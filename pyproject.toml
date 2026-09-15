@@ -1,0 +1,32 @@
+[project]
+name = "achievement-analytics"
+version = "0.1.0"
+description = "Steam 成就数据分析：分析用户和玩家更愿意玩什么样的游戏"
+requires-python = ">=3.13"
+dependencies = [
+    # 爬虫
+    "httpx>=0.27",            # async HTTP client
+    "python-dotenv>=1.0",     # .env 读取
+
+    # 数据处理
+    "pandas>=2.2",
+    # 上限 <2.4 是硬约束，不要放宽：shap 依赖 numba，而 numba（x86_64-darwin fork）
+    # 要求 numpy<2.4。放宽后 uv 会回溯到 numba 0.53.1，其 sdist 拒绝 Python 3.13，
+    # 导致 uv sync 直接失败（2026-09-15 实测）。
+    "numpy>=2.0,<2.4",
+
+    # 建模
+    "scikit-learn>=1.5",      # baseline 回归
+    # "girth>=0.9",           # IRT 2PL（W7 前确认可用性，备选 py-irt）
+
+    # 可视化
+    "matplotlib>=3.9",
+    "seaborn>=0.13",
+    "plotly>=5.22",
+
+    # 归因
+    "shap>=0.46",
+
+    # 测试
+    "pytest>=8.0",
+]
