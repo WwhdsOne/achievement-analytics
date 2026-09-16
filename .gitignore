@@ -1,5 +1,12 @@
-# 环境与密钥（AGENTS.md 硬性：.env 不入库）
+# 环境与密钥（AGENTS.md 硬性：一律不入库）
+# .env.* 覆盖 .env.local / .env.production 等变体；!.env.example 再把模板放出来
 .env
+.env.*
+!.env.example
+*.key
+*.pem
+credentials.json
+secrets.*
 
 
 # 数据目录（原始数据含个人信息，永不入库）

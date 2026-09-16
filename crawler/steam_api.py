@@ -1,136 +1,66 @@
-"""crawler.steam_api — Steam 数据采集模块
+"""crawler.steam_api — Steam 公开数据采集模块
 
-数据源分两类：
-- 免 key：appdetails（商店元数据，**单 appid 请求**，实测多 appid 批量返回
-  400）、GetGlobalAchievementPercentagesForApp（全局成就完成率，
-  Q1 难度 b 的代理指标）
-- 需 key（.env 的 STEAM_API_KEY）：GetSchemaForGame（成就架构
-  name -> displayName，名称映射的唯一完整来源——appdetails 只有 10 个
-  highlighted 展示名，不敷映射使用）、GetOwnedGames、GetPlayerAchievements
+全部数据源免 key。2026-09-15 决定：个人 Steam API key 只能覆盖 key 持有者
+本人的逐玩家数据，对本项目的**游戏级**分析没有价值，因此不申请、不使用
+任何 key。
 
-硬性规范（AGENTS.md）：
-- 请求间隔 >= 1s；失败重试 <= 3 次，失败记日志不中断整体任务
-- 缓存层 data/raw/cache/，已爬不重爬（断点续爬）
-- 只采公开数据，不碰需登录态的页面
+使用的公开数据源：
+- appdetails（商店接口）：游戏元数据 + 成就概览。**单 appid 请求**，实测多
+  appid 批量返回 400；成就字段只有 total + 10 个 highlighted 展示名
+- GetGlobalAchievementPercentagesForApp：全局成就完成率，返回内部名
+  （如 ACH39）+ percent，是本项目的难度核心数据
+- Steam 社区成就页：**全部**成就的展示名 + 完成率。与上一项的成就顺序一致
+  （2026-09-15 实测：条数 / percent 多重集 / 顺序完全相同），两者按位对齐
+  即可得到 name -> displayName 映射，不需要 GetSchemaForGame
+
+限速 / 重试 / 缓存统一走 crawler.http。硬性规范见 AGENTS.md。
 """
 
 from __future__ import annotations
 
-import hashlib
-import json
+import html
 import logging
-import time
+import re
 from typing import Any
 
-import httpx
-
-from crawler.config import (
-    DATA_RAW,
-    MAX_RETRIES,
-    REQUEST_INTERVAL_SEC,
-    STEAM_API_KEY,
-)
+from crawler.http import read_cache, request_json, request_text, write_cache
 
 logger = logging.getLogger(__name__)
 
 STORE_APPDETAILS_URL = "https://store.steampowered.com/api/appdetails"
 WEB_API_BASE = "https://api.steampowered.com"
-
-CACHE_DIR = DATA_RAW / "cache"
-
-
-# ── 限速与请求 ────────────────────────────────────────────
-
-_last_request_ts = 0.0
+COMMUNITY_STATS_URL = "https://steamcommunity.com/stats/{appid}/achievements"
 
 
-def _throttle() -> None:
-    """全局限速：保证相邻两次请求间隔 >= REQUEST_INTERVAL_SEC。"""
-    global _last_request_ts
-    elapsed = time.monotonic() - _last_request_ts
-    if elapsed < REQUEST_INTERVAL_SEC:
-        time.sleep(REQUEST_INTERVAL_SEC - elapsed)
-    _last_request_ts = time.monotonic()
+# ── 公开接口 ──────────────────────────────────────────────
 
 
-def _request(url: str, params: dict[str, Any]) -> Any:
-    """GET 并解析 JSON：全局限速 + 失败重试 <= MAX_RETRIES。
-
-    不含缓存（由调用方按业务键缓存）。
-
-    Raises:
-        RuntimeError: 重试耗尽仍失败。
-    """
-    last_exc: Exception | None = None
-    for attempt in range(1, MAX_RETRIES + 1):
-        try:
-            _throttle()
-            resp = httpx.get(url, params=params, timeout=30.0)
-            resp.raise_for_status()
-            return resp.json()
-        except (httpx.HTTPError, json.JSONDecodeError) as exc:
-            last_exc = exc
-            logger.warning(
-                "请求失败（%d/%d）%s %s：%s", attempt, MAX_RETRIES, url, params, exc
-            )
-    raise RuntimeError(f"重试耗尽：{url} {params}") from last_exc
-
-
-# ── 缓存层（断点续爬依据）─────────────────────────────────
-
-
-def _cache_path(key: str) -> "Any":
-    """缓存键 -> data/raw/cache/ 下文件路径。键须为合法文件名字符。"""
-    return CACHE_DIR / f"{key}.json"
-
-
-def _read_cache(key: str) -> Any | None:
-    """命中返回缓存内容，未命中或文件损坏返回 None。"""
-    path = _cache_path(key)
-    if not path.exists():
-        return None
-    try:
-        return json.loads(path.read_text(encoding="utf-8"))
-    except json.JSONDecodeError:
-        logger.warning("缓存损坏，忽略并重爬：%s", path.name)
-        return None
-
-
-def _write_cache(key: str, payload: Any) -> None:
-    """写入缓存。键唯一即文件唯一，不覆盖其他条目。"""
-    CACHE_DIR.mkdir(parents=True, exist_ok=True)
-    _cache_path(key).write_text(
-        json.dumps(payload, ensure_ascii=False, indent=2), encoding="utf-8"
-    )
-
-
-def _hashed_steamid(steamid: str | int) -> str:
-    """玩家 ID 哈希（12 位），避免明文 steamid 出现在缓存文件名。"""
-    return hashlib.sha256(str(steamid).encode()).hexdigest()[:12]
-
-
-# ── 免 key 接口 ───────────────────────────────────────────
-
-
-def fetch_appdetails(appids: list[int]) -> dict[str, dict[str, Any]]:
+def fetch_appdetails(
+    appids: list[int], lang: str = "english"
+) -> dict[str, dict[str, Any]]:
     """逐个拉取商店 appdetails（游戏元数据 + 成就概览，免 key）。
 
     实测 appdetails 不支持多 appid 批量（返回 400），只能单 appid 请求；
     已缓存的 appid 直接命中，不重复请求。
+
+    Args:
+        appids: 要拉取的 Steam AppID 列表。
+        lang: 语言（english / schinese / …）。**官方名随语言变化**，取中英文
+            官方名就分别用 "english" 与 "schinese" 各拉一次（2026-09-15 实测：
+            ELDEN RING -> 艾尔登法环，Valve 无中文名时回落英文名）。
 
     Returns:
         {appid_str: data}，仅含 success 条目；失败 appid 记日志并跳过。
     """
     result: dict[str, dict[str, Any]] = {}
     for appid in appids:
-        cached = _read_cache(f"appdetails_{appid}")
+        cache_key = f"appdetails_{lang}_{appid}"
+        cached = read_cache(cache_key)
         if cached is not None:
             result[str(appid)] = cached
             continue
         try:
-            payload = _request(
-                STORE_APPDETAILS_URL, {"appids": appid, "l": "english"}
-            )
+            payload = request_json(STORE_APPDETAILS_URL, {"appids": appid, "l": lang})
         except RuntimeError as exc:
             logger.error("appdetails 失败，跳过 appid=%s：%s", appid, exc)
             continue
@@ -138,24 +68,42 @@ def fetch_appdetails(appids: list[int]) -> dict[str, dict[str, Any]]:
         if not entry.get("success"):
             logger.warning("appdetails 无数据：appid=%s", appid)
             continue
-        _write_cache(f"appdetails_{appid}", entry["data"])
+        write_cache(cache_key, entry["data"])
         result[str(appid)] = entry["data"]
     return result
 
 
-def fetch_global_achievement_percentages(appid: int) -> list[dict[str, Any]]:
-    """拉取某游戏的全局成就完成率（免 key，Q1 难度 b 代理）。
+def fetch_official_names(appid: int) -> dict[str, str]:
+    """取该游戏的**官方中英文名**（Steam 商店 appdetails，免 key）。
+
+    这是"以官方权威数据定游戏身份"的第一步：先拿到 Valve 官方名，
+    再用它去查询其他数据源。
 
     Returns:
-        [{"name": API 内部名, "percent": 全局完成率}, ...]。
-        注意 name 是内部名（如 NEW_ACHIEVEMENT_1_1），须映射成 displayName
-        后才能进正式分析与报告（AGENTS.md 硬性）。
+        {"name_en": ..., "name_zh": ...}；取不到时为缺省的空字符串。
+        Valve 没有中文名时 name_zh 会回落成英文名。
+    """
+    en = fetch_appdetails([appid], lang="english").get(str(appid)) or {}
+    zh = fetch_appdetails([appid], lang="schinese").get(str(appid)) or {}
+    return {
+        "name_en": en.get("name") or "",
+        "name_zh": zh.get("name") or en.get("name") or "",
+    }
+
+
+def fetch_global_achievement_percentages(appid: int) -> list[dict[str, Any]]:
+    """拉取某游戏的全局成就完成率（免 key）。
+
+    Returns:
+        [{"name": API 内部名, "percent": 全局完成率字符串}, ...]。
+        注意 name 是内部名（如 ACH39 / NEW_ACHIEVEMENT_1_1），须按位对齐
+        社区成就页拿到 displayName 后才能进正式分析与报告（AGENTS.md 硬性）。
     """
     cache_key = f"global_ach_{appid}"
-    cached = _read_cache(cache_key)
+    cached = read_cache(cache_key)
     if cached is not None:
         return cached
-    payload = _request(
+    payload = request_json(
         f"{WEB_API_BASE}/ISteamUserStats/"
         f"GetGlobalAchievementPercentagesForApp/v2/",
         {"gameid": appid, "format": "json"},
@@ -165,86 +113,78 @@ def fetch_global_achievement_percentages(appid: int) -> list[dict[str, Any]]:
     ) or []
     if not achievements:
         logger.warning("全局完成率为空：appid=%s", appid)
-    _write_cache(cache_key, achievements)
+    write_cache(cache_key, achievements)
     return achievements
 
 
-# ── 需 key 接口 ───────────────────────────────────────────
+def fetch_community_achievements(appid: int) -> list[dict[str, Any]]:
+    """拉取 Steam 社区成就页的全部成就（展示名 + 完成率，免 key）。
 
+    这是 name -> displayName 映射的公开替代方案：页面把「展示名 + 完成率」
+    成对给出，不需要 GetSchemaForGame（需 key）。
 
-def fetch_achievement_schema(appid: int) -> list[dict[str, Any]]:
-    """拉取成就架构（需 key）：name -> displayName 映射的权威来源。
-
-    Returns:
-        [{"name": 内部名, "displayName": 显示名, "description": ..., ...}, ...]。
-        空列表表示游戏无成就或接口无数据。
-    """
-    if not STEAM_API_KEY:
-        raise EnvironmentError("STEAM_API_KEY 未配置（见 .env.example）")
-    cache_key = f"schema_{appid}"
-    cached = _read_cache(cache_key)
-    if cached is not None:
-        return cached
-    payload = _request(
-        f"{WEB_API_BASE}/ISteamUserStats/GetSchemaForGame/v2/",
-        {"key": STEAM_API_KEY, "appid": appid, "format": "json"},
-    )
-    game = payload.get("game") or {}
-    achievements = (game.get("availableGameStats") or {}).get("achievements") or []
-    _write_cache(cache_key, achievements)
-    return achievements
-
-
-def fetch_owned_games(steamid: str | int) -> list[dict[str, Any]]:
-    """拉取玩家公开游戏库（需 key）：playtime_forever 等参与度字段。
+    返回顺序与 fetch_global_achievement_percentages 一致（2026-09-15 对
+    黑魂3 实测：条数、percent 多重集、顺序三者完全相同），调用方可按位
+    对齐给内部名补上展示名。
 
     Returns:
-        游戏列表（空列表 = 档案非公开或库为空，调用方按缺样本处理）。
+        [{"display_name": 展示名, "percent": 完成率(float),
+          "description": 成就描述}, ...]；页面无成就时返回空列表。
     """
-    if not STEAM_API_KEY:
-        raise EnvironmentError("STEAM_API_KEY 未配置（见 .env.example）")
-    cache_key = f"owned_{_hashed_steamid(steamid)}"
-    cached = _read_cache(cache_key)
+    cache_key = f"community_ach_{appid}"
+    cached = read_cache(cache_key)
     if cached is not None:
         return cached
-    payload = _request(
-        f"{WEB_API_BASE}/IPlayerService/GetOwnedGames/v1/",
-        {
-            "key": STEAM_API_KEY,
-            "steamid": steamid,
-            "include_played_free_games": True,
-            "format": "json",
-        },
-    )
-    games = (payload.get("response") or {}).get("games") or []
-    _write_cache(cache_key, games)
-    return games
+    text = request_text(COMMUNITY_STATS_URL.format(appid=appid))
+    rows = _parse_achievement_rows(text)
+    if not rows:
+        logger.warning("社区成就页解析不到成就行：appid=%s", appid)
+    write_cache(cache_key, rows)
+    return rows
 
 
-def fetch_player_achievements(
-    steamid: str | int, appid: int
-) -> dict[str, Any]:
-    """拉取玩家在某游戏的成就解锁状态（需 key）。
+# ── 社区成就页解析 ────────────────────────────────────────
+
+# 页面结构（2026-09-15 实测）::
+#   <div class="achieveRow">
+#     <div class="achievePercent">93.9%</div>
+#     <div class="achieveTxt">
+#       <h3>Enkindle</h3>
+#       <h5>Light a bonfire flame for the first time.</h5>
+#     </div>
+#   </div>
+_ROW_SPLIT = '<div class="achieveRow'
+_PERCENT_RE = re.compile(r'class="achievePercent">([\d.]+)%')
+_TITLE_RE = re.compile(r"<h3>(.*?)</h3>", re.S)
+_DESC_RE = re.compile(r"<h5>(.*?)</h5>", re.S)
+
+
+def _parse_achievement_rows(text: str) -> list[dict[str, Any]]:
+    """从社区成就页 HTML 解析出展示名 / 完成率 / 描述。
+
+    缺 percent 或 h3 的行直接跳过；描述缺失不跳过（隐藏成就可以没有描述）。
 
     Returns:
-        接口 response 原文；success=False 表示档案非公开或游戏无成就。
+        [{"display_name": str, "percent": float, "description": str}, ...]。
     """
-    if not STEAM_API_KEY:
-        raise EnvironmentError("STEAM_API_KEY 未配置（见 .env.example）")
-    cache_key = f"player_ach_{_hashed_steamid(steamid)}_{appid}"
-    cached = _read_cache(cache_key)
-    if cached is not None:
-        return cached
-    payload = _request(
-        f"{WEB_API_BASE}/ISteamUserStats/GetPlayerAchievements/v1/",
-        {"key": STEAM_API_KEY, "steamid": steamid, "appid": appid, "format": "json"},
-    )
-    response = payload.get("response") or {}
-    _write_cache(cache_key, response)
-    return response
+    rows: list[dict[str, Any]] = []
+    for block in text.split(_ROW_SPLIT)[1:]:
+        percent = _PERCENT_RE.search(block)
+        title = _TITLE_RE.search(block)
+        if not (percent and title):
+            continue
+        desc = _DESC_RE.search(block)
+        rows.append(
+            {
+                "display_name": html.unescape(title.group(1)).strip(),
+                "percent": float(percent.group(1)),
+                "description": html.unescape(desc.group(1)).strip() if desc else "",
+            }
+        )
+    return rows
 
 
-# ── W1 冒烟测试：5 款 FromSoftware 游戏 ────────────────────
+# ── 冒烟测试：5 款 FromSoftware 游戏 ────────────────────
 
 SMOKE_GAMES: dict[int, str] = {
     570940: "黑暗之魂：重制版",
@@ -255,12 +195,17 @@ SMOKE_GAMES: dict[int, str] = {
 }
 
 
+def easier_name(ach: dict[str, Any]) -> str:
+    """打印用：截短成就内部名。"""
+    return ach["name"][:28]
+
+
 def smoke_test() -> None:
-    """冒烟测试：跑通免 key 接口 + 检验名称映射可行性。"""
+    """冒烟测试：跑通全部公开接口 + 验证按位对齐的名称映射。"""
     logging.basicConfig(level=logging.INFO, format="%(levelname)s %(message)s")
 
     print("=" * 62)
-    print("1) appdetails 批量（免 key）")
+    print("1) appdetails（免 key，单 appid）")
     details = fetch_appdetails(list(SMOKE_GAMES))
     for appid, cn in SMOKE_GAMES.items():
         d = details.get(str(appid)) or {}
@@ -272,14 +217,14 @@ def smoke_test() -> None:
         )
 
     print("=" * 62)
-    print("2) 全局成就完成率（免 key，Q1 难度代理）")
+    print("2) 全局成就完成率（免 key，难度核心数据）")
     globals_by_appid: dict[int, list[dict[str, Any]]] = {}
     for appid, cn in SMOKE_GAMES.items():
         achs = fetch_global_achievement_percentages(appid)
         globals_by_appid[appid] = achs
         if achs:
-            easiest = max(achs, key=lambda a: a["percent"])
-            hardest = min(achs, key=lambda a: a["percent"])
+            easiest = max(achs, key=lambda a: float(a["percent"]))
+            hardest = min(achs, key=lambda a: float(a["percent"]))
             print(
                 f"  [{appid}] {cn}：{len(achs)} 项成就，"
                 f"最易 {easier_name(easiest)}={easiest['percent']}%，"
@@ -287,25 +232,21 @@ def smoke_test() -> None:
             )
 
     print("=" * 62)
-    print("3) 名称映射可行性：appdetails 的 highlighted 是内部名还是显示名？")
+    print("3) 名称映射：社区成就页 vs 全局完成率（均免 key，按位对齐）")
     for appid, cn in SMOKE_GAMES.items():
-        d = details.get(str(appid)) or {}
-        highlighted = [
-            a["name"] for a in (d.get("achievements") or {}).get("highlighted") or []
-        ]
-        internal_names = {g["name"] for g in globals_by_appid[appid]}
-        overlap = [n for n in highlighted if n in internal_names]
+        rows = fetch_community_achievements(appid)
+        api = globals_by_appid[appid]
+        page_pct = [r["percent"] for r in rows]
+        api_pct = [float(a["percent"]) for a in api]
         print(
-            f"  [{appid}] {cn}：highlighted {len(highlighted)} 项，"
-            f"其中 {len(overlap)} 项与全局完成率的内部名匹配"
+            f"  [{appid}] {cn}：社区页 {len(rows)} 项 / 全局接口 {len(api)} 项，"
+            f"条数一致={len(rows) == len(api)}，顺序一致={page_pct == api_pct}"
         )
-    print("结论已实测：highlighted 是显示名（如 The Dark Soul）且仅 ~10 项，")
-    print("完整 name->displayName 映射必须走 fetch_achievement_schema（需 key）。")
-
-
-def easier_name(ach: dict[str, Any]) -> str:
-    """打印用：截短成就内部名。"""
-    return ach["name"][:28]
+        if rows and api:
+            print(
+                f"      样例映射 {api[0]['name']} -> {rows[0]['display_name']}"
+                f"（{rows[0]['percent']}%）"
+            )
 
 
 if __name__ == "__main__":

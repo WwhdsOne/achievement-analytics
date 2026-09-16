@@ -1,0 +1,32 @@
+# 本地开发用 PostgreSQL（AGENTS.md：只用公开数据源，DB 跑在本机，不需要任何云账号）
+#
+# 用法:
+#   docker compose up -d          启动
+#   docker compose ps             看状态
+#   docker compose down           停止（数据保留在卷里）
+#   docker compose down -v        停止并删除数据卷（会清空数据！）
+#
+# 端口用 5433 而不是 5432，避免和本机可能已有的 PostgreSQL 冲突。
+
+services:
+  db:
+    image: postgres:16
+    container_name: achievement-analytics-db
+    environment:
+      POSTGRES_DB: ${POSTGRES_DB:-achievement_analytics}
+      POSTGRES_USER: ${POSTGRES_USER:-analyst}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-analyst_dev_pw}
+    ports:
+      - "${POSTGRES_PORT:-5433}:5432"
+    volumes:
+      - pgdata:/var/lib/postgresql/data
+    healthcheck:
+      test:
+        ["CMD-SHELL", "pg_isready -U ${POSTGRES_USER:-analyst} -d ${POSTGRES_DB:-achievement_analytics}"]
+      interval: 5s
+      timeout: 3s
+      retries: 10
+      start_period: 5s
+
+volumes:
+  pgdata:

@@ -59,7 +59,7 @@
 ## 快速开始
 
 ```bash
-git clone <repo-url>
+git clone https://github.com/WwhdsOne/achievement-analytics.git
 cd achievement-analytics
 uv sync
 ```
