@@ -16,10 +16,16 @@
 --        SELECT obj_description('games'::regclass);
 --        SELECT col_description('games'::regclass, ordinal_position), column_name
 --          FROM information_schema.columns WHERE table_name='games';
---   6. 数据源：Steam appdetails / 全局成就完成率 / Steam 社区成就页 / SteamSpy / RAWG。
+--   6. 数据源：Steam 商店搜索（全量枚举，bulk）/ Steam appdetails / 全局成就完成率 /
+--      Steam 社区成就页 / SteamSpy / RAWG。**源的清单与限速配额都在 sources 表里**，
+--      加源只改那张表。
 --      **IGDB 已于 2026-09-15 放弃**：它需 Twitch OAuth2，而 Twitch 两步验证在国内
 --      手机号上走不通；其时长（RAWG playtime 已覆盖）、评分（RAWG metacritic 已覆盖）
 --      价值已由 RAWG 承接，只剩系列归属属加分项，故整表移除。
+--   7. 抓取是 **gap 驱动**的：games 先灌入全量游戏（种子），seed 时物化
+--      (游戏 × 逐款源) 的任务队列 fetch_tasks，worker 反复「取缺口 → 抓 → 回填」。
+--      因此本 schema 有两套并存的记录：fetch_tasks 管**当前状态**（该抓谁），
+--      ingest_log 管**审计历史与真实抓取时间**（何时抓的）。
 -- ============================================================================
 
 BEGIN;
@@ -151,6 +157,121 @@ ALTER TABLE rawg_games ADD COLUMN IF NOT EXISTS status_toplay  INTEGER;
 ALTER TABLE rawg_games ADD COLUMN IF NOT EXISTS status_dropped INTEGER;
 ALTER TABLE rawg_games ADD COLUMN IF NOT EXISTS status_playing INTEGER;
 
+-- ── 1.10 商店搜索枚举结果（种子层，bulk 源）─────────────────────────────────
+-- 「最公开的信息」：一次请求拿 100 款，不需要逐款 appdetails。这是全量游戏
+-- 的落地处，也是 seed 的产物。
+--
+-- 为什么要单独一张表而不是塞进 steam_appdetails：两者是**不同批次、不同来源**
+-- 的数据，同一批 appid 上会给出不同的名字/价格/发售日（商店搜索给的是搜索索引里的
+-- 值，appdetails 给的是商店页权威值）。混在一张表里就无法区分来源与新鲜度，
+-- 也违背「每个数据源一张表」的设计原则。游戏身份统一由 games 表承担。
+
+CREATE TABLE IF NOT EXISTS store_search_games (
+    appid          INTEGER     PRIMARY KEY REFERENCES games (appid) ON DELETE CASCADE,
+    release_date   DATE,
+    review_label   TEXT,
+    review_percent INTEGER     CHECK (review_percent BETWEEN 0 AND 100),
+    review_count   INTEGER,
+    price_cents    INTEGER,
+    tag_ids        INTEGER[],
+    fetched_at     TIMESTAMPTZ NOT NULL DEFAULT now()
+);
+
+-- ── 1.11 源注册表 ───────────────────────────────────────────────────────────
+-- 单一真源：**新增数据源只改这里**，gap 视图与队列不再需要各自维护源清单
+-- （旧版把源清单硬编码在 ingest_coverage 的 VALUES 里，加源容易漏改）。
+--
+-- kind 区分两种抓取范式，这决定了源能不能进队列：
+--   bulk     = 一次请求覆盖多款游戏（商店搜索 100 款/次、SteamSpy all 1000 款/次）
+--              → **不进 fetch_tasks 队列**，作为独立的「全量刷新」任务
+--   per_game = 一次请求只覆盖一款游戏 → 进队列，走 gap 驱动逐个回填
+
+CREATE TABLE IF NOT EXISTS sources (
+    source        TEXT    PRIMARY KEY,
+    kind          TEXT    NOT NULL CHECK (kind IN ('bulk', 'per_game')),
+    interval_ms   INTEGER NOT NULL CHECK (interval_ms > 0),
+    daily_quota   INTEGER,
+    monthly_quota INTEGER,
+    max_attempts  INTEGER NOT NULL DEFAULT 3 CHECK (max_attempts > 0),
+    note          TEXT
+);
+
+-- 迁移：给已存在的库补列
+ALTER TABLE sources ADD COLUMN IF NOT EXISTS daily_quota INTEGER;
+
+-- 幂等 upsert：改限速 / 配额 / 重试上限后重跑 schema.sql 即生效
+INSERT INTO sources (source, kind, interval_ms, daily_quota, monthly_quota, max_attempts, note) VALUES
+    ('store_search',  'bulk',     1000, NULL,  NULL,  3,
+     'Steam 商店搜索：全量枚举入口，一次 100 款（count 上限 100，传 1000 无效）。免 key'),
+    ('steamspy_all',  'bulk',    60000, NULL,  NULL,  3,
+     'SteamSpy request=all：一次 1000 款，含 owners/ccu/好评差评。免 key。'
+     '官方限速写明 request=all 是 1 req/60s（不是 1 req/s），故 interval_ms=60000。'
+     '报错字段不含 tags，且 average_forever/median_forever 已失效恒为 0'),
+    ('appdetails_en', 'per_game', 1000, NULL,  NULL,  3,
+     'Steam 商店 appdetails（l=english）：官方英文名与元数据。实测不支持批量，只能单 appid。免 key'),
+    ('appdetails_zh', 'per_game', 1000, NULL,  NULL,  3,
+     'Steam 商店 appdetails（l=schinese）：官方中文名，无中文名时回落英文名。免 key'),
+    ('global_ach',    'per_game', 1000, NULL,  NULL,  3,
+     'GetGlobalAchievementPercentagesForApp：内部名 + percent，难度核心数据。免 key'),
+    ('community_ach', 'per_game', 1000, NULL,  NULL,  3,
+     'Steam 社区成就页：展示名 + percent + 描述。免 key。与 global_ach 顺序一致，按位对齐完成名称映射'),
+    ('steamspy',      'per_game', 1000, 1000,  NULL,  3,
+     'SteamSpy appdetails：用户标签 + 票数（bulk 的 steamspy_all 拿不到 tags，这是它唯一独有价值）。'
+     '免 key。官方页面只公布 1 req/s（2026-09-17 核对），**没有公布任何每日配额** —— '
+     'daily_quota=1000 是**本项目自设的保守上限**，不是官方额度。'
+     '81,850 款按 1000/天要 82 天，故只应作为「取标签」的可选补充，不要盲目全量入队'),
+    ('rawg',          'per_game', 1000, NULL, 20000, 3,
+     'RAWG：评分 / 时长 / 弃坑率 / 题材标签。**需 key**。免费档 20,000 请求/月（官方文档），'
+     '响应头不暴露剩余额度，故配额靠 api_usage 自行记账')
+ON CONFLICT (source) DO UPDATE SET
+    kind          = EXCLUDED.kind,
+    interval_ms   = EXCLUDED.interval_ms,
+    daily_quota   = EXCLUDED.daily_quota,
+    monthly_quota = EXCLUDED.monthly_quota,
+    max_attempts  = EXCLUDED.max_attempts,
+    note          = EXCLUDED.note;
+
+-- ── 1.12 抓取任务队列（gap 驱动的状态表）────────────────────────────────────
+-- 与 ingest_log 的分工：
+--   ingest_log  = **追加式审计历史**（每次尝试都留痕，回答「何时抓的、当时成功没有」）
+--   fetch_tasks = **可变的当前状态**（一行一「游戏, 源」，回答「现在还缺什么、下一步该抓谁」）
+-- 拆开的理由：审计历史必须不可变，而队列状态需要被反复改写；混在一张表里两者都做不好。
+--
+-- **终止条件**（旧设计缺失、会导致无限重爬）：attempts 到 sources.max_attempts 就转
+-- exhausted，不再出现在可执行队列里。status 语义：
+--   pending   = 待抓（初始态，或来自 bulk 种子的新任务）
+--   ok        = 已成功拿到数据
+--   empty     = 接口通但该游戏确实没有这项数据（**确定性终态**，不再重试）
+--   skipped   = 按配置跳过（如未配 RAWG key）—— 配好 key 后应重置回 pending
+--   error     = 失败，等 next_retry_at 退避重试；attempts 到上限转 exhausted
+--   exhausted = 重试耗尽，放弃（终态）
+
+CREATE TABLE IF NOT EXISTS fetch_tasks (
+    appid         INTEGER     NOT NULL REFERENCES games (appid) ON DELETE CASCADE,
+    source        TEXT        NOT NULL REFERENCES sources (source),
+    status        TEXT        NOT NULL DEFAULT 'pending'
+                  CHECK (status IN ('pending', 'ok', 'empty', 'skipped', 'error', 'exhausted')),
+    attempts      INTEGER     NOT NULL DEFAULT 0,
+    last_error    TEXT,
+    next_retry_at TIMESTAMPTZ,
+    updated_at    TIMESTAMPTZ NOT NULL DEFAULT now(),
+    PRIMARY KEY (appid, source)
+);
+
+-- ── 1.13 配额账本 ───────────────────────────────────────────────────────────
+-- RAWG 等按量计费的源**不暴露剩余额度**（2026-09-17 实测响应头无任何 x-ratelimit
+-- 字段），不自己记账就无从判断还能抓多少。按 (源, 日期) 聚合而非逐请求一行：
+-- 全量抓取会有几十万次请求，逐行存是没必要的膨胀。
+
+CREATE TABLE IF NOT EXISTS api_usage (
+    source   TEXT    NOT NULL,
+    day      DATE    NOT NULL,
+    requests INTEGER NOT NULL DEFAULT 0 CHECK (requests >= 0),
+    PRIMARY KEY (source, day)
+);
+
+ALTER TABLE api_usage ADD COLUMN IF NOT EXISTS requests INTEGER NOT NULL DEFAULT 0;
+
 -- ════════════════════════════════════════════════════════════════════════════
 -- 二、索引
 -- ════════════════════════════════════════════════════════════════════════════
@@ -187,6 +308,18 @@ CREATE INDEX IF NOT EXISTS idx_ingest_appid
 CREATE INDEX IF NOT EXISTS idx_ingest_source
     ON ingest_log (source, fetched_at DESC);
 
+-- 取任务用：worker 的 claim 查询按「可执行状态 + 退避到期」筛，这是最热的路径
+CREATE INDEX IF NOT EXISTS idx_fetch_tasks_claim
+    ON fetch_tasks (status, next_retry_at);
+
+-- 按源看队列（「这个源还剩多少没抓」）
+CREATE INDEX IF NOT EXISTS idx_fetch_tasks_source_status
+    ON fetch_tasks (source, status);
+
+-- 配额账本按月汇总（「本月 RAWG 用了多少次」）
+CREATE INDEX IF NOT EXISTS idx_api_usage_day
+    ON api_usage (day);
+
 -- ════════════════════════════════════════════════════════════════════════════
 -- 三、视图
 -- ════════════════════════════════════════════════════════════════════════════
@@ -198,6 +331,9 @@ CREATE INDEX IF NOT EXISTS idx_ingest_source
 
 DROP VIEW IF EXISTS games_full      CASCADE;
 DROP VIEW IF EXISTS ingest_gaps     CASCADE;
+DROP VIEW IF EXISTS ingest_progress CASCADE;
+DROP VIEW IF EXISTS quota_status    CASCADE;
+DROP VIEW IF EXISTS quota_this_month CASCADE;
 DROP VIEW IF EXISTS game_engagement CASCADE;
 DROP VIEW IF EXISTS game_difficulty CASCADE;
 DROP VIEW IF EXISTS ingest_coverage CASCADE;
@@ -279,6 +415,9 @@ SELECT
     s.negative,
     r.metacritic        AS rawg_metacritic,
     r.rating            AS rawg_rating,
+    ss.review_label     AS store_review_label,
+    ss.review_percent   AS store_review_percent,
+    ss.review_count     AS store_review_count,
     ge.playtime_hours,
     ge.dropped_ratio,
     ge.beaten_ratio,
@@ -287,11 +426,12 @@ SELECT
     d.p10_percent,
     d.hard_ratio
 FROM games g
-LEFT JOIN steam_appdetails a  USING (appid)
-LEFT JOIN steamspy_games   s  USING (appid)
-LEFT JOIN rawg_games       r  USING (appid)
-LEFT JOIN game_engagement  ge USING (appid)
-LEFT JOIN game_difficulty  d  USING (appid);
+LEFT JOIN steam_appdetails   a  USING (appid)
+LEFT JOIN steamspy_games     s  USING (appid)
+LEFT JOIN rawg_games         r  USING (appid)
+LEFT JOIN store_search_games ss USING (appid)
+LEFT JOIN game_engagement    ge USING (appid)
+LEFT JOIN game_difficulty    d  USING (appid);
 
 -- ════════════════════════════════════════════════════════════════════════════
 -- 四、表注释
@@ -303,6 +443,11 @@ COMMENT ON TABLE games IS
 COMMENT ON TABLE steam_appdetails IS
     'Steam 商店 appdetails（免 key）：Valve 官方元数据。'
     '官方 genre 极粗（如黑魂3 只有 Action），题材分析要用 game_tags 的用户标签。';
+COMMENT ON TABLE store_search_games IS
+    '商店搜索枚举结果（种子层）：一次请求覆盖 100 款的**最公开信息**。'
+    '与 steam_appdetails 是不同来源、不同批次的数据，故分表存放——'
+    '两者在同批 appid 上会给出不同的名字/价格/发售日。'
+    '免 key，是全量游戏（81,849 款带成就）的唯一免 key 枚举入口。';
 COMMENT ON TABLE steamspy_games IS
     'SteamSpy（免 key）：owners/ccu/好评差评数。注意 average_forever / median_forever 已失效恒为 0。';
 COMMENT ON TABLE rawg_games IS
@@ -332,6 +477,26 @@ COMMENT ON COLUMN games.name_zh IS '官方中文名（appdetails l=schinese）�
 COMMENT ON COLUMN games.source_title IS '原始来源标题（如 B 站白金视频标题），便于回溯数据从哪条清单来；可能含「忠于自我」等非官方名后缀';
 COMMENT ON COLUMN games.first_seen_at IS '该 appid 首次入库时间';
 COMMENT ON COLUMN games.updated_at IS '该行最近一次更新时间';
+
+-- store_search_games
+COMMENT ON COLUMN store_search_games.appid IS '外键 → games.appid';
+COMMENT ON COLUMN store_search_games.release_date IS
+    '发售日。搜索结果给的是「Sep 10, 2026」展示格式，入库前已解析为 ISO 日期';
+COMMENT ON COLUMN store_search_games.review_label IS
+    '好评档位展示名（Very Positive / Mostly Positive / …）。**注意不是 CSS class**，'
+    '后者是 positive 这类 slug（2026-09-17 踩到）';
+COMMENT ON COLUMN store_search_games.review_percent IS
+    '好评率（%）。免费的「口碑」信号，比 SteamSpy 的 owners 区间字符串更硬';
+COMMENT ON COLUMN store_search_games.review_count IS
+    '评价总数。**热度代理，也是判断 review_percent 可信度的样本量**——'
+    '「39 条评价 100% 好评」和「39,068 条评价 85% 好评」不是一回事。未发售游戏为 NULL';
+COMMENT ON COLUMN store_search_games.price_cents IS
+    '当前售价（美分），取自搜索结果的 data-price-final。免费为 0，未定价为 NULL';
+COMMENT ON COLUMN store_search_games.tag_ids IS
+    'Steam 官方标签 ID 数组（data-ds-tagids）。**存的是 ID 不是名字**——'
+    'ID→名字的映射表尚未采集，故这里先原样保留，勿直接当题材特征用';
+COMMENT ON COLUMN store_search_games.fetched_at IS
+    '本行数据的抓取时间。搜索结果的价格/好评率会变，时间敏感分析要看它';
 
 -- steam_appdetails
 COMMENT ON COLUMN steam_appdetails.appid IS '外键 → games.appid';
@@ -483,6 +648,9 @@ COMMENT ON COLUMN games_full.positive IS '好评数（SteamSpy）';
 COMMENT ON COLUMN games_full.negative IS '差评数（SteamSpy）';
 COMMENT ON COLUMN games_full.rawg_metacritic IS 'Metacritic 媒体评分（来自 RAWG）';
 COMMENT ON COLUMN games_full.rawg_rating IS 'RAWG 用户评分（0-5）';
+COMMENT ON COLUMN games_full.store_review_label IS 'Steam 好评档位展示名（来自商店搜索枚举）';
+COMMENT ON COLUMN games_full.store_review_percent IS 'Steam 好评率（%），来自商店搜索枚举';
+COMMENT ON COLUMN games_full.store_review_count IS 'Steam 评价总数（口碑可信度的样本量）';
 COMMENT ON COLUMN games_full.playtime_hours IS '平均游玩时长（小时）';
 COMMENT ON COLUMN games_full.dropped_ratio IS '弃坑率（来自 game_engagement）';
 COMMENT ON COLUMN games_full.beaten_ratio IS '通关率（来自 game_engagement）';
@@ -492,10 +660,15 @@ COMMENT ON COLUMN games_full.p10_percent IS '全局完成率 P10 分位';
 COMMENT ON COLUMN games_full.hard_ratio IS '极难成就占比（完成率 < 10%）';
 
 -- ════════════════════════════════════════════════════════════════════════════
--- 八、抓取覆盖：哪些游戏的哪些数据源已获取 / 成功失败 / 何时获取
+-- 八、抓取覆盖与进度：回答「还缺什么 / 下一步该抓谁 / 跑了多少」
 -- ════════════════════════════════════════════════════════════════════════════
--- ingest_log 是**追加式日志**，同一 (游戏,源) 会有多行历史，所以要先取最新一条，
--- 再和「期望的源清单」交叉展开——否则「从没跑过」和「跑了失败」分不清。
+-- 两个数据来源分工明确：
+--   fetch_tasks = **当前状态**（该抓谁）—— gap 驱动队列的驱动源，可变
+--   ingest_log  = **历史与真实抓取时间**（何时抓的）—— 追加式，不可变
+-- 本节的视图把两者拼起来：状态取自 fetch_tasks，抓取时间取自 ingest_log。
+--
+-- 旧版靠 CROSS JOIN 硬编码的源清单来「展开期望的源」；现在队列在 seed 时就已
+-- 物化了 (游戏 × 逐款源) 的全集，无需再展开，加源也不用改这里。
 
 -- 该索引服务于下面 ingest_latest 的 DISTINCT ON 查询
 CREATE INDEX IF NOT EXISTS idx_ingest_appid_source_time
@@ -508,61 +681,187 @@ FROM ingest_log
 WHERE appid IS NOT NULL
 ORDER BY appid, source, fetched_at DESC, id DESC;
 
+-- 覆盖矩阵：一行一「游戏 × 逐款源」的当前状态
 CREATE OR REPLACE VIEW ingest_coverage AS
-WITH expected (source, ord) AS (
-    VALUES ('appdetails_en', 1), ('appdetails_zh', 2), ('global_ach', 3),
-           ('community_ach', 4), ('steamspy', 5), ('rawg', 6)
-)
 SELECT
-    g.appid,
+    t.appid,
     g.name_en,
-    e.source,
-    l.status,                                  -- NULL = 这个源从没跑过
-    l.fetched_at,
-    l.error,
-    (l.status = 'ok') AS ok
-FROM games g
-CROSS JOIN expected e
+    t.source,
+    s.kind,
+    t.status,
+    t.attempts,
+    s.max_attempts,
+    t.last_error                                 AS error,
+    t.next_retry_at,
+    l.fetched_at,                                -- 真实的抓取时间（来自审计日志）
+    (t.status = 'ok')                            AS ok,
+    (t.status IN ('pending', 'error')
+     AND t.attempts < s.max_attempts)            AS actionable   -- 是否还能被 worker 捡起来
+FROM fetch_tasks t
+JOIN games   g ON g.appid = t.appid
+JOIN sources s ON s.source = t.source
 LEFT JOIN ingest_latest l
-       ON l.appid = g.appid AND l.source = e.source
-ORDER BY g.appid, e.ord;
+       ON l.appid = t.appid AND l.source = t.source;
 
--- 只看有问题的行（没跑过 / empty / error / skipped），一眼看出还缺什么
+-- 可执行缺口：**只列 worker 真的会去抓的行**。
+-- 与 ingest_coverage 的关键区别：empty / skipped / exhausted / 重试耗尽的 error
+-- 都不在此视图里。这是「循环有终止条件」的体现——若把它们也算缺口，
+-- 一个本来就没有成就的游戏会被永远重爬（旧设计的缺陷）。
 CREATE OR REPLACE VIEW ingest_gaps AS
 SELECT * FROM ingest_coverage
-WHERE status IS DISTINCT FROM 'ok';
+WHERE actionable;
+
+-- 进度汇总：一行一个源，直接回答「这个源还剩多少没抓」
+CREATE OR REPLACE VIEW ingest_progress AS
+SELECT
+    s.source,
+    s.kind,
+    s.daily_quota,
+    s.monthly_quota,
+    count(t.appid)                                          AS total,
+    count(*) FILTER (WHERE t.status = 'ok')                 AS ok,
+    count(*) FILTER (WHERE t.status = 'empty')              AS empty,
+    count(*) FILTER (WHERE t.status = 'skipped')            AS skipped,
+    count(*) FILTER (WHERE t.status = 'error')              AS error,
+    count(*) FILTER (WHERE t.status = 'exhausted')          AS exhausted,
+    count(*) FILTER (WHERE t.status = 'pending')            AS pending,
+    count(*) FILTER (WHERE t.status IN ('pending', 'error')
+                       AND t.attempts < s.max_attempts)     AS actionable,
+    max(t.updated_at)                                       AS last_activity_at
+FROM sources s
+LEFT JOIN fetch_tasks t ON t.source = s.source
+GROUP BY s.source, s.kind, s.daily_quota, s.monthly_quota;
+
+-- 配额余额：日限与月限都要看（SteamSpy 是日限 1000，RAWG 是月限 20000）
+CREATE OR REPLACE VIEW quota_status AS
+SELECT
+    s.source,
+    s.daily_quota,
+    s.monthly_quota,
+    coalesce(sum(u.requests) FILTER (WHERE u.day = current_date), 0)        AS used_today,
+    CASE WHEN s.daily_quota IS NULL THEN NULL
+         ELSE s.daily_quota
+              - coalesce(sum(u.requests) FILTER (WHERE u.day = current_date), 0)
+    END                                                                     AS remaining_today,
+    coalesce(sum(u.requests) FILTER (
+        WHERE date_trunc('month', u.day) = date_trunc('month', current_date)), 0)
+                                                                            AS used_this_month,
+    CASE WHEN s.monthly_quota IS NULL THEN NULL
+         ELSE s.monthly_quota
+              - coalesce(sum(u.requests) FILTER (
+                  WHERE date_trunc('month', u.day) = date_trunc('month', current_date)), 0)
+    END                                                                     AS remaining_this_month
+FROM sources s
+LEFT JOIN api_usage u ON u.source = s.source
+GROUP BY s.source, s.daily_quota, s.monthly_quota;
 
 COMMENT ON INDEX idx_ingest_appid_source_time IS
     '服务 ingest_latest 的 DISTINCT ON (appid, source) 查询：每游戏每源取最新一条';
 
 COMMENT ON VIEW ingest_latest IS
-    '每 (游戏, 源) 的**最新一次**抓取状态。ingest_log 是追加式日志，查当前状态要走这个视图。';
+    '每 (游戏, 源) 的**最新一次**抓取状态与**真实抓取时间**。来源是追加式审计日志 '
+    'ingest_log；查「该抓谁」要走 ingest_coverage（来源是 fetch_tasks）。';
 COMMENT ON COLUMN ingest_latest.appid IS 'Steam AppID';
 COMMENT ON COLUMN ingest_latest.source IS '数据源标识';
-COMMENT ON COLUMN ingest_latest.status IS '最新一次的状态：ok / empty / skipped / error';
+COMMENT ON COLUMN ingest_latest.status IS '最新一次的状态：ok / empty / skipped / error / exhausted';
 COMMENT ON COLUMN ingest_latest.cache_key IS '对应的 data/raw/cache/ 缓存键';
 COMMENT ON COLUMN ingest_latest.error IS '失败原因（status=error 时有值）';
 COMMENT ON COLUMN ingest_latest.fetched_at IS '该数据**真实的抓取时间**（取缓存文件 mtime，不是入库时间）';
 
 COMMENT ON VIEW ingest_coverage IS
-    '覆盖矩阵：每个游戏 × 每个期望数据源一行，直接回答「哪些游戏的哪些源已获取/成功失败/何时获取」。';
+    '覆盖矩阵：一行一「游戏 × 逐款源」的当前队列状态。状态取自 fetch_tasks（可变），'
+    '抓取时间取自 ingest_log（审计）。批量源（kind=bulk）不在此视图中，'
+    '它们不是逐款抓取的，用量看 api_usage / quota_this_month。';
 COMMENT ON COLUMN ingest_coverage.appid IS 'Steam AppID';
-COMMENT ON COLUMN ingest_coverage.name_en IS '官方英文名，方便人眼扫';
-COMMENT ON COLUMN ingest_coverage.source IS '期望的数据源（view 里硬编码的清单，新增源要同步这里）';
-COMMENT ON COLUMN ingest_coverage.status IS '最新状态；**NULL 表示这个源从没跑过**（区别于跑了但失败）';
-COMMENT ON COLUMN ingest_coverage.fetched_at IS '该源最近一次抓取时间；没跑过为 NULL';
+COMMENT ON COLUMN ingest_coverage.name_en IS '英文名，方便人眼扫';
+COMMENT ON COLUMN ingest_coverage.source IS '数据源标识（清单来自 sources 表，加源只需改那张表）';
+COMMENT ON COLUMN ingest_coverage.kind IS 'bulk=一次请求覆盖多款；per_game=一次请求一款';
+COMMENT ON COLUMN ingest_coverage.status IS
+    '队列当前状态：pending / ok / empty / skipped / error / exhausted。'
+    'empty 是**确定性终态**（该游戏确实没这项数据），不会重试';
+COMMENT ON COLUMN ingest_coverage.attempts IS '已尝试次数';
+COMMENT ON COLUMN ingest_coverage.max_attempts IS '该源的重试上限（来自 sources）';
 COMMENT ON COLUMN ingest_coverage.error IS '最近一次失败原因';
-COMMENT ON COLUMN ingest_coverage.ok IS '是否已成功获取（status = ok）';
+COMMENT ON COLUMN ingest_coverage.next_retry_at IS '下次可重试时间（退避）；为 NULL 表示立即可抓';
+COMMENT ON COLUMN ingest_coverage.fetched_at IS '该源最近一次**真实抓取时间**；从没抓成功为 NULL';
+COMMENT ON COLUMN ingest_coverage.ok IS '是否已成功获取';
+COMMENT ON COLUMN ingest_coverage.actionable IS
+    'worker 是否还会抓它：status 为 pending/error **且** attempts 未达上限。'
+    '这是「循环能否终止」的判据';
 
 COMMENT ON VIEW ingest_gaps IS
-    '覆盖率缺口：只列 status 不是 ok 的 (游戏, 源) —— 没跑过 / empty / error / skipped。'
-    '抓取任务收尾时扫一眼这张表就知道还缺什么。';
+    '可执行缺口：**只列 worker 真的会去抓的 (游戏, 源)**。'
+    'empty / skipped / exhausted / 重试耗尽的 error 都不在内 —— 因此这个集合单调收敛，'
+    '抓完就空，不会因为「某游戏本来就没成就」而无限重爬。';
 COMMENT ON COLUMN ingest_gaps.appid IS 'Steam AppID';
-COMMENT ON COLUMN ingest_gaps.name_en IS '官方英文名';
-COMMENT ON COLUMN ingest_gaps.source IS '还缺或出问题的数据源';
-COMMENT ON COLUMN ingest_gaps.status IS 'NULL=没跑过；empty=接口通但无数据；error=失败；skipped=跳过（如未配 key）';
-COMMENT ON COLUMN ingest_gaps.fetched_at IS '该源最近一次抓取时间；没跑过为 NULL';
-COMMENT ON COLUMN ingest_gaps.error IS '失败原因';
-COMMENT ON COLUMN ingest_gaps.ok IS '恒为 false（视图已过滤掉成功的行）';
+COMMENT ON COLUMN ingest_gaps.name_en IS '英文名';
+COMMENT ON COLUMN ingest_gaps.source IS '还缺或待重试的数据源';
+COMMENT ON COLUMN ingest_gaps.status IS 'pending=待抓；error=失败待退避重试';
+COMMENT ON COLUMN ingest_gaps.attempts IS '已尝试次数';
+COMMENT ON COLUMN ingest_gaps.next_retry_at IS '下次可重试时间';
+COMMENT ON COLUMN ingest_gaps.actionable IS '恒为 true（视图已过滤）';
+
+COMMENT ON VIEW ingest_progress IS
+    '抓取进度汇总：一行一个源，含各状态计数与 actionable 剩余量。'
+    '「这个源还剩多少没抓」看 actionable 列。';
+COMMENT ON COLUMN ingest_progress.source IS '数据源标识';
+COMMENT ON COLUMN ingest_progress.kind IS 'bulk / per_game；bulk 源不进队列，total 为 0';
+COMMENT ON COLUMN ingest_progress.daily_quota IS '每日配额上限；NULL 表示不限量';
+COMMENT ON COLUMN ingest_progress.monthly_quota IS '月度配额上限；NULL 表示不限量';
+COMMENT ON COLUMN ingest_progress.total IS '该源的队列任务总数（seed 时物化）';
+COMMENT ON COLUMN ingest_progress.ok IS '已成功';
+COMMENT ON COLUMN ingest_progress.empty IS '接口通但无数据（确定性终态，不重试）';
+COMMENT ON COLUMN ingest_progress.skipped IS '按配置跳过（如未配 RAWG key）';
+COMMENT ON COLUMN ingest_progress.error IS '失败待重试';
+COMMENT ON COLUMN ingest_progress.exhausted IS '重试耗尽已放弃（终态）';
+COMMENT ON COLUMN ingest_progress.pending IS '尚未开始';
+COMMENT ON COLUMN ingest_progress.actionable IS 'worker 还会抓的总数 —— 归零即该源抓完';
+COMMENT ON COLUMN ingest_progress.last_activity_at IS '该源队列最近一次变动时间';
+
+COMMENT ON VIEW quota_status IS
+    '配额余额：日限与月限都要看。RAWG 响应头不暴露剩余额度，所以这是判断'
+    '「还能抓多少」的唯一依据；SteamSpy 是日限 1000，超了次日才恢复。';
+COMMENT ON COLUMN quota_status.source IS '数据源标识';
+COMMENT ON COLUMN quota_status.daily_quota IS '每日配额上限；NULL 表示不限量';
+COMMENT ON COLUMN quota_status.monthly_quota IS '月度配额上限；NULL 表示不限量';
+COMMENT ON COLUMN quota_status.used_today IS '今日已发出的真实网络请求数（缓存命中不计）';
+COMMENT ON COLUMN quota_status.remaining_today IS '今日剩余额度；不限量时为 NULL';
+COMMENT ON COLUMN quota_status.used_this_month IS '本月已发出的真实网络请求数';
+COMMENT ON COLUMN quota_status.remaining_this_month IS '本月剩余额度；不限量时为 NULL';
+
+COMMENT ON TABLE sources IS
+    '数据源注册表（单一真源）：新增数据源只改这张表，gap 视图与队列都从它读。'
+    'kind 决定范式：bulk 一次请求覆盖多款（商店搜索 100/次、SteamSpy all 1000/次），'
+    '不进队列；per_game 一次一款，进 fetch_tasks 走 gap 驱动回填。';
+COMMENT ON COLUMN sources.source IS '数据源标识，与 ingest_log.source / fetch_tasks.source 对应';
+COMMENT ON COLUMN sources.kind IS 'bulk=批量覆盖多款（不进队列）；per_game=逐款（进队列）';
+COMMENT ON COLUMN sources.interval_ms IS '相邻两次请求的最小间隔（毫秒），按站点礼貌间隔设定';
+COMMENT ON COLUMN sources.daily_quota IS '每日请求配额上限；NULL 表示无限制（SteamSpy 是 1000/天）';
+COMMENT ON COLUMN sources.monthly_quota IS '月度请求配额上限；NULL 表示无限制（RAWG 免费档 20000/月）';
+COMMENT ON COLUMN sources.max_attempts IS '重试上限，达到后转 exhausted 终止，防止无限重爬';
+COMMENT ON COLUMN sources.note IS '限速来源、是否需 key、已知坑等人读备注';
+
+COMMENT ON TABLE fetch_tasks IS
+    '抓取任务队列（gap 驱动的状态表）：一行一「游戏, 源」。'
+    '与 ingest_log 分工——本表是可变的**当前状态**（该抓谁），'
+    'ingest_log 是不可变的**审计历史**（何时抓的）。'
+    '终止条件靠 attempts 对 sources.max_attempts：error 达上限转 exhausted。';
+COMMENT ON COLUMN fetch_tasks.appid IS '外键 → games.appid';
+COMMENT ON COLUMN fetch_tasks.source IS '外键 → sources.source';
+COMMENT ON COLUMN fetch_tasks.status IS
+    'pending 待抓 / ok 成功 / empty 确定性无数据（终态）/ skipped 按配置跳过 / '
+    'error 失败待退避重试 / exhausted 重试耗尽（终态）';
+COMMENT ON COLUMN fetch_tasks.attempts IS '已尝试次数，达 sources.max_attempts 即转 exhausted';
+COMMENT ON COLUMN fetch_tasks.last_error IS '最近一次失败原因';
+COMMENT ON COLUMN fetch_tasks.next_retry_at IS '下次可重试时间（指数退避）；NULL 表示立即可抓';
+COMMENT ON COLUMN fetch_tasks.updated_at IS '该行最近一次变动时间';
+
+COMMENT ON TABLE api_usage IS
+    '配额账本：按 (源, 日期) 聚合真实网络请求数。'
+    'RAWG 等按量计费的源不暴露剩余额度（实测响应头无 x-ratelimit 字段），'
+    '不自己记账就无从判断还能抓多少。缓存命中不计入。';
+COMMENT ON COLUMN api_usage.source IS '数据源标识';
+COMMENT ON COLUMN api_usage.day IS 'UTC 日期（按日聚合，避免逐请求一行）';
+COMMENT ON COLUMN api_usage.requests IS '当日真实网络请求数，缓存命中不计';
 
 COMMIT;

@@ -31,6 +31,12 @@ STORE_APPDETAILS_URL = "https://store.steampowered.com/api/appdetails"
 WEB_API_BASE = "https://api.steampowered.com"
 COMMUNITY_STATS_URL = "https://steamcommunity.com/stats/{appid}/achievements"
 
+# appdetails 的 lang 参数 -> 注册表里的源标识（限速与配额按源分别记）
+_LANG_TO_SOURCE: dict[str, str] = {
+    "english": "appdetails_en",
+    "schinese": "appdetails_zh",
+}
+
 
 # ── 公开接口 ──────────────────────────────────────────────
 
@@ -60,7 +66,11 @@ def fetch_appdetails(
             result[str(appid)] = cached
             continue
         try:
-            payload = request_json(STORE_APPDETAILS_URL, {"appids": appid, "l": lang})
+            payload = request_json(
+                STORE_APPDETAILS_URL,
+                {"appids": appid, "l": lang},
+                source=_LANG_TO_SOURCE.get(lang, "appdetails_en"),
+            )
         except RuntimeError as exc:
             logger.error("appdetails 失败，跳过 appid=%s：%s", appid, exc)
             continue
@@ -107,6 +117,7 @@ def fetch_global_achievement_percentages(appid: int) -> list[dict[str, Any]]:
         f"{WEB_API_BASE}/ISteamUserStats/"
         f"GetGlobalAchievementPercentagesForApp/v2/",
         {"gameid": appid, "format": "json"},
+        source="global_ach",
     )
     achievements = (payload.get("achievementpercentages") or {}).get(
         "achievements"
@@ -135,7 +146,9 @@ def fetch_community_achievements(appid: int) -> list[dict[str, Any]]:
     cached = read_cache(cache_key)
     if cached is not None:
         return cached
-    text = request_text(COMMUNITY_STATS_URL.format(appid=appid))
+    text = request_text(
+        COMMUNITY_STATS_URL.format(appid=appid), source="community_ach"
+    )
     rows = _parse_achievement_rows(text)
     if not rows:
         logger.warning("社区成就页解析不到成就行：appid=%s", appid)

@@ -11,8 +11,9 @@ Steam 成就数据分析，**总目标：分析用户和玩家更愿意玩什么
 ## 目录约定
 
 ```
-crawler/    每个数据源一个模块（http.py 共享限速/缓存层 · steam_api.py · steamspy.py · rawg.py）；test_crawl.py 是单款游戏抓取演示，用 `uv run python -m crawler.test_crawl` 跑
+crawler/    每个数据源一个模块（http.py 共享限速/缓存层 · registry.py 源注册表 · steam_api.py · steamspy.py · rawg.py · store_search.py 全量枚举）；test_crawl.py 是单款游戏抓取演示，用 `uv run python -m crawler.test_crawl` 跑
 cleaning/   清洗、成就名称映射与反作弊，输入 data/raw，输出 data/processed；schema.sql 是数据库唯一真源
+            · writers.py 单源抓取+入库（两条路径共用）· seed.py 灌全量游戏 · worker.py gap 驱动回填
 modeling/   irt/（Q1 难度建模）+ regression/（Q2 偏好归因）两个子包，一个实验一个脚本
 viz/        图表函数，与 notebook 解耦
 notebooks/  只做探索，不放正式逻辑；正式逻辑沉淀到模块
@@ -21,6 +22,36 @@ docs/       plan.md 等正式文档
 learning-logs/  中文日志，每天一个文件
 tests/      关键函数必须有测试（schema 校验、名称映射、反作弊规则）
 ```
+
+## 数据获取流程（2026-09-17 起：gap 驱动）
+
+不再靠人工维护的目标清单，改为**全量枚举 + 按缺口回填**：
+
+1. **种子** `uv run python -m cleaning.seed` —— 用 `crawler/store_search.py`
+   （免 key）枚举全部**带 Steam 成就的游戏（当前约 81,850 款）**，写入 `games`
+   + `store_search_games`。成本约 819 次请求、14 分钟，一次灌满。
+   随后把 (游戏 × 逐款源) 展开物化成 `fetch_tasks` 任务队列。
+2. **回填** `uv run python -m cleaning.worker` —— 反复「取缺口 → 抓 → 回填」，
+   可随时 Ctrl-C、重跑自动续。进度看 `ingest_progress` 视图，
+   「还缺什么」看 `ingest_gaps`。
+
+**规模是运行参数**：`seed --sample N --order random` 先物化一小批跑通验收，
+再扩到全量。别一上来就全量——管道有 bug 时不该等几十小时才发现。
+
+要点：
+
+- **数据源清单与限速/配额只在 `sources` 表**（`schema.sql`）与 `crawler/registry.py`
+  两处声明，`tests/test_registry.py` 断言两者一致；加源要同时改，别只改一处
+- **源分两类**：`bulk`（一次请求覆盖多款：商店搜索 100/次、SteamSpy `all` 1000/次）
+  **不进队列**；`per_game`（一次一款）才进 `fetch_tasks`
+- `fetch_tasks`（可变**当前状态**·该抓谁）与 `ingest_log`（不可变**审计历史**·何时抓的）
+  分工明确，不要混用
+- 循环有**终止条件**：`empty` 是确定性终态不重试，`error` 退避重试到
+  `sources.max_attempts` 后转 `exhausted`。因此 `ingest_gaps` 单调收敛
+- RAWG 等按量计费的源**不暴露剩余额度**（实测响应头无 x-ratelimit），
+  配额靠 `api_usage` 自己记账，余额查 `quota_status`
+- 不要盲跑 `fetch_official`（一次两请求）：队列路径下 `appdetails_en` / `appdetails_zh`
+  各自只拉自己要的那个语言，否则请求数翻倍
 
 ## 环境规范
 

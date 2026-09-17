@@ -12,6 +12,9 @@
   ``http://store.steampowered.com/app/374320/``），可解析出 appid
 - 因此流程是：**按官方名搜 → 逐个候选查 /stores → appid 一致才算匹配**，
   不做名称模糊匹配（实测搜 "God of War III" 唯一命中是完全无关的游戏）
+- 成本上先走 ``search_exact=true`` 精确搜索（官方文档提及、**未实测**），
+  命中时只需 1 次 search + 1 次 stores；失败才走宽松搜索兜底。RAWG 按月配额
+  计费（免费档 20,000 次/月），匹配一款的请求数是能否放量的硬约束
 
 **搜索词必须先清洗商标符号**：官方名 ``DARK SOULS™ III`` 直接拿去搜，真正的
 游戏根本不在结果里（返回的是 ``Dark Fall 3: Lost Souls`` 之类）；去掉 ``™``
@@ -55,7 +58,9 @@ def _api(path: str, params: dict[str, Any]) -> dict[str, Any]:
     if not RAWG_API_KEY:
         raise EnvironmentError("RAWG_API_KEY 未配置（见 .env.example）")
     return request_json(
-        f"{RAWG_BASE}/{path.lstrip('/')}", {**params, "key": RAWG_API_KEY}
+        f"{RAWG_BASE}/{path.lstrip('/')}",
+        {**params, "key": RAWG_API_KEY},
+        source="rawg",
     )
 
 
@@ -84,7 +89,9 @@ def search_variants(name: str) -> list[str]:
     return variants
 
 
-def search_games(name: str, page_size: int = 5) -> list[dict[str, Any]]:
+def search_games(
+    name: str, page_size: int = 5, *, exact: bool = False
+) -> list[dict[str, Any]]:
     """按名称搜索 RAWG 游戏（搜索词会先清洗商标符号）。
 
     RAWG 的搜索很宽松（搜 "Elden Ring" 返回 5864 条），只能当**候选入口**，
@@ -93,21 +100,27 @@ def search_games(name: str, page_size: int = 5) -> list[dict[str, Any]]:
     Args:
         name: 搜索词，建议用**官方英文名**（中文名往往搜不到）。
         page_size: 返回候选数上限。
+        exact: 用 ``search_exact=true`` 只匹配精确词。官方文档「Latest updates」
+            提及此参数（**未实测**）；精确匹配能大幅减少假阳性候选，从而省下
+            ``/stores`` 校验请求——RAWG 按月配额计费，候选少一个就少一次请求。
 
     Returns:
         候选列表（含 id / name / slug / released / metacritic / rating 等）。
     """
     clean = normalize_for_search(name)
     key = "rawg_search_" + hashlib.sha1(
-        f"{clean}|{page_size}".encode()
+        f"{clean}|{page_size}|{exact}".encode()
     ).hexdigest()[:12]
     cached = read_cache(key)
     if cached is not None:
         return cached
-    payload = _api("games", {"search": clean, "page_size": page_size})
+    params: dict[str, Any] = {"search": clean, "page_size": page_size}
+    if exact:
+        params["search_exact"] = "true"
+    payload = _api("games", params)
     results = payload.get("results") or []
     if not results:
-        logger.warning("RAWG 搜不到：%s", clean)
+        logger.warning("RAWG 搜不到：%s（exact=%s）", clean, exact)
     write_cache(key, results)
     return results
 
@@ -154,7 +167,7 @@ def match_by_appid(
     appid: int,
     names: list[str],
     page_size: int = 5,
-    max_candidates: int = 12,
+    max_candidates: int = 6,
 ) -> dict[str, Any] | None:
     """用「名称搜索 + appid 校验」找到 appid 对应的 RAWG 游戏详情。
 
@@ -162,36 +175,56 @@ def match_by_appid(
     对候选调 ``steam_appid_of`` 比对；**只有 appid 一模一样才算匹配**，
     避免名称搜索的假阳性。
 
+    **成本分两轮**（RAWG 按月配额计费，候选少一个就少一次请求）：
+    1. 先走 ``search_exact=true`` 精确搜索 —— 命中时总成本只有
+       1 次 search + 1 次 stores
+    2. 精确搜不到再走宽松搜索兜底，逐候选校验直到 ``max_candidates``
+
     Args:
         appid: 目标 Steam appid。
         names: 候选搜索词，按优先级排列。
         page_size: 每个搜索词取多少候选。
-        max_candidates: 最多校验多少个候选，防止请求数失控。
+        max_candidates: 最多校验多少个候选，防止请求数失控（默认 6，比旧版的 12
+            更保守——配额是这条链路的硬约束）。
 
     Returns:
         匹配到的 RAWG 详情 dict；全部候选都没对上时返回 None。
     """
-    candidates: list[dict[str, Any]] = []
-    for name in names:
-        for variant in search_variants(name):
-            candidates.extend(search_games(variant, page_size=page_size))
-
     seen: set[int] = set()
     checked = 0
-    for cand in candidates:
-        rawg_id = cand.get("id")
-        if not rawg_id or rawg_id in seen:
-            continue
-        if checked >= max_candidates:
-            logger.warning(
-                "RAWG 候选数超上限(%d)，可能漏匹配：appid=%s", max_candidates, appid
-            )
-            break
-        seen.add(rawg_id)
-        checked += 1
-        if steam_appid_of(rawg_id) == appid:
-            logger.info("RAWG 匹配成功：appid=%s -> rawg_id=%s", appid, rawg_id)
-            return fetch_game_detail(rawg_id)
+    for exact in (True, False):
+        for name in names:
+            for variant in search_variants(name):
+                if checked >= max_candidates:
+                    logger.warning(
+                        "RAWG 候选数超上限(%d)，可能漏匹配：appid=%s",
+                        max_candidates,
+                        appid,
+                    )
+                    return None
+                for cand in search_games(variant, page_size=page_size, exact=exact):
+                    rawg_id = cand.get("id")
+                    if not rawg_id or rawg_id in seen:
+                        continue
+                    if checked >= max_candidates:
+                        logger.warning(
+                            "RAWG 候选数超上限(%d)，可能漏匹配：appid=%s",
+                            max_candidates,
+                            appid,
+                        )
+                        return None
+                    seen.add(rawg_id)
+                    checked += 1
+                    if steam_appid_of(rawg_id) == appid:
+                        logger.info(
+                            "RAWG 匹配成功：appid=%s -> rawg_id=%s"
+                            "（exact=%s，校验了 %d 个候选）",
+                            appid,
+                            rawg_id,
+                            exact,
+                            checked,
+                        )
+                        return fetch_game_detail(rawg_id)
     logger.warning("RAWG 未能匹配：appid=%s names=%s", appid, names)
     return None
 

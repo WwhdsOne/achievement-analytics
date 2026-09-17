@@ -11,7 +11,15 @@
 - ``average_forever`` / ``median_forever`` **已失效，恒为 0**，不要当游玩
   时长用。
 - SteamSpy 数据有缓存延迟（可能滞后数天到数周），入库必须记录抓取时间。
-- 官方限速：appdetails 1 req/s、每天 1000 次。
+- 官方限速（2026-09-17 核对 https://steamspy.com/api.php 原文）：
+  只公布了 ``Allowed poll rate - 1 request per second for most requests,
+  1 request per 60 seconds for the *all* requests.``
+  **页面上没有任何「每天 N 次」的配额**。本项目在 ``sources.daily_quota`` 里给
+  appdetails 设的 1000/天是**自设的保守上限**（防止限流窗口内反复撞墙），
+  不是官方公布的额度——查限额时别把它当权威数字。
+- 页面另一句值得注意：``The data is refreshed once a day, there is no reason to
+  request the same information more than once every 24 hours.``
+  即同一 appid 一天内不必重复请求，缓存层应至少保留 24 小时。
 """
 
 from __future__ import annotations
@@ -36,7 +44,11 @@ def fetch_app_details(appid: int) -> dict[str, Any]:
     cached = read_cache(cache_key)
     if cached is not None:
         return cached
-    payload = request_json(STEAMSPY_URL, {"request": "appdetails", "appid": appid})
+    payload = request_json(
+        STEAMSPY_URL,
+        {"request": "appdetails", "appid": appid},
+        source="steamspy",
+    )
     if not payload:
         logger.warning("SteamSpy 无数据：appid=%s", appid)
     write_cache(cache_key, payload)
