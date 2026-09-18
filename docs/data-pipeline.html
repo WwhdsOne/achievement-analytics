@@ -1,0 +1,422 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>数据获取流程 · achievement-analytics</title>
+<style>
+  :root {
+    --ink: #1a2332;
+    --ink-2: #4a5568;
+    --ink-3: #718096;
+    --paper: #f7f8fa;
+    --card: #ffffff;
+    --line: #e2e8f0;
+    --accent: #2563eb;
+    --accent-soft: #eff6ff;
+    --green: #059669;
+    --green-soft: #ecfdf5;
+    --amber: #b45309;
+    --amber-soft: #fffbeb;
+    --red: #b91c1c;
+    --red-soft: #fef2f2;
+    --purple: #7c3aed;
+    --purple-soft: #f5f3ff;
+    --code-bg: #0f172a;
+    --code-ink: #e2e8f0;
+  }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body {
+    font-family: "PingFang SC", "Hiragino Sans GB", "Microsoft YaHei", -apple-system, sans-serif;
+    background: var(--paper);
+    color: var(--ink);
+    line-height: 1.7;
+    padding-bottom: 80px;
+  }
+  .wrap { max-width: 980px; margin: 0 auto; padding: 0 24px; }
+
+  header {
+    background: linear-gradient(135deg, #0f172a 0%, #1e3a5f 100%);
+    color: #fff;
+    padding: 48px 0 40px;
+    margin-bottom: 40px;
+  }
+  header h1 { font-size: 28px; font-weight: 700; letter-spacing: 0.5px; }
+  header p { color: #94a3b8; margin-top: 8px; max-width: 720px; }
+  header .tagline { color: #e2e8f0; font-size: 15px; margin-top: 16px; }
+  header code { background: rgba(255,255,255,.12); padding: 2px 8px; border-radius: 4px; font-size: 13px; }
+
+  h2 {
+    font-size: 20px; margin: 48px 0 16px; padding-left: 12px;
+    border-left: 4px solid var(--accent);
+  }
+  h2 .no { color: var(--accent); margin-right: 8px; font-variant-numeric: tabular-nums; }
+  h3 { font-size: 15px; margin: 24px 0 8px; color: var(--ink-2); }
+  p.lead { color: var(--ink-2); margin-bottom: 16px; }
+  .muted { color: var(--ink-3); font-size: 13px; }
+
+  .card {
+    background: var(--card); border: 1px solid var(--line); border-radius: 12px;
+    padding: 20px 24px; margin-bottom: 16px;
+  }
+
+  /* ── 流程图 ── */
+  .flow { display: flex; flex-direction: column; gap: 0; }
+  .flow-row { display: flex; align-items: stretch; gap: 12px; }
+  .flow-box {
+    flex: 1; border-radius: 10px; padding: 14px 16px;
+    border: 1px solid var(--line); background: var(--card);
+  }
+  .flow-box .t { font-weight: 600; font-size: 14px; display: flex; align-items: center; gap: 8px; }
+  .flow-box .d { font-size: 12.5px; color: var(--ink-2); margin-top: 4px; }
+  .flow-box .cmd {
+    font-family: "SF Mono", Menlo, Consolas, monospace; font-size: 11.5px;
+    background: var(--code-bg); color: var(--code-ink);
+    padding: 3px 8px; border-radius: 5px; display: inline-block; margin-top: 8px;
+  }
+  .flow-arrow {
+    text-align: center; color: var(--ink-3); font-size: 18px; line-height: 1;
+    padding: 6px 0;
+  }
+  .flow-split { display: flex; gap: 12px; }
+  .flow-split .flow-box { flex: 1; }
+  .badge {
+    font-size: 11px; font-weight: 600; padding: 1px 8px; border-radius: 999px;
+    white-space: nowrap;
+  }
+  .b-blue  { background: var(--accent-soft); color: var(--accent); }
+  .b-green { background: var(--green-soft);  color: var(--green); }
+  .b-amber { background: var(--amber-soft);  color: var(--amber); }
+  .b-red   { background: var(--red-soft);    color: var(--red); }
+  .b-purple{ background: var(--purple-soft); color: var(--purple); }
+
+  /* ── 表格 ── */
+  table { width: 100%; border-collapse: collapse; font-size: 13.5px; }
+  th {
+    text-align: left; padding: 8px 10px; background: #f1f5f9;
+    border-bottom: 2px solid var(--line); font-size: 12.5px; color: var(--ink-2);
+    white-space: nowrap;
+  }
+  td { padding: 8px 10px; border-bottom: 1px solid var(--line); vertical-align: top; }
+  tr:last-child td { border-bottom: none; }
+  td code, p code, li code {
+    font-family: "SF Mono", Menlo, Consolas, monospace; font-size: 12.5px;
+    background: #eef2f7; padding: 1px 6px; border-radius: 4px; color: #334155;
+  }
+  .num { font-variant-numeric: tabular-nums; }
+
+  /* ── 状态机 ── */
+  .states { display: flex; flex-wrap: wrap; gap: 10px; align-items: center; }
+  .state {
+    border-radius: 8px; padding: 8px 14px; font-size: 13px; font-weight: 600;
+    border: 1px solid var(--line); background: var(--card); text-align: center;
+  }
+  .state small { display: block; font-weight: 400; font-size: 11.5px; color: var(--ink-3); margin-top: 2px; }
+  .st-pending { border-color: #93c5fd; background: var(--accent-soft); }
+  .st-ok      { border-color: #6ee7b7; background: var(--green-soft); }
+  .st-empty   { border-color: #6ee7b7; background: var(--green-soft); }
+  .st-skipped { border-color: #c4b5fd; background: var(--purple-soft); }
+  .st-error   { border-color: #fcd34d; background: var(--amber-soft); }
+  .st-exh     { border-color: #fca5a5; background: var(--red-soft); }
+  .s-arrow { color: var(--ink-3); font-size: 14px; }
+
+  /* ── 两栏要点 ── */
+  .grid2 { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; }
+  @media (max-width: 760px) { .grid2 { grid-template-columns: 1fr; } }
+  .kv { display: flex; gap: 10px; margin: 10px 0; }
+  .kv .k {
+    flex-shrink: 0; font-weight: 600; font-size: 13px; color: var(--accent);
+    background: var(--accent-soft); border-radius: 6px; padding: 2px 10px; height: fit-content;
+    white-space: nowrap;
+  }
+  .kv .v { font-size: 13.5px; color: var(--ink-2); }
+
+  .note {
+    border-left: 3px solid var(--amber); background: var(--amber-soft);
+    border-radius: 0 8px 8px 0; padding: 10px 14px; font-size: 13.5px; margin: 12px 0;
+  }
+  .note.blue { border-color: var(--accent); background: var(--accent-soft); }
+  .note b { color: var(--ink); }
+
+  pre {
+    background: var(--code-bg); color: var(--code-ink); border-radius: 10px;
+    padding: 14px 18px; font-size: 13px; overflow-x: auto; line-height: 1.6;
+    font-family: "SF Mono", Menlo, Consolas, monospace;
+  }
+  pre .c { color: #64748b; }
+  pre .k { color: #7dd3fc; }
+
+  footer {
+    margin-top: 56px; padding-top: 20px; border-top: 1px solid var(--line);
+    color: var(--ink-3); font-size: 13px;
+  }
+</style>
+</head>
+<body>
+
+<header>
+  <div class="wrap">
+    <h1>achievement-analytics · 数据获取流程</h1>
+    <p>这份页面解释项目的数据是怎么一步步抓进 PostgreSQL 的：谁先谁后、花了多少请求、
+       断了怎么办、多台机器怎么一起跑。面向全组同学，不需要先读代码。</p>
+    <p class="tagline">核心问题：<b>玩家更愿意玩什么样的游戏？</b> —— 先得有足够多的游戏数据。</p>
+  </div>
+</header>
+
+<div class="wrap">
+
+  <!-- ══════════════ 1. 总体范围 ══════════════ -->
+  <h2><span class="no">01</span>我们到底在抓什么</h2>
+  <p class="lead">
+    目标总体：<b>2026 年以前发售、带 Steam 成就的游戏</b>——成就是本研究（难度建模 + 偏好归因）的基础信号，
+    没有成就的游戏进不了任何分析。规模是实测采样估计，不是拍脑袋：
+  </p>
+  <div class="card">
+    <table>
+      <tr><th>口径</th><th>数量（估计）</th><th>说明</th></tr>
+      <tr><td>Steam 全部游戏</td><td class="num">≈ 186,800</td><td>官方 GetAppList 全量接口，4 次请求拿完</td></tr>
+      <tr><td>其中带 Steam 成就</td><td class="num">≈ 81,850</td><td>商店筛选出（数字每日浮动）</td></tr>
+      <tr><td><b>再限「2026 年以前发售」</b></td><td class="num"><b>≈ 49,900</b></td><td><b>我们的数据范围</b>（占 61%；2026 新作与无发售日的排除）</td></tr>
+      <tr><td>其中 RAWG 有任务</td><td class="num">评价数 ≥ 100 的子集</td><td>配额太贵，只给有知名度的游戏（见 06 节）</td></tr>
+    </table>
+  </div>
+
+  <!-- ══════════════ 2. 全景流程 ══════════════ -->
+  <h2><span class="no">02</span>全景：三步走</h2>
+  <p class="lead">整个数据侧只有三个入口命令。所有状态都存共享云库（PostgreSQL），本地不留任何数据文件。</p>
+
+  <div class="flow">
+    <div class="flow-row">
+      <div class="flow-box" style="border-color:#93c5fd; background:var(--accent-soft);">
+        <div class="t"><span class="badge b-blue">第 1 步 · 种子</span>枚举「都有哪些游戏」</div>
+        <div class="d">翻 Steam 商店搜索页（一次 100 款，按发售日降序），把每款游戏的名字、发售日、评价数、价格写进 <code>games</code> 和 <code>store_search_games</code>。约 819 次请求、14 分钟，<b>免 API key</b>。</div>
+        <span class="cmd">uv run python -m cleaning.seed</span>
+      </div>
+    </div>
+    <div class="flow-arrow">↓ 枚举完，把「每款游戏 × 每个逐款数据源」展开成待办清单</div>
+    <div class="flow-row">
+      <div class="flow-box" style="border-color:#93c5fd; background:var(--accent-soft);">
+        <div class="t"><span class="badge b-blue">第 2 步 · 物化</span>生成任务队列</div>
+        <div class="d">约 5 万款游戏 × 6 个逐款源 → <b>约 30 万行任务</b>写进 <code>fetch_tasks</code> 表，初始状态 pending。之后抓多快、抓多少，全看这台「队列」。<b>由种子命令带 <code>--materialize</code> 参数一并完成</b>，也可以事后单独补物化。</div>
+      </div>
+    </div>
+    <div class="flow-arrow">↓ 任何人、任何机器都可以开始干活，随时中断随时续</div>
+    <div class="flow-row">
+      <div class="flow-box" style="border-color:#6ee7b7; background:var(--green-soft);">
+        <div class="t"><span class="badge b-green">第 3 步 · 回填</span>worker 循环干活</div>
+        <div class="d">反复「<b>抢一批任务 → 抓数据 → 写库 → 记进度</b>」，直到队列清空。Ctrl-C 随时中断，重跑自动续。多台机器共用一个云库同时跑，互不重复。</div>
+        <span class="cmd">uv run python -m cleaning.worker</span>
+      </div>
+    </div>
+  </div>
+
+  <div class="note blue">
+    <b>为什么这么设计？</b> 好处有三个：<b>可中断</b>（进度全在库里，断了就断）；
+    <b>可观测</b>（还缺什么查一下视图就知道）；<b>可并行</b>（加机器就是加吞吐，不用改任何代码）。
+    老方案是「一个大脚本顺序跑八万款」，第 30 小时才暴露 bug，谁也耗不起。
+  </div>
+
+  <!-- ══════════════ 3. 数据源 ══════════════ -->
+  <h2><span class="no">03</span>九个数据源：6 个逐款 + 3 个批量</h2>
+  <p class="lead">
+    每款游戏的数据来自多个公开接口，分两类：<b>bulk</b>（一次请求拿一批，不走任务队列）
+    和 <b>per_game</b>（一次请求拿一款，进队列）。逐款源按 <code>priority</code> 排队，序号小的先抓。
+  </p>
+  <div class="card">
+    <table>
+      <tr>
+        <th>源</th><th>类型</th><th>给什么数据</th><th>限速</th><th>配额</th><th>key</th><th>优先级</th>
+      </tr>
+      <tr>
+        <td><code>appdetails_en</code></td><td>per_game</td>
+        <td>游戏详情（英文）：类型、发行商、 genres / categories</td>
+        <td>1s</td><td>—</td><td>免</td><td class="num">10</td>
+      </tr>
+      <tr>
+        <td><code>global_ach</code></td><td>per_game</td>
+        <td>全局成就完成率（每个成就的全球解锁百分比）</td>
+        <td>1s</td><td>—</td><td>免</td><td class="num">20</td>
+      </tr>
+      <tr>
+        <td><code>community_ach</code></td><td>per_game</td>
+        <td>成就的<b>展示名</b>（中文可读名称，与上一源按位对齐完成映射）</td>
+        <td>1s</td><td>—</td><td>免</td><td class="num">30</td>
+      </tr>
+      <tr>
+        <td><code>appdetails_zh</code></td><td>per_game</td>
+        <td>游戏详情（简中）：本地化名称与描述</td>
+        <td>1s</td><td>—</td><td>免</td><td class="num">40</td>
+      </tr>
+      <tr>
+        <td><code>steamspy</code></td><td>per_game</td>
+        <td>拥有量区间、SteamSpy 侧标签与时长分布</td>
+        <td>1s</td><td>—</td><td>免</td><td class="num">50</td>
+      </tr>
+      <tr>
+        <td><code>rawg</code></td><td>per_game</td>
+        <td>社区评分、平均时长、弃坑 / 通关人数、metacritic</td>
+        <td>1s</td><td class="num">20,000/月/key</td><td><b>需</b></td><td class="num">90</td>
+      </tr>
+    </table>
+    <p class="muted" style="margin-top:10px">
+      另有三个 bulk 源不走队列：商店搜索（种子用）、<code>store_applist</code>（全量 appid 校验）、
+      <code>steamspy_all</code>（1000 款/次，间隔 60s）。权威定义在 <code>schema.sql</code> 的
+      <code>sources</code> 表，代码侧 <code>crawler/registry.py</code> 与之保持一致，有测试断言。
+    </p>
+  </div>
+
+  <!-- ══════════════ 4. 一次任务的旅程 ══════════════ -->
+  <h2><span class="no">04</span>一条任务的旅程（状态机）</h2>
+  <p class="lead">任务只有五种状态，其中三种是「确定性终态」——这是整个队列能收敛、不会无限重跑的关键。</p>
+  <div class="card">
+    <div class="states">
+      <div class="state st-pending">pending<small>排队中</small></div>
+      <span class="s-arrow">→ 抢占（写 5 分钟租约）→</span>
+      <div class="state st-ok">ok<small>抓到了</small></div>
+    </div>
+    <div class="states" style="margin-top:10px">
+      <div class="state st-pending">pending</div>
+      <span class="s-arrow">→</span>
+      <div class="state st-empty">empty<small>接口确定没数据<br>（如无成就 403）</small></div>
+      <span class="s-arrow">·</span>
+      <div class="state st-skipped">skipped<small>被剔除<br>（该游戏无成就）</small></div>
+      <span class="s-arrow">·</span>
+      <div class="state st-error">error<small>失败，退避后可重试</small></div>
+      <span class="s-arrow">→ 重试 3 次仍败 →</span>
+      <div class="state st-exh">exhausted<small>放弃，待人工</small></div>
+    </div>
+    <div class="note" style="margin-top:16px">
+      <b>确定性终态的意义：</b>empty 和 skipped 不会重试。比如某游戏根本没有成就数据
+      （接口返回 403），确认一次就够了——它其余 5 个源的任务会被立刻取消
+      （skipped），<b>尤其是最贵的 RAWG 一分配额都不会花</b>。
+    </div>
+  </div>
+
+  <!-- ══════════════ 5. 多机并行 ══════════════ -->
+  <h2><span class="no">05</span>多台机器怎么不打架</h2>
+  <div class="grid2">
+    <div class="card">
+      <h3>原子抢占：一条 SQL 选任务 + 占座</h3>
+      <p style="font-size:13.5px; color:var(--ink-2)">
+        worker 每次用一条 <code>UPDATE ... WHERE ... IN (SELECT ... FOR UPDATE SKIP LOCKED)</code>
+        同时完成「挑 20 条待办」和「写下租约」。数据库行锁保证两台机器<b>不可能抢到同一条</b>——
+        谁先锁到行谁拿走，后来的直接跳过（SKIP LOCKED），不排队不等待。
+      </p>
+    </div>
+    <div class="card">
+      <h3>租约：worker 崩了也不用清尸</h3>
+      <p style="font-size:13.5px; color:var(--ink-2)">
+        抢到的任务有 <b>5 分钟租约</b>（<code>claimed_by</code> / <code>lease_until</code>）。
+        处理完正常回填；如果 worker 半路崩溃，租约到期后任务自动回到可抢状态——
+        不需要任何人去清理「僵尸任务」。
+      </p>
+    </div>
+  </div>
+  <div class="card">
+    <h3>前提只有一个：连同一个库</h3>
+    <p style="font-size:13.5px; color:var(--ink-2)">
+      队列、配额账本、RAWG 密钥池全在共享的 PostgreSQL（腾讯云）里，各机器 <code>.env</code> 配同一个
+      <code>POSTGRES_HOST</code> 即可。<b>例外：RAWG 的配额绑定 API key 而不是机器</b>，
+      所以加机器对 RAWG 没有加速效果，扩容只能加 key（见下节）。
+    </p>
+  </div>
+
+  <!-- ══════════════ 6. RAWG 特殊处理 ══════════════ -->
+  <h2><span class="no">06</span>最贵的 RAWG：三条护栏</h2>
+  <p class="lead">
+    RAWG 是唯一按量计费的源（20,000 次请求/月/key，响应头不显示剩余额度），
+    实测约 <b>6.3 次请求才能处理一款游戏</b>——单 key 一个月只够约 3,100 款。
+    所以它排在优先级最后，并配了三条护栏：
+  </p>
+  <div class="grid2">
+    <div class="card">
+      <h3><span class="badge b-amber">护栏一</span> 评价数阈值</h3>
+      <p style="font-size:13.5px; color:var(--ink-2)">
+        物化任务时，<b>商店评价数 &lt; 100 的游戏不建 RAWG 任务</b>。
+        试水证实低评价游戏在 RAWG 上几乎必然没数据（100 款冷门游戏：72 款搜不到、
+        28 款搜到也近乎空表）。阈值可用 <code>--rawg-min-reviews</code> 调整。
+      </p>
+    </div>
+    <div class="card">
+      <h3><span class="badge b-amber">护栏二</span> 无成就先剔除</h3>
+      <p style="font-size:13.5px; color:var(--ink-2)">
+        RAWG 优先级（90）排在 <code>global_ach</code>（20）之后：一旦某游戏被确认没有成就，
+        它的 RAWG 任务在同批次内就会被跳过，<b>配额一分不花</b>。
+      </p>
+    </div>
+    <div class="card">
+      <h3><span class="badge b-amber">护栏三</span> 密钥池 + 记账</h3>
+      <p style="font-size:13.5px; color:var(--ink-2)">
+        所有 key 注册进共享库的密钥池，每次请求<b>原子地</b>挑一个本月还有余额的 key 并计数。
+        余额查 <code>rawg_key_status</code> 视图（只显示尾 4 位，不暴露明文）；
+        每一次真实请求都记进 <code>api_usage</code> 账本。
+      </p>
+    </div>
+    <div class="card">
+      <h3><span class="badge b-red">义务</span> 非商业 + 回链</h3>
+      <p style="font-size:13.5px; color:var(--ink-2)">
+        RAWG 免费档限非商业用途（课程项目符合），且要求在使用数据的页面加
+        RAWG 回链——<b>这条义务要在最终报告 / 展示页里落实</b>，不是可选项。
+      </p>
+    </div>
+  </div>
+
+  <!-- ══════════════ 7. 可靠性 ══════════════ -->
+  <h2><span class="no">07</span>防止把事情搞砸的几道保险</h2>
+  <div class="card">
+    <div class="kv"><span class="k">限速</span>
+      <span class="v">按源配置，不是一刀切。Steam 系 1s、SteamSpy 批量接口 60s（官方要求）。
+      计时按域名分桶——Steam、SteamSpy、RAWG 互不排队，总耗时不会白乘三倍。</span></div>
+    <div class="kv"><span class="k">退避</span>
+      <span class="v">失败重试之间强制指数退避（2s / 4s，封顶 30s）。没有退避时几次重试会挤在
+      同一个限流窗口里全部撞墙——实测这样打断过一次 819 页的枚举。</span></div>
+    <div class="kv"><span class="k">断点续传</span>
+      <span class="v">商店枚举被限流时记下「空洞」偏移并继续，跑完报告空洞数；重跑只补洞。
+      <b>有空洞 = 帧不完整 = 不能开始全量抓取</b>，这是显式的质量闸门。</span></div>
+    <div class="kv"><span class="k">不中断</span>
+      <span class="v">单条任务失败只记日志 + 退避，绝不中断整批；批内异常兜底成 error 状态，
+      worker 进程永不因一条坏任务崩掉。</span></div>
+    <div class="kv"><span class="k">审计</span>
+      <span class="v"><code>fetch_tasks</code>（可变的当前状态）与 <code>ingest_log</code>（不可变的抓取历史）
+      分工明确：前者回答「该抓谁」，后者回答「什么时候抓的、结果如何」。</span></div>
+  </div>
+
+  <div class="note">
+    <b>PostgreSQL 是唯一事实源。</b> 项目没有本地文件缓存——防重复完全靠任务状态，
+    删库 = 全部重抓 + 重花 RAWG 配额。所以<b>云库自动备份（按天快照）是硬性要求</b>。
+    <code>data/</code> 目录在建模阶段才启用，原始数据永远不进 git。
+  </div>
+
+  <!-- ══════════════ 8. 数据规范 ══════════════ -->
+  <h2><span class="no">08</span>入库之后：三条硬规范</h2>
+  <div class="grid2">
+    <div class="card">
+      <h3>成就名必须用展示名</h3>
+      <p style="font-size:13.5px; color:var(--ink-2)">
+        全局完成率接口给的是 <code>ACH41</code> 这类内部名；社区页给的是可读展示名。
+        两源顺序一致、按位对齐完成映射，落在
+        <code>achievements.api_name → display_name</code>。
+        <b>正式分析与报告只允许出现 display_name</b>，内部名禁止出现。
+      </p>
+    </div>
+    <div class="card">
+      <h3>建模绑定数据版本</h3>
+      <p style="font-size:13.5px; color:var(--ink-2)">
+        全局完成率会随时间漂移（今天的完成率 ≠ 下个月的）。建模前在
+        <code>dataset_versions</code> 登记固定版本号，保证实验可复现；
+        追溯真实抓取时间看各表的 <code>fetched_at</code>。
+      </p>
+    </div>
+  </div>
+
+  <footer>
+    <div class="wrap" style="padding:0">
+      口径以 <code>AGENTS.md</code> 与 <code>cleaning/schema.sql</code> 为准；
+      数据源限额速查见 <code>docs/sources.md</code>。
+      本页为讲解用快照，代码迭代后请同步更新。 · 2026-09-18
+    </div>
+  </footer>
+
+</div>
+</body>
+</html>

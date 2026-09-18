@@ -1,6 +1,10 @@
 ## 项目定位
 
-Steam 成就数据分析，**总目标：分析用户和玩家更愿意玩什么样的游戏**。先读 `README.md` 了解背景，再读 `docs/plan.md` 了解排期与当前阶段。做任何事之前确认处于正确阶段，不要提前实现后期任务。
+Steam 成就数据分析，**总目标：分析用户和玩家更愿意玩什么样的游戏**。先读 `README.md` 了解背景，再读 `docs/plan.md` 了解研究问题与排期。做任何事之前确认处于正确阶段，不要提前实现后期任务。
+
+> ⚠️ `docs/plan.md` 的**「数据源」与「清洗核心步骤」两节已过期**：它仍按「逐玩家 API + 需 key 的
+> `GetSchemaForGame`」写，而实际在 2026-09-15 / 09-17 已改为**纯游戏级、免 key（RAWG 除外）**方案。
+> 数据侧的当前口径以本文件为准，限额速查见 `docs/sources.md`。
 
 当前研究范围（详见 `docs/plan.md`）：
 
@@ -11,25 +15,37 @@ Steam 成就数据分析，**总目标：分析用户和玩家更愿意玩什么
 ## 目录约定
 
 ```
-crawler/    每个数据源一个模块（http.py 共享限速/缓存层 · registry.py 源注册表 · steam_api.py · steamspy.py · rawg.py · store_search.py 全量枚举）；test_crawl.py 是单款游戏抓取演示，用 `uv run python -m crawler.test_crawl` 跑
-cleaning/   清洗、成就名称映射与反作弊，输入 data/raw，输出 data/processed；schema.sql 是数据库唯一真源
-            · writers.py 单源抓取+入库（两条路径共用）· seed.py 灌全量游戏 · worker.py gap 驱动回填
-modeling/   irt/（Q1 难度建模）+ regression/（Q2 偏好归因）两个子包，一个实验一个脚本
+crawler/    每个数据源一个模块（http.py 共享限速层 · config.py 配置 · registry.py 源注册表
+            · store_applist.py 全量 appid · store_search.py 商店枚举
+            · steam_api.py · steamspy.py · rawg.py）；
+            test_crawl.py 是单款游戏抓取演示，用 `uv run python -m crawler.test_crawl` 跑
+cleaning/   抓取编排与入库，**产物是 PostgreSQL 数据仓库**，不是 data/processed
+            · schema.sql 数据库唯一真源（表 / 视图 / 源清单）· db.py 连接与 apply_schema
+            · writers.py 单源抓取+入库 · seed.py 灌全量游戏 · worker.py gap 驱动回填
+            · rawg_keys.py RAWG 密钥池（多 key 协调取用）
+modeling/   Q1 与 Q2 各一个子包：irt/（Q1 难度建模，**目前仅占位**）
+            · regression/（Q2 偏好归因，**尚未创建**）；一个实验一个脚本，
+            实验记录统一写 modeling/experiments.md
 viz/        图表函数，与 notebook 解耦
 notebooks/  只做探索，不放正式逻辑；正式逻辑沉淀到模块
-data/       不入 git（见下）
-docs/       plan.md 等正式文档
+data/       全部不入 git。interim/ 与 processed/ 目前是**空占位**（未启用）
+docs/       plan.md（研究问题与排期，数据源两节已过期）· sources.md（数据源限额速查）
 learning-logs/  中文日志，每天一个文件
-tests/      关键函数必须有测试（schema 校验、名称映射、反作弊规则）
+tests/      关键函数必须有测试（响应解析、schema 契约、队列状态机、写入层）
 ```
 
 ## 数据获取流程（2026-09-17 起：gap 驱动）
 
+**当前数据范围：只取 2026 年以前发售的游戏**（`seed --before-year 2026`，已是默认）。
+实测采样估计该范围约 **49,900 款**（占带成就游戏 81,850 款的 61%）；2026 年新作 14.8%、
+发售日缺失/未发售 24.2% 都被排除。要改范围用 `--before-year` 或 `--all-years`。
+
 不再靠人工维护的目标清单，改为**全量枚举 + 按缺口回填**：
 
 1. **种子** `uv run python -m cleaning.seed` —— 用 `crawler/store_search.py`
-   （免 key）枚举全部**带 Steam 成就的游戏（当前约 81,850 款）**，写入 `games`
-   + `store_search_games`。成本约 819 次请求、14 分钟，一次灌满。
+   （免 key）枚举全部**带 Steam 成就的游戏（当前约 81,850 款，数字每日浮动）**，写入 `games`
+   + `store_search_games`。成本约 819 次请求，顺利时 1s 间隔约 14 分钟；
+   **遇限流会留空洞，需重跑补齐**（重跑会重新发那些页的请求）。
    随后把 (游戏 × 逐款源) 展开物化成 `fetch_tasks` 任务队列。
 2. **回填** `uv run python -m cleaning.worker` —— 反复「取缺口 → 抓 → 回填」，
    可随时 Ctrl-C、重跑自动续。进度看 `ingest_progress` 视图，
@@ -50,32 +66,103 @@ tests/      关键函数必须有测试（schema 校验、名称映射、反作�
   `sources.max_attempts` 后转 `exhausted`。因此 `ingest_gaps` 单调收敛
 - RAWG 等按量计费的源**不暴露剩余额度**（实测响应头无 x-ratelimit），
   配额靠 `api_usage` 自己记账，余额查 `quota_status`
-- 不要盲跑 `fetch_official`（一次两请求）：队列路径下 `appdetails_en` / `appdetails_zh`
-  各自只拉自己要的那个语言，否则请求数翻倍
+- appdetails 中英文是**两次独立请求**：队列路径下 `appdetails_en` / `appdetails_zh`
+  各自只拉自己要的语言；`crawler/steam_api.py` 的 `fetch_official_names()` 一次拉两个，
+  **队列里别用**，否则请求数翻倍
+- **枚举会遇到限流**：商店搜索实测连续约 30 次请求后开始失败。取不到的偏移记成「空洞」，
+  跑完会报空洞数——**有空洞就说明帧不完整**，重跑同一条命令会重新发那些页的请求、只补空洞
+
+### 多机并行（2026-09-17 起）
+
+用多台机器提高吞吐的做法与前提：
+
+- **抢占是原子的**：`worker` 的 claim 用一条
+  `UPDATE ... WHERE (appid, source) IN (SELECT ... FOR UPDATE SKIP LOCKED) RETURNING`
+  同时完成「选任务」与「写租约」，所以多台机器共用一个库不会重复抓同一条
+- **租约（`claimed_by` / `lease_until`，默认 5 分钟）**：到期即自动可被重新抢占，
+  所以 **worker 崩溃不会让任务永久卡住**，也不需要额外的僵尸任务清理
+- **前提：所有机器连同一个 Postgres**（`.env` 里改 `POSTGRES_HOST`，云库加
+  `POSTGRES_SSLMODE=require`）。队列、配额账本、密钥池都在那个库里
+- **RAWG 是唯一「加机器无效」的源**：它的 20,000 次/月**绑定 API key**，不是按机器或 IP。
+  扩容只能加 key，见下
+- **无成就的游戏会被自动剔除**：`global_ach` 对无成就 appid 返回 403（已归一成
+  「确定性无数据」），worker 确认后立即取消该游戏其余任务——**最贵的 RAWG 放在
+  最后一个源**（见 `sources.priority`），被剔除的游戏不花配额
+
+### RAWG 密钥池
+
+**RAWG 任务有评价数阈值（2026-09-18 定，默认 review_count ≥ 100）**：seed 物化任务时
+低于阈值的游戏**不建** RAWG 任务（`seed.py` 的 `INSERT_TASKS`，可用
+`--rawg-min-reviews` 调整，传 0 关闭）。理由：实测 RAWG 成本 ≈ 6.3 次请求/游戏
+（单 key 月配额 20,000 ≈ 只够 3,100 款），而试水证实低评价游戏在 RAWG 上几乎必然
+没数据。改阈值 = 改 RAWG 花费预算，帧全量入库后按「达标游戏数 × 6.3 ≈ 所需配额」复核。
+
+RAWG 配额按 key 计，所以 key 放在**共享库**里（不是各机器本地 `.env`），
+这样所有机器看到同一份余额并协调取用：
+
+```bash
+uv run python -m cleaning.rawg_keys add --key <KEY> --label <谁的>   # 注册
+uv run python -m cleaning.rawg_keys list                            # 看各 key 余额
+uv run python -m cleaning.rawg_keys disable --key-id 3              # 停用已超额的
+```
+
+- 取用接口 `cleaning/rawg_keys.reserve_key`：**原子地**挑一个本月还有余额的 key 并计数 +1；
+  `worker` 启动时把它注入 `crawler.rawg.set_key_provider`，每次真实请求消耗一次
+- `rawg_key_status` 视图**刻意不暴露 key 明文**（只给尾 4 位），避免查额度时把密钥
+  读进终端或日志
+- ⚠️ RAWG 条款：免费档限**非商业用途**，且要求使用数据的页面加 RAWG 回链。
+  本项目是课程项目符合非商业；**回链要求在最终报告/展示页里必须落实**
 
 ## 环境规范
 
 - Python 3.13，统一用 **uv** 原生工作流管理依赖（`pyproject.toml` + `uv.lock`）：`uv sync` 建环境并装依赖
 - 依赖变更必须同步 `pyproject.toml` 与 `uv.lock` 并在日志中说明
 - 执行脚本统一 `uv run <cmd>`（如 `uv run pytest`），不必手动 activate
-- **只用公开数据源**；唯一的例外是 **RAWG**（题材标签 / 评分 / 时长 / 弃坑率），其 key 放项目根目录 `.env`（不入 git），读取统一走 `crawler/config.py`
+- **数据库跑在腾讯云**（2026-09-17 起不再用本地 Docker）：`.env` 里配
+  `POSTGRES_HOST` / `POSTGRES_PORT`（云库一般是 **5432**）/ `POSTGRES_DB` /
+  `POSTGRES_USER` / `POSTGRES_PASSWORD`，云库另需 `POSTGRES_SSLMODE=require`
+- ⚠️ **云库是共享的**：`worker` 启动会执行 `schema.sql`（含 `DROP VIEW` / `CREATE VIEW`），
+  多机同时启动要加 `--skip-schema` 避免争 DDL 锁；**改 schema 前先在自己那边验证**，
+  别直接对共享库试错
+- DB 连接参数读 `.env`，统一走 `crawler/config.py`
+- ⚠️ **删库 = 丢掉 RAWG 配额账本**：`api_usage` 与密钥池用量都在库里，删库会让当月已用
+  次数归零、密钥池「看起来」满额。删库前先记下 `quota_status` 与 `rawg_key_status`
+- **只用公开数据源**；唯一的例外是 **RAWG**（评分 / 时长 / 弃坑率 / 题材标签），其 key 放项目根目录 `.env`（不入 git），读取统一走 `crawler/config.py`
 - IGDB 已于 2026-09-15 放弃，不要复活：它需 Twitch OAuth2，而 Twitch 两步验证在国内手机号上走不通；其时长/评分价值已被 RAWG 覆盖
 
 ## 数据规范
 
-- `data/` 分层：`raw/`（原始，只读不改）→ `interim/`（中间）→ `processed/`（建模输入）
-- **原始数据永不入库**（体积大且含个人信息），git 只跟踪处理后的样本与 schema
-- schema 变更必须同步更新 `cleaning/schema.sql`（**唯一真源**）并通知全组；`apply_schema()` 幂等，改完重跑即可，无需手工迁移
-- **成就名称映射是硬性要求**：`GetGlobalAchievementPercentagesForApp` 返回的是 API 内部名称（如 `ACH41`），展示名要从 Steam 社区成就页取；两个数据源的成就**顺序一致**，按位对齐即完成映射（2026-09-15 实测）。建模只消费映射后的标准成就数据文件，禁止直接用内部名称进报告
-- 全局完成率 percent 随抓取批次漂移，建模必须绑定固定数据版本，记录抓取时间
+- **PostgreSQL 是唯一事实源**（2026-09-17 起废除本地文件缓存）：抓到的数据只进云库，
+  各源表（`games` / `store_search_games` / `achievements` …）就是原始记录。
+  **因此云库必须开自动备份**（按天快照）——废缓存后「删库」等于全部重抓 + 重花 RAWG 配额
+- 抓取时间由 HTTP 层记录（`crawler.http.last_fetched_at`，成功拿到响应的时刻），
+  落在 `ingest_log.fetched_at`。它是「数据何时获取」，不是「何时写库」
+- `data/` 分层：`interim/` → `processed/`。**两层目前是空占位**（建模阶段才会启用）；
+  当前管道的产物全部在 PostgreSQL
+- **原始数据不进 git**，git 只跟踪代码与 schema
+- schema 变更必须同步更新 `cleaning/schema.sql`（**唯一真源**）；**建表/改表只能通过
+  `uv run python -m cleaning.db init`**（幂等），worker/seed 启动时不碰 DDL、只校验就绪
+- **成就名称映射是硬性要求**：全局完成率接口给的是 API 内部名（如 `ACH41`）+ percent，
+  展示名从 Steam 社区成就页取；两源**顺序一致**，按位对齐即完成映射（2026-09-15 实测）。
+  映射结果落在 `achievements.api_name` → `achievements.display_name`；
+  建模与报告**只允许用 `display_name`**，禁止内部名出现在正式分析与报告中
+- 全局完成率 percent 随抓取批次漂移，建模必须绑定固定数据版本：在 `dataset_versions`
+  登记版本号；追溯真实抓取时间看各源表的 `fetched_at` 与 `ingest_log.fetched_at`
 
 ## 爬虫规范（硬性）
 
-- 限速：请求间隔 ≥ 1s，遵守各站 robots / ToS，只采公开数据
-- 必须带缓存层（已爬过的 URL/AppID 不重复请求），断点续爬
-- 爬虫失败重试 ≤ 3 次，失败记录到日志，不中断整体任务
+- **限速按源配置，不是一刀切 1s**。权威清单在 `sources` 表（`schema.sql`）与
+  `crawler/registry.py`：多数源 ≥1s，**SteamSpy `request=all` 是 60s**（官方文档）。
+  计时**按 host 分桶**，不同站点互不排队。限额速查见 `docs/sources.md`
+- **没有缓存层**（已废除）：防重复靠 `fetch_tasks` 的任务状态——已完成的任务不会被
+  重跑；多机共享队列，不需要本地缓存
+- 失败重试 ≤ 3 次，且**重试之间必须有指数退避**（2s / 4s，封顶 30s）。没有退避时几次尝试会
+  挤在同一个限流窗口里全部撞墙——实测把一次 819 页的枚举在第 32 页整轮打断（2026-09-17）
+- 失败记录到日志，**不中断整体任务**；批量枚举再包一层页级重试，取不到的偏移记「空洞」并继续翻页
+- 按量计费的源（RAWG）**不暴露剩余额度**（实测响应头无 x-ratelimit 字段），
+  每次真实请求都要在 `api_usage` 记账，否则无从判断还能抓多少
 - 不爬任何需要登录态才能访问的页面
-- appdetails 实测**不支持批量**（多 appid 返回 400，2026-09-15 验证），单 appid 请求；省配额靠缓存层不重复请求
+- appdetails 实测**不支持批量**（多 appid 返回 400，2026-09-15 验证），单 appid 请求
 
 ## 代码规范
 
@@ -104,10 +191,10 @@ tests/      关键函数必须有测试（schema 校验、名称映射、反作�
 
 ## 禁止事项
 
-- 禁止把爬取到的原始数据提交进仓库（`data/` 全部不入库）
+- 禁止把爬取到的原始数据提交进仓库（`data/` 全部不进 git）
 - 禁止把 `.env` 提交进仓库（内含 RAWG key；`.gitignore` 已挡，但新增密钥文件时务必确认）
 - 禁止在 notebook 里写正式管道逻辑（探索可以，沉淀必须进模块）
 - 禁止跳过 baseline 直接上深度模型
-- 禁止删除或覆盖 `data/raw/` 下任何文件
+- **云库必须开自动备份**（按天快照）：数据只存在库里，没有本地缓存兜底
 - 禁止用未映射的 API 内部名称（如 `NEW_ACHIEVEMENT_1_1`）出现在正式分析与报告中
-- 不确定的设计决策，先在群里问，不要自行拍板改 schema
+- 不确定的设计决策先确认，不要自行拍板改 schema
