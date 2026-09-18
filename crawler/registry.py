@@ -36,6 +36,10 @@ class SourceSpec:
     monthly_quota: int | None
     max_attempts: int
     note: str
+    priority: int = 100
+    """抓取优先级，小的先跑。**顺序决定「剔除无成就游戏」能省多少**：
+    ``global_ach`` 越早跑，越早能确认某游戏没有成就并取消它其余任务；
+    ``rawg`` 放最后，因为它每次匹配要花 2~5 次月度配额。"""
 
     @property
     def interval_ms(self) -> int:
@@ -54,6 +58,21 @@ SOURCES: dict[str, SourceSpec] = {
             monthly_quota=None,
             max_attempts=3,
             note="Steam 商店搜索：全量枚举入口，一次 100 款（count 上限 100，传 1000 无效）。免 key",
+        ),
+        SourceSpec(
+            source="store_applist",
+            kind="bulk",
+            interval_sec=1.0,
+            daily_quota=None,
+            monthly_quota=None,
+            max_attempts=3,
+            note=(
+                "IStoreService/GetAppList：**按 appid 顺序**返回商店全部条目，用 last_appid "
+                "游标续页 —— **无排序漂移、完整性可证明**（商店搜索会漂移，实测一轮 819 页"
+                "只覆盖 84.9% 且漏项无法自知）。max_results 最大 50000，"
+                "约 4 次请求覆盖 17.7 万款游戏。**需 Steam Web API key**。"
+                "缺口：不含发售日与成就信息，需与 store_search / appdetails 配合"
+            ),
         ),
         SourceSpec(
             source="steamspy_all",
@@ -75,7 +94,8 @@ SOURCES: dict[str, SourceSpec] = {
             daily_quota=None,
             monthly_quota=None,
             max_attempts=3,
-            note="Steam 商店 appdetails（l=english）：官方英文名与元数据。实测不支持批量，只能单 appid。免 key",
+            priority=10,
+            note="Steam 商店 appdetails（l=english）：官方英文名与元数据。实测不支持批量，只能单 appid。免 key。优先级最高：建立 games 行并提供 type",
         ),
         SourceSpec(
             source="appdetails_zh",
@@ -84,6 +104,7 @@ SOURCES: dict[str, SourceSpec] = {
             daily_quota=None,
             monthly_quota=None,
             max_attempts=3,
+            priority=40,
             note="Steam 商店 appdetails（l=schinese）：官方中文名，无中文名时回落英文名。免 key",
         ),
         SourceSpec(
@@ -93,7 +114,8 @@ SOURCES: dict[str, SourceSpec] = {
             daily_quota=None,
             monthly_quota=None,
             max_attempts=3,
-            note="GetGlobalAchievementPercentagesForApp：内部名 + percent，难度核心数据。免 key",
+            priority=20,
+            note="GetGlobalAchievementPercentagesForApp：内部名 + percent，难度核心数据。免 key。对无成就的 appid 返回 403，已归一成「确定性无数据」→ 越早跑越好，确认无成就即可取消该游戏其余任务",
         ),
         SourceSpec(
             source="community_ach",
@@ -102,7 +124,8 @@ SOURCES: dict[str, SourceSpec] = {
             daily_quota=None,
             monthly_quota=None,
             max_attempts=3,
-            note="Steam 社区成就页：展示名 + percent + 描述。免 key。与 global_ach 顺序一致，按位对齐完成名称映射",
+            priority=30,
+            note="Steam 社区成就页：展示名 + percent + 描述。免 key。与 global_ach 顺序一致，按位对齐完成名称映射。两者是**一对**：缺任一个都生成不了 achievements",
         ),
         SourceSpec(
             source="steamspy",
@@ -111,6 +134,7 @@ SOURCES: dict[str, SourceSpec] = {
             daily_quota=1000,
             monthly_quota=None,
             max_attempts=3,
+            priority=50,
             note=(
                 "SteamSpy appdetails：用户标签 + 票数（bulk 的 steamspy_all 拿不到 tags，这是它唯一独有价值）。"
                 "免 key。官方页面只公布 1 req/s（2026-09-17 核对），"
@@ -126,6 +150,7 @@ SOURCES: dict[str, SourceSpec] = {
             daily_quota=None,
             monthly_quota=20000,
             max_attempts=3,
+            priority=90,
             note=(
                 "RAWG：评分 / 时长 / 弃坑率 / 题材标签。**需 key**。免费档 20,000 请求/月（官方文档），"
                 "响应头不暴露剩余额度，故配额靠 api_usage 自行记账"

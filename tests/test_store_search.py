@@ -12,6 +12,7 @@ from crawler.store_search import (
     PAGE_SIZE,
     build_params,
     parse_search_page,
+    release_year,
 )
 
 # 两行：一行数据齐全，一行是未发售游戏（没有评价摘要、price 为 0）
@@ -118,3 +119,27 @@ def test_build_params_category_filters() -> None:
     loose = build_params(0, games_only=False, has_achievements=False)
     assert "category1" not in loose
     assert "category2" not in loose
+
+
+def test_build_params_passes_sort_by() -> None:
+    """sort_by 要真的进 query —— 它决定排序是否单调、能否提前停止。"""
+    assert "sort_by" not in build_params(0)
+    assert build_params(0, sort_by="Released_DESC")["sort_by"] == "Released_DESC"
+
+
+@pytest.mark.parametrize(
+    ("raw", "expected"),
+    [
+        ("Sep 10, 2026", 2026),
+        ("Q4 2026", 2026),
+        ("February 2027", 2027),
+        ("2026", 2026),
+        ("Coming soon", None),
+        ("To be announced", None),
+        ("", None),
+        (None, None),
+    ],
+)
+def test_release_year_extraction(raw: str | None, expected: int | None) -> None:
+    """年份抽取要覆盖展示格式、季度格式、纯年份，并对未发售值返回 None。"""
+    assert release_year(raw) == expected

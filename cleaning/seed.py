@@ -37,10 +37,22 @@ from typing import Any
 from sqlalchemy import Engine, text
 
 from crawler.store_search import iter_games, total_count
-from cleaning.db import apply_schema, get_engine
+from cleaning.db import ensure_ready, get_engine
 from cleaning.writers import parse_release_date
 
 logger = logging.getLogger(__name__)
+
+# 当前数据获取范围：**只取 2026 年以前发售的游戏**（2026-09-17 定的范围）。
+# 传 None 关闭过滤。过滤在入库前做，不额外消耗请求——发售日随枚举一起返回。
+DEFAULT_BEFORE_YEAR: int | None = 2026
+
+# 枚举排序：**用按发售日降序**，因为只有它能保证「翻到目标年份就停」是完整的，
+# 且排序漂移从上万条压到几十条（见 crawler/store_search.py 的「排序与完整性」）。
+DEFAULT_SORT_BY: str = "Released_DESC"
+
+# RAWG 任务的最低评价数（商店 search 免费带出的 review_count，见 INSERT_TASKS 注释）。
+# 0 = 不设限。可以先用 `--rawg-min-reviews 100` 试跑，按配额预算调整。
+RAWG_MIN_REVIEWS: int = 100
 
 UPSERT_GAME_MIN = text(
     """
@@ -75,16 +87,27 @@ UPSERT_STORE_SEARCH = text(
 # 物化 (游戏 × 逐款源) 的任务全集。
 # **只物化 kind='per_game' 的源**：bulk 源（商店搜索、SteamSpy all）一次请求覆盖
 # 上百上千款，逐条入队是反优化，它们走独立的「全量刷新」路径。
+#
+# **RAWG 有评价数阈值**（RAWG_MIN_REVIEWS，2026-09-18 定）：低于阈值的不建任务。
+# 理由：试水实测 RAWG 成本 ≈ 6.3 次请求/游戏（单 key 月配额 20,000 ≈ 只够
+# 3,100 款），而评价数 < 100 的游戏在 RAWG 上几乎必然没数据——试水 100 款
+# （2025 年末最新、最冷门的一段）里连 1,028 评价的国产游戏都没匹配上，
+# 匹配上的 28 款也几乎没有有效字段。与其给长尾游戏白烧配额，不如把钱花在
+# 有知名度的游戏上。阈值是运行参数，帧入库后按配额预算调整。
 INSERT_TASKS = text(
     """
     INSERT INTO fetch_tasks (appid, source)
     SELECT g.appid, s.source
     FROM games g
     CROSS JOIN sources s
+    LEFT JOIN store_search_games ss ON ss.appid = g.appid
     WHERE s.kind = 'per_game'
       -- CAST 不能省：参数为 NULL 时 Postgres 推断不出类型（AmbiguousParameter）
       AND (CAST(:appids AS INTEGER[]) IS NULL
            OR g.appid = ANY(CAST(:appids AS INTEGER[])))
+      -- RAWG 只给评价数达标的游戏建任务；阈值传 0 = 不设限
+      AND (s.source <> 'rawg'
+           OR COALESCE(ss.review_count, 0) >= CAST(:rawg_min_reviews AS INTEGER))
     ON CONFLICT (appid, source) DO NOTHING
     """
 )
@@ -116,19 +139,27 @@ def seed_games(
     limit: int | None = None,
     games_only: bool = True,
     has_achievements: bool = True,
+    before_year: int | None = DEFAULT_BEFORE_YEAR,
+    sort_by: str | None = DEFAULT_SORT_BY,
 ) -> dict[str, int]:
     """枚举商店搜索并把游戏身份与公开信息幂等入库。返回计数。
 
     Args:
         engine: SQLAlchemy Engine。
-        limit: 只枚举前 N 款（冒烟测试用）。**非随机**，见模块 docstring。
+        limit: 只入库 N 款**通过过滤的**游戏（冒烟测试用）。非随机，见模块 docstring。
         games_only: 只枚举游戏（排除 DLC / 软体 / 原声带）。
         has_achievements: 只枚举带 Steam 成就的游戏（默认，这才是 Q1/Q2 的总体）。
+        before_year: **只保留发售年份早于该年的游戏**（默认 2026，即「2026 年以前」）。
+            传 None 关闭过滤与提前停止。
+        sort_by: 枚举排序，默认 ``Released_DESC``（按发售日降序）。**只有按发售日
+            排序才敢提前停止**，也才有可接受的低漂移。
     """
-    apply_schema(engine)
-    stats = {"enumerated": 0, "games": 0, "errors": 0, "holes": 0}
+    ensure_ready(engine)
+    stats = {"enumerated": 0, "games": 0, "errors": 0, "holes": 0, "filtered_out": 0}
     batch: list[dict[str, Any]] = []
     holes: list[int] = []
+    report: dict[str, Any] = {}
+    cutoff = f"{before_year}-01-01" if before_year is not None else None
 
     def flush(conn: Any, rows: list[dict[str, Any]]) -> int:
         written = 0
@@ -157,16 +188,28 @@ def seed_games(
             written += 1
         return written
 
-    # 分批提交：整批 8 万条放一个事务里，失败就得全部重来
+    # 分批提交：整批 8 万条放一个事务里，失败就得全部重来。
+    # 不传 total 给 iter_games：limit 要按**过滤后**的数量算，否则一批全是 2026 年
+    # 新作时会白跑（用户说「100 款」显然指能用的 100 款）。
     try:
         for row in iter_games(
-            total=limit,
             games_only=games_only,
             has_achievements=has_achievements,
+            sort_by=sort_by,
             holes=holes,
+            report=report,
         ):
+            if cutoff is not None:
+                iso = parse_release_date(row["release_date"])
+                if iso is None or iso >= cutoff:
+                    stats["filtered_out"] += 1
+                    continue
+                # 归一化成 ISO，flush 里再解析一次是幂等的
+                row["release_date"] = iso
             batch.append(row)
             stats["enumerated"] += 1
+            if limit is not None and stats["enumerated"] >= limit:
+                break
             if len(batch) >= 500:
                 try:
                     with engine.begin() as conn:
@@ -187,12 +230,28 @@ def seed_games(
             batch = []
 
     stats["holes"] = len(holes)
+    stats["coverage"] = report.get("coverage")
+    stats["duplicates"] = report.get("duplicates", 0)
+    stats["total_count"] = report.get("total_count", 0)
+    stats["pages"] = report.get("pages", 0)
     if holes:
         logger.error(
             "枚举有 %d 个偏移取数失败（空洞）：%s%s",
             len(holes),
             holes[:10],
             " …" if len(holes) > 10 else "",
+        )
+    coverage = stats["coverage"]
+    if coverage is not None and coverage < 0.99:
+        logger.error(
+            "枚举覆盖率只有 %.1f%%（拿到 %d 个唯一 appid / 商店声称 %d 款，"
+            "重复 %d 行）——**帧不完整**。原因是商店排序在翻页期间漂移，重复项被"
+            "去重丢掉、尾部数据没拿到。修法是换排序："
+            "sort_by=Released_DESC 把重复从 12,392 条压到 99 条。",
+            coverage * 100,
+            report.get("unique", 0),
+            stats["total_count"],
+            stats["duplicates"],
         )
     return stats
 
@@ -216,18 +275,24 @@ def sample_appids(engine: Engine, limit: int, order: str = "random") -> list[int
         return [int(r[0]) for r in conn.execute(sql, {"n": limit})]
 
 
-def materialize_tasks(engine: Engine, appids: list[int] | None = None) -> int:
+def materialize_tasks(
+    engine: Engine,
+    appids: list[int] | None = None,
+    rawg_min_reviews: int = RAWG_MIN_REVIEWS,
+) -> int:
     """把 (游戏 × 逐款源) 展开写进 fetch_tasks（已存在的行不动）。返回新增行数。
 
     Args:
         engine: SQLAlchemy Engine。
         appids: 只给这些游戏建任务；None 表示库里全部游戏。
-
-    Returns:
-        本次新增的任务行数。
+        rawg_min_reviews: RAWG 任务的最低评价数阈值（0 = 不设限）；
+            低于阈值的游戏**不建** RAWG 任务，配额留给有知名度的游戏。
     """
     with engine.begin() as conn:
-        result = conn.execute(INSERT_TASKS, {"appids": appids})
+        result = conn.execute(
+            INSERT_TASKS,
+            {"appids": appids, "rawg_min_reviews": rawg_min_reviews},
+        )
         return int(result.rowcount or 0)
 
 
@@ -239,11 +304,25 @@ def main() -> None:
     )
     parser.add_argument(
         "--limit", type=int, default=None,
-        help="只枚举前 N 款（冒烟测试用；**非随机**，见模块 docstring）",
+        help="只入库前 N 款**通过过滤的**游戏（冒烟测试用；**非随机**）",
     )
     parser.add_argument(
         "--all-games", action="store_true",
         help="不筛 Steam 成就，枚举全部游戏（176,932 款，含无成就的）",
+    )
+    parser.add_argument(
+        "--before-year", type=int, default=DEFAULT_BEFORE_YEAR,
+        help=f"只保留发售年份早于该年的游戏（默认 {DEFAULT_BEFORE_YEAR}）；"
+             f"发售日缺失的一律排除",
+    )
+    parser.add_argument(
+        "--all-years", action="store_true",
+        help="关闭发售年份过滤，枚举全部年份的游戏",
+    )
+    parser.add_argument(
+        "--sort", default=DEFAULT_SORT_BY,
+        help=f"枚举排序（默认 {DEFAULT_SORT_BY}）。**只有 Released_DESC 能保证"
+             f"「翻到目标年份就停」是完整的**；换别的排序会退化成全量翻页且漏项无法自知",
     )
     parser.add_argument(
         "--no-enumerate", action="store_true",
@@ -260,6 +339,12 @@ def main() -> None:
         "--order", default="random", choices=sorted(_ORDER_SQL),
         help="抽样口径；random 仅在帧完整时无偏",
     )
+    parser.add_argument(
+        "--rawg-min-reviews", type=int, default=RAWG_MIN_REVIEWS,
+        help=f"RAWG 任务的最低评价数阈值（默认 {RAWG_MIN_REVIEWS}，0 = 不设限）。"
+             "低于阈值的游戏不建 RAWG 任务——实测 RAWG 约 6.3 次请求/游戏，"
+             "单 key 月配额只够约 3,100 款",
+    )
     args = parser.parse_args()
 
     engine = get_engine()
@@ -274,21 +359,41 @@ def main() -> None:
             limit=args.limit,
             games_only=True,
             has_achievements=not args.all_games,
+            before_year=None if args.all_years else args.before_year,
+            sort_by=args.sort,
         )
+        scope = "全部年份" if args.all_years else f"{args.before_year} 年以前"
         print(
-            f"枚举 {stats['enumerated']} 款，入库 {stats['games']} 款，"
-            f"失败 {stats['errors']} 款"
+            f"枚举 {stats['enumerated'] + stats['filtered_out']} 款（范围：{scope}，"
+            f"排序 {args.sort}），入库 {stats['games']} 款，"
+            f"年份过滤掉 {stats['filtered_out']} 款，失败 {stats['errors']} 款"
         )
+        print(f"  翻页 {stats['pages']} 页，重复 {stats['duplicates']} 行")
         if stats["holes"]:
             print(
-                f"⚠ 有 {stats['holes']} 个偏移取数失败（空洞）：**帧不完整**，"
-                f"重跑本命令会命中缓存、只补这些洞"
+                f"  ⚠ 有 {stats['holes']} 个偏移取数失败（空洞）：**帧不完整**，"
+                f"重跑本命令会重新发那些页的请求、只补这些洞"
             )
+        cov = stats.get("coverage")
+        if cov is None:
+            print("  （未做整轮枚举，无覆盖率数据）")
+        elif cov >= 0.99:
+            print(f"  ✓ 覆盖率 {cov:.1%}（无空洞，帧完整）")
         else:
-            print("✓ 无空洞，帧完整")
-        if args.limit and args.limit < frame_total:
             print(
-                f"⚠ 只枚举了前 {args.limit} 款（商店默认排序，明显偏向热门/新作），"
+                f"  ⚠ **帧不完整**：覆盖率仅 {cov:.1%}"
+                f"（唯一 appid {stats['enumerated'] + stats['filtered_out']:,} / "
+                f"商店声称 {stats['total_count']:,} 款，"
+                f"重复 {stats['duplicates']:,} 行）"
+            )
+            print(
+                "     重跑本命令会重新发那些页的请求（只补缺失），"
+                "但根本修法是换排序：`--sort Released_DESC`（新作只从顶部进入，"
+                "实测把重复从 12,392 条压到 99 条）"
+            )
+        if args.limit:
+            print(
+                f"⚠ 只入了前 {args.limit} 款（商店默认排序，明显偏向热门/新作），"
                 f"**不要**把它当分析样本"
             )
 
@@ -297,8 +402,8 @@ def main() -> None:
         if args.sample:
             appids = sample_appids(engine, args.sample, order=args.order)
             print(f"按 {args.order} 口径抽出 {len(appids)} 款")
-        added = materialize_tasks(engine, appids)
-        print(f"新增任务 {added} 行")
+        added = materialize_tasks(engine, appids, rawg_min_reviews=args.rawg_min_reviews)
+        print(f"新增任务 {added} 行（RAWG 阈值：评价数 ≥ {args.rawg_min_reviews}）")
 
 
 if __name__ == "__main__":

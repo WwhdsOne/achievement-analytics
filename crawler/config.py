@@ -42,15 +42,27 @@ DATA_PROCESSED: Path = _PROJECT_ROOT / "data" / "processed"
 
 RAWG_API_KEY: str = os.getenv("RAWG_API_KEY", "")
 
+# Steam Web API key：**只用于 IStoreService/GetAppList**（读公开商店条目，拿无漂移的
+# 全量 appid 全集）。与「逐玩家数据」无关——项目不需要任何用户数据，所以这个 key
+# 不违反「只用公开数据源」的约束。
+STEAM_API_KEY: str = os.getenv("STEAM_API_KEY", "")
 
-# ── 数据库（本地 Docker Postgres，见 docker-compose.yml）──
-# 缺省值与 docker-compose.yml 一致，本机开发开箱即用；队友可用 .env 覆盖。
+
+# ── 数据库（**必填**：.env 里配云库，2026-09-17 起不再有本地 Docker 缺省）──
+# 所有机器连**同一个**云库：任务队列、配额账本、RAWG 密钥池都在那里，
+# worker 的原子抢占（FOR UPDATE SKIP LOCKED）也依赖这个共享库。
+#
+# 下面的缺省值只是「没配 .env 时的兜底」，实际部署必须显式配置——
+# 否则会静默连到 localhost 上一个不存在的库。
+# 云数据库通常强制 SSL，设 POSTGRES_SSLMODE=require。注意云库端口一般是 5432。
 
 DB_HOST: str = os.getenv("POSTGRES_HOST", "localhost")
-DB_PORT: int = int(os.getenv("POSTGRES_PORT", "5433"))
+DB_PORT: int = int(os.getenv("POSTGRES_PORT", "5432"))
 DB_NAME: str = os.getenv("POSTGRES_DB", "achievement_analytics")
 DB_USER: str = os.getenv("POSTGRES_USER", "analyst")
-DB_PASSWORD: str = os.getenv("POSTGRES_PASSWORD", "analyst_dev_pw")
+DB_PASSWORD: str = os.getenv("POSTGRES_PASSWORD", "")
+# 留空表示不传 sslmode。云库一般要 "require"。
+DB_SSLMODE: str = os.getenv("POSTGRES_SSLMODE", "")
 
 
 def rawg_enabled() -> bool:

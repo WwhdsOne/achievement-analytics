@@ -8,12 +8,11 @@
 - 返回该源本次的状态，**不决定**调度（调度在 ``cleaning.worker``）
 
 统一入口是 :func:`run_source`：给 (appid, source) 就完成「抓 + 写 + 记审计」。
-``cleaning.build_dataset`` 的一次性批量路径与 ``cleaning.worker`` 的队列路径
-都走它，避免两套写入逻辑漂移。
+``cleaning.worker`` 的 gap 驱动队列路径（唯一路径）走它，所以不存在「两套写入逻辑
+漂移」的问题；调试单个游戏用 ``worker --appid <N>``。
 
 写入顺序的硬约束（2026-09-15 踩到）：所有源表都有 ``appid REFERENCES games(appid)``，
-所以 **``games`` 那行必须先存在**。种子（``cleaning.seed``）已保证这一点；
-一次性路径里则由 ``build()`` 先 upsert ``games``。
+所以 **``games`` 那行必须先存在**。种子（``cleaning.seed``）已保证这一点。
 
 成就的特例：``achievements`` 表需要 ``global_ach`` 与 ``community_ach`` **两个源
 都存在**才能按位对齐生成（单源缺一个就映射不了）。因此这两个源各自只管抓取落缓存，
@@ -29,8 +28,8 @@ from typing import Any
 
 from sqlalchemy import text
 
+from crawler import http
 from crawler.config import rawg_enabled
-from crawler.http import cache_fetched_at
 from crawler.steam_api import (
     fetch_appdetails,
     fetch_community_achievements,
@@ -147,8 +146,8 @@ INSERT_TAG = text(
 
 INSERT_INGEST = text(
     """
-    INSERT INTO ingest_log (appid, source, status, cache_key, error, fetched_at)
-    VALUES (:appid, :source, :status, :cache_key, :error, COALESCE(:fetched_at, now()))
+    INSERT INTO ingest_log (appid, source, status, error, fetched_at)
+    VALUES (:appid, :source, :status, :error, COALESCE(:fetched_at, now()))
     """
 )
 
@@ -159,18 +158,16 @@ SELECT_GAME_NAMES = text(
 
 # ── 工具 ──────────────────────────────────────────────────
 
-# 各源的缓存键模板；取不到真实抓取时间时也能给出准确的 cache_key。
-# rawg 的缓存键含 rawg_id，运行时才知道，走 override。
-_CACHE_KEY_TEMPLATES = {
-    "appdetails_en": "appdetails_english_{appid}",
-    "appdetails_zh": "appdetails_schinese_{appid}",
-    "global_ach": "global_ach_{appid}",
-    "community_ach": "community_ach_{appid}",
-    "steamspy": "steamspy_{appid}",
-}
-
 # appdetails 返回的是 "Apr 11, 2016" 这类展示格式，还可能是 "Coming soon"
 _DATE_FORMATS = ("%b %d, %Y", "%d %b, %Y", "%Y-%m-%d", "%b %Y", "%Y")
+
+
+# 商店/接口里表示「还没发售」的已知取值 —— 它们解析不出日期是**正确行为**，
+# 不该按告警刷屏（实测一次枚举会打印上万行，把真正的异常淹没）
+_KNOWN_NON_DATES = {
+    "coming soon", "to be announced", "tba", "tbd", "待定", "即将推出",
+    "wishlist now", "not yet announced",
+}
 
 
 def parse_release_date(raw: str | None) -> str | None:
@@ -180,26 +177,25 @@ def parse_release_date(raw: str | None) -> str | None:
     ``"Coming soon"`` / ``"Q1 2024"``），直接塞进 ``DATE`` 列不可靠。
     商店搜索给的 ``"Sep 10, 2026"`` 是同一套 ``%b %d, %Y`` 格式，共用本函数。
 
+    ``Coming soon`` / ``To be announced`` 这类**已知的非日期值**只记 DEBUG，
+    其余解析失败才告警——否则一次全量枚举会刷出上万行噪音。
+
     Returns:
-        形如 ``"2016-04-11"``；解析不了返回 None 并告警。
+        形如 ``"2016-04-11"``；解析不了返回 None。
     """
     if not raw:
         return None
+    text_value = raw.strip()
     for fmt in _DATE_FORMATS:
         try:
-            return datetime.strptime(raw.strip(), fmt).date().isoformat()
+            return datetime.strptime(text_value, fmt).date().isoformat()
         except ValueError:
             continue
-    logger.warning("无法解析日期：%r", raw)
+    if text_value.lower() in _KNOWN_NON_DATES:
+        logger.debug("未发售日期，按无日期处理：%r", raw)
+    else:
+        logger.warning("无法解析日期：%r", raw)
     return None
-
-
-def _cache_key_for(source: str, appid: int, override: str | None = None) -> str | None:
-    """按源推出缓存键；rawg 等运行时才确定的用 override 显式给。"""
-    if override:
-        return override
-    template = _CACHE_KEY_TEMPLATES.get(source)
-    return template.format(appid=appid) if template else None
 
 
 def log_ingest(
@@ -208,23 +204,21 @@ def log_ingest(
     source: str,
     status: str,
     error: str | None = None,
-    cache_key: str | None = None,
 ) -> None:
     """写一条抓取审计记录（断点续爬 / 增量判断 / 覆盖率的依据）。
 
-    ``cache_key`` 记真实文件名，``fetched_at`` 取该缓存文件的 mtime —— 即数据
-    真实的抓取时间，而不是本次入库时间。
+    ``fetched_at`` 由 HTTP 层记录：每个源最近一次**成功拿到响应**的时刻
+    （见 ``crawler.http.last_fetched_at``）。它是「数据何时获取」，而不是
+    「本次入库时间」——没有缓存文件 mtime 可用之后，这个语义由请求本身延续。
     """
-    ck = _cache_key_for(source, appid, cache_key)
     conn.execute(
         INSERT_INGEST,
         {
             "appid": appid,
             "source": source,
             "status": status,
-            "cache_key": ck,
             "error": error,
-            "fetched_at": cache_fetched_at(ck) if ck else None,
+            "fetched_at": http.last_fetched_at(source),
         },
     )
 
@@ -324,7 +318,13 @@ def write_appdetails(conn: Any, appid: int, en: dict[str, Any]) -> None:
     )
 
 
-def rebuild_achievements(conn: Any, appid: int) -> int:
+def rebuild_achievements(
+    conn: Any,
+    appid: int,
+    *,
+    valve: list[dict[str, Any]] | None = None,
+    community: list[dict[str, Any]] | None = None,
+) -> int:
     """按位对齐两个成就源，**重建**该游戏的 ``achievements``。返回条数。
 
     两个源顺序一致（2026-09-15 实测）才敢按位 zip；不一致时只对齐到较短的一方
@@ -332,9 +332,18 @@ def rebuild_achievements(conn: Any, appid: int) -> int:
 
     任何一方没拿到就返回 0（另一方的任务稍后完成时会再调一次本函数）。
     先删后插：游戏更新会让 position 变动，upsert 会撞 UNIQUE(appid, position)。
+
+    Args:
+        valve: 已取到的全局完成率数据。**传进来可以省一次请求**——调用方若刚
+            抓过就直接给，缺省时才自己取。这个参数存在的意义：缓存曾掩盖了
+            「任务分支与 rebuild 各取一次」的重复，去掉缓存后不修这里就会
+            每款游戏多 2 次请求（2026-09-17 发现）。
+        community: 已取到的社区成就页数据，同上。
     """
-    valve = fetch_global_achievement_percentages(appid)
-    community = fetch_community_achievements(appid)
+    if valve is None:
+        valve = fetch_global_achievement_percentages(appid)
+    if community is None:
+        community = fetch_community_achievements(appid)
     if not valve or not community:
         return 0
 
@@ -449,13 +458,7 @@ def write_rawg(conn: Any, appid: int, names: list[str]) -> tuple[str, str | None
     ]
     if rows:
         conn.execute(INSERT_TAG, rows)
-    log_ingest(
-        conn,
-        appid,
-        "rawg",
-        "ok",
-        cache_key=f"rawg_game_{rawg_id}" if rawg_id else None,
-    )
+    log_ingest(conn, appid, "rawg", "ok")
     return "ok", None
 
 
@@ -465,8 +468,7 @@ def write_rawg(conn: Any, appid: int, names: list[str]) -> tuple[str, str | None
 def run_source(conn: Any, appid: int, source: str) -> tuple[str, str | None]:
     """执行**单个源**的抓取与入库（幂等），并写一条 ``ingest_log``。
 
-    这是 ``build_dataset``（一次性批量）与 ``worker``（gap 驱动队列）共用的
-    唯一入口，保证两条路径的写入语义一致。
+    这是 ``worker``（gap 驱动队列）用的唯一入口，保证写入语义只有一套。
 
     实现要点：内部用 **SAVEPOINT**（``conn.begin_nested()``）包住单个源的写入。
     否则任一条 SQL 失败会让整个事务进入 aborted 状态，**连出错后要写的审计日志都
@@ -529,14 +531,19 @@ def _run_source_inner(conn: Any, appid: int, source: str) -> tuple[str, str | No
 
     if source in ("global_ach", "community_ach"):
         # 两个源各自只负责抓取落缓存；任一方到位后都尝试重建一次
-        # achievements，两边齐了才算真写完（见模块 docstring）
+        # achievements，两边齐了才算真写完（见模块 docstring）。
+        # 已抓到的那份直接传给 rebuild，避免它内部再取一遍。
+        valve: list[dict[str, Any]] | None = None
+        community: list[dict[str, Any]] | None = None
         if source == "global_ach":
-            got = fetch_global_achievement_percentages(appid)
+            valve = fetch_global_achievement_percentages(appid)
+            got = valve
         else:
-            got = fetch_community_achievements(appid)
+            community = fetch_community_achievements(appid)
+            got = community
         log_ingest(conn, appid, source, "ok" if got else "empty")
         if got:
-            rebuild_achievements(conn, appid)
+            rebuild_achievements(conn, appid, valve=valve, community=community)
         return ("ok" if got else "empty"), None
 
     if source == "steamspy":

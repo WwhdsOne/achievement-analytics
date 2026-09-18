@@ -23,7 +23,7 @@ import logging
 import re
 from typing import Any
 
-from crawler.http import read_cache, request_json, request_text, write_cache
+from crawler.http import HttpStatusError, request_json, request_text
 
 logger = logging.getLogger(__name__)
 
@@ -46,8 +46,7 @@ def fetch_appdetails(
 ) -> dict[str, dict[str, Any]]:
     """逐个拉取商店 appdetails（游戏元数据 + 成就概览，免 key）。
 
-    实测 appdetails 不支持多 appid 批量（返回 400），只能单 appid 请求；
-    已缓存的 appid 直接命中，不重复请求。
+    实测 appdetails 不支持多 appid 批量（返回 400），只能单 appid 请求。
 
     Args:
         appids: 要拉取的 Steam AppID 列表。
@@ -60,11 +59,6 @@ def fetch_appdetails(
     """
     result: dict[str, dict[str, Any]] = {}
     for appid in appids:
-        cache_key = f"appdetails_{lang}_{appid}"
-        cached = read_cache(cache_key)
-        if cached is not None:
-            result[str(appid)] = cached
-            continue
         try:
             payload = request_json(
                 STORE_APPDETAILS_URL,
@@ -78,7 +72,6 @@ def fetch_appdetails(
         if not entry.get("success"):
             logger.warning("appdetails 无数据：appid=%s", appid)
             continue
-        write_cache(cache_key, entry["data"])
         result[str(appid)] = entry["data"]
     return result
 
@@ -104,27 +97,37 @@ def fetch_official_names(appid: int) -> dict[str, str]:
 def fetch_global_achievement_percentages(appid: int) -> list[dict[str, Any]]:
     """拉取某游戏的全局成就完成率（免 key）。
 
+    **HTTP 403 表示该 appid 没有成就数据**（实测 12/12，2026-09-17）：
+    Steam 对无成就的 appid 不是返回空列表而是直接 403。这里把它归一成空列表，
+    这样调用方能记成「确定性无数据（empty）」而不是「可重试的失败（error）」——
+    后者会白白重试 3 次并最终记成 exhausted，浪费请求也混淆归因。
+
+    ⚠️ 403 的结果**故意不写缓存**：虽然当前口径下「无成就」不会再变，但若某个
+    未发售游戏日后上线并加了成就，缓存会把「无成就」永久钉死。这类 appid 数量少，
+    重跑时多发几次请求比钉死错误结论划算。
+
     Returns:
-        [{"name": API 内部名, "percent": 全局完成率字符串}, ...]。
+        [{"name": API 内部名, "percent": 全局完成率字符串}, ...]，无成就数据时为空列表。
         注意 name 是内部名（如 ACH39 / NEW_ACHIEVEMENT_1_1），须按位对齐
         社区成就页拿到 displayName 后才能进正式分析与报告（AGENTS.md 硬性）。
     """
-    cache_key = f"global_ach_{appid}"
-    cached = read_cache(cache_key)
-    if cached is not None:
-        return cached
-    payload = request_json(
-        f"{WEB_API_BASE}/ISteamUserStats/"
-        f"GetGlobalAchievementPercentagesForApp/v2/",
-        {"gameid": appid, "format": "json"},
-        source="global_ach",
-    )
+    try:
+        payload = request_json(
+            f"{WEB_API_BASE}/ISteamUserStats/"
+            f"GetGlobalAchievementPercentagesForApp/v2/",
+            {"gameid": appid, "format": "json"},
+            source="global_ach",
+        )
+    except HttpStatusError as exc:
+        if exc.status == 403:
+            logger.info("appid=%s 无成就数据（HTTP 403），按空处理", appid)
+            return []
+        raise
     achievements = (payload.get("achievementpercentages") or {}).get(
         "achievements"
     ) or []
     if not achievements:
         logger.warning("全局完成率为空：appid=%s", appid)
-    write_cache(cache_key, achievements)
     return achievements
 
 
@@ -142,17 +145,12 @@ def fetch_community_achievements(appid: int) -> list[dict[str, Any]]:
         [{"display_name": 展示名, "percent": 完成率(float),
           "description": 成就描述}, ...]；页面无成就时返回空列表。
     """
-    cache_key = f"community_ach_{appid}"
-    cached = read_cache(cache_key)
-    if cached is not None:
-        return cached
     text = request_text(
         COMMUNITY_STATS_URL.format(appid=appid), source="community_ach"
     )
     rows = _parse_achievement_rows(text)
     if not rows:
         logger.warning("社区成就页解析不到成就行：appid=%s", appid)
-    write_cache(cache_key, rows)
     return rows
 
 

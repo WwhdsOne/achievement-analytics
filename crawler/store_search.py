@@ -22,7 +22,36 @@
 =================================  =========  ==============================
 
 **81,849 才是 Q1/Q2 的真正总体**：Q1 的 IRT 需要成就，Q2 的难度特征也来自成就。
-（当日两次探测分别得到 81,847 / 81,849，见下方「total_count 会变动」）
+（当日多次探测得到 81,847 / 81,849 / 81,850 / 81,859，见下方「total_count 会变动」）
+
+排序与完整性（2026-09-17 实测，**这是本项目最重要的一条爬虫结论**）：
+
+默认排序**在翻页期间会漂移**，实测一轮 819 页只拿到 69,498 个唯一 appid
+（目标 81,850，**覆盖率 84.9%**，重复 12,392 行）——重复被去重丢掉，尾部数据整段
+没拿到，**而漏项无法自知**（`holes` 只统计取页失败）。
+
+``sort_by=Released_DESC`` 是修法。它按发售日严格递减（逐页抽查 0/100/…/600 页，
+页内与页间都单调），好处是**新作只从顶部进入**：累积位移 = 翻页期间的新作数，
+实测重复从 **12,392 条降到 99 条（125 倍）**，因此帧接近完整。
+
+⚠️ **不要拿这个排序去「提前停止」**（我一开始就是这么想的，方向搞反了）：
+``Released_DESC`` 是**新的在前**，2026 年新作在**前面**、我们要的 pre-2026 全在
+**后面**——「翻到 pre-2026 就停」恰好停在有用数据开始的地方。想省掉前面那段
+2026 新作（约 106 页 / 10,496 款），得改成「从边界偏移开始翻」而不是「到头就停」。
+
+各排序的 ``total_count`` 不同（实测）：
+
+====================  =========  ====================================
+``sort_by``            total      说明
+====================  =========  ====================================
+（默认）                81,859   相关度排序，**漂移最严重**
+``Released_DESC``       61,491   按发售日降序，排除了未发售的；**用它**
+``Reviews_DESC``        42,017   按评价数降序，排除无评价的
+``Name_ASC``            81,859   按名称
+====================  =========  ====================================
+
+（用 ``Released_DESC`` 时，2026 年新作 ≈ 10,496 款 → 减去即得 pre-2026 ≈ 50,995 款，
+与随机采样估的 49,900 一致。）
 
 规模换算：81,849 款 ÷ 100 条/页 ≈ **819 次请求**，1s 间隔约 **14 分钟**
 ——这是全量枚举的全部成本，比逐款源便宜三个数量级，所以「先灌全量再回填」值得做。
@@ -62,7 +91,7 @@ import re
 import time
 from typing import Any, Iterator
 
-from crawler.http import read_cache, request_json, write_cache
+from crawler.http import request_json
 
 logger = logging.getLogger(__name__)
 
@@ -113,6 +142,7 @@ def build_params(
     count: int = PAGE_SIZE,
     games_only: bool = True,
     has_achievements: bool = True,
+    sort_by: str | None = None,
 ) -> dict[str, Any]:
     """构造商店搜索的 query 参数。
 
@@ -121,6 +151,9 @@ def build_params(
         count: 每页条数，**硬上限 100**，超出无效。
         games_only: 只保留 ``category1=998``（游戏），排除 DLC / 软体 / 原声带。
         has_achievements: 只保留 ``category2=22``（带 Steam 成就）的游戏。
+        sort_by: 排序方式。**强烈建议用 ``Released_DESC``**（见模块 docstring 的
+            「排序与完整性」）：它按发售日严格递减，既能「翻到目标年份就停」得到
+            可证明完整的帧，又能把排序漂移从上万条压到几十条。
 
     Returns:
         query 参数字典。
@@ -137,6 +170,8 @@ def build_params(
         params["category1"] = CATEGORY_GAMES
     if has_achievements:
         params["category2"] = CATEGORY_ACHIEVEMENTS
+    if sort_by:
+        params["sort_by"] = sort_by
     return params
 
 
@@ -212,23 +247,23 @@ def fetch_search_page(
     count: int = PAGE_SIZE,
     games_only: bool = True,
     has_achievements: bool = True,
+    sort_by: str | None = None,
 ) -> dict[str, Any]:
     """抓一页商店搜索结果（已缓存不重爬）。
+
+    ``sort_by`` 决定分页内容，换排序等于换一套结果。
 
     Returns:
         ``{"total_count": int, "start": int, "rows": [...]}``。
         接口返回 success=false 时 rows 为空并告警。
     """
     params = build_params(
-        start, count=count, games_only=games_only, has_achievements=has_achievements
+        start,
+        count=count,
+        games_only=games_only,
+        has_achievements=has_achievements,
+        sort_by=sort_by,
     )
-    cache_key = (
-        f"store_search_{int(games_only)}_{int(has_achievements)}_{start}_{params['count']}"
-    )
-    cached = read_cache(cache_key)
-    if cached is not None:
-        return cached
-
     payload = request_json(SEARCH_URL, params, source="store_search")
     if not payload.get("success"):
         logger.warning("商店搜索未成功：start=%s payload=%s", start, payload)
@@ -239,7 +274,6 @@ def fetch_search_page(
             "start": int(payload.get("start") or start),
             "rows": parse_search_page(payload.get("results_html") or ""),
         }
-    write_cache(cache_key, result)
     return result
 
 
@@ -249,6 +283,7 @@ def fetch_search_page_resilient(
     count: int = PAGE_SIZE,
     games_only: bool = True,
     has_achievements: bool = True,
+    sort_by: str | None = None,
 ) -> dict[str, Any] | None:
     """带页级退避重试地取一页；彻底失败返回 None（由调用方记录成空洞）。
 
@@ -262,6 +297,7 @@ def fetch_search_page_resilient(
                 count=count,
                 games_only=games_only,
                 has_achievements=has_achievements,
+                sort_by=sort_by,
             )
         except RuntimeError as exc:
             logger.warning(
@@ -273,6 +309,25 @@ def fetch_search_page_resilient(
     return None
 
 
+# 从展示格式里抽年份：'Sep 10, 2026' / 'Q4 2026' / '2026' / 'February 2027' 都能命中；
+# 'Coming soon' / 'To be announced' 命中不了 → 返回 None。
+# 提前停止只需要年份粒度，所以不必引入完整日期解析（那属于 cleaning 层，
+# crawler 依赖 cleaning 是分层倒置）。
+_YEAR_RE = re.compile(r"(\d{4})\s*$")
+
+
+def release_year(raw: str | None) -> int | None:
+    """从商店的展示格式发售日里抽出年份；抽不到返回 None。
+
+    用于校验排序方向、统计各年份占比等。**不要用它做「提前停止」**——
+    见 :func:`iter_games` 的说明。
+    """
+    if not raw:
+        return None
+    match = _YEAR_RE.search(raw.strip())
+    return int(match.group(1)) if match else None
+
+
 def iter_games(
     start: int = 0,
     *,
@@ -280,16 +335,24 @@ def iter_games(
     count: int = PAGE_SIZE,
     games_only: bool = True,
     has_achievements: bool = True,
+    sort_by: str | None = None,
     holes: list[int] | None = None,
+    report: dict[str, Any] | None = None,
 ) -> Iterator[dict[str, Any]]:
     """逐页枚举游戏，产出**去重后**的记录。
 
     **单页失败不会中断整轮**：取不到的偏移会追加进 ``holes`` 并继续往下翻，
     调用方据此判断帧是否完整（扇区有洞就无法宣称是全量）。
 
-    appid 去重是必须的：分页之间排序可能漂移，导致同一 appid 出现在多页
-    （appid 是 ``games`` 主键，重复 upsert 无害，但会浪费请求与配额）。
-    **漏项无法在本函数内自知**——调用方收尾时应比对产出条数与 ``total_count``。
+    ⚠️ **「无空洞」不等于「帧完整」**（2026-09-17 踩到）：商店搜索的排序会在
+    翻页期间漂移，造成**大量重复**——实测用**默认排序**跑一轮 819 页只拿到
+    69,498 个唯一 appid（目标 81,850，**覆盖率 84.9%**），重复项被这里的去重
+    丢掉，尾部数据整段没拿到。这个损失**不体现在 holes 里**，必须看 ``report``
+    的 ``coverage``。
+
+    正确做法是用 ``sort_by="Released_DESC"``（见模块 docstring）：按发售日严格
+    递减，新作只从顶部进入，累积位移只有翻页期间的新作数——实测重复从 12,392 条
+    降到 99 条。
 
     Args:
         start: 起始偏移。
@@ -297,7 +360,11 @@ def iter_games(
         count: 每页条数（硬上限 100）。
         games_only: 只枚举游戏。
         has_achievements: 只枚举带 Steam 成就的游戏。
+        sort_by: 排序方式，建议 ``Released_DESC``。
         holes: 传入一个列表用于收集取数失败的偏移（就地追加）。
+        report: 传入一个 dict 收集统计（就地写入）：
+            ``total_count`` / ``pages`` / ``rows_seen`` / ``duplicates`` /
+            ``unique`` / ``coverage``。
 
     Yields:
         去重后的游戏记录，字段同 ``parse_search_page``。
@@ -306,49 +373,65 @@ def iter_games(
     offset = start
     emitted = 0
     total_count: int | None = None
+    pages = 0
+    rows_seen = 0
 
-    while True:
-        if total is not None and emitted >= total:
-            return
-        page = fetch_search_page_resilient(
-            offset,
-            count=count,
-            games_only=games_only,
-            has_achievements=has_achievements,
-        )
-        if page is None:
-            if holes is not None:
-                holes.append(offset)
-            # 记洞后继续翻页：一整轮 819 页不该因为一页失败而前功尽弃
-            offset += count
-            if total_count and offset >= total_count:
-                return
-            continue
-
-        if total_count is None:
-            total_count = page["total_count"]
-            logger.info("商店搜索命中 %d 款（过滤条件已生效）", total_count)
-        rows = page["rows"]
-        if not rows:
-            logger.info("枚举结束：start=%s 无数据", offset)
-            return
-
-        for row in rows:
-            if row["appid"] in seen:
-                continue
-            seen.add(row["appid"])
-            emitted += 1
-            yield row
+    try:
+        while True:
             if total is not None and emitted >= total:
                 return
+            page = fetch_search_page_resilient(
+                offset,
+                count=count,
+                games_only=games_only,
+                has_achievements=has_achievements,
+                sort_by=sort_by,
+            )
+            pages += 1
+            if page is None:
+                if holes is not None:
+                    holes.append(offset)
+                # 记洞后继续翻页：一整轮几百页不该因为一页失败而前功尽弃
+                offset += count
+                if total_count and offset >= total_count:
+                    return
+                continue
 
-        # **按实际返回行数推进，不能按请求的 count**：实测该接口会在被限流时
-        # 悄悄缩水每页条数（请求 count=100 曾只回 25 条、99 条），若仍按 count
-        # 推进就会整段跳过数据（2026-09-17 踩到）。
-        offset += len(rows)
-        if total_count and offset >= total_count:
-            logger.info("枚举结束：已翻过 total_count=%d", total_count)
-            return
+            if total_count is None:
+                total_count = page["total_count"]
+                logger.info("商店搜索命中 %d 款（过滤条件已生效）", total_count)
+            rows = page["rows"]
+            if not rows:
+                logger.info("枚举结束：start=%s 无数据", offset)
+                return
+
+            rows_seen += len(rows)
+            for row in rows:
+                if row["appid"] in seen:
+                    continue
+                seen.add(row["appid"])
+                emitted += 1
+                yield row
+                if total is not None and emitted >= total:
+                    return
+
+            # **按实际返回行数推进，不能按请求的 count**：实测该接口会在被限流时
+            # 悄悄缩水每页条数（请求 count=100 曾只回 25 条、99 条），若仍按 count
+            # 推进就会整段跳过数据（2026-09-17 踩到）。
+            offset += len(rows)
+            if total_count and offset >= total_count:
+                logger.info("枚举结束：已翻过 total_count=%d", total_count)
+                return
+    finally:
+        if report is not None:
+            report.update(
+                total_count=total_count or 0,
+                pages=pages,
+                rows_seen=rows_seen,
+                unique=emitted,
+                duplicates=rows_seen - emitted,
+                coverage=(emitted / total_count) if total_count else None,
+            )
 
 
 def total_count(*, games_only: bool = True, has_achievements: bool = True) -> int:

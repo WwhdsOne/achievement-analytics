@@ -27,7 +27,7 @@ from __future__ import annotations
 import logging
 from typing import Any
 
-from crawler.http import read_cache, request_json, write_cache
+from crawler.http import request_json
 
 logger = logging.getLogger(__name__)
 
@@ -35,15 +35,11 @@ STEAMSPY_URL = "https://steamspy.com/api.php"
 
 
 def fetch_app_details(appid: int) -> dict[str, Any]:
-    """拉取 SteamSpy 的游戏详情（免 key，已缓存不重爬）。
+    """拉取 SteamSpy 的游戏详情（免 key）。
 
     Returns:
         SteamSpy 原始字段 dict；该 appid 在 SteamSpy 查不到时返回 ``{}``。
     """
-    cache_key = f"steamspy_{appid}"
-    cached = read_cache(cache_key)
-    if cached is not None:
-        return cached
     payload = request_json(
         STEAMSPY_URL,
         {"request": "appdetails", "appid": appid},
@@ -51,5 +47,4 @@ def fetch_app_details(appid: int) -> dict[str, Any]:
     )
     if not payload:
         logger.warning("SteamSpy 无数据：appid=%s", appid)
-    write_cache(cache_key, payload)
     return payload

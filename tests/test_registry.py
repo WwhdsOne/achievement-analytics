@@ -25,24 +25,21 @@ _INSERT_BLOCK = re.compile(
 _ROW = re.compile(r"\(([^()]*?)\)\s*,\s*\n", re.S)
 
 
-def _parse_schema_sources() -> dict[str, tuple[str, int, int | None, int | None, int]]:
+def _parse_schema_sources() -> dict[str, tuple[str, int, int | None, int | None, int, int]]:
     """从 schema.sql 里解析出 sources 表的行值。
 
     Returns:
-        {source: (kind, interval_ms, daily_quota, monthly_quota, max_attempts)}。
+        {source: (kind, interval_ms, daily_quota, monthly_quota, max_attempts, priority)}。
     """
     sql = SCHEMA_FILE.read_text(encoding="utf-8")
     block = _INSERT_BLOCK.search(sql)
     assert block, "schema.sql 里找不到 INSERT INTO sources 语句"
+    assert "priority" in block.group(1), "INSERT 的列清单里应有 priority"
 
-    parsed: dict[str, tuple[str, int, int | None, int | None, int]] = {}
+    parsed: dict[str, tuple[str, int, int | None, int | None, int, int]] = {}
     for match in _ROW.finditer(block.group(2) + ",\n"):
         raw = match.group(1)
-        # 值里含字符串（note），不能简单 split(',')；用正则逐字段取
-        fields = re.findall(
-            r"'((?:[^']|'')*)'|(NULL)|(-?\d+)",
-            raw,
-        )
+        fields = re.findall(r"'((?:[^']|'')*)'|(NULL)|(-?\d+)", raw)
         values: list[str | None] = []
         for s, null, num in fields:
             if s:
@@ -51,20 +48,18 @@ def _parse_schema_sources() -> dict[str, tuple[str, int, int | None, int | None,
                 values.append(None)
             else:
                 values.append(num)
-        # 前 6 个字段之外的字符串都属 note 的续行，拼回去
-        rest = [v for v in values[6:] if v is not None]
-        values = values[:6]
-        if len(values) < 6:
+        # 前 7 个字段之外的字符串都属 note 的续行，不影响被断言的字段
+        values = values[:7]
+        if len(values) < 7:
             continue
-        source, kind, interval_ms, daily, monthly, max_attempts = values
-        if rest:
-            source = source  # note 续行不影响被断言的字段
+        source, kind, interval_ms, daily, monthly, max_attempts, priority = values
         parsed[str(source)] = (
             str(kind),
             int(interval_ms or 0),
             int(daily) if daily is not None else None,
             int(monthly) if monthly is not None else None,
             int(max_attempts or 0),
+            int(priority or 0),
         )
     return parsed
 
@@ -87,15 +82,29 @@ def test_registry_matches_schema_source_set() -> None:
 
 @pytest.mark.parametrize("source", sorted(SOURCES))
 def test_registry_row_matches_schema_row(source: str) -> None:
-    """逐源逐字段比对 kind / 限速 / 配额 / 重试上限。"""
+    """逐源逐字段比对 kind / 限速 / 配额 / 重试上限 / 优先级。"""
     parsed = _parse_schema_sources()
     spec = SOURCES[source]
-    kind, interval_ms, daily, monthly, max_attempts = parsed[source]
+    kind, interval_ms, daily, monthly, max_attempts, priority = parsed[source]
     assert spec.kind == kind, f"{source}.kind"
     assert spec.interval_ms == interval_ms, f"{source}.interval_ms"
     assert spec.daily_quota == daily, f"{source}.daily_quota"
     assert spec.monthly_quota == monthly, f"{source}.monthly_quota"
     assert spec.max_attempts == max_attempts, f"{source}.max_attempts"
+    assert spec.priority == priority, f"{source}.priority"
+
+
+def test_priority_orders_global_ach_before_rawg() -> None:
+    """顺序是「剔除无成就游戏」省钱的依据，不能被随手改掉。
+
+    ``global_ach`` 早跑 → 一旦确认某游戏无成就就能取消它其余任务；
+    ``rawg`` 最后跑 → 被剔除的游戏不会花掉那 2~5 次月度配额。
+    这条以前是靠 source 的字母序碰巧成立的，太脆弱，所以显式断言。
+    """
+    assert SOURCES["appdetails_en"].priority < SOURCES["global_ach"].priority
+    assert SOURCES["global_ach"].priority < SOURCES["rawg"].priority
+    assert SOURCES["global_ach"].priority < SOURCES["steamspy"].priority
+    assert SOURCES["community_ach"].priority < SOURCES["rawg"].priority
 
 
 def test_bulk_and_per_game_partition() -> None:

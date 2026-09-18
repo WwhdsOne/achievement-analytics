@@ -28,17 +28,36 @@ SteamSpy 高度重叠，RAWG 的独有价值主要是 metacritic 与 rating。
 
 from __future__ import annotations
 
-import hashlib
 import logging
 import re
-from typing import Any
+from typing import Any, Callable
 
 from crawler.config import RAWG_API_KEY
-from crawler.http import read_cache, request_json, write_cache
+from crawler.http import request_json
 
 logger = logging.getLogger(__name__)
 
 RAWG_BASE = "https://api.rawg.io/api"
+
+# ── 密钥提供者（多 key 池的接入点）────────────────────────
+# RAWG 的月配额**绑定 key**，所以多机并行时要从共享的密钥池取用，而不是各机器读
+# 自己的 .env。本模块不认识数据库，只暴露一个钩子：调用方（cleaning.worker）把
+# set_key_provider 指向 cleaning/rawg_keys.reserve_key 的包装即可。
+# 不注入时回落到 config 里的单个 RAWG_API_KEY，单机开发不受影响。
+_key_provider: Callable[[], str | None] | None = None
+
+
+def set_key_provider(provider: Callable[[], str | None] | None) -> None:
+    """注入「取一个可用 API key」的回调（返回 None 表示池子已用尽）。"""
+    global _key_provider
+    _key_provider = provider
+
+
+def current_key() -> str | None:
+    """当前可用的 API key。注入了 provider 就向它要，否则回落到 .env 的单个 key。"""
+    if _key_provider is not None:
+        return _key_provider()
+    return RAWG_API_KEY or None
 
 # /games/{id}/stores 返回的 url 形如 http(s)://store.steampowered.com/app/374320/
 _STEAM_STORE_ID = 1
@@ -49,17 +68,24 @@ _TRADEMARK_RE = re.compile(r"[™®©]")
 
 
 def _api(path: str, params: dict[str, Any]) -> dict[str, Any]:
-    """调 RAWG 接口（自动带 key）。
+    """调 RAWG 接口（自动带上当前可用的 key）。
+
+    key 来自 :func:`current_key`：注入了密钥池 provider 就向池子取（每次请求都会
+    消耗一次配额并记账），否则回落到 ``.env`` 里的单个 key。
 
     Raises:
-        EnvironmentError: 未配置 RAWG_API_KEY。
+        EnvironmentError: 密钥池已用尽，或未配置任何 key。
         RuntimeError: 请求重试耗尽。
     """
-    if not RAWG_API_KEY:
-        raise EnvironmentError("RAWG_API_KEY 未配置（见 .env.example）")
+    key = current_key()
+    if not key:
+        raise EnvironmentError(
+            "RAWG key 不可用：密钥池已用尽（查 rawg_key_status）"
+            "或未配置 RAWG_API_KEY（见 .env.example）"
+        )
     return request_json(
         f"{RAWG_BASE}/{path.lstrip('/')}",
-        {**params, "key": RAWG_API_KEY},
+        {**params, "key": key},
         source="rawg",
     )
 
@@ -108,12 +134,6 @@ def search_games(
         候选列表（含 id / name / slug / released / metacritic / rating 等）。
     """
     clean = normalize_for_search(name)
-    key = "rawg_search_" + hashlib.sha1(
-        f"{clean}|{page_size}|{exact}".encode()
-    ).hexdigest()[:12]
-    cached = read_cache(key)
-    if cached is not None:
-        return cached
     params: dict[str, Any] = {"search": clean, "page_size": page_size}
     if exact:
         params["search_exact"] = "true"
@@ -121,31 +141,18 @@ def search_games(
     results = payload.get("results") or []
     if not results:
         logger.warning("RAWG 搜不到：%s（exact=%s）", clean, exact)
-    write_cache(key, results)
     return results
 
 
 def fetch_game_detail(rawg_id: int) -> dict[str, Any]:
     """取 RAWG 游戏详情（含 metacritic / rating / tags）。"""
-    key = f"rawg_game_{rawg_id}"
-    cached = read_cache(key)
-    if cached is not None:
-        return cached
-    detail = _api(f"games/{rawg_id}", {})
-    write_cache(key, detail)
-    return detail
+    return _api(f"games/{rawg_id}", {})
 
 
 def fetch_stores(rawg_id: int) -> list[dict[str, Any]]:
     """取该游戏在各商店的上架记录（**这里才有可解析的 url**）。"""
-    key = f"rawg_stores_{rawg_id}"
-    cached = read_cache(key)
-    if cached is not None:
-        return cached
     payload = _api(f"games/{rawg_id}/stores", {})
-    results = payload.get("results") or []
-    write_cache(key, results)
-    return results
+    return payload.get("results") or []
 
 
 def steam_appid_of(rawg_id: int) -> int | None:
