@@ -110,6 +110,20 @@ CREATE TABLE IF NOT EXISTS achievements (
     UNIQUE (appid, position)
 );
 
+-- ── 1.5b 成就名映射质量台账 ─────────────────────────────────────────────────
+-- 「全局接口 vs 社区页」按位对齐是成就名映射的根基（见 AGENTS.md 硬性要求）。
+-- 两源 percent 序列对不上时按位配对会张冠李戴——把这类游戏记进台账：
+-- 建模侧过滤 resolved=false 的 appid，repair_mapping 修复成功后置 resolved=true。
+CREATE TABLE IF NOT EXISTS mapping_issues (
+    appid       INTEGER     PRIMARY KEY REFERENCES games (appid) ON DELETE CASCADE,
+    reason      TEXT        NOT NULL,
+    detected_at TIMESTAMPTZ NOT NULL DEFAULT now(),
+    resolved    BOOLEAN     NOT NULL DEFAULT false
+);
+
+CREATE INDEX IF NOT EXISTS idx_mapping_issues_open
+    ON mapping_issues (appid) WHERE NOT resolved;
+
 -- ── 1.6 标签（一行一「游戏, 来源, 标签」）────────────────────────────────────
 
 CREATE TABLE IF NOT EXISTS game_tags (

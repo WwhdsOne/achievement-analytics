@@ -437,6 +437,7 @@ def run(
     appid: int | None = None,
     limit: int | None = None,
     dry_run: bool = False,
+    exclude: set[str] | None = None,
 ) -> dict[str, int]:
     """主循环：反复抢占任务并回填，直到没得抢（或达到 limit）。
 
@@ -454,11 +455,17 @@ def run(
         appid: 只跑这一款游戏的所有源（调试用，看单个游戏的全流程）。
         limit: 最多处理多少个任务；None 表示不限（跑到抢不到为止）。
         dry_run: 只报告还要抓什么，不发请求、不写库。
+        exclude: 跳过的源集合（CLI ``--exclude steamspy``）。用在源**临时不可用**时
+            （如实测 2026-09-22 SteamSpy 整站开 Cloudflare challenge），先把该源
+            挂起跑其他源，恢复后去掉参数即可，任务不会丢。
 
     Returns:
         各状态计数 ``{"ok": n, "empty": n, ...}``。
     """
     ensure_ready(engine)
+    extra_exclude = set(exclude or ())
+    if extra_exclude:
+        logger.warning("本轮跳过源：%s", ", ".join(sorted(extra_exclude)))
     recorder = UsageRecorder()
     set_call_recorder(recorder)
     # RAWG 的 key 来源分两种模式，**必须按池子是否为空来选**：
@@ -484,7 +491,7 @@ def run(
             )
             # 抢占在一个独立短事务里提交：租约必须先落库，别的机器才会让开
             with engine.begin() as conn:
-                blocked = quota_exhausted(conn)
+                blocked = quota_exhausted(conn) | extra_exclude
                 rows = claim(conn, source, batch_size, exclude=blocked, appid=appid)
             if not rows:
                 if blocked:
@@ -610,6 +617,11 @@ def main() -> None:
     )
     parser.add_argument("--limit", type=int, default=None, help="最多处理多少个任务")
     parser.add_argument(
+        "--exclude", default=None,
+        help="跳过的源，逗号分隔（如 --exclude steamspy）。"
+             "用于源临时不可用时挂起它跑其他源，任务不丢、不耗重试次数",
+    )
+    parser.add_argument(
         "--dry-run", action="store_true", help="只看还要抓什么，不发请求不写库"
     )
     parser.add_argument(
@@ -640,6 +652,7 @@ def main() -> None:
             appid=args.appid,
             limit=args.limit,
             dry_run=args.dry_run,
+            exclude={s.strip() for s in args.exclude.split(",")} if args.exclude else None,
         )
     except RuntimeError as exc:
         # ensure_ready 的报错要原样透出——它会直接告诉你该跑哪条命令

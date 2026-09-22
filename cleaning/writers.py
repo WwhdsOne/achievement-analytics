@@ -135,6 +135,22 @@ INSERT_ACHIEVEMENT = text(
     """
 )
 
+# 成就名映射质量台账（见 schema.sql 的 mapping_issues 注释）
+UPSERT_MAPPING_ISSUE = text(
+    """
+    INSERT INTO mapping_issues (appid, reason)
+    VALUES (:appid, :reason)
+    ON CONFLICT (appid) DO UPDATE SET
+        reason      = EXCLUDED.reason,
+        detected_at = now(),
+        resolved    = false
+    """
+)
+
+RESOLVE_MAPPING_ISSUE = text(
+    "UPDATE mapping_issues SET resolved = true WHERE appid = :appid"
+)
+
 INSERT_TAG = text(
     """
     INSERT INTO game_tags (appid, source, tag, votes, kind)
@@ -318,6 +334,50 @@ def write_appdetails(conn: Any, appid: int, en: dict[str, Any]) -> None:
     )
 
 
+def write_achievement_pairs(
+    conn: Any, appid: int, pairs: list[dict[str, Any]]
+) -> None:
+    """把配好对的成就行写入 ``achievements``（先删后插，position 从 1 连续编号）。
+
+    供 :func:`rebuild_achievements`（按位对齐）与 ``cleaning.repair_mapping``
+    （percent 重对齐）共用，保证两条路径的落库方式完全一致。
+
+    Args:
+        conn: 已开启事务的连接。
+        appid: 游戏appid。
+        pairs: ``[{api_name, display_name, description, percent}, ...]``，
+            顺序即最终 position 顺序。
+    """
+    conn.execute(text("DELETE FROM achievements WHERE appid = :a"), {"a": appid})
+    conn.execute(
+        INSERT_ACHIEVEMENT,
+        [
+            {
+                "appid": appid,
+                "position": i + 1,
+                **pair,
+            }
+            for i, pair in enumerate(pairs)
+        ],
+    )
+
+
+def sequences_within_tolerance(
+    valve_pct: list[float], page_pct: list[float], tol: float = 0.5
+) -> bool:
+    """两源 percent 序列**逐位**差异是否都在容差内（等长才可比）。
+
+    为什么不能精确比较（2026-09-22 实测）：社区页与全局接口的 percent 存在
+    ≤0.1 的舍入/缓存差（抽样 5 款全部逐位差 ≤0.1），精确比较会把这些
+    「顺序其实一致」的游戏误标为不一致——台账一度积累 37 款假阳性。
+    真正的乱序会让某些位置的差距拉大到个位数百分点，0.5 的容差挡得住；
+    相邻成就 percent 本来就接近时即使互换也对分析无实质影响（难度近似）。
+    """
+    if len(valve_pct) != len(page_pct):
+        return False
+    return all(abs(a - b) <= tol for a, b in zip(valve_pct, page_pct))
+
+
 def rebuild_achievements(
     conn: Any,
     appid: int,
@@ -349,22 +409,35 @@ def rebuild_achievements(
 
     valve_pct = [float(a["percent"]) for a in valve]
     page_pct = [r["percent"] for r in community]
-    if len(valve) != len(community) or valve_pct != page_pct:
+    if not sequences_within_tolerance(valve_pct, page_pct):
+        # 按位对齐的根基被动摇：长度不同，或某些位置 percent 差距超出容差
+        #（疑似排序不同）。落台账（repair_mapping 之后会尝试重对齐），
+        # 建模侧过滤 resolved=false 的游戏。
         logger.warning(
-            "成就两源不一致：appid=%s 全局接口 %d 项 / 社区页 %d 项，顺序一致=%s",
+            "成就两源不一致：appid=%s 全局接口 %d 项 / 社区页 %d 项，逐位容差内=%s",
             appid,
             len(valve),
             len(community),
-            valve_pct == page_pct,
+            sequences_within_tolerance(valve_pct, page_pct),
         )
-    n = min(len(valve), len(community))
-    conn.execute(text("DELETE FROM achievements WHERE appid = :a"), {"a": appid})
-    conn.execute(
-        INSERT_ACHIEVEMENT,
-        [
+        conn.execute(
+            UPSERT_MAPPING_ISSUE,
             {
                 "appid": appid,
-                "position": i + 1,
+                "reason": (
+                    f"两源percent逐位差异超容差（全局 {len(valve)} 项 / 社区 {len(community)} 项）"
+                ),
+            },
+        )
+    else:
+        # 之前标记过、这次两源一致了（如修复脚本重抓后）→ 销账
+        conn.execute(RESOLVE_MAPPING_ISSUE, {"appid": appid})
+    n = min(len(valve), len(community))
+    write_achievement_pairs(
+        conn,
+        appid,
+        [
+            {
                 "api_name": valve[i]["name"],
                 "display_name": community[i]["display_name"],
                 "description": community[i]["description"] or None,

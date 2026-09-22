@@ -67,8 +67,9 @@ uv run python -m cleaning.seed --no-enumerate --materialize --sample 1000
 uv run python -m cleaning.worker              # 跑到抢不到任务为止，可随时 Ctrl-C
 uv run python -m cleaning.worker --progress   # 只看各源进度，不干活
 uv run python -m cleaning.worker --dry-run    # 看接下来会抓什么，不发请求
-uv run python -m cleaning.worker --limit 20   # 只处理 20 个任务（试跑）
+uv run python -m cleaning.worker --limit 10000   # 只处理 10000 个任务（试跑）
 uv run python -m cleaning.worker --source rawg              # 只跑某个源
+uv run python -m cleaning.worker --exclude steamspy         # 挂起某源跑其余（源临时不可用）
 uv run python -m cleaning.worker --appid 367520             # 单游戏全流程（调试）
 uv run python -m cleaning.worker --prune      # 批量剔除「无成就」游戏的剩余任务后退出
 ```
@@ -114,6 +115,8 @@ uv run python -m crawler.test_crawl          # 单款游戏六源抓取演示（
 | 新队友第一天 | `uv sync` → 配 `.env` → `worker --progress` 看一眼 → 直接 `worker` 开抢 |
 | 全量开跑（只做一次） | 组长跑 `seed --materialize` 物化全部任务，之后大家只跑 `worker` |
 | 中途断了 | 直接重跑同一条 `worker`，自动续 |
+| **某源临时不可用**（如实测 2026-09-22 SteamSpy 整站开 Cloudflare challenge） | `worker --exclude steamspy` 挂起该源；`curl -s -o /dev/null -w "%{http_code}" "https://steamspy.com/api.php?request=appdetails&appid=440"` 返回 200 后去掉参数。任务不丢、不耗重试次数 |
+| **全量跑完后的收尾（必做）** | `uv run python -m cleaning.repair_mapping --from-issues` —— 把台账里「成就两源顺序不一致」的游戏按 percent 重对齐修复（两源免费，不花 RAWG 配额）。跑完 `mapping_issues` 里 `resolved=false` 应为 0；建模时用 `WHERE appid NOT IN (SELECT appid FROM mapping_issues WHERE NOT resolved)` 过滤兜底 |
 | 怀疑某游戏数据有问题 | `worker --appid <id> --limit 6` 单款重抓（先 `DELETE` 该款任务行可强制重跑） |
 | RAWG 快没额度了 | `rawg_keys list` 看谁还有余量；都耗尽就等下月或加 key |
 | 改了代码想提交 | 全量 `uv run pytest` 过了再说；commit message 用 `<scope>: <中文>` |

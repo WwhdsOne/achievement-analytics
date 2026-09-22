@@ -152,7 +152,11 @@ def request_json(
     for attempt in range(1, MAX_RETRIES + 1):
         try:
             _throttle(url, interval)
-            resp = httpx.get(url, params=params, timeout=30.0)
+            # follow_redirects 必须开：Steam 社区页对改过名的老游戏会把
+            # /stats/{appid}/achievements 302 到 /stats/{别名}/achievements
+            # （实测 appid=300 → DOD:S），默认不跟随会被 raise_for_status 当错误
+            # 白白重试 3 次（2026-09-22 踩到）。
+            resp = httpx.get(url, params=params, timeout=30.0, follow_redirects=True)
             last_status = resp.status_code
             resp.raise_for_status()
             key = source or _host_of(url)
@@ -189,7 +193,9 @@ def request_text(
     for attempt in range(1, MAX_RETRIES + 1):
         try:
             _throttle(url, interval)
-            resp = httpx.get(url, headers=REQUEST_HEADERS, timeout=30.0)
+            resp = httpx.get(
+                url, headers=REQUEST_HEADERS, timeout=30.0, follow_redirects=True
+            )
             last_status = resp.status_code
             resp.raise_for_status()
             key = source or _host_of(url)
