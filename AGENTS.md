@@ -23,13 +23,18 @@ cleaning/   抓取编排与入库，**产物是 PostgreSQL 数据仓库**，不�
             · schema.sql 数据库唯一真源（表 / 视图 / 源清单）· db.py 连接与 apply_schema
             · writers.py 单源抓取+入库 · seed.py 灌全量游戏 · worker.py gap 驱动回填
             · rawg_keys.py RAWG 密钥池（多 key 协调取用）
+            · repair_mapping.py 成就名映射收尾修复（两源顺序不一致时按 percent 重对齐）
 modeling/   Q1 与 Q2 各一个子包：irt/（Q1 难度建模，**目前仅占位**）
             · regression/（Q2 偏好归因，**尚未创建**）；一个实验一个脚本，
             实验记录统一写 modeling/experiments.md
+dashboard/  内部状态面板（标准库 http.server，零额外依赖）：队列进度 / 单游戏查询 /
+            按任务方式补抓 · `uv run python -m dashboard.app`
 viz/        图表函数，与 notebook 解耦
 notebooks/  只做探索，不放正式逻辑；正式逻辑沉淀到模块
 data/       全部不入 git。interim/ 与 processed/ 目前是**空占位**（未启用）
-docs/       plan.md（研究问题与排期，数据源两节已过期）· sources.md（数据源限额速查）
+docs/       commands.md（命令手册，**日常先看这个**）· sources.md（数据源限额速查）
+            · multi-machine.html（多机分工与防冲突讲解）· data-pipeline.html（流程讲解）
+            · plan.md（研究问题与排期，数据源两节已过期）
 learning-logs/  中文日志，每天一个文件
 tests/      关键函数必须有测试（响应解析、schema 契约、队列状态机、写入层）
 ```
@@ -74,20 +79,39 @@ tests/      关键函数必须有测试（响应解析、schema 契约、队列�
 
 ### 多机并行（2026-09-17 起）
 
-用多台机器提高吞吐的做法与前提：
+用多台机器提高吞吐的做法与前提（讲解页见 `docs/multi-machine.html`）：
 
+- **没有分工表**：任务不预先分配给机器，所有 worker 对等，各自从共享队列**抢占**。
+  谁快谁多做，机器下线后它没做完的任务立刻被别人抢走
 - **抢占是原子的**：`worker` 的 claim 用一条
   `UPDATE ... WHERE (appid, source) IN (SELECT ... FOR UPDATE SKIP LOCKED) RETURNING`
   同时完成「选任务」与「写租约」，所以多台机器共用一个库不会重复抓同一条
+- **`SKIP LOCKED` 是不卡的关键**：别人锁着的行直接跳过而不是排队等待——否则机器越多
+  排队越长，最后比单机还慢
 - **租约（`claimed_by` / `lease_until`，默认 5 分钟）**：到期即自动可被重新抢占，
-  所以 **worker 崩溃不会让任务永久卡住**，也不需要额外的僵尸任务清理
-- **前提：所有机器连同一个 Postgres**（`.env` 里改 `POSTGRES_HOST`，云库加
-  `POSTGRES_SSLMODE=require`）。队列、配额账本、密钥池都在那个库里
-- **RAWG 是唯一「加机器无效」的源**：它的 20,000 次/月**绑定 API key**，不是按机器或 IP。
-  扩容只能加 key，见下
+  所以 **worker 崩溃不会让任务永久卡住**，也不需要额外的僵尸任务清理。
+  ⚠️ `claimed_by` 只是「主机名:pid」标签，**不是互斥手段**——真正的互斥靠数据库行锁
+  与租约时间戳，字符串本身写错/重复都不影响正确性
+- **任务粒度是「游戏 × 数据源」而非游戏**：同一款游戏的 6 条任务可能落在两台机器上
+  （批次边界处），这是允许的——每个源独立写入且幂等，最终数据与单机跑完全一致
+- **前提：所有机器连同一个 Postgres**（`.env` 里改 `POSTGRES_HOST`）。队列、配额账本、
+  密钥池都在那个库里。**无本地缓存**，换机器接着跑即可
+- **RAWG 是唯一「加机器无效」的源**：20,000 次/月**绑定 API key**，扩容只能加 key，见下
+- **SteamSpy 只有按机器的速率限制**（2026-09-22 取消自设的 1000/天上限）：N 台机器
+  对它的聚合速率 = N × 1 req/s，不加协调。与 RAWG 的按 key 配额是两回事
 - **无成就的游戏会被自动剔除**：`global_ach` 对无成就 appid 返回 403（已归一成
   「确定性无数据」），worker 确认后立即取消该游戏其余任务——**最贵的 RAWG 放在
   最后一个源**（见 `sources.priority`），被剔除的游戏不花配额
+
+⚠️ **唯一会「卡住所有人」的操作是 DDL**（2026-09-22 实际踩到）：
+`db init` 要拿 `DROP VIEW` / `CREATE VIEW` 的排他锁，一旦被别的会话挡住（典型是
+`idle in transaction` 的滞留连接），排他锁会**排队**，而排在它后面的所有请求
+（包括 worker 抢任务）也一并堵住——整个管道停摆。因此：
+
+- **建表/改表只由一个人执行一次**，不要在别人 worker 正跑时改结构
+- **不要中途强杀正在执行的 `db init`**：客户端没了但服务端会话仍在等锁，形成死结
+- 怀疑卡住时查 `pg_stat_activity`：`state='idle in transaction'` 且 `xact_start` 很旧的
+  会话就是元凶，`SELECT pg_terminate_backend(pid)` 清掉即可（worker 会自动重连）
 
 ### RAWG 密钥池
 
@@ -118,12 +142,14 @@ uv run python -m cleaning.rawg_keys disable --key-id 3              # 停用已�
 - Python 3.13，统一用 **uv** 原生工作流管理依赖（`pyproject.toml` + `uv.lock`）：`uv sync` 建环境并装依赖
 - 依赖变更必须同步 `pyproject.toml` 与 `uv.lock` 并在日志中说明
 - 执行脚本统一 `uv run <cmd>`（如 `uv run pytest`），不必手动 activate
-- **数据库跑在腾讯云**（2026-09-17 起不再用本地 Docker）：`.env` 里配
-  `POSTGRES_HOST` / `POSTGRES_PORT`（云库一般是 **5432**）/ `POSTGRES_DB` /
-  `POSTGRES_USER` / `POSTGRES_PASSWORD`，云库另需 `POSTGRES_SSLMODE=require`
-- ⚠️ **云库是共享的**：`worker` 启动会执行 `schema.sql`（含 `DROP VIEW` / `CREATE VIEW`），
-  多机同时启动要加 `--skip-schema` 避免争 DDL 锁；**改 schema 前先在自己那边验证**，
-  别直接对共享库试错
+- **数据库跑在腾讯云**（2026-09-17 起不再用本地 Docker；服务器上是 Docker 里的 PostgreSQL）：
+  `.env` 里配 `POSTGRES_HOST` / `POSTGRES_PORT`（**本项目当前是 15432**，不是默认 5432）/
+  `POSTGRES_DB` / `POSTGRES_USER` / `POSTGRES_PASSWORD`
+- ⚠️ **自建库不支持 SSL**：`POSTGRES_SSLMODE=require` 会直接连不上（2026-09-18 实测），
+  留空或注释掉；托管型云库（如阿里云 RDS）才需要
+- ⚠️ **云库是共享的**：**建表/改表只走 `uv run python -m cleaning.db init`，且只由一个人执行**
+  （worker/seed 启动仅校验、不碰 DDL）。多机同时 init 会争排他锁，排他锁排队会把所有请求
+  （含大家抢任务）一起堵住——2026-09-22 实际踩到，详见「多机并行」一节
 - DB 连接参数读 `.env`，统一走 `crawler/config.py`
 - ⚠️ **删库 = 丢掉 RAWG 配额账本**：`api_usage` 与密钥池用量都在库里，删库会让当月已用
   次数归零、密钥池「看起来」满额。删库前先记下 `quota_status` 与 `rawg_key_status`
@@ -145,7 +171,11 @@ uv run python -m cleaning.rawg_keys disable --key-id 3              # 停用已�
 - **成就名称映射是硬性要求**：全局完成率接口给的是 API 内部名（如 `ACH41`）+ percent，
   展示名从 Steam 社区成就页取；两源**顺序一致**，按位对齐即完成映射（2026-09-15 实测）。
   映射结果落在 `achievements.api_name` → `achievements.display_name`；
-  建模与报告**只允许用 `display_name`**，禁止内部名出现在正式分析与报告中
+  建模与报告**只允许用 `display_name`**，禁止内部名出现在正式分析与报告中。
+  ⚠️ 顺序一致用**逐位容差**判定（≤0.5 个百分点视为一致，两源有 ≤0.1 的舍入/缓存差，
+  精确比较会误报）；判定不通过的记进 `mapping_issues` 台账。
+  **全量跑完后必须收尾**：`uv run python -m cleaning.repair_mapping --from-issues`
+  （按 percent 重对齐，两源免费不花 RAWG 配额），建模时过滤 `resolved=false` 的 appid
 - 全局完成率 percent 随抓取批次漂移，建模必须绑定固定数据版本：在 `dataset_versions`
   登记版本号；追溯真实抓取时间看各源表的 `fetched_at` 与 `ingest_log.fetched_at`
 

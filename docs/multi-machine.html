@@ -1,0 +1,307 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>多机协作 · 每台机器在干什么，为什么不冲突</title>
+<style>
+  :root {
+    --ink:#1a2332; --ink-2:#4a5568; --ink-3:#718096;
+    --paper:#f7f8fa; --card:#fff; --line:#e2e8f0;
+    --accent:#2563eb; --accent-soft:#eff6ff;
+    --green:#059669; --green-soft:#ecfdf5;
+    --amber:#b45309; --amber-soft:#fffbeb;
+    --red:#b91c1c; --red-soft:#fef2f2;
+    --purple:#7c3aed; --purple-soft:#f5f3ff;
+    --code-bg:#0f172a; --code-ink:#e2e8f0;
+  }
+  *{box-sizing:border-box;margin:0;padding:0}
+  body{
+    font-family:"PingFang SC","Hiragino Sans GB","Microsoft YaHei",-apple-system,sans-serif;
+    background:var(--paper); color:var(--ink); line-height:1.75; padding-bottom:80px;
+  }
+  .wrap{max-width:980px;margin:0 auto;padding:0 24px}
+  header{background:linear-gradient(135deg,#0f172a 0%,#1e3a5f 100%);color:#fff;padding:48px 0 40px;margin-bottom:40px}
+  header h1{font-size:27px;font-weight:700;letter-spacing:.5px}
+  header p{color:#94a3b8;margin-top:10px;max-width:760px}
+  header .tagline{color:#e2e8f0;font-size:15px;margin-top:16px}
+  header code{background:rgba(255,255,255,.12);padding:2px 8px;border-radius:4px;font-size:13px}
+  h2{font-size:20px;margin:46px 0 16px;padding-left:12px;border-left:4px solid var(--accent)}
+  h2 .no{color:var(--accent);margin-right:8px;font-variant-numeric:tabular-nums}
+  h3{font-size:15px;margin:22px 0 8px;color:var(--ink-2)}
+  p.lead{color:var(--ink-2);margin-bottom:16px}
+  .muted{color:var(--ink-3);font-size:13px}
+  .card{background:var(--card);border:1px solid var(--line);border-radius:12px;padding:20px 24px;margin-bottom:16px}
+  table{width:100%;border-collapse:collapse;font-size:13.5px}
+  th{text-align:left;padding:8px 10px;background:#f1f5f9;border-bottom:2px solid var(--line);font-size:12.5px;color:var(--ink-2);white-space:nowrap}
+  td{padding:9px 10px;border-bottom:1px solid var(--line);vertical-align:top}
+  tr:last-child td{border-bottom:none}
+  td code,p code,li code,th code{font-family:"SF Mono",Menlo,Consolas,monospace;font-size:12.5px;background:#eef2f7;padding:1px 6px;border-radius:4px;color:#334155}
+  .num{font-variant-numeric:tabular-nums}
+  .badge{font-size:11px;font-weight:600;padding:1px 8px;border-radius:999px;white-space:nowrap}
+  .b-blue{background:var(--accent-soft);color:var(--accent)}
+  .b-green{background:var(--green-soft);color:var(--green)}
+  .b-amber{background:var(--amber-soft);color:var(--amber)}
+  .b-red{background:var(--red-soft);color:var(--red)}
+  .b-purple{background:var(--purple-soft);color:var(--purple)}
+  .note{border-left:3px solid var(--amber);background:var(--amber-soft);border-radius:0 8px 8px 0;padding:10px 14px;font-size:13.5px;margin:12px 0}
+  .note.blue{border-color:var(--accent);background:var(--accent-soft)}
+  .note.red{border-color:var(--red);background:var(--red-soft)}
+  .note.green{border-color:var(--green);background:var(--green-soft)}
+  pre{background:var(--code-bg);color:var(--code-ink);border-radius:10px;padding:14px 18px;font-size:13px;overflow-x:auto;line-height:1.65;font-family:"SF Mono",Menlo,Consolas,monospace}
+  pre .c{color:#64748b}
+  pre .k{color:#7dd3fc}
+
+  /* 机器卡片 */
+  .machines{display:grid;grid-template-columns:repeat(3,1fr);gap:14px}
+  @media(max-width:760px){.machines{grid-template-columns:1fr}}
+  .machine{border:1px solid var(--line);border-radius:12px;padding:14px 16px;background:var(--card)}
+  .machine .mt{font-weight:700;font-size:14px;display:flex;align-items:center;gap:8px}
+  .machine .md{font-size:12.5px;color:var(--ink-2);margin-top:6px}
+  .machine .mx{font-size:12px;color:var(--ink-3);margin-top:8px}
+  .machine.core{border-color:#93c5fd;background:var(--accent-soft)}
+  .machine.worker{border-color:#6ee7b7;background:var(--green-soft)}
+
+  /* 抢占示意图 */
+  .race{display:grid;grid-template-columns:1fr auto 1fr;gap:12px;align-items:center;margin:8px 0}
+  .race .side{border:1px solid var(--line);border-radius:10px;padding:12px 14px;font-size:13px;background:var(--card)}
+  .race .mid{text-align:center;color:var(--ink-3);font-size:12px;line-height:1.5}
+  .rowbox{display:flex;gap:6px;margin-top:8px;flex-wrap:wrap}
+  .slot{width:44px;height:26px;border-radius:6px;border:1px solid var(--line);display:flex;align-items:center;justify-content:center;font-size:11px;color:var(--ink-3);background:#f1f5f9}
+  .slot.taken{background:var(--green-soft);border-color:#6ee7b7;color:var(--green);font-weight:700}
+  .slot.skipped{background:var(--amber-soft);border-color:#fcd34d;color:var(--amber);font-weight:700}
+  .legend{display:flex;gap:16px;flex-wrap:wrap;font-size:12.5px;color:var(--ink-2);margin-top:10px}
+  .legend span{display:flex;align-items:center;gap:6px}
+  .dot{width:12px;height:12px;border-radius:4px;display:inline-block;border:1px solid var(--line)}
+  .dot.g{background:var(--green-soft);border-color:#6ee7b7}
+  .dot.a{background:var(--amber-soft);border-color:#fcd34d}
+  .dot.n{background:#f1f5f9}
+  footer{margin-top:56px;padding-top:20px;border-top:1px solid var(--line);color:var(--ink-3);font-size:13px}
+</style>
+</head>
+<body>
+
+<header>
+  <div class="wrap">
+    <h1>多机协作：每台机器在干什么，为什么不会冲突</h1>
+    <p>这份页面解释当前抓取任务的机器分工与防冲突机制。全组任何人看完都应该能回答两个问题：
+       「我这台机器该干什么」和「会不会和别人抢到同一条任务」。</p>
+    <p class="tagline">一句话答案：<b>没有分工表</b>——所有机器都是对等的劳动力，任务靠<b>原子抢占</b>从共享队列里领，抢到了才算你的。</p>
+  </div>
+</header>
+
+<div class="wrap">
+
+  <!-- 01 -->
+  <h2><span class="no">01</span>角色：谁在干活</h2>
+  <p class="lead">系统里只有四类角色，且除了「云库」之外都是可替代的——任何一台笔记本都能顶上另一个角色的活。</p>
+
+  <div class="machines">
+    <div class="machine core">
+      <div class="mt"><span class="badge b-blue">中枢</span>云数据库</div>
+      <div class="md">腾讯云上的一台服务器（Docker 里的 PostgreSQL，端口 15432）。<b>它不是计算节点</b>，只负责存三样东西：任务队列、配额账本、RAWG 密钥池。</div>
+      <div class="mx">不可替代 · 所有机器都要连它</div>
+    </div>
+    <div class="machine worker">
+      <div class="mt"><span class="badge b-green">劳动力</span>worker 机器 × N</div>
+      <div class="md">每台同学的笔记本。跑 <code>uv run python -m cleaning.worker</code>，反复「抢任务 → 抓数据 → 写库」。<b>彼此完全对等</b>，没有主从、没有分组、没有谁负责哪个 appid 段。</div>
+      <div class="mx">可替代 · 加机器 = 线性加速</div>
+    </div>
+    <div class="machine">
+      <div class="mt"><span class="badge b-purple">观察窗</span>状态面板</div>
+      <div class="md">任意一台机器跑 <code>uv run python -m dashboard.app</code>。看队列进度、查单个游戏、按任务方式补抓。<b>只读 + 补抓</b>，不参与批量抓取。</div>
+      <div class="mx">可选 · 谁开都行</div>
+    </div>
+    <div class="machine">
+      <div class="mt"><span class="badge b-amber">一次性</span>seed 种子</div>
+      <div class="md">枚举全量游戏、物化任务队列。<b>全项目只跑一次</b>（已完成），由组长执行。它不抓逐款数据，只把「有哪些游戏、每个游戏要抓哪些源」写进队列。</div>
+      <div class="mx">已执行 · 不需要重复</div>
+    </div>
+  </div>
+
+  <div class="note blue">
+    <b>为什么没有「A 机器抓 appid 1-10000，B 机器抓 10001-20000」这种分工？</b>
+    因为分片会带来三个问题：分片边界要人工维护、机器快慢不均导致有的闲着有的堆积、某台机器下线时它的分片没人接手。
+    共享队列天然解决这三件事——<b>快机器自然多做，慢机器少做，下线的机器留下的任务立刻被别人抢走</b>。
+  </div>
+
+  <!-- 02 -->
+  <h2><span class="no">02</span>任务不是分配，是抢：一条 SQL 决定归属</h2>
+  <p class="lead">
+    每台 worker 启动后就进入循环：向云库要一批任务（默认 20 条），拿到就干，干完再要。
+    「要任务」这一步是用<b>一条 SQL</b> 完成的——它同时做两件事：<b>挑出可做的任务</b> 和 <b>写上「这几条归我」的租约</b>。
+    两步合一，中间没有缝隙，所以不存在「两台机器都以为任务归自己」的窗口。
+  </p>
+
+  <pre><span class="c">-- 简化示意（真实语句见 cleaning/worker.py 的 CLAIM_TASKS）</span>
+<span class="k">UPDATE</span> fetch_tasks <span class="k">SET</span> claimed_by = <span class="c">'我这台机器'</span>, lease_until = now() + <span class="c">'5 分钟'</span>
+<span class="k">WHERE</span> (appid, source) <span class="k">IN</span> (
+    <span class="k">SELECT</span> appid, source <span class="k">FROM</span> fetch_tasks
+    <span class="k">WHERE</span> status = <span class="c">'pending'</span> <span class="k">AND</span> 租约已过期
+    <span class="k">ORDER BY</span> appid <span class="k">LIMIT</span> 20
+    <span class="k">FOR UPDATE SKIP LOCKED</span>   <span class="c">-- 关键：锁住的行别人直接跳过，不排队等待</span>
+)
+<span class="k">RETURNING</span> appid, source;</pre>
+
+  <h3>两台机器同时抢，会发生什么</h3>
+  <div class="race">
+    <div class="side">
+      <b>机器 A</b> 请求 20 条任务
+      <div class="rowbox">
+        <div class="slot taken">A</div><div class="slot taken">A</div><div class="slot taken">A</div>
+        <div class="slot">待抓</div><div class="slot">待抓</div>
+      </div>
+      <div class="muted" style="margin-top:6px">数据库给它们上了行锁 → A 拿到 3 条</div>
+    </div>
+    <div class="mid">同时<br>到达</div>
+    <div class="side">
+      <b>机器 B</b> 请求 20 条任务
+      <div class="rowbox">
+        <div class="slot skipped">跳过</div><div class="slot skipped">跳过</div><div class="slot skipped">跳过</div>
+        <div class="slot taken">B</div><div class="slot taken">B</div>
+      </div>
+      <div class="muted" style="margin-top:6px"><code>SKIP LOCKED</code> 让它跳过 A 占住的行，直接拿后面的</div>
+    </div>
+  </div>
+  <div class="legend">
+    <span><i class="dot g"></i>已被抢走（有租约）</span>
+    <span><i class="dot a"></i>被跳过（别人锁着，不排队）</span>
+    <span><i class="dot n"></i>仍待抓</span>
+  </div>
+
+  <div class="note">
+    <b>「不排队」很重要。</b> 如果换成普通的行锁（<code>FOR UPDATE</code> 不带 <code>SKIP LOCKED</code>），
+    B 会停下来等 A 处理完才继续——机器越多、等得越久，最后比单机还慢。
+    <code>SKIP LOCKED</code> 让 B 直接跳过、去拿别的活，两台机器永远并行。
+  </div>
+
+  <!-- 03 -->
+  <h2><span class="no">03</span>五道防冲突机制</h2>
+  <p class="lead">上面那条 SQL 解决了「抢」，但完整的不冲突还需要另外四层保障。每一层单独失效都不会造成脏数据。</p>
+  <div class="card">
+    <table>
+      <tr><th>机制</th><th>解决什么问题</th><th>失效时会怎样</th></tr>
+      <tr>
+        <td><b>原子抢占</b><br><span class="muted">一条 SQL + 行锁</span></td>
+        <td>两台机器同时抢同一批任务</td>
+        <td>不可能失效：数据库行锁是硬保证。抢到的行会立刻写上 <code>claimed_by</code></td>
+      </tr>
+      <tr>
+        <td><b>租约（默认 5 分钟）</b><br><span class="muted">claimed_by / lease_until</span></td>
+        <td>机器崩溃、断网、强杀进程后，任务永久卡在「有人拿着」</td>
+        <td>到期自动回到可抢状态。<b>不需要任何人工清理僵尸任务</b>——这是刻意设计的，因为学生机器随时会合盖休眠</td>
+      </tr>
+      <tr>
+        <td><b>任务粒度 = 游戏 × 数据源</b><br><span class="muted">不是整款游戏</span></td>
+        <td>「一个游戏的数据被两台机器各抓一半」这种担心</td>
+        <td><b>这是允许发生且无害的</b>：每个源独立写入、各自幂等，谁抓哪几个源都不影响最终数据（详见下节）</td>
+      </tr>
+      <tr>
+        <td><b>幂等写入</b><br><span class="muted">INSERT ... ON CONFLICT DO UPDATE</span></td>
+        <td>租约到期被重抢、同一份数据被抓两次</td>
+        <td>后写的覆盖先写的，结果完全一致。代价只是几次多余的请求</td>
+      </tr>
+      <tr>
+        <td><b>终态不再重跑</b><br><span class="muted">ok / empty / skipped</span></td>
+        <td>已完成的任务被反复抓</td>
+        <td>三种终态的任务不会再进入可抢集合。只有 <code>pending</code> 和 <code>error</code>（退避到期后）才可能被抢</td>
+      </tr>
+    </table>
+  </div>
+
+  <!-- 04 -->
+  <h2><span class="no">04</span>那条最容易被误解的规则：任务粒度</h2>
+  <div class="card">
+    <p style="font-size:13.5px;color:var(--ink-2)">
+      队列里的「一条任务」= <b>一个游戏的一个数据源</b>（例如「Hollow Knight 的 SteamSpy 数据」）。
+      一款游戏有 5~6 条任务（appdetails 中英文 / 全局成就率 / 社区成就页 / SteamSpy / 可能还有 RAWG）。
+      抢占的排序是<b>先按 appid、同游戏内再按源码优先级</b>，所以同一款游戏的几条任务通常会落在同一批、由同一台机器处理完。
+    </p>
+    <table style="margin-top:12px">
+      <tr><th>情况</th><th>会发生吗</th><th>后果</th></tr>
+      <tr>
+        <td>同一款游戏的 6 条任务被两台机器分别处理</td>
+        <td><span class="badge b-amber">可能</span>（批次边界处）</td>
+        <td>无害。各源独立写入，最终数据与单机跑完全一致</td>
+      </tr>
+      <tr>
+        <td>两条机器抓到<b>同一条</b>任务（同游戏同源）</td>
+        <td><span class="badge b-green">正常情况不会</span></td>
+        <td>只在租约到期后被重抢时发生，幂等写入兜底，代价是白花一次请求</td>
+      </tr>
+      <tr>
+        <td>两台机器同时改同一行数据库</td>
+        <td><span class="badge b-green">不会冲突</span></td>
+        <td>PostgreSQL 行锁串行化写入；后提交的赢。所有写入都是「整行覆盖」，不存在字段互相覆盖的中间态</td>
+      </tr>
+      <tr>
+        <td>两台机器同时执行 <code>db init</code>（DDL）</td>
+        <td><span class="badge b-red">要避免</span></td>
+        <td>会争排他锁、可能堵住整个队列。<b>建表只由一个人执行一次</b>，其余人永远只跑 worker</td>
+      </tr>
+    </table>
+  </div>
+
+  <div class="note red">
+    <b>实操建议：</b>worker 随便开多少台都安全；但「改表结构」「重跑 seed」这类动作要协调——
+    不是因为有数据冲突风险，而是它们会短暂锁表，让正在跑的 worker 空等。
+  </div>
+
+  <!-- 05 -->
+  <h2><span class="no">05</span>什么共享、什么不共享</h2>
+  <div class="card">
+    <table>
+      <tr><th>资源</th><th>在哪</th><th>是否跨机器共享</th><th>说明</th></tr>
+      <tr><td>任务队列</td><td>云库 <code>fetch_tasks</code></td><td><span class="badge b-green">共享</span></td><td>抢占就是围绕它设计的</td></tr>
+      <tr><td>抓取历史</td><td>云库 <code>ingest_log</code></td><td><span class="badge b-green">共享</span></td><td>不可变审计：谁在什么时候抓了什么，增删改都留痕</td></tr>
+      <tr><td>配额账本</td><td>云库 <code>api_usage</code></td><td><span class="badge b-green">共享</span></td><td>所有机器发出的真实请求都记在同一个账本上</td></tr>
+      <tr><td>RAWG 密钥池</td><td>云库 <code>rawg_keys</code></td><td><span class="badge b-green">共享</span></td><td>见下节——这是唯一「必须共享」的资源</td></tr>
+      <tr><td>限速器</td><td>各机器内存</td><td><span class="badge b-amber">不共享</span></td><td>按域名分桶的 1 秒间隔是<b>进程内</b>的：N 台机器对同一站点就是 N 倍速率</td></tr>
+      <tr><td>抓取数据本身</td><td>云库各源表</td><td><span class="badge b-green">共享</span></td><td><b>没有本地缓存</b>（已废除）：数据库是唯一事实源，机器换一台接着跑即可</td></tr>
+      <tr><td><code>.env</code> 配置</td><td>各机器本地</td><td><span class="badge b-amber">不共享</span></td><td>数据库地址相同，Steam key 可共用；不入 git</td></tr>
+    </table>
+  </div>
+
+  <!-- 06 -->
+  <h2><span class="no">06</span>唯二的全局约束</h2>
+  <div class="card">
+    <h3>① RAWG：配额绑定 API key，不是机器<span class="badge b-amber" style="margin-left:8px">必须共享</span></h3>
+    <p style="font-size:13.5px;color:var(--ink-2)">
+      RAWG 免费档每 key 20,000 次/月。如果各机器各用自己的 key 且互不知情，就会出现
+      「5 台机器都以为额度是满的、结果一起超额」。所以 key 全部注册进<b>云库的密钥池</b>：
+      每次真实请求前原子地取一个「本月还有余额」的 key 并计数，所有机器看到同一份余额。
+      <b>加机器对 RAWG 没有任何加速作用，扩容只能加 key。</b>
+    </p>
+    <h3 style="margin-top:18px">② SteamSpy：只有按机器的速率限制<span class="badge b-blue" style="margin-left:8px">不共享</span></h3>
+    <p style="font-size:13.5px;color:var(--ink-2)">
+      SteamSpy 官方只公布 1 请求/秒，没有配额。我们<b>取消了自设的每日上限</b>，
+      只保留每台机器 1 秒间隔——这意味着 N 台机器对 SteamSpy 的聚合速率是 N 请求/秒。
+      这是刻意选择（否则 4.9 万个任务要跑 49 天），代价是机器开很多时要留意对方是否开始限流。
+    </p>
+  </div>
+
+  <!-- 07 -->
+  <h2><span class="no">07</span>当前实况</h2>
+  <div class="card">
+    <table>
+      <tr><th>项目</th><th>数值</th><th>含义</th></tr>
+      <tr><td>队列总量</td><td class="num">271,342 条</td><td>50,956 款游戏 × 5~6 个逐款源</td></tr>
+      <tr><td>已完成</td><td class="num">36,209 条</td><td>ok 状态，终态不再重跑</td></tr>
+      <tr><td>待抓</td><td class="num">234,721 条</td><td>任何在线的 worker 都可以抢</td></tr>
+      <tr><td>RAWG 密钥池</td><td class="num">7 个 key</td><td>4 个已启用且有消耗，3 个满额待用；余额实时可查</td></tr>
+      <tr><td>面板</td><td><code>dashboard.app</code></td><td>队列进度 + 单游戏查询 + 按任务补抓</td></tr>
+    </table>
+    <p class="muted" style="margin-top:12px">
+      实时数字请打开状态面板（<code>uv run python -m dashboard.app</code>）——本页是机制说明，快照数字会过期。
+    </p>
+  </div>
+
+  <footer>
+    机器名与租约从 <code>fetch_tasks.claimed_by</code> / <code>lease_until</code> 可查；
+    抓取历史从 <code>ingest_log</code> 可查。机制细节见 <code>AGENTS.md</code>（多机并行一节）与
+    <code>cleaning/worker.py</code>。
+  </footer>
+
+</div>
+</body>
+</html>
