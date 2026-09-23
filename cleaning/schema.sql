@@ -250,11 +250,11 @@ INSERT INTO sources (source, kind, interval_ms, daily_quota, monthly_quota, max_
      '与 global_ach 是**一对**：缺任一个都生成不了 achievements 表'),
     ('appdetails_zh', 'per_game', 1000, NULL,  NULL,  3, 40,
      'Steam 商店 appdetails（l=schinese）：官方中文名，无中文名时回落英文名。免 key'),
-    ('steamspy',      'per_game', 1000, 1000,  NULL,  3, 50,
+    ('steamspy',      'per_game', 1000, NULL,  NULL,  3, 50,
      'SteamSpy appdetails：用户标签 + 票数（bulk 的 steamspy_all 拿不到 tags，这是它唯一独有价值）。'
-     '免 key。官方页面只公布 1 req/s（2026-09-17 核对），**没有公布任何每日配额** —— '
-     'daily_quota=1000 是**本项目自设的保守上限**，不是官方额度。'
-     '81,850 款按 1000/天要 82 天，故只应作为「取标签」的可选补充，不要盲目全量入队'),
+     '免 key。官方只公布 1 req/s（2026-09-17 核对），**没有公布日配额** —— '
+     '2026-09-22 取消本项目自设的 1000/天上限，现在**只有速率限制**（1 req/s，按机器分桶）。'
+     '与 RAWG 不同：不存在按 key 的跨机器配额账本。'),
     ('rawg',          'per_game', 1000, NULL, 20000, 3, 90,
      'RAWG：评分 / 时长 / 弃坑率 / 题材标签。**需 key**。免费档 20,000 请求/月（官方文档），'
      '响应头不暴露剩余额度，故配额靠 api_usage 自行记账。'

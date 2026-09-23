@@ -131,16 +131,17 @@ SOURCES: dict[str, SourceSpec] = {
             source="steamspy",
             kind="per_game",
             interval_sec=1.0,
-            daily_quota=1000,
+            daily_quota=None,
             monthly_quota=None,
             max_attempts=3,
             priority=50,
             note=(
                 "SteamSpy appdetails：用户标签 + 票数（bulk 的 steamspy_all 拿不到 tags，这是它唯一独有价值）。"
-                "免 key。官方页面只公布 1 req/s（2026-09-17 核对），"
-                "**没有公布任何「每天 N 次」的配额** —— 这里 daily_quota=1000 是"
-                "**本项目自设的保守上限**（避免在限流窗口里反复撞墙），不是官方额度。"
-                "81,850 款按 1000/天要 82 天，故只应作为「取标签」的可选补充，不要盲目全量入队"
+                "免 key。官方页面只公布 1 req/s（2026-09-17 核对），**没有公布任何日配额** —— "
+                "2026-09-22 起取消本项目自设的 1000/天上限（48,798 个待抓任务按 1000/天要 49 天，"
+                "而官方限速 1 req/s 的理论上限是 86,400/天，1000 定得过于保守）。"
+                "现在**只有速率限制**：1 req/s，按机器分桶（与 RAWG 的按 key 配额不同，"
+                "不存在跨机器的共享账本）。"
             ),
         ),
         SourceSpec(

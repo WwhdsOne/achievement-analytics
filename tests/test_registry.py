@@ -125,20 +125,22 @@ def test_steamspy_all_rate_limit_is_60s() -> None:
     assert SOURCES["steamspy"].interval_sec == 1.0
 
 
-def test_steamspy_daily_quota_is_self_imposed_cap() -> None:
-    """SteamSpy 逐款接口的 1000/天是**本项目自设的保守上限**，不是官方额度。
+def test_steamspy_has_rate_limit_only_no_quota() -> None:
+    """SteamSpy 逐款接口**只有速率限制、没有配额**（2026-09-22 决策）。
 
-    2026-09-17 核对官方页面（https://steamspy.com/api.php），只公布了
-    ``1 request per second for most requests, 1 request per 60 seconds for the
-    *all* requests``，**没有任何「每天 N 次」的配额**。此前代码注释里写的
-    「官方限速每天 1000 次」无法佐证，已改为标注自设。
+    官方页面（https://steamspy.com/api.php）只公布限速：``1 request per second
+    for most requests, 1 request per 60 seconds for the *all* requests``，
+    **没有任何日/月配额**。项目曾自设 1000/天上限，实测 48,798 个待抓任务按
+    1000/天要 49 天（官方限速 1 req/s 理论上限 86,400/天），过于保守，已取消。
 
-    这一列仍然要存在：它让 worker 能在撞到限流前主动停下。
+    与 RAWG 的区别要守住：RAWG 的配额**绑定 key**、存在跨机器共享账本；SteamSpy
+    只受**按机器的速率限制**，不需要任何配额协调机制。
     """
-    assert SOURCES["steamspy"].daily_quota == 1000
-    # 官方未公布日限的源不能凭空写一个数字
-    assert SOURCES["appdetails_en"].daily_quota is None
-    assert SOURCES["global_ach"].daily_quota is None
+    assert SOURCES["steamspy"].daily_quota is None, (
+        "SteamSpy 只保留速率限制；不要再加回自设日限（它会把 49 天的活拖成瓶颈）"
+    )
+    assert SOURCES["steamspy"].monthly_quota is None
+    assert SOURCES["steamspy"].interval_sec == 1.0
 
 
 def test_rawg_monthly_quota_is_20000() -> None:
