@@ -1,0 +1,673 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width,initial-scale=1" />
+<title>achievement-analytics · 抓取面板</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<script src="https://cdn.jsdelivr.net/npm/wordcloud@1.2.2/src/wordcloud2.js"></script>
+<style>
+  /* ── MONO tokens（对齐 lieflat-charts / mono-tokens.js）──────────── */
+  :root {
+    --INK:   #1C1C1A;
+    --PAPER: #F0EFEB;
+    --MUTED: #8F8E88;
+    --FAINT: #C6C5BF;
+    --GRID:  #DEDDD6;
+    --L1: #1C1C1A; --L2: #4A4944; --L3: #6A6963; --L4: #8F8E88;
+    --L5: #B0AFA9; --L6: #C6C5BF; --L7: #D8D7D1;
+  }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body {
+    background: #E3E2DC;
+    font-family: 'Inter', -apple-system, 'PingFang SC', 'Microsoft YaHei', sans-serif;
+    color: var(--INK);
+    padding: 0 24px 80px;
+    -webkit-font-smoothing: antialiased;
+  }
+  .wrap { max-width: 920px; margin: 0 auto; }
+
+  /* ── 顶部导航 ── */
+  nav {
+    position: sticky; top: 0; z-index: 10;
+    background: #E3E2DCF2; backdrop-filter: blur(8px);
+    display: flex; align-items: center; gap: 28px;
+    padding: 18px 2px 14px; margin-bottom: 20px;
+    border-bottom: 1px solid var(--GRID);
+  }
+  nav .brand { font-size: 13px; font-weight: 800; letter-spacing: .1em; }
+  nav .tabs { display: flex; gap: 20px; margin-left: auto; }
+  nav .tab {
+    background: none; border: none; cursor: pointer; padding: 4px 2px;
+    font: inherit; font-size: 13px; font-weight: 600; color: var(--MUTED);
+    border-bottom: 2px solid transparent; transition: color .2s, border-color .2s;
+  }
+  nav .tab:hover { color: var(--INK); }
+  nav .tab.active { color: var(--INK); border-bottom-color: var(--INK); }
+  .card {
+    background: var(--PAPER);
+    border-radius: 24px;
+    padding: 28px 28px 20px;
+    margin-bottom: 20px;
+  }
+  .hidden { display: none; }
+  h2 { font-size: 16.5px; font-weight: 700; letter-spacing: -.02em; margin-bottom: 4px; }
+  .sub { color: var(--MUTED); font-size: 12.5px; margin-bottom: 16px; }
+  .src {
+    margin-top: 14px; color: var(--FAINT);
+    font-size: 10px; font-weight: 600; letter-spacing: .14em; text-transform: uppercase;
+  }
+  .num { font-variant-numeric: tabular-nums; }
+
+  /* KPI 行 */
+  .kpis { display: grid; grid-template-columns: repeat(5, 1fr); gap: 20px; }
+  .kpi .v { font-size: 34px; font-weight: 800; letter-spacing: -.03em; font-variant-numeric: tabular-nums; }
+  .kpi .k { font-size: 10px; font-weight: 600; letter-spacing: .12em; text-transform: uppercase; color: var(--MUTED); margin-top: 2px; }
+  @media (max-width: 720px) { .kpis { grid-template-columns: repeat(2, 1fr); } }
+
+  /* 逐源进度 */
+  .row {
+    display: grid; grid-template-columns: 130px 1fr 190px;
+    gap: 14px; align-items: center;
+    padding: 11px 0; border-top: 1px solid var(--GRID);
+  }
+  .row:first-of-type { border-top: none; }
+  .row .name { font-size: 12px; font-weight: 600; letter-spacing: .06em; text-transform: uppercase;
+               position: relative; cursor: help; width: fit-content; }
+  /* 悬浮说明：黑底纸字（token tipLight），hover 出现 */
+  .name .tip {
+    display: none; position: absolute; left: 0; top: calc(100% + 10px); z-index: 30;
+    width: 280px; background: var(--INK); color: var(--PAPER);
+    border-radius: 12px; padding: 12px 14px;
+    font-size: 12px; font-weight: 400; line-height: 1.75;
+    letter-spacing: 0; text-transform: none; cursor: default;
+    box-shadow: 0 8px 24px #1C1C1A22;
+  }
+  .name .tip b { display: block; font-weight: 700; margin-bottom: 4px; letter-spacing: .02em; }
+  .name:hover .tip { display: block; }
+
+  /* 类型词云：wordcloud2.js 渲染，颜色每次刷新随机 */
+  .cloud { position: relative; width: 100%; height: 500px; }
+  .cloud canvas { width: 100%; height: 100%; display: block; }
+  #cloudTip, #tagTip {
+    display: none; position: absolute; z-index: 30; pointer-events: none;
+    background: var(--INK); color: var(--PAPER); border-radius: 12px; padding: 8px 12px;
+    font-size: 12px; font-weight: 600; white-space: nowrap; font-variant-numeric: tabular-nums;
+  }
+  .empty-note {
+    position: absolute; inset: 0; display: flex; align-items: center; justify-content: center;
+    color: var(--MUTED); font-size: 13px;
+  }
+  .pop { animation: pop .5s cubic-bezier(.2,.7,.3,1.3) both; }
+  @keyframes pop { from { transform: scale(0); opacity: 0; } to { transform: none; opacity: 1; } }
+  @media (prefers-reduced-motion: reduce) { .pop { animation: none; } }
+
+  /* 游戏信息卡：三个源三列 */
+  .igrid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 22px; }
+  @media (max-width: 760px) { .igrid { grid-template-columns: 1fr; } }
+  .iblk-lbl {
+    font-size: 10px; font-weight: 600; letter-spacing: .14em; text-transform: uppercase;
+    color: var(--MUTED); margin-bottom: 8px;
+  }
+  .kvrow {
+    display: flex; justify-content: space-between; gap: 10px;
+    padding: 6px 0; border-top: 1px solid var(--GRID); font-size: 12px;
+  }
+  .kvrow .k { color: var(--MUTED); white-space: nowrap; }
+  .kvrow .v { text-align: right; font-weight: 600; font-variant-numeric: tabular-nums; overflow-wrap: anywhere; }
+  .kvrow .v .faint { color: var(--FAINT); font-weight: 500; }
+  .stbar { display: grid; grid-template-columns: 44px 1fr 40px; gap: 8px; align-items: center; padding: 3px 0; font-size: 11.5px; }
+  .stbar .sk { color: var(--MUTED); }
+  .stbar .sv { text-align: right; font-weight: 600; font-variant-numeric: tabular-nums; }
+  .stbar .track { height: 4px; background: var(--L7); border-radius: 99px; overflow: hidden; }
+  .stbar .fill { height: 100%; background: var(--INK); border-radius: 99px; }
+  .track { background: var(--L7); border-radius: 99px; height: 6px; overflow: hidden; }
+  .fill  { background: var(--INK); border-radius: 99px; height: 100%; width: 0;
+           transition: width .9s cubic-bezier(.165,.84,.44,1); }
+  .counts { font-size: 11.5px; color: var(--MUTED); text-align: right; font-variant-numeric: tabular-nums; white-space: nowrap; }
+  .counts b { color: var(--INK); font-weight: 700; }
+  @media (max-width: 720px) { .row { grid-template-columns: 96px 1fr; } .counts { grid-column: 1 / -1; text-align: left; } }
+
+  /* 查询区 */
+  .lookup { display: flex; gap: 12px; margin-bottom: 14px; }
+  input {
+    flex: 1; background: transparent; border: none; border-bottom: 1.5px solid var(--FAINT);
+    font: inherit; font-size: 18px; font-weight: 600; letter-spacing: .02em;
+    padding: 6px 2px; color: var(--INK); outline: none; font-variant-numeric: tabular-nums;
+  }
+  input:focus { border-bottom-color: var(--INK); }
+  input::placeholder { color: var(--FAINT); font-weight: 500; }
+  button {
+    background: var(--INK); color: var(--PAPER); border: none; cursor: pointer;
+    font: inherit; font-size: 13px; font-weight: 700; letter-spacing: .02em;
+    padding: 10px 22px; border-radius: 99px; transition: opacity .2s;
+  }
+  button:hover { opacity: .82; }
+  button:disabled { opacity: .35; cursor: default; }
+  button.ghost { background: transparent; color: var(--INK); border: 1.5px solid var(--INK); }
+
+  /* 游戏结果 */
+  .gname { font-size: 17px; font-weight: 800; letter-spacing: -.01em; margin: 6px 0 12px; }
+  .chips { display: flex; flex-wrap: wrap; gap: 8px; margin-bottom: 12px; }
+  .chip {
+    font-size: 11.5px; font-weight: 600; padding: 4px 12px; border-radius: 99px;
+    font-variant-numeric: tabular-nums;
+  }
+  .chip small { font-weight: 500; opacity: .75; }
+  .st-ok      { background: var(--L1); color: var(--PAPER); }
+  .st-empty   { background: var(--L4); color: var(--PAPER); }
+  .st-skipped { background: var(--L6); color: var(--INK); }
+  .st-pending { background: transparent; color: var(--L2); box-shadow: inset 0 0 0 1.5px var(--FAINT); }
+  .st-error   { background: transparent; color: var(--INK); box-shadow: inset 0 0 0 1.5px var(--INK); }
+  .st-exhausted { background: var(--L2); color: var(--PAPER); }
+  .st-none    { background: transparent; color: var(--FAINT); box-shadow: inset 0 0 0 1.5px var(--GRID); }
+  .meta { color: var(--MUTED); font-size: 12px; line-height: 1.8; }
+  .meta b { color: var(--INK); font-weight: 600; }
+  .log {
+    margin-top: 12px; font-size: 12px; line-height: 1.7; color: var(--MUTED);
+    font-variant-numeric: tabular-nums;
+  }
+  .log .err { color: var(--INK); font-weight: 600; }
+  #fetchLog:empty, #missingBox:empty, #achBox:empty { display: none; }
+
+  /* 缺失源 */
+  .missing-row { display: flex; flex-wrap: wrap; gap: 8px; align-items: center; margin-bottom: 12px; }
+  .missing-label { font-size: 10px; font-weight: 600; letter-spacing: .12em; text-transform: uppercase; color: var(--MUTED); }
+  .chip.miss { background: transparent; color: var(--INK); box-shadow: inset 0 0 0 1.5px var(--INK); }
+  .allgood { font-size: 12px; color: var(--MUTED); margin-bottom: 12px; }
+
+  /* 成就表 */
+  .ach-head { display: flex; gap: 8px; margin-bottom: 10px; }
+  .ach-head .lbl { font-size: 10px; font-weight: 600; letter-spacing: .12em; text-transform: uppercase; color: var(--MUTED); align-self: center; }
+  .ach-head button {
+    padding: 3px 12px; font-size: 11px; border-radius: 99px;
+    background: transparent; color: var(--MUTED); border: 1.5px solid var(--FAINT);
+  }
+  .ach-head button.active { color: var(--PAPER); background: var(--INK); border-color: var(--INK); }
+  .atable { width: 100%; border-collapse: collapse; }
+  .atable td { padding: 7px 8px; border-top: 1px solid var(--GRID); font-size: 12.5px; vertical-align: middle; }
+  .atable tr:first-child td { border-top: none; }
+  .atable .pos  { color: var(--FAINT); font-size: 11px; width: 30px; font-variant-numeric: tabular-nums; }
+  .atable .disp { font-weight: 600; }
+  .atable .api  { color: var(--FAINT); font-size: 11px; }
+  .atable .pct  { text-align: right; font-weight: 700; width: 52px; font-variant-numeric: tabular-nums; }
+  .atable .barc { width: 130px; }
+  .atable .track { height: 4px; }
+  .atable .fill { transition: width .9s cubic-bezier(.165,.84,.44,1); }
+
+  /* 入场动画 */
+  .fade { animation: fade .9s ease both; }
+  @keyframes fade { from { opacity: 0; transform: translateY(6px); } to { opacity: 1; transform: none; } }
+  @media (prefers-reduced-motion: reduce) { .fade { animation: none; } .fill { transition: none; } }
+</style>
+</head>
+<body>
+
+<nav>
+  <div class="brand">ACHIEVEMENT-ANALYTICS</div>
+  <div class="tabs">
+    <button class="tab active" id="tabQueue" onclick="switchView('queue')">队列总览</button>
+    <button class="tab" id="tabGame" onclick="switchView('game')">Steam AppID 查询</button>
+    <button class="tab" id="tabCloud" onclick="switchView('cloud')">类型词云</button>
+  </div>
+</nav>
+
+<div class="wrap">
+
+  <!-- ════ 视图一：队列总览 ════ -->
+  <div id="viewQueue">
+    <div class="card fade">
+      <h2>队列还剩多少活</h2>
+      <div class="sub">共享队列实时状态 · 每 5s 自动刷新</div>
+      <div class="kpis">
+        <div class="kpi"><div class="v num" id="kpiRemain">–</div><div class="k">剩余未完成</div></div>
+        <div class="kpi"><div class="v num" id="kpiPending">–</div><div class="k">待抓 pending</div></div>
+        <div class="kpi"><div class="v num" id="kpiOk">–</div><div class="k">完成 ok</div></div>
+        <div class="kpi"><div class="v num" id="kpiEmpty">–</div><div class="k">确定无数据</div></div>
+        <div class="kpi"><div class="v num" id="kpiError">–</div><div class="k">error+exhausted</div></div>
+      </div>
+      <div class="src">fetch_tasks · 共 <span id="kpiTotal" class="num">–</span> 条任务 / <span id="kpiGames" class="num">–</span> 款游戏</div>
+    </div>
+
+    <div class="card fade">
+      <h2>逐源进度</h2>
+      <div class="sub">条长 = 已到终态比例（ok + empty + skipped）· 右侧为 各状态计数</div>
+      <div id="sources"></div>
+      <div class="src">ingest_progress 视图 · postgresql 唯一事实源</div>
+    </div>
+  </div>
+
+  <!-- ════ 视图二：AppID 查询 ════ -->
+  <div id="viewGame" class="hidden">
+    <div class="card fade">
+      <h2>Steam AppID 查询 / 补抓</h2>
+      <div class="sub">查任务状态与全部成就 · 尚未爬取的游戏可「立即抓取」（走任务队列，SteamSpy 暂挂）</div>
+      <div class="lookup">
+        <input id="appidInput" inputmode="numeric" placeholder="输入 AppID，如 367520" />
+        <button id="lookupBtn">查询</button>
+        <button id="crawlBtn" class="ghost">立即抓取</button>
+      </div>
+      <div class="log" id="fetchLog"></div>
+    </div>
+
+    <div class="card fade hidden" id="resultCard">
+      <div class="gname" id="gname"></div>
+      <div class="missing-row" id="missingBox"></div>
+      <div class="chips" id="taskChips"></div>
+      <div class="meta" id="gmeta"></div>
+      <div class="src">fetch_tasks · steam_appdetails · achievements · steamspy_games · rawg_games</div>
+    </div>
+
+    <div class="card fade hidden" id="infoCard">
+      <h2>游戏信息全览</h2>
+      <div class="sub">三个信息源的字段全量展示 · <span style="color:var(--FAINT)">–</span> 表示该源暂无数据（未抓到或游戏没有该信息）</div>
+      <div class="igrid">
+        <div><div class="iblk-lbl">Steam 商店 · appdetails</div><div id="infoSteam"></div></div>
+        <div><div class="iblk-lbl">SteamSpy</div><div id="infoSpy"></div></div>
+        <div><div class="iblk-lbl">RAWG</div><div id="infoRawg"></div></div>
+      </div>
+      <div class="src">steam_appdetails · steamspy_games · rawg_games</div>
+    </div>
+
+    <div class="card fade hidden" id="achCard">
+      <h2>成就明细</h2>
+      <div class="sub" id="achSub">解锁率取自全局完成率接口 · 名称来自社区页按位映射</div>
+      <div class="ach-head">
+        <span class="lbl">排序</span>
+        <button id="sortPct" class="active" onclick="renderAchievements('pct')">按解锁率</button>
+        <button id="sortPos" onclick="renderAchievements('pos')">按游戏内顺序</button>
+      </div>
+      <table class="atable"><tbody id="achBody"></tbody></table>
+      <div class="src">条长 = 全局解锁率 · 0–100%</div>
+    </div>
+  </div>
+
+  <!-- ════ 视图三：类型词云 ════ -->
+  <div id="viewCloud" class="hidden">
+    <div class="card fade">
+      <h2>玩家都在做哪类游戏</h2>
+      <div class="sub">Steam 官方类型 · 字号 = 游戏数量的平方根 · 颜色每次刷新随机重排</div>
+      <div class="cloud" id="cloud">
+        <canvas id="cloudCanvas"></canvas>
+        <div id="cloudTip"></div>
+      </div>
+      <div class="src">steam_appdetails.valve_genres · 覆盖 <span id="cloudGames" class="num">–</span> 款已抓取游戏 · 悬停看精确计数 · wordcloud2.js</div>
+    </div>
+
+    <div class="card fade">
+      <h2>玩家用什么词形容这些游戏</h2>
+      <div class="sub">SteamSpy 玩家标签（细粒度：Souls-like / Atmospheric / Difficult 这类）· 字号 = 带该标签游戏数的平方根 · 颜色每次刷新随机重排</div>
+      <div class="cloud" id="tagCloud">
+        <canvas id="tagCanvas"></canvas>
+        <div id="tagTip"></div>
+      </div>
+      <div class="src">game_tags · source=steamspy · 覆盖 <span id="tagGames" class="num">–</span> 款游戏 · 悬停看 游戏数 / 票数 · wordcloud2.js</div>
+    </div>
+  </div>
+
+</div>
+
+<script>
+const $ = id => document.getElementById(id);
+const fmt = n => (n ?? 0).toLocaleString('en-US');
+
+/* ── 视图切换 ── */
+function switchView(v) {
+  $('viewQueue').classList.toggle('hidden', v !== 'queue');
+  $('viewGame').classList.toggle('hidden', v !== 'game');
+  $('viewCloud').classList.toggle('hidden', v !== 'cloud');
+  $('tabQueue').classList.toggle('active', v === 'queue');
+  $('tabGame').classList.toggle('active', v === 'game');
+  $('tabCloud').classList.toggle('active', v === 'cloud');
+  if (v === 'cloud') { loadGenres(); loadTags(); }
+}
+
+/* ── 词云：wordcloud2.js 渲染，颜色每次刷新随机 ── */
+function randomColor() {
+  // 每个词随机色相，饱和度/明度受控，保证在纸灰底上可读且整体协调
+  const h = Math.floor(Math.random() * 360);
+  const s = 40 + Math.floor(Math.random() * 30);   // 40–70%
+  const l = 28 + Math.floor(Math.random() * 17);   // 28–45%
+  return `hsl(${h}, ${s}%, ${l}%)`;
+}
+
+function cloudNote(boxId, msg) {
+  const box = $(boxId);
+  let n = box.querySelector('.empty-note');
+  if (!n) {
+    n = document.createElement('div');
+    n.className = 'empty-note';
+    box.appendChild(n);
+  }
+  n.textContent = msg;
+}
+
+/** 通用词云绘制。items = [{text, weight, tip}]，weight 需已做 sqrt（面积 ∝ 数量） */
+function drawWordCloud({ canvasId, boxId, tipId, items }) {
+  const box = $(boxId), canvas = $(canvasId), tip = $(tipId);
+  const note = box.querySelector('.empty-note');
+  if (note) note.remove();
+  if (typeof WordCloud === 'undefined') {
+    cloudNote(boxId, 'wordcloud2.js 加载失败（需要联网加载 CDN 脚本）');
+    return;
+  }
+  if (!items.length) {
+    cloudNote(boxId, '还没有数据，等 worker 跑一会儿再来看');
+    return;
+  }
+
+  const dpr = window.devicePixelRatio || 1;
+  const W = box.clientWidth || 860, H = 500;
+  canvas.width = W * dpr;
+  canvas.height = H * dpr;
+
+  const maxW = Math.max(...items.map(i => i.weight));
+  const byText = new Map(items.map(i => [i.text, i.tip]));
+
+  WordCloud(canvas, {
+    list: items.map(i => [i.text, i.weight]),
+    // weightFactor 把最大词放大到 ~64 CSS px；minSize 保底让长尾词不被静默丢弃
+    weightFactor: (64 / (maxW || 1)) * dpr,
+    minSize: 9 * dpr,
+    gridSize: 6 * dpr,
+    fontFamily: 'Inter, sans-serif',
+    fontWeight: 700,
+    color: () => randomColor(),
+    backgroundColor: 'rgba(240, 239, 235, 0)',   // 透出卡片纸灰底
+    shuffle: false,                               // 布局确定：大词居中向外螺旋
+    rotateRatio: 0,                               // 全部水平，可读性优先
+    clearCanvas: true,
+    hover: (item, _defaultStyle, e) => {
+      if (!item) { tip.style.display = 'none'; return; }
+      tip.style.display = 'block';
+      tip.textContent = byText.get(item[0]) || item[0];
+      const rect = box.getBoundingClientRect();
+      tip.style.left = Math.min(e.clientX - rect.left + 14, rect.width - 190) + 'px';
+      tip.style.top = (e.clientY - rect.top + 14) + 'px';
+    },
+  });
+}
+
+/* 词云一：Steam 官方类型（valve_genres） */
+async function loadGenres() {
+  const d = await (await fetch('/api/genres')).json();
+  $('cloudGames').textContent = fmt(d.games_with_genres);
+  const total = d.games_with_genres || 0;
+  drawWordCloud({
+    canvasId: 'cloudCanvas', boxId: 'cloud', tipId: 'cloudTip',
+    items: (d.genres || []).map(g => ({
+      text: g.genre,
+      weight: Math.sqrt(g.count),
+      tip: `${fmt(g.count)} 款 · 占已抓游戏 ${total ? (g.count / total * 100).toFixed(1) : 0}%`,
+    })),
+  });
+}
+
+/* 词云二：SteamSpy 玩家标签（细粒度） */
+async function loadTags() {
+  const d = await (await fetch('/api/tags')).json();
+  $('tagGames').textContent = fmt(d.games_with_tags);
+  const total = d.games_with_tags || 0;
+  drawWordCloud({
+    canvasId: 'tagCanvas', boxId: 'tagCloud', tipId: 'tagTip',
+    items: (d.tags || []).map(t => ({
+      text: t.tag,
+      weight: Math.sqrt(t.games),
+      tip: `${fmt(t.games)} 款 · ${fmt(t.votes)} 票 · 占已抓 ${total ? (t.games / total * 100).toFixed(1) : 0}%`,
+    })),
+  });
+}
+
+/* ── 队列总览（失败自动重试：库抖动/重启时不至于永远停在「–」）── */
+const sleep = ms => new Promise(r => setTimeout(r, ms));
+
+/* 各源的字段说明（鼠标悬停源名时展示） */
+const SOURCE_TIPS = {
+  appdetails_en: '官方英文名 name_en · 游戏类型 type · 是否免费 · 定价（分）· 发售日 · 开发商 · 发行商 · 官方 genres / categories · 评价总数 recommendations',
+  appdetails_zh: '官方中文名 name_zh 等本地化信息（同一张表，与英文版各拉一次，互不覆盖成就与统计字段）',
+  global_ach: '每个成就的<b>全局解锁率</b> percent（内部名 + 完成率）。Q1 难度建模与游戏难度特征的数据来源',
+  community_ach: '成就的<b>展示名</b> display_name + 描述（玩家可读）。与 global_ach 按位对齐完成内部名 → 展示名映射',
+  steamspy: '拥有量区间 owners · 同时在线 ccu · 好评/差评数 positive / negative · 平均与中位游玩时长 average / median_forever',
+  rawg: 'metacritic 媒体评分 · 社区评分 rating / ratings_count · 题材 genres · 平均时长 playtime · 关注数 added_count · 玩家状态分布（拥有 / 通关 / 弃坑 / 想玩 / 在玩）',
+};
+
+async function loadProgress() {
+  const d = await (await fetch('/api/progress')).json();
+  const b = d.by_status || {};
+  $('kpiRemain').textContent  = fmt(d.remaining);
+  $('kpiPending').textContent = fmt(b.pending);
+  $('kpiOk').textContent      = fmt(b.ok);
+  $('kpiEmpty').textContent   = fmt(b.empty);
+  $('kpiError').textContent   = fmt((b.error||0) + (b.exhausted||0));
+  $('kpiTotal').textContent   = fmt(d.total);
+  $('kpiGames').textContent   = fmt(d.games);
+
+  const box = $('sources');
+  box.innerHTML = '';
+  for (const s of d.sources) {
+    const done = s.ok + s.empty + s.skipped;
+    const pct = s.total ? Math.round(done / s.total * 100) : 0;
+    const row = document.createElement('div');
+    row.className = 'row';
+    row.innerHTML =
+      `<div class="name">${s.source}` +
+      `<div class="tip"><b>${s.source}</b>${SOURCE_TIPS[s.source] || ''}</div></div>` +
+      `<div class="track"><div class="fill" style="width:${pct}%"></div></div>` +
+      `<div class="counts"><b>${fmt(s.ok)}</b> ok · ${fmt(s.empty)} empty · ` +
+      `${fmt(s.error+s.exhausted)} err · 剩 <b>${fmt(s.pending)}</b></div>`;
+    box.appendChild(row);
+  }
+}
+
+async function progressLoop() {
+  for (;;) {
+    try {
+      await loadProgress();
+      await sleep(5000);
+    } catch (e) {
+      $('kpiRemain').textContent = '!';
+      $('kpiRemain').title = '查询失败，自动重试中（检查云库连接）';
+      await sleep(2000);
+    }
+  }
+}
+
+/* ── 单款查询 ── */
+let currentAppid = null;
+let currentAch = [];
+let currentSort = 'pct';
+
+async function lookup(appid) {
+  const res = await fetch('/api/game?appid=' + appid);
+  const d = await res.json();
+  $('resultCard').classList.remove('hidden');
+  if (!res.ok) {
+    $('gname').textContent = `未收录 · appid ${appid}`;
+    $('missingBox').innerHTML = '';
+    $('taskChips').innerHTML = '';
+    $('gmeta').innerHTML = `${d.error || '不在库中'}。若它在 Steam 上真实存在，点「立即抓取」会自动补录并进队列。`;
+    $('achCard').classList.add('hidden');
+    return { notFound: true };
+  }
+
+  currentAch = d.achievements_list || [];
+  currentSort = 'pct';
+  $('sortPct').classList.add('active');
+  $('sortPos').classList.remove('active');
+
+  $('gname').innerHTML =
+    `${d.name || '（未命名）'} <span style="color:var(--MUTED);font-weight:500">· ${d.appid}</span>`;
+
+  // 缺失数据源
+  const miss = d.missing_sources || [];
+  $('missingBox').innerHTML = miss.length
+    ? `<span class="missing-label">缺失数据源 · ${miss.length}/6</span>` +
+      miss.map(s => `<span class="chip miss">${s}</span>`).join('')
+    : `<span class="allgood">六个源数据齐全，无缺失</span>`;
+
+  // 任务状态芯片
+  $('taskChips').innerHTML = (d.tasks.length
+    ? d.tasks
+    : [{source:'—', status:'none', attempts:0}]
+  ).map(t =>
+    `<span class="chip st-${t.status}">${t.source} · ${t.status}${t.attempts ? ` <small>×${t.attempts}</small>` : ''}</span>`
+  ).join('');
+
+  const c = d.counts || {};
+  $('gmeta').innerHTML =
+    `数据落地：<b>${fmt(c.achievements)}</b> 条成就 · <b>${fmt(c.appdetails)}</b> 份 appdetails · ` +
+    `<b>${fmt(c.steamspy)}</b> 条 SteamSpy · <b>${fmt(c.rawg)}</b> 条 RAWG · <b>${fmt(c.tags)}</b> 条标签<br>` +
+    `最近抓取：${d.last_fetched_at ? new Date(d.last_fetched_at).toLocaleString('zh-CN') : '从未'}`;
+
+  renderInfo(d);
+  $('infoCard').classList.toggle('hidden', !(d.appdetails || d.steamspy || d.rawg));
+
+  // 成就表
+  $('achCard').classList.toggle('hidden', !currentAch.length);
+  $('achSub').textContent = currentAch.length
+    ? `共 ${currentAch.length} 个成就 · 解锁率取自全局完成率接口 · 名称来自社区页按位映射`
+    : '';
+  renderAchievements(currentSort);
+  return d;
+}
+
+function renderAchievements(sort) {
+  currentSort = sort;
+  $('sortPct').classList.toggle('active', sort === 'pct');
+  $('sortPos').classList.toggle('active', sort === 'pos');
+  const rows = [...currentAch].sort((a, b) =>
+    sort === 'pct' ? b.percent - a.percent : a.position - b.position);
+  $('achBody').innerHTML = rows.map(a =>
+    `<tr>` +
+    `<td class="pos">${a.position}</td>` +
+    `<td class="disp">${escapeHtml(a.display_name)}</td>` +
+    `<td class="api">${escapeHtml(a.api_name)}</td>` +
+    `<td class="barc"><div class="track"><div class="fill" style="width:${a.percent}%"></div></div></td>` +
+    `<td class="pct">${a.percent.toFixed(1)}%</td>` +
+    `</tr>`).join('');
+}
+
+function escapeHtml(s) {
+  return String(s ?? '').replace(/[&<>"']/g,
+    c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+}
+
+/* ── 游戏信息全览：三个源的字段全量展示 ── */
+const STATUS_ZH = { status_yet: '未玩', status_owned: '拥有', status_beaten: '通关',
+                    status_toplay: '想玩', status_dropped: '弃坑', status_playing: '在玩' };
+
+function renderInfo(d) {
+  const NA = '<span class="faint">–</span>';
+  const kv = (k, v) => `<div class="kvrow"><span class="k">${k}</span><span class="v">${v ?? NA}</span></div>`;
+  const arr = a => (a && a.length) ? a.map(escapeHtml).join(' / ') : NA;
+
+  /* Steam 商店 */
+  const app = d.appdetails;
+  $('infoSteam').innerHTML = !app ? kv('说明', '') :
+    kv('类型', app.type ? escapeHtml(app.type) : NA) +
+    kv('定价', app.is_free ? '免费' : (app.price_cents != null ? '$' + (app.price_cents / 100).toFixed(2) : NA)) +
+    kv('发售日', app.release_date ? app.release_date : NA) +
+    kv('开发商', arr(app.developers)) +
+    kv('发行商', arr(app.publishers)) +
+    kv('官方类型', arr(app.valve_genres)) +
+    kv('标签类别', arr(app.valve_categories)) +
+    kv('评价总数', app.recommendations != null ? fmt(app.recommendations) : NA);
+
+  /* SteamSpy */
+  const spy = d.steamspy;
+  let spyHtml;
+  if (!spy) spyHtml = '';
+  else {
+    const totalRev = (spy.positive || 0) + (spy.negative || 0);
+    const rate = totalRev ? Math.round(spy.positive / totalRev * 100) + '%' : NA;
+    const hrs = m => (m != null ? (m / 60).toFixed(1) + ' 小时' : NA);
+    spyHtml =
+      kv('拥有量区间', spy.owners ? escapeHtml(spy.owners) : NA) +
+      kv('同时在线', spy.ccu != null ? fmt(spy.ccu) : NA) +
+      kv('好评 / 差评', `${fmt(spy.positive)} / ${fmt(spy.negative)}`) +
+      kv('好评率', rate) +
+      kv('平均时长', hrs(spy.average_forever)) +
+      kv('中位时长', hrs(spy.median_forever));
+  }
+  $('infoSpy').innerHTML = spyHtml;
+
+  /* RAWG */
+  const rawg = d.rawg;
+  let rawgHtml;
+  if (!rawg) rawgHtml = '';
+  else {
+    const stKeys = Object.keys(STATUS_ZH);
+    const maxSt = Math.max(...stKeys.map(k => rawg[k] || 0), 1);
+    const bars = stKeys.map(k =>
+      `<div class="stbar"><span class="sk">${STATUS_ZH[k]}</span>` +
+      `<div class="track"><div class="fill" style="width:${Math.round((rawg[k] || 0) / maxSt * 100)}%"></div></div>` +
+      `<span class="sv">${fmt(rawg[k])}</span></div>`).join('');
+    rawgHtml =
+      kv('Metacritic', rawg.metacritic != null ? escapeHtml(rawg.metacritic) : NA) +
+      kv('社区评分', rawg.rating != null ? `${rawg.rating} / 5` : NA) +
+      kv('评分数', rawg.ratings_count != null ? fmt(rawg.ratings_count) : NA) +
+      kv('题材', arr(rawg.genres)) +
+      kv('平均时长', rawg.playtime != null ? rawg.playtime + ' 小时' : NA) +
+      kv('被收录次数', rawg.added_count != null ? fmt(rawg.added_count) : NA) +
+      `<div style="padding:6px 0;border-top:1px solid var(--GRID)">${bars}</div>`;
+  }
+  $('infoRawg').innerHTML = rawgHtml;
+}
+
+async function doLookup() {
+  const appid = parseInt($('appidInput').value, 10);
+  if (!appid) return;
+  currentAppid = appid;
+  $('lookupBtn').disabled = true;
+  try { await lookup(appid); } finally { $('lookupBtn').disabled = false; }
+}
+
+/* ── 立即抓取（任务式）── */
+async function doCrawl() {
+  const appid = parseInt($('appidInput').value, 10);
+  if (!appid) { $('fetchLog').textContent = '先输入 appid'; return; }
+  currentAppid = appid;
+  $('crawlBtn').disabled = true;
+  $('fetchLog').textContent = `正在把 appid=${appid} 补进任务队列…`;
+  const res = await fetch('/api/game/crawl', {
+    method: 'POST', headers: {'Content-Type': 'application/json'},
+    body: JSON.stringify({ appid }),
+  });
+  const d = await res.json();
+  if (!res.ok || !d.ok) {
+    $('fetchLog').innerHTML = `<span class="err">${d.error || '提交失败'}</span>`;
+    $('crawlBtn').disabled = false;
+    return;
+  }
+  $('fetchLog').textContent =
+    `已物化 ${d.created_tasks} 条任务，worker 线程处理中（同队列原子抢占）…`;
+  await lookup(appid);
+  pollWhileFetching(appid);
+}
+
+async function pollWhileFetching(appid) {
+  for (;;) {
+    const d = await (await fetch('/api/game?appid=' + appid)).json();
+    const pend = (d.tasks || []).filter(t => t.status === 'pending' || t.status === 'error').length;
+    if (d.fetching && pend > 0) {
+      $('fetchLog').textContent = `处理中… 剩 ${pend} 条任务未到终态`;
+      await new Promise(r => setTimeout(r, 2000));
+      continue;
+    }
+    $('fetchLog').textContent = '本轮抓取结束。';
+    break;
+  }
+  $('crawlBtn').disabled = false;
+  await lookup(appid);
+  loadProgress();
+}
+
+$('lookupBtn').addEventListener('click', doLookup);
+$('crawlBtn').addEventListener('click', doCrawl);
+$('appidInput').addEventListener('keydown', e => { if (e.key === 'Enter') doLookup(); });
+
+progressLoop();
+</script>
+</body>
+</html>
