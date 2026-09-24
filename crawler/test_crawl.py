@@ -24,7 +24,6 @@ import json
 from datetime import datetime, timezone
 from typing import Any
 
-from crawler.config import rawg_enabled
 from crawler.steam_api import (
     fetch_appdetails,
     fetch_community_achievements,
@@ -110,8 +109,12 @@ def _fetch_and_print_rawg(
 ) -> dict[str, Any]:
     """按名搜索 + appid 校验匹配 RAWG，并打印结果。返回 {} 表示未匹配/未配置。"""
     print("\n【3】RAWG（需 key，按官方英文名搜 + appid 校验）")
-    if not rawg_enabled():
-        print("  跳过：未配置 RAWG_API_KEY（见 .env.example）")
+    # 判据是「有 key 来源」：本 demo 不认识共享密钥池（那是 worker 的活），
+    # 所以这里只认本地 .env 的 key —— 用 key_available() 与抓取管道保持同一套语义
+    from crawler.rawg import key_available
+
+    if not key_available():
+        print("  跳过：既无本地 RAWG_API_KEY，也无共享密钥池（worker 跑时才会注入池子）")
         return {}
 
     from crawler.rawg import match_by_appid

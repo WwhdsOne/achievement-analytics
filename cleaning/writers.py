@@ -29,7 +29,6 @@ from typing import Any
 from sqlalchemy import text
 
 from crawler import http
-from crawler.config import rawg_enabled
 from crawler.steam_api import (
     fetch_appdetails,
     fetch_community_achievements,
@@ -486,12 +485,15 @@ def write_steamspy(conn: Any, appid: int) -> str:
 
 def write_rawg(conn: Any, appid: int, names: list[str]) -> tuple[str, str | None]:
     """按名搜 + appid 校验匹配 RAWG，写入评分与题材标签。返回 (状态, 失败原因)。"""
-    if not rawg_enabled():
-        return "skipped", "RAWG_API_KEY 未配置"
+    # 判据是「有 key 来源」：共享密钥池（worker 启动时注入了 provider）**或**本地
+    # .env 的单 key。历史教训（2026-09-23）：这里曾用 config.rawg_enabled()（只看
+    # 本地 .env），在多机场景下把任务烧成终态 skipped；该函数已删除。
+    from crawler.rawg import key_available, match_by_appid, split_tags
+
+    if not key_available():
+        return "skipped", "既无本地 RAWG_API_KEY，也无可用共享密钥池"
     if not names:
         return "empty", "games 表里没有可用名字（需先跑 appdetails 或 seed）"
-
-    from crawler.rawg import match_by_appid, split_tags
 
     detail = match_by_appid(appid, names)
     if not detail:

@@ -59,6 +59,20 @@ def current_key() -> str | None:
         return _key_provider()
     return RAWG_API_KEY or None
 
+
+def key_available() -> bool:
+    """是否**有 key 来源**可用——共享密钥池（已注入 provider）或本地 .env 的单个 key。
+
+    ⚠️ 抓取前必须用它判断，**不要只看本地 .env**。2026-09-23 踩到：多机协作下 key
+    存在共享库里、本地 .env 故意留空，用「只看本地」的判据（当时的
+    ``config.rawg_enabled()``，已删除）返回 False → ``write_rawg`` 直接返回
+    ``skipped``，而 skipped 是**终态、永不重试**，RAWG 任务被静默烧掉。
+
+    注意语义：本函数表示「有取 key 的途径」，不等于「配额还没用完」——
+    池子中途耗尽时 ``current_key()`` 会返回 None，那时的失败应记为可重试的 error。
+    """
+    return _key_provider is not None or bool(RAWG_API_KEY)
+
 # /games/{id}/stores 返回的 url 形如 http(s)://store.steampowered.com/app/374320/
 _STEAM_STORE_ID = 1
 _STEAM_APPID_RE = re.compile(r"store\.steampowered\.com/app/(\d+)")

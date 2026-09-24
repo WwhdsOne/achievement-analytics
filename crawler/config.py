@@ -65,6 +65,7 @@ DB_PASSWORD: str = os.getenv("POSTGRES_PASSWORD", "")
 DB_SSLMODE: str = os.getenv("POSTGRES_SSLMODE", "")
 
 
-def rawg_enabled() -> bool:
-    """RAWG 密钥是否已配置。"""
-    return bool(RAWG_API_KEY)
+# ⚠️ 这里曾有一个 rawg_enabled()（= bool(RAWG_API_KEY)），2026-09-23 已删除：
+# 它只看本地 .env，而多机协作下 RAWG key 存在共享密钥池里、本地故意留空，
+# 用它做门禁会把所有 RAWG 任务判成 skipped（终态、永不重试）。
+# 判断「能不能抓 RAWG」统一用 crawler.rawg.key_available()（认池子）。

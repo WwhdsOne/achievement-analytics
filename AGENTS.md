@@ -132,6 +132,9 @@ uv run python -m cleaning.rawg_keys disable --key-id 3              # 停用已�
 
 - 取用接口 `cleaning/rawg_keys.reserve_key`：**原子地**挑一个本月还有余额的 key 并计数 +1；
   `worker` 启动时把它注入 `crawler.rawg.set_key_provider`，每次真实请求消耗一次
+- ⚠️ **判断「能不能抓 RAWG」只认 `crawler.rawg.key_available()`**（池子已注入 provider
+  **或** 本地 `.env` 有 key）。不要只看本地 `.env`——2026-09-23 曾因此在多机场景下把
+  RAWG 任务误判为未配置、烧成终态 `skipped`（该 footgun 函数 `config.rawg_enabled()` 已删除）
 - `rawg_key_status` 视图**刻意不暴露 key 明文**（只给尾 4 位），避免查额度时把密钥
   读进终端或日志
 - ⚠️ RAWG 条款：免费档限**非商业用途**，且要求使用数据的页面加 RAWG 回链。

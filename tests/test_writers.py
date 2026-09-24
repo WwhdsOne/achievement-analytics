@@ -137,3 +137,54 @@ def test_worker_statuses_are_allowed_by_schema() -> None:
 def test_schema_has_pending_default() -> None:
     """初始状态必须是 pending，否则新物化的任务会被 worker 忽略。"""
     assert "pending" in _fetch_tasks_status_check()
+
+
+class TestRawgKeyGate:
+    """RAWG 抓取门禁必须认「共享密钥池」，不能只看本地 .env。
+
+    2026-09-23 的 bug：``write_rawg`` 用 ``config.rawg_enabled()`` 判断（只看本地
+    ``RAWG_API_KEY``），而多机协作下 key 存在共享库里、本地 .env 故意留空 ——
+    结果每一条 RAWG 任务直接返回 ``skipped``，而 skipped 是**终态、永不重试**，
+    任务被静默烧掉。下面三条锁住修复后的语义。
+    """
+
+    def test_no_key_source_at_all(self, monkeypatch: pytest.MonkeyPatch) -> None:
+        """既无本地 key 也无池子 → 仍是 skipped（这种情况确实抓不了）。"""
+        from crawler import rawg
+
+        monkeypatch.setattr(rawg, "RAWG_API_KEY", "")
+        monkeypatch.setattr(rawg, "_key_provider", None)
+        assert rawg.key_available() is False
+
+    def test_local_key_only(self, monkeypatch: pytest.MonkeyPatch) -> None:
+        from crawler import rawg
+
+        monkeypatch.setattr(rawg, "RAWG_API_KEY", "abc123")
+        monkeypatch.setattr(rawg, "_key_provider", None)
+        assert rawg.key_available() is True
+
+    def test_pool_provider_counts_as_available(self, monkeypatch: pytest.MonkeyPatch) -> None:
+        """**回归点**：池子注入后，即使本地 .env 没有 key，也必须认作可用。"""
+        from crawler import rawg
+
+        monkeypatch.setattr(rawg, "RAWG_API_KEY", "")
+        rawg.set_key_provider(lambda: "pool-key")
+        try:
+            assert rawg.key_available() is True
+            assert rawg.current_key() == "pool-key"
+        finally:
+            rawg.set_key_provider(None)
+
+    def test_write_rawg_proceeds_with_pool_only(self, monkeypatch: pytest.MonkeyPatch) -> None:
+        """池子可用时必须真的往下走（不是 skipped）——匹配未命中应记 empty。"""
+        from cleaning import writers
+        from crawler import rawg
+
+        monkeypatch.setattr(rawg, "RAWG_API_KEY", "")
+        rawg.set_key_provider(lambda: "pool-key")
+        monkeypatch.setattr(rawg, "match_by_appid", lambda appid, names: None)
+        try:
+            status, err = writers.write_rawg(None, 367520, ["Hollow Knight"])
+            assert status == "empty", f"应继续请求而非跳过：{status} / {err}"
+        finally:
+            rawg.set_key_provider(None)
