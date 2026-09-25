@@ -44,7 +44,7 @@ from cleaning.writers import (
     sequences_within_tolerance,
     write_achievement_pairs,
 )
-from cleaning.worker import UsageRecorder, flush_usage
+from cleaning.worker import UsageRecorder, flush_usage_safe
 
 logger = logging.getLogger(__name__)
 
@@ -247,14 +247,12 @@ def main() -> None:
                 )
             counts[status] += 1
             if i % 100 == 0 or i == len(appids):
-                with engine.begin() as conn:
-                    flush_usage(conn, recorder)
+                flush_usage_safe(engine, recorder)
                 logger.info("进度 %d/%d %s", i, len(appids), dict(counts))
     finally:
         set_call_recorder(None)
         if not args.dry_run:
-            with engine.begin() as conn:
-                flush_usage(conn, recorder)
+            flush_usage_safe(engine, recorder)
 
     print("=" * 52)
     for k, v in sorted(counts.items()):

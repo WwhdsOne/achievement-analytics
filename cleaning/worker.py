@@ -45,6 +45,7 @@ import logging
 import os
 import socket
 import sys
+import time
 from collections import Counter
 from datetime import datetime, timedelta, timezone
 from typing import Any
@@ -425,9 +426,59 @@ def _max_attempts(conn: Any, source: str) -> int:
 
 
 def flush_usage(conn: Any, recorder: UsageRecorder) -> None:
-    """把累计的真实请求数写进 ``api_usage``。"""
-    for source, n in recorder.drain().items():
-        conn.execute(UPSERT_USAGE, {"source": source, "requests": n})
+    """把累计的真实请求数写进 ``api_usage``。
+
+    多机死锁的两个防线（2026-09-24 实际踩到：两台 worker 各自的事务按**不同顺序**
+    upsert 同一批 ``(source, day)`` 行，行锁成环，Postgres 杀掉一方）：
+
+    1. **按 source 排序后写入**：所有机器以同一顺序拿行锁，环就不可能形成
+       （经典的多行并发 upsert 死锁解法）；
+    2. **计数只在全部写成功后扣减**：事务回滚（如死锁被杀）时计数保留，
+       下次 flush 会补上——``api_usage`` 不丢账。旧实现先 ``drain()`` 再写，
+       回滚后这一段计数就永久丢了。
+    """
+    if not recorder.counts:
+        return
+    taken = dict(recorder.counts)
+    for source in sorted(taken):
+        conn.execute(UPSERT_USAGE, {"source": source, "requests": taken[source]})
+    # 用减法而不是 clear()：万一 flush 期间（别的线程）又累计了新计数，不会丢
+    recorder.counts -= Counter(taken)
+
+
+# PostgreSQL 重试安全的 SQLSTATE：40P01 = deadlock_detected，
+# 40001 = serialization_failure。两者都是「整个事务重试即正确」的瞬态错误。
+_RETRYABLE_SQLSTATES = {"40P01", "40001"}
+
+
+def _is_retryable(exc: Exception) -> bool:
+    """判断异常是否为值得重试的瞬态锁冲突（死锁 / 序列化失败）。"""
+    orig = getattr(exc, "orig", None)
+    return getattr(orig, "sqlstate", None) in _RETRYABLE_SQLSTATES
+
+
+def flush_usage_safe(engine: Engine, recorder: UsageRecorder) -> bool:
+    """在**独立短事务**里刷记账，死锁/序列化冲突自动重试。
+
+    与旧做法（搭任务事务的便车）的区别：死锁发生时只回滚记账本身，
+    任务的结果写库不受连累；重试后计数不丢。重试耗尽也不抛——记账失败
+    只影响观测（``quota_status`` 少记几次），不值得杀死 worker。
+
+    Returns:
+        是否最终刷成功。
+    """
+    for attempt in range(3):
+        try:
+            with engine.begin() as conn:
+                flush_usage(conn, recorder)
+            return True
+        except Exception as exc:  # noqa: BLE001 — 见 docstring，记账不该杀死 worker
+            if attempt < 2 and _is_retryable(exc):
+                time.sleep(2**attempt)  # 1s / 2s 退避后重试
+                continue
+            logger.error("flush_usage 失败（attempt=%d）：%s", attempt + 1, exc)
+            return False
+    return False
 
 
 def run(
@@ -554,7 +605,9 @@ def run(
                             logger.info(
                                 "appid=%s 无成就 → 取消其余 %d 个任务", task_appid, pruned
                             )
-                    flush_usage(conn, recorder)
+                # 记账在任务事务**之外**的独立短事务里刷：死锁只回滚记账本身，
+                # 不连累任务结果（2026-09-24 多机踩到，详见 flush_usage_safe）
+                flush_usage_safe(engine, recorder)
                 stats[task_status] += 1
                 done += 1
                 logger.info(
@@ -571,8 +624,8 @@ def run(
         set_call_recorder(None)
         rawg_module.set_key_provider(None)
         if not dry_run:
-            with engine.begin() as conn:
-                flush_usage(conn, recorder)
+            # 收尾也要死锁重试：多台机器同时 Ctrl-C 时这里是并发热点
+            flush_usage_safe(engine, recorder)
         else:
             # dry-run 只是为了看「还要抓什么」，不该把租约留在库里 5 分钟、
             # 让真正的 worker 干等——所以立刻释放本次抢到的租约

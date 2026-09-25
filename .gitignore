@@ -27,3 +27,8 @@ __pycache__/
 .DS_Store
 .vscode
 .idea
+node_modules/
+.inkos/
+inkos.json
+.nvmrc
+.node-version
