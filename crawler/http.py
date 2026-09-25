@@ -114,6 +114,64 @@ class HttpStatusError(RuntimeError):
         self.status = status
 
 
+class SourceChallenge(HttpStatusError):
+    """被站点的反爬挑战挡住（典型：Cloudflare 的 ``cf-mitigated: challenge``）。
+
+    为什么要单列一类（2026-09-24 加）：这类失败**不是任务的错，也不是网络故障**，
+    而是「这个源暂时不欢迎自动请求」。它有两个和普通失败不同的性质：
+
+    1. **快速重试毫无意义**：挑战窗口通常持续几分钟，2s/4s 的退避只会白烧请求；
+    2. **不该消耗任务的重试预算**：``worker`` 每个任务周期 attempts+1，攒够
+       ``sources.max_attempts`` 就转终态 ``exhausted``——2026-09-24 实测
+       SteamSpy 的间歇 403 就这样烧掉了 23 条任务（数据其实过几分钟就能抓到）。
+
+    所以调用方（``cleaning.worker``）应当把它当作「**源级临时不可用**」：
+    任务放回 ``pending``、本轮的源挂起、稍后自然重试。
+
+    继承 :class:`HttpStatusError`，这样没专门处理的调用方（如旧脚本）仍能
+    按「带状态码的 HTTP 失败」对待，不会漏接。
+    """
+
+
+# Cloudflare 挑战页的响应体特征（大小写不敏感）。光看状态码不够——403 也可能
+# 是业务语义（如全局成就率接口对「无成就」返回 403），所以必须同时看响应头/体。
+_CHALLENGE_BODY_MARKERS = (
+    "just a moment",
+    "cf-chl",
+    "challenge-platform",
+    "cf_chl_opt",
+    "__cf_chl",
+    "attention required",
+    "enable javascript and cookies",
+)
+
+
+def is_cloudflare_challenge(
+    status: int | None, headers: Any, body: str
+) -> bool:
+    """判断响应是否为 Cloudflare 之类的反爬挑战页。
+
+    Args:
+        status: HTTP 状态码。
+        headers: 响应头（大小写不敏感地按键取值）。
+        body: 响应体（只看开头若干 KB 即可）。
+
+    Returns:
+        是否为挑战页。判据：状态码是 403/503 **且**
+        （有 ``cf-mitigated`` 响应头 **或** 响应体含挑战页特征串）。
+    """
+    if status not in (403, 503):
+        return False
+    try:
+        mitigated = (headers or {}).get("cf-mitigated", "")
+    except AttributeError:  # 非常规 headers 容器
+        mitigated = ""
+    if str(mitigated).lower() == "challenge":
+        return True
+    low = (body or "")[:4096].lower()
+    return any(marker in low for marker in _CHALLENGE_BODY_MARKERS)
+
+
 def _backoff(attempt: int) -> None:
     """重试前的指数退避：2s、4s、8s…（封顶 30s）。
 
@@ -156,14 +214,29 @@ def request_json(
             # /stats/{appid}/achievements 302 到 /stats/{别名}/achievements
             # （实测 appid=300 → DOD:S），默认不跟随会被 raise_for_status 当错误
             # 白白重试 3 次（2026-09-22 踩到）。
-            resp = httpx.get(url, params=params, timeout=30.0, follow_redirects=True)
+            resp = httpx.get(
+                url, params=params, headers=REQUEST_HEADERS, timeout=30.0,
+                follow_redirects=True,
+            )
             last_status = resp.status_code
+            # 反爬挑战：立即抛出，不做快速重试（挑战窗口是分钟级，2s/4s 退避纯属浪费），
+            # 让 worker 把它当作「源临时不可用」处理（2026-09-24）
+            if is_cloudflare_challenge(last_status, resp.headers, resp.text):
+                logger.warning(
+                    "被反爬挑战拦截（status=%s，cf-mitigated=%s）：%s",
+                    last_status, resp.headers.get("cf-mitigated"), url,
+                )
+                raise SourceChallenge(
+                    f"被反爬挑战拦截：{url}（status={last_status}）", last_status
+                )
             resp.raise_for_status()
             key = source or _host_of(url)
             _last_fetched_at[key] = datetime.now(timezone.utc)
             if _call_recorder is not None:
                 _call_recorder(source or _host_of(url))
             return resp.json()
+        except SourceChallenge:
+            raise  # 挑战不算「重试耗尽」，原样上抛给 worker 做源级处理
         except (httpx.HTTPError, json.JSONDecodeError) as exc:
             last_exc = exc
             logger.warning(
@@ -197,12 +270,21 @@ def request_text(
                 url, headers=REQUEST_HEADERS, timeout=30.0, follow_redirects=True
             )
             last_status = resp.status_code
+            if is_cloudflare_challenge(last_status, resp.headers, resp.text):
+                logger.warning(
+                    "被反爬挑战拦截（status=%s）：%s", last_status, url
+                )
+                raise SourceChallenge(
+                    f"被反爬挑战拦截：{url}（status={last_status}）", last_status
+                )
             resp.raise_for_status()
             key = source or _host_of(url)
             _last_fetched_at[key] = datetime.now(timezone.utc)
             if _call_recorder is not None:
                 _call_recorder(source or _host_of(url))
             return resp.text
+        except SourceChallenge:
+            raise  # 见 request_json 的同样说明
         except httpx.HTTPError as exc:
             last_exc = exc
             logger.warning("请求失败（%d/%d）%s：%s", attempt, MAX_RETRIES, url, exc)

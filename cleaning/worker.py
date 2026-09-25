@@ -53,7 +53,7 @@ from typing import Any
 from sqlalchemy import Engine, text
 
 from crawler import rawg as rawg_module
-from crawler.http import set_call_recorder
+from crawler.http import SourceChallenge, set_call_recorder
 from crawler.registry import SOURCES
 from cleaning.db import ensure_ready, get_engine
 from cleaning.rawg_keys import pool_size, reserve_key
@@ -165,6 +165,16 @@ RELEASE_LEASE = text(
     UPDATE fetch_tasks
        SET claimed_by = NULL, lease_until = NULL, updated_at = now()
      WHERE claimed_by = :worker
+    """
+)
+
+# 释放**单条**任务：反爬挑战时把任务原样放回队列（不改 attempts、不写终态）。
+# 与 RELEASE_LEASE（按 worker 释放全部）不同——这里只还一条，其余批次照常处理。
+RELEASE_TASK = text(
+    """
+    UPDATE fetch_tasks
+       SET claimed_by = NULL, lease_until = NULL, updated_at = now()
+     WHERE appid = :appid AND source = :source AND claimed_by = :worker
     """
 )
 
@@ -533,6 +543,9 @@ def run(
     logger.info("worker=%s 启动（lease=%ss）", WORKER_ID, LEASE_SEC)
 
     done = 0
+    # 本轮被反爬挑战挡住的源：不再抢它的任务、已抢到的立刻放回队列。
+    # 挑战窗口是分钟级，挂起到本轮结束即可（下一轮 worker 会自然重试）。
+    challenged: set[str] = set()
     try:
         while True:
             if limit is not None and done >= limit:
@@ -542,12 +555,22 @@ def run(
             )
             # 抢占在一个独立短事务里提交：租约必须先落库，别的机器才会让开
             with engine.begin() as conn:
-                blocked = quota_exhausted(conn) | extra_exclude
-                rows = claim(conn, source, batch_size, exclude=blocked, appid=appid)
+                # 三类「本轮不碰」的源要分开记，日志才说得清是谁被跳过了：
+                # 配额用尽 / 命令行 --exclude / 被反爬挑战
+                quota_blocked = quota_exhausted(conn) | extra_exclude
+                rows = claim(
+                    conn, source, batch_size,
+                    exclude=quota_blocked | challenged, appid=appid,
+                )
             if not rows:
-                if blocked:
+                if quota_blocked:
                     logger.warning(
-                        "以下源配额已用尽、已跳过：%s", ", ".join(sorted(blocked))
+                        "以下源配额已用尽、已跳过：%s", ", ".join(sorted(quota_blocked))
+                    )
+                if challenged:
+                    logger.warning(
+                        "以下源本轮被反爬挑战、已挂起（任务留在队列里，稍后重跑即可）：%s",
+                        ", ".join(sorted(challenged)),
                     )
                 logger.info("抢不到任务了，结束")
                 break
@@ -569,42 +592,70 @@ def run(
                 if task_appid in pruned_in_batch:
                     logger.debug("跳过已被剔除的游戏：appid=%s source=%s", task_appid, task_source)
                     continue
-                # 每个任务一个短事务：网络请求可能耗时数秒，不该握着事务等
-                with engine.begin() as conn:
-                    # 护栏：run_source 本应自己吞掉异常并返回 ('error', msg)，
-                    # 但万一它抛出来了，绝不能让整个 worker 崩掉——那会让任务永远
-                    # 停在 pending、进度无法解释。这里兜成 error 走正常退避。
-                    try:
-                        with conn.begin_nested():
-                            task_status, err = run_source(conn, task_appid, task_source)
-                    except Exception as exc:  # noqa: BLE001
-                        task_status, err = "error", f"未捕获异常：{exc}"[:500]
-                        logger.exception(
-                            "run_source 抛出未捕获异常：appid=%s source=%s",
-                            task_appid,
-                            task_source,
-                        )
-                    attempts_after = (
+                # 该源本轮已被确认遭到反爬挑战：把抢到的任务原样放回队列，
+                # 不占着租约（否则别的机器要等 5 分钟才能接手）
+                if task_source in challenged:
+                    with engine.begin() as conn:
                         conn.execute(
-                            text(
-                                "SELECT attempts + 1 FROM fetch_tasks"
-                                " WHERE appid = :a AND source = :s"
-                            ),
-                            {"a": task_appid, "s": task_source},
-                        ).scalar()
-                        or 1
-                    )
-                    complete(conn, task_appid, task_source, task_status, err, int(attempts_after))
-                    # 一旦确认这个游戏没有成就，立刻取消它剩下的任务——
-                    # 它进不了 Q1/Q2（两者都依赖成就完成率），继续抓纯属浪费配额
-                    if task_source == "global_ach" and task_status == "empty":
-                        pruned = prune_no_achievement_siblings(conn, task_appid)
-                        if pruned:
-                            pruned_in_batch.add(task_appid)
-                            stats["pruned"] += pruned
-                            logger.info(
-                                "appid=%s 无成就 → 取消其余 %d 个任务", task_appid, pruned
+                            RELEASE_TASK,
+                            {"appid": task_appid, "source": task_source, "worker": WORKER_ID},
+                        )
+                    continue
+                # 每个任务一个短事务：网络请求可能耗时数秒，不该握着事务等
+                try:
+                    with engine.begin() as conn:
+                        # 护栏：run_source 本应自己吞掉异常并返回 ('error', msg)，
+                        # 但万一它抛出来了，绝不能让整个 worker 崩掉——那会让任务永远
+                        # 停在 pending、进度无法解释。这里兜成 error 走正常退避。
+                        try:
+                            with conn.begin_nested():
+                                task_status, err = run_source(conn, task_appid, task_source)
+                        except SourceChallenge:
+                            raise  # 反爬挑战必须交给外层做源级处理，不能记成 error
+                        except Exception as exc:  # noqa: BLE001
+                            task_status, err = "error", f"未捕获异常：{exc}"[:500]
+                            logger.exception(
+                                "run_source 抛出未捕获异常：appid=%s source=%s",
+                                task_appid,
+                                task_source,
                             )
+                        attempts_after = (
+                            conn.execute(
+                                text(
+                                    "SELECT attempts + 1 FROM fetch_tasks"
+                                    " WHERE appid = :a AND source = :s"
+                                ),
+                                {"a": task_appid, "s": task_source},
+                            ).scalar()
+                            or 1
+                        )
+                        complete(conn, task_appid, task_source, task_status, err, int(attempts_after))
+                        # 一旦确认这个游戏没有成就，立刻取消它剩下的任务——
+                        # 它进不了 Q1/Q2（两者都依赖成就完成率），继续抓纯属浪费配额
+                        if task_source == "global_ach" and task_status == "empty":
+                            pruned = prune_no_achievement_siblings(conn, task_appid)
+                            if pruned:
+                                pruned_in_batch.add(task_appid)
+                                stats["pruned"] += pruned
+                                logger.info(
+                                    "appid=%s 无成就 → 取消其余 %d 个任务", task_appid, pruned
+                                )
+                except SourceChallenge as exc:
+                    # 源级临时不可用：任务**放回 pending**（不改 attempts、不写终态），
+                    # 本轮不再碰这个源。挑战窗口通常几分钟，下一轮自然恢复。
+                    # 2026-09-24：SteamSpy 的间歇 403 曾把 23 条任务烧成 exhausted。
+                    challenged.add(task_source)
+                    with engine.begin() as conn:
+                        conn.execute(
+                            RELEASE_TASK,
+                            {"appid": task_appid, "source": task_source, "worker": WORKER_ID},
+                        )
+                    stats["challenged"] += 1
+                    logger.warning(
+                        "源 %s 遭到反爬挑战，本轮挂起（任务已放回队列、不计重试次数）：%s",
+                        task_source, exc,
+                    )
+                    continue
                 # 记账在任务事务**之外**的独立短事务里刷：死锁只回滚记账本身，
                 # 不连累任务结果（2026-09-24 多机踩到，详见 flush_usage_safe）
                 flush_usage_safe(engine, recorder)

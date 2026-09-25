@@ -23,7 +23,7 @@ import logging
 import re
 from typing import Any
 
-from crawler.http import HttpStatusError, request_json, request_text
+from crawler.http import HttpStatusError, SourceChallenge, request_json, request_text
 
 logger = logging.getLogger(__name__)
 
@@ -118,6 +118,11 @@ def fetch_global_achievement_percentages(appid: int) -> list[dict[str, Any]]:
             {"gameid": appid, "format": "json"},
             source="global_ach",
         )
+    except SourceChallenge:
+        # 反爬挑战也是 403，但**绝不能**当成「无成就」——那样会把这款游戏误判成
+        # 没有成就数据并连带剔除它的其余任务（worker 的 prune 逻辑）。
+        # 原样上抛，由 worker 按「源临时不可用」处理（2026-09-24 加）。
+        raise
     except HttpStatusError as exc:
         if exc.status == 403:
             logger.info("appid=%s 无成就数据（HTTP 403），按空处理", appid)
