@@ -1,0 +1,612 @@
+{
+  "meta": {
+    "extracted_at": "2026-10-13T07:15:16.886902+00:00",
+    "rows": 648006,
+    "games": 50925,
+    "sha256": "049bff4b1de0d5097ca1829cd80e7cf84d9c9be585bf1854fec1f681a4d73bbc",
+    "steamspy_fetch_window": {
+      "first": "2026-09-18 00:23:45.314827+00",
+      "last": "2026-10-01 10:28:33.325162+00"
+    },
+    "registered_version": null,
+    "note": "本机无快照文件，故直接只读查库；未写入 dataset_versions（库对本 agent 只读）",
+    "cache": "miss",
+    "plot_window": [
+      2014,
+      2024
+    ],
+    "growth_window": [
+      2014,
+      2020
+    ],
+    "min_base_games": 30
+  },
+  "coverage": {
+    "2008": {
+      "games": 19,
+      "with_tags": 19,
+      "coverage_pct": 100.0,
+      "avg_tags_per_game": 12.68
+    },
+    "2009": {
+      "games": 46,
+      "with_tags": 46,
+      "coverage_pct": 100.0,
+      "avg_tags_per_game": 15.24
+    },
+    "2010": {
+      "games": 94,
+      "with_tags": 93,
+      "coverage_pct": 98.9,
+      "avg_tags_per_game": 13.24
+    },
+    "2011": {
+      "games": 123,
+      "with_tags": 122,
+      "coverage_pct": 99.2,
+      "avg_tags_per_game": 14.22
+    },
+    "2012": {
+      "games": 178,
+      "with_tags": 177,
+      "coverage_pct": 99.4,
+      "avg_tags_per_game": 14.61
+    },
+    "2013": {
+      "games": 292,
+      "with_tags": 286,
+      "coverage_pct": 97.9,
+      "avg_tags_per_game": 15.88
+    },
+    "2014": {
+      "games": 810,
+      "with_tags": 802,
+      "coverage_pct": 99.0,
+      "avg_tags_per_game": 13.41
+    },
+    "2015": {
+      "games": 1470,
+      "with_tags": 1461,
+      "coverage_pct": 99.4,
+      "avg_tags_per_game": 11.98
+    },
+    "2016": {
+      "games": 2259,
+      "with_tags": 2244,
+      "coverage_pct": 99.3,
+      "avg_tags_per_game": 11.28
+    },
+    "2017": {
+      "games": 3030,
+      "with_tags": 3006,
+      "coverage_pct": 99.2,
+      "avg_tags_per_game": 10.92
+    },
+    "2018": {
+      "games": 3567,
+      "with_tags": 3517,
+      "coverage_pct": 98.6,
+      "avg_tags_per_game": 11.13
+    },
+    "2019": {
+      "games": 3175,
+      "with_tags": 3112,
+      "coverage_pct": 98.0,
+      "avg_tags_per_game": 12.41
+    },
+    "2020": {
+      "games": 3767,
+      "with_tags": 3702,
+      "coverage_pct": 98.3,
+      "avg_tags_per_game": 15.51
+    },
+    "2021": {
+      "games": 4278,
+      "with_tags": 4007,
+      "coverage_pct": 93.7,
+      "avg_tags_per_game": 17.8
+    },
+    "2022": {
+      "games": 4556,
+      "with_tags": 4117,
+      "coverage_pct": 90.4,
+      "avg_tags_per_game": 17.88
+    },
+    "2023": {
+      "games": 5318,
+      "with_tags": 4653,
+      "coverage_pct": 87.5,
+      "avg_tags_per_game": 17.98
+    },
+    "2024": {
+      "games": 7831,
+      "with_tags": 6444,
+      "coverage_pct": 82.3,
+      "avg_tags_per_game": 17.79
+    },
+    "2025": {
+      "games": 10112,
+      "with_tags": 3476,
+      "coverage_pct": 34.4,
+      "avg_tags_per_game": 17.99
+    }
+  },
+  "line_tags": [
+    "Singleplayer",
+    "Indie",
+    "Casual",
+    "Action",
+    "2D",
+    "Adventure",
+    "3D",
+    "Atmospheric",
+    "Colorful",
+    "Puzzle",
+    "Simulation",
+    "Strategy"
+  ],
+  "heat_tags": [
+    "Singleplayer",
+    "Indie",
+    "Action",
+    "Casual",
+    "Adventure",
+    "2D",
+    "Puzzle",
+    "Atmospheric",
+    "Strategy",
+    "Colorful",
+    "3D",
+    "Simulation",
+    "Pixel Graphics",
+    "Story Rich",
+    "RPG",
+    "Cute",
+    "Exploration",
+    "Arcade",
+    "Fantasy",
+    "Funny",
+    "First-Person",
+    "Retro",
+    "Platformer",
+    "Family Friendly",
+    "Relaxing",
+    "Multiplayer"
+  ],
+  "growth_main": [
+    {
+      "tag": "Colorful",
+      "base_pct": 6.98,
+      "end_pct": 21.99,
+      "delta_pp": 15.01,
+      "base_games": 56,
+      "end_games": 814
+    },
+    {
+      "tag": "Casual",
+      "base_pct": 35.16,
+      "end_pct": 47.89,
+      "delta_pp": 12.73,
+      "base_games": 282,
+      "end_games": 1773
+    },
+    {
+      "tag": "Cute",
+      "base_pct": 8.35,
+      "end_pct": 18.83,
+      "delta_pp": 10.47,
+      "base_games": 67,
+      "end_games": 697
+    },
+    {
+      "tag": "Pixel Graphics",
+      "base_pct": 13.59,
+      "end_pct": 19.29,
+      "delta_pp": 5.7,
+      "base_games": 109,
+      "end_games": 714
+    },
+    {
+      "tag": "Exploration",
+      "base_pct": 9.6,
+      "end_pct": 14.99,
+      "delta_pp": 5.39,
+      "base_games": 77,
+      "end_games": 555
+    },
+    {
+      "tag": "Cartoony",
+      "base_pct": 3.99,
+      "end_pct": 9.27,
+      "delta_pp": 5.28,
+      "base_games": 32,
+      "end_games": 343
+    },
+    {
+      "tag": "Arcade",
+      "base_pct": 13.34,
+      "end_pct": 18.21,
+      "delta_pp": 4.86,
+      "base_games": 107,
+      "end_games": 674
+    },
+    {
+      "tag": "Family Friendly",
+      "base_pct": 8.85,
+      "end_pct": 13.7,
+      "delta_pp": 4.84,
+      "base_games": 71,
+      "end_games": 507
+    },
+    {
+      "tag": "Singleplayer",
+      "base_pct": 61.1,
+      "end_pct": 65.72,
+      "delta_pp": 4.62,
+      "base_games": 490,
+      "end_games": 2433
+    },
+    {
+      "tag": "Simulation",
+      "base_pct": 16.21,
+      "end_pct": 20.21,
+      "delta_pp": 4.0,
+      "base_games": 130,
+      "end_games": 748
+    },
+    {
+      "tag": "Choices Matter",
+      "base_pct": 4.11,
+      "end_pct": 8.1,
+      "delta_pp": 3.99,
+      "base_games": 33,
+      "end_games": 300
+    },
+    {
+      "tag": "First-Person",
+      "base_pct": 10.6,
+      "end_pct": 14.45,
+      "delta_pp": 3.85,
+      "base_games": 85,
+      "end_games": 535
+    },
+    {
+      "tag": "Top-Down",
+      "base_pct": 5.74,
+      "end_pct": 9.16,
+      "delta_pp": 3.42,
+      "base_games": 46,
+      "end_games": 339
+    },
+    {
+      "tag": "Visual Novel",
+      "base_pct": 5.36,
+      "end_pct": 8.64,
+      "delta_pp": 3.28,
+      "base_games": 43,
+      "end_games": 320
+    },
+    {
+      "tag": "Old School",
+      "base_pct": 3.99,
+      "end_pct": 6.92,
+      "delta_pp": 2.93,
+      "base_games": 32,
+      "end_games": 256
+    }
+  ],
+  "growth_wide_window": [
+    {
+      "tag": "Colorful",
+      "base_pct": 6.98,
+      "end_pct": 25.9,
+      "delta_pp": 18.92,
+      "base_games": 56,
+      "end_games": 1669
+    },
+    {
+      "tag": "Singleplayer",
+      "base_pct": 61.1,
+      "end_pct": 78.8,
+      "delta_pp": 17.7,
+      "base_games": 490,
+      "end_games": 5078
+    },
+    {
+      "tag": "Exploration",
+      "base_pct": 9.6,
+      "end_pct": 25.22,
+      "delta_pp": 15.62,
+      "base_games": 77,
+      "end_games": 1625
+    },
+    {
+      "tag": "Cute",
+      "base_pct": 8.35,
+      "end_pct": 22.47,
+      "delta_pp": 14.12,
+      "base_games": 67,
+      "end_games": 1448
+    },
+    {
+      "tag": "Controller",
+      "base_pct": 6.23,
+      "end_pct": 17.33,
+      "delta_pp": 11.1,
+      "base_games": 50,
+      "end_games": 1117
+    },
+    {
+      "tag": "First-Person",
+      "base_pct": 10.6,
+      "end_pct": 20.5,
+      "delta_pp": 9.9,
+      "base_games": 85,
+      "end_games": 1321
+    },
+    {
+      "tag": "Casual",
+      "base_pct": 35.16,
+      "end_pct": 44.71,
+      "delta_pp": 9.55,
+      "base_games": 282,
+      "end_games": 2881
+    },
+    {
+      "tag": "Pixel Graphics",
+      "base_pct": 13.59,
+      "end_pct": 22.98,
+      "delta_pp": 9.39,
+      "base_games": 109,
+      "end_games": 1481
+    },
+    {
+      "tag": "2D",
+      "base_pct": 33.17,
+      "end_pct": 42.07,
+      "delta_pp": 8.9,
+      "base_games": 266,
+      "end_games": 2711
+    },
+    {
+      "tag": "Psychological Horror",
+      "base_pct": 4.36,
+      "end_pct": 12.94,
+      "delta_pp": 8.58,
+      "base_games": 35,
+      "end_games": 834
+    },
+    {
+      "tag": "Top-Down",
+      "base_pct": 5.74,
+      "end_pct": 14.14,
+      "delta_pp": 8.4,
+      "base_games": 46,
+      "end_games": 911
+    },
+    {
+      "tag": "Cartoony",
+      "base_pct": 3.99,
+      "end_pct": 11.95,
+      "delta_pp": 7.96,
+      "base_games": 32,
+      "end_games": 770
+    },
+    {
+      "tag": "Rogue-lite",
+      "base_pct": 4.36,
+      "end_pct": 11.75,
+      "delta_pp": 7.38,
+      "base_games": 35,
+      "end_games": 757
+    },
+    {
+      "tag": "Dark",
+      "base_pct": 4.24,
+      "end_pct": 11.34,
+      "delta_pp": 7.1,
+      "base_games": 34,
+      "end_games": 731
+    },
+    {
+      "tag": "Choices Matter",
+      "base_pct": 4.11,
+      "end_pct": 10.74,
+      "delta_pp": 6.62,
+      "base_games": 33,
+      "end_games": 692
+    }
+  ],
+  "robustness": {
+    "tags": [
+      "3D",
+      "Indie",
+      "Great Soundtrack",
+      "Colorful",
+      "Singleplayer",
+      "Action-Adventure"
+    ],
+    "free_share_by_year_pct": {
+      "2008": {
+        "all_games": 5.3,
+        "tagged_games": 5.3
+      },
+      "2009": {
+        "all_games": 4.3,
+        "tagged_games": 4.3
+      },
+      "2010": {
+        "all_games": 4.3,
+        "tagged_games": 4.3
+      },
+      "2011": {
+        "all_games": 6.5,
+        "tagged_games": 6.6
+      },
+      "2012": {
+        "all_games": 2.8,
+        "tagged_games": 2.3
+      },
+      "2013": {
+        "all_games": 4.5,
+        "tagged_games": 4.5
+      },
+      "2014": {
+        "all_games": 5.8,
+        "tagged_games": 5.7
+      },
+      "2015": {
+        "all_games": 7.3,
+        "tagged_games": 7.3
+      },
+      "2016": {
+        "all_games": 7.2,
+        "tagged_games": 7.3
+      },
+      "2017": {
+        "all_games": 9.8,
+        "tagged_games": 9.8
+      },
+      "2018": {
+        "all_games": 8.4,
+        "tagged_games": 8.5
+      },
+      "2019": {
+        "all_games": 10.3,
+        "tagged_games": 10.5
+      },
+      "2020": {
+        "all_games": 11.0,
+        "tagged_games": 11.1
+      },
+      "2021": {
+        "all_games": 10.4,
+        "tagged_games": 6.2
+      },
+      "2022": {
+        "all_games": 11.7,
+        "tagged_games": 5.2
+      },
+      "2023": {
+        "all_games": 11.2,
+        "tagged_games": 4.5
+      },
+      "2024": {
+        "all_games": 13.7,
+        "tagged_games": 4.1
+      },
+      "2025": {
+        "all_games": 10.1,
+        "tagged_games": 2.3
+      }
+    },
+    "note": "缺失标签的游戏以免费游戏为主；上表是免费游戏在「全部游戏」与「有标签游戏」中的占比落差，落差越大说明缺失越非随机。"
+  },
+  "category_coverage": {
+    "2014": {
+      "其他": 44.3,
+      "模式与功能": 70.9,
+      "氛围与叙事": 62.6,
+      "玩法类型": 100.0,
+      "美术与呈现": 70.9,
+      "非游戏条目": 1.0,
+      "题材设定": 65.8
+    },
+    "2015": {
+      "其他": 40.8,
+      "模式与功能": 60.8,
+      "氛围与叙事": 57.9,
+      "玩法类型": 100.0,
+      "美术与呈现": 64.8,
+      "非游戏条目": 1.2,
+      "题材设定": 61.8
+    },
+    "2016": {
+      "其他": 37.3,
+      "模式与功能": 60.7,
+      "氛围与叙事": 54.3,
+      "玩法类型": 100.0,
+      "美术与呈现": 58.4,
+      "非游戏条目": 0.9,
+      "题材设定": 54.7
+    },
+    "2017": {
+      "其他": 36.7,
+      "模式与功能": 59.4,
+      "氛围与叙事": 53.7,
+      "玩法类型": 99.9,
+      "美术与呈现": 54.6,
+      "非游戏条目": 1.0,
+      "题材设定": 50.0
+    },
+    "2018": {
+      "其他": 38.6,
+      "模式与功能": 59.8,
+      "氛围与叙事": 56.0,
+      "玩法类型": 99.9,
+      "美术与呈现": 56.2,
+      "非游戏条目": 1.2,
+      "题材设定": 49.6
+    },
+    "2019": {
+      "其他": 44.1,
+      "模式与功能": 64.0,
+      "氛围与叙事": 61.3,
+      "玩法类型": 99.9,
+      "美术与呈现": 62.4,
+      "非游戏条目": 1.4,
+      "题材设定": 55.9
+    },
+    "2020": {
+      "其他": 59.1,
+      "模式与功能": 80.0,
+      "氛围与叙事": 76.4,
+      "玩法类型": 100.0,
+      "美术与呈现": 83.6,
+      "非游戏条目": 1.8,
+      "题材设定": 67.9
+    },
+    "2021": {
+      "其他": 72.7,
+      "模式与功能": 87.5,
+      "氛围与叙事": 83.7,
+      "玩法类型": 100.0,
+      "美术与呈现": 95.6,
+      "非游戏条目": 2.6,
+      "题材设定": 76.3
+    },
+    "2022": {
+      "其他": 74.5,
+      "模式与功能": 89.0,
+      "氛围与叙事": 83.8,
+      "玩法类型": 100.0,
+      "美术与呈现": 96.9,
+      "非游戏条目": 2.7,
+      "题材设定": 76.5
+    },
+    "2023": {
+      "其他": 75.0,
+      "模式与功能": 89.3,
+      "氛围与叙事": 81.3,
+      "玩法类型": 100.0,
+      "美术与呈现": 96.5,
+      "非游戏条目": 2.9,
+      "题材设定": 77.8
+    },
+    "2024": {
+      "其他": 72.7,
+      "模式与功能": 89.7,
+      "氛围与叙事": 81.2,
+      "玩法类型": 100.0,
+      "美术与呈现": 97.1,
+      "非游戏条目": 3.0,
+      "题材设定": 79.6
+    }
+  },
+  "caveats": [
+    "标签是抓取当时的 Steam 用户标签，不是当年标签；库中无当年的玩家数、销量或评论历史记录，不能用它判断某游戏在当年是否流行，也不能用现今拥有量反推历史热度。",
+    "2026 年未纳入分析帧（口径 release_date < 2026-01-01）且尚未结束，其年度数量不可与完整年份直接比较。",
+    "各年标签覆盖率不同，2021 年起逐年下降、2025 年不足 35%，覆盖率低的年份占比不可与覆盖率高的年份直接比较。",
+    "多标签游戏在每个标签上重复计入，各标签占比之和大于 100%，不构成互斥分割。"
+  ]
+}
