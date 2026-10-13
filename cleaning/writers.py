@@ -29,7 +29,7 @@ from typing import Any
 from sqlalchemy import text
 
 from crawler import http
-from crawler.http import SourceChallenge
+from crawler.http import SourceUnavailable
 from crawler.steam_api import (
     fetch_appdetails,
     fetch_community_achievements,
@@ -562,7 +562,7 @@ def run_source(conn: Any, appid: int, source: str) -> tuple[str, str | None]:
     try:
         with conn.begin_nested():
             return _run_source_inner(conn, appid, source)
-    except SourceChallenge:
+    except SourceUnavailable:
         # 反爬挑战**原样上抛**：它不是任务的错，也不该在这里被记成 error
         # 并消耗重试预算。worker 会把它当「源级临时不可用」处理——任务放回
         # pending、本轮挂起该源（2026-09-24：SteamSpy 间歇 403 曾烧掉 23 条任务）。

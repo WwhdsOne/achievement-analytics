@@ -53,7 +53,7 @@ from typing import Any
 from sqlalchemy import Engine, text
 
 from crawler import rawg as rawg_module
-from crawler.http import SourceChallenge, set_call_recorder
+from crawler.http import SourceUnavailable, set_call_recorder
 from crawler.registry import SOURCES
 from cleaning.db import ensure_ready, get_engine
 from cleaning.rawg_keys import pool_size, reserve_key
@@ -543,9 +543,10 @@ def run(
     logger.info("worker=%s 启动（lease=%ss）", WORKER_ID, LEASE_SEC)
 
     done = 0
-    # 本轮被反爬挑战挡住的源：不再抢它的任务、已抢到的立刻放回队列。
-    # 挑战窗口是分钟级，挂起到本轮结束即可（下一轮 worker 会自然重试）。
-    challenged: set[str] = set()
+    # 本轮「源级临时不可用」的源（反爬挑战 / 限流 429）：不再抢它的任务、
+    # 已抢到的立刻放回队列。这类窗口是分钟级，挂起到本轮结束即可
+    # （下一轮 worker 会自然重试，任务不烧、attempts 不涨）。
+    unavailable: set[str] = set()
     try:
         while True:
             if limit is not None and done >= limit:
@@ -560,17 +561,18 @@ def run(
                 quota_blocked = quota_exhausted(conn) | extra_exclude
                 rows = claim(
                     conn, source, batch_size,
-                    exclude=quota_blocked | challenged, appid=appid,
+                    exclude=quota_blocked | unavailable, appid=appid,
                 )
             if not rows:
                 if quota_blocked:
                     logger.warning(
                         "以下源配额已用尽、已跳过：%s", ", ".join(sorted(quota_blocked))
                     )
-                if challenged:
+                if unavailable:
                     logger.warning(
-                        "以下源本轮被反爬挑战、已挂起（任务留在队列里，稍后重跑即可）：%s",
-                        ", ".join(sorted(challenged)),
+                        "以下源本轮临时不可用（反爬挑战 / 限流 429）、已挂起"
+                        "（任务留在队列里，稍后重跑即可）：%s",
+                        ", ".join(sorted(unavailable)),
                     )
                 logger.info("抢不到任务了，结束")
                 break
@@ -592,9 +594,9 @@ def run(
                 if task_appid in pruned_in_batch:
                     logger.debug("跳过已被剔除的游戏：appid=%s source=%s", task_appid, task_source)
                     continue
-                # 该源本轮已被确认遭到反爬挑战：把抢到的任务原样放回队列，
+                # 该源本轮已被确认临时不可用：把抢到的任务原样放回队列，
                 # 不占着租约（否则别的机器要等 5 分钟才能接手）
-                if task_source in challenged:
+                if task_source in unavailable:
                     with engine.begin() as conn:
                         conn.execute(
                             RELEASE_TASK,
@@ -610,7 +612,7 @@ def run(
                         try:
                             with conn.begin_nested():
                                 task_status, err = run_source(conn, task_appid, task_source)
-                        except SourceChallenge:
+                        except SourceUnavailable:
                             raise  # 反爬挑战必须交给外层做源级处理，不能记成 error
                         except Exception as exc:  # noqa: BLE001
                             task_status, err = "error", f"未捕获异常：{exc}"[:500]
@@ -640,19 +642,21 @@ def run(
                                 logger.info(
                                     "appid=%s 无成就 → 取消其余 %d 个任务", task_appid, pruned
                                 )
-                except SourceChallenge as exc:
-                    # 源级临时不可用：任务**放回 pending**（不改 attempts、不写终态），
-                    # 本轮不再碰这个源。挑战窗口通常几分钟，下一轮自然恢复。
-                    # 2026-09-24：SteamSpy 的间歇 403 曾把 23 条任务烧成 exhausted。
-                    challenged.add(task_source)
+                except SourceUnavailable as exc:
+                    # 源级临时不可用（反爬挑战 / 限流 429）：任务**放回 pending**
+                    # （不改 attempts、不写终态），本轮不再碰这个源；窗口通常几分钟，
+                    # 下一轮自然恢复。教训：2026-09-24 的 SteamSpy 403 曾烧掉 23 条
+                    # exhausted；2026-09-27 的 429 更是被吞成终态 empty 丢了 7,402 条。
+                    unavailable.add(task_source)
                     with engine.begin() as conn:
                         conn.execute(
                             RELEASE_TASK,
                             {"appid": task_appid, "source": task_source, "worker": WORKER_ID},
                         )
-                    stats["challenged"] += 1
+                    stats["unavailable"] += 1
                     logger.warning(
-                        "源 %s 遭到反爬挑战，本轮挂起（任务已放回队列、不计重试次数）：%s",
+                        "源 %s 临时不可用（挑战/限流），本轮挂起"
+                        "（任务已放回队列、不计重试次数）：%s",
                         task_source, exc,
                     )
                     continue

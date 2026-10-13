@@ -154,3 +154,68 @@ class TestRunSourcePropagates:
         with pytest.raises(SourceChallenge):
             writers.run_source(_Conn(), 1108240, "steamspy")
         assert logged == [], "挑战不该写 ingest_log（不产生 error 记录）"
+
+
+class TestThrottleHandling:
+    """HTTP 429（限流）：先等再试，仍 429 才升级成源级不可用。
+
+    2026-09-27 事故：429 被上层吞成终态 ``empty``，7,402 条 appdetails 任务被判
+    「无数据」。这里锁住 HTTP 层的正确处置。
+    """
+
+    def test_429_waits_then_succeeds(self, monkeypatch: pytest.MonkeyPatch) -> None:
+        """第一次 429、第二次成功 → 必须等到并成功，且不抛异常。"""
+        from crawler import http as http_module
+
+        calls = {"n": 0}
+        slept: list[float] = []
+
+        def fake_get(url, **kw):
+            calls["n"] += 1
+            if calls["n"] == 1:
+                return _FakeResp(429, {"retry-after": "7"}, "too many")
+            return _OkResp()
+
+        monkeypatch.setattr(http_module.httpx, "get", fake_get)
+        monkeypatch.setattr(http_module.time, "sleep", lambda s: slept.append(s))
+        out = http_module.request_json("https://x.test/a", {}, interval_sec=0)
+        assert out == {"ok": True}
+        assert calls["n"] == 2
+        assert slept == [7.0], "应尊重 Retry-After 头"
+
+    def test_persistent_429_raises_source_throttled(
+        self, monkeypatch: pytest.MonkeyPatch
+    ) -> None:
+        """一直 429 → 抛 SourceThrottled（源级不可用），而不是普通失败。"""
+        from crawler import http as http_module
+
+        monkeypatch.setattr(
+            http_module.httpx, "get",
+            lambda url, **kw: _FakeResp(429, {}, "too many"),
+        )
+        monkeypatch.setattr(http_module.time, "sleep", lambda s: None)
+        with pytest.raises(http_module.SourceThrottled):
+            http_module.request_json("https://x.test/a", {}, interval_sec=0)
+        # SourceThrottled 属于 SourceUnavailable → worker 会挂起源、不烧任务
+        assert issubclass(http_module.SourceThrottled, http_module.SourceUnavailable)
+
+    def test_retry_after_is_clamped(self, monkeypatch: pytest.MonkeyPatch) -> None:
+        """Retry-After 异常值（0 / 9999 / 非数字）要落在合理区间内。"""
+        from crawler import http as http_module
+
+        assert http_module._throttle_wait(_FakeResp(429, {"retry-after": "0"}, "")) == 5.0
+        assert http_module._throttle_wait(_FakeResp(429, {"retry-after": "9999"}, "")) == 300.0
+        assert http_module._throttle_wait(_FakeResp(429, {}, "")) == 60.0
+
+
+class _OkResp:
+    status_code = 200
+    headers: dict = {}
+    text = "{}"
+    content = b"{}"
+
+    def raise_for_status(self) -> None:
+        return None
+
+    def json(self):  # noqa: ANN201
+        return {"ok": True}

@@ -114,7 +114,22 @@ class HttpStatusError(RuntimeError):
         self.status = status
 
 
-class SourceChallenge(HttpStatusError):
+class SourceUnavailable(HttpStatusError):
+    """**源级临时不可用**：站点明确表示「现在不欢迎自动请求」。
+
+    两个成因，处置方式相同（不是任务的错，不该消耗任务的重试预算）：
+
+    - :class:`SourceChallenge`：反爬挑战（Cloudflare ``cf-mitigated: challenge`` 等）
+    - :class:`SourceThrottled`：限流 429（重试到上限仍是 429）
+
+    调用方（``cleaning.worker``）应当：把任务放回 ``pending``、本轮挂起该源、
+    稍后再试。**绝不能**把它当成「这个游戏没有数据」——那会落成终态
+    ``empty``/``skipped``，永久丢数据（2026-09-27 踩到：429 被吞成 empty，
+    7,402 条 appdetails 任务被误判为「无数据」）。
+    """
+
+
+class SourceChallenge(SourceUnavailable):
     """被站点的反爬挑战挡住（典型：Cloudflare 的 ``cf-mitigated: challenge``）。
 
     为什么要单列一类（2026-09-24 加）：这类失败**不是任务的错，也不是网络故障**，
@@ -127,10 +142,37 @@ class SourceChallenge(HttpStatusError):
 
     所以调用方（``cleaning.worker``）应当把它当作「**源级临时不可用**」：
     任务放回 ``pending``、本轮的源挂起、稍后自然重试。
-
-    继承 :class:`HttpStatusError`，这样没专门处理的调用方（如旧脚本）仍能
-    按「带状态码的 HTTP 失败」对待，不会漏接。
     """
+
+
+class SourceThrottled(SourceUnavailable):
+    """被限流（HTTP 429）且退避重试后仍然 429。
+
+    与挑战的区别只在于**我们愿意等**：429 往往几十秒到几分钟就恢复，所以 HTTP 层
+    会先按 ``Retry-After``（缺省 60s）等待重试；只有仍然 429 才升级成源级不可用。
+    如果一味快速重试（2s/4s）就会耗尽重试预算 → 记 ``error``，而旧代码甚至把它
+    当成「无数据」落成终态 ``empty``（2026-09-27 的实际事故）。
+    """
+
+
+# 429 的默认等待时长（秒）与合理区间：站点给了 Retry-After 就听它的，否则等 1 分钟
+_THROTTLE_WAIT_DEFAULT_SEC = 60.0
+_THROTTLE_WAIT_MIN_SEC = 5.0
+_THROTTLE_WAIT_MAX_SEC = 300.0
+
+
+def _throttle_wait(resp: Any) -> float:
+    """从 429 响应里解析该等多久（``Retry-After`` 头，支持秒数形式）。"""
+    raw = ""
+    try:
+        raw = (resp.headers or {}).get("retry-after", "") or ""
+    except AttributeError:
+        raw = ""
+    try:
+        wait = float(str(raw).strip())
+    except (TypeError, ValueError):
+        wait = _THROTTLE_WAIT_DEFAULT_SEC
+    return max(_THROTTLE_WAIT_MIN_SEC, min(wait, _THROTTLE_WAIT_MAX_SEC))
 
 
 # Cloudflare 挑战页的响应体特征（大小写不敏感）。光看状态码不够——403 也可能
@@ -229,14 +271,27 @@ def request_json(
                 raise SourceChallenge(
                     f"被反爬挑战拦截：{url}（status={last_status}）", last_status
                 )
+            # 限流 429：先老实等（听 Retry-After，缺省 60s）再重试；还不行就升级成
+            # 源级不可用交给 worker 挂起——**绝不**让它被上层当成「没有数据」
+            # （2026-09-27 事故：429 被吞成终态 empty，7,402 条任务被判「无数据」）
+            if last_status == 429:
+                wait = _throttle_wait(resp)
+                logger.warning(
+                    "被限流（429）：%s，等待 %.0fs 后重试（%d/%d）",
+                    url, wait, attempt, MAX_RETRIES,
+                )
+                if attempt < MAX_RETRIES:
+                    time.sleep(wait)
+                    continue
+                raise SourceThrottled(f"限流持续（429）：{url}", 429)
             resp.raise_for_status()
             key = source or _host_of(url)
             _last_fetched_at[key] = datetime.now(timezone.utc)
             if _call_recorder is not None:
                 _call_recorder(source or _host_of(url))
             return resp.json()
-        except SourceChallenge:
-            raise  # 挑战不算「重试耗尽」，原样上抛给 worker 做源级处理
+        except SourceUnavailable:
+            raise  # 挑战/限流是源级问题，原样上抛给 worker，不当成「重试耗尽」
         except (httpx.HTTPError, json.JSONDecodeError) as exc:
             last_exc = exc
             logger.warning(
@@ -277,13 +332,23 @@ def request_text(
                 raise SourceChallenge(
                     f"被反爬挑战拦截：{url}（status={last_status}）", last_status
                 )
+            if last_status == 429:
+                wait = _throttle_wait(resp)
+                logger.warning(
+                    "被限流（429）：%s，等待 %.0fs 后重试（%d/%d）",
+                    url, wait, attempt, MAX_RETRIES,
+                )
+                if attempt < MAX_RETRIES:
+                    time.sleep(wait)
+                    continue
+                raise SourceThrottled(f"限流持续（429）：{url}", 429)
             resp.raise_for_status()
             key = source or _host_of(url)
             _last_fetched_at[key] = datetime.now(timezone.utc)
             if _call_recorder is not None:
                 _call_recorder(source or _host_of(url))
             return resp.text
-        except SourceChallenge:
+        except SourceUnavailable:
             raise  # 见 request_json 的同样说明
         except httpx.HTTPError as exc:
             last_exc = exc

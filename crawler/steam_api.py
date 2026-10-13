@@ -21,15 +21,29 @@ from __future__ import annotations
 import html
 import logging
 import re
+import time
 from typing import Any
 
-from crawler.http import HttpStatusError, SourceChallenge, request_json, request_text
+from crawler.http import (
+    HttpStatusError,
+    SourceUnavailable,
+    request_json,
+    request_text,
+)
 
 logger = logging.getLogger(__name__)
 
 STORE_APPDETAILS_URL = "https://store.steampowered.com/api/appdetails"
 WEB_API_BASE = "https://api.steampowered.com"
 COMMUNITY_STATS_URL = "https://steamcommunity.com/stats/{appid}/achievements"
+
+# ``success: false``（HTTP 200 下的软拒绝）要**重试**再判定为「真的没数据」。
+# 2026-09-27 实测：7,402 条被记成终态 ``empty`` 的 appdetails 任务里，重新抓取后
+# **93% 恢复正常**（28/30 抽样）——它们是 Steam 侧的随机软拒绝（疑似 WAF 对自动化
+# 客户端的概率性拦截），不是「游戏不存在」。而 ``empty`` 是终态、永不重试，
+# 于是这部分数据被静默丢弃。UA 与请求速率两个假设都已用对照实验排除。
+_EMPTY_RETRY_ATTEMPTS = 3
+_EMPTY_RETRY_DELAY_SEC = 3.0
 
 # appdetails 的 lang 参数 -> 注册表里的源标识（限速与配额按源分别记）
 _LANG_TO_SOURCE: dict[str, str] = {
@@ -59,20 +73,39 @@ def fetch_appdetails(
     """
     result: dict[str, dict[str, Any]] = {}
     for appid in appids:
-        try:
-            payload = request_json(
-                STORE_APPDETAILS_URL,
-                {"appids": appid, "l": lang},
-                source=_LANG_TO_SOURCE.get(lang, "appdetails_en"),
+        for attempt in range(1, _EMPTY_RETRY_ATTEMPTS + 1):
+            try:
+                payload = request_json(
+                    STORE_APPDETAILS_URL,
+                    {"appids": appid, "l": lang},
+                    source=_LANG_TO_SOURCE.get(lang, "appdetails_en"),
+                )
+            except SourceUnavailable:
+                # 挑战 / 限流 429：源级问题，交给 worker 挂起源（任务不烧）
+                raise
+            except RuntimeError as exc:
+                # ⚠️ **必须上抛**：请求失败 ≠ 「这游戏没数据」。旧实现这里只记日志
+                # 然后跳过，上层看到「没数据」就落成**终态 empty**，于是 429 限流
+                # 被永久写成「无数据」（2026-09-27：7,402 条 appdetails 因此被判空）。
+                # 上抛后 worker 记 error 走退避重试，数据不丢。
+                raise RuntimeError(f"appdetails 请求失败 appid={appid}：{exc}") from exc
+            entry = payload.get(str(appid)) or {}
+            if entry.get("success"):
+                result[str(appid)] = entry["data"]
+                break
+            # 软拒绝（HTTP 200 但 success=false）：隔几秒再试，别急着判「无数据」
+            logger.warning(
+                "appdetails 软拒绝（%d/%d）：appid=%s，%s 后重试",
+                attempt, _EMPTY_RETRY_ATTEMPTS, appid,
+                f"{_EMPTY_RETRY_DELAY_SEC}s" if attempt < _EMPTY_RETRY_ATTEMPTS else "—",
             )
-        except RuntimeError as exc:
-            logger.error("appdetails 失败，跳过 appid=%s：%s", appid, exc)
-            continue
-        entry = payload.get(str(appid)) or {}
-        if not entry.get("success"):
-            logger.warning("appdetails 无数据：appid=%s", appid)
-            continue
-        result[str(appid)] = entry["data"]
+            if attempt < _EMPTY_RETRY_ATTEMPTS:
+                time.sleep(_EMPTY_RETRY_DELAY_SEC)
+        else:
+            logger.warning(
+                "appdetails 连续 %d 次软拒绝，判为无数据：appid=%s",
+                _EMPTY_RETRY_ATTEMPTS, appid,
+            )
     return result
 
 
@@ -118,8 +151,8 @@ def fetch_global_achievement_percentages(appid: int) -> list[dict[str, Any]]:
             {"gameid": appid, "format": "json"},
             source="global_ach",
         )
-    except SourceChallenge:
-        # 反爬挑战也是 403，但**绝不能**当成「无成就」——那样会把这款游戏误判成
+    except SourceUnavailable:
+        # 反爬挑战/限流也是 403/429，但**绝不能**当成「无成就」——那样会把这款游戏误判成
         # 没有成就数据并连带剔除它的其余任务（worker 的 prune 逻辑）。
         # 原样上抛，由 worker 按「源临时不可用」处理（2026-09-24 加）。
         raise

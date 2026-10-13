@@ -187,13 +187,20 @@ uv run python -m cleaning.rawg_keys disable --key-id 3              # 停用已�
 - **限速按源配置，不是一刀切 1s**。权威清单在 `sources` 表（`schema.sql`）与
   `crawler/registry.py`：多数源 ≥1s，**SteamSpy `request=all` 是 60s**（官方文档）。
   计时**按 host 分桶**，不同站点互不排队。限额速查见 `docs/sources.md`
-- **反爬挑战自动挂起源，不烧任务**（2026-09-24）：站点返回 Cloudflare 挑战
-  （403/503 + `cf-mitigated: challenge` 或挑战页特征串）时抛 `crawler.http.SourceChallenge`，
-  HTTP 层**不做快速重试**，worker 把任务**放回 pending（attempts 不变）**并本轮挂起该源。
-  理由：挑战窗口是分钟级，硬重试只会白烧请求；而每任务 attempts+1 攒够就转终态
-  `exhausted`——实测 SteamSpy 的间歇 403 曾烧掉 23 条任务。
+- **反爬挑战 / 限流自动挂起源，不烧任务**（2026-09-24 挑战，2026-09-27 补限流）：
+  站点返回 Cloudflare 挑战（403/503 + `cf-mitigated: challenge` 或挑战页特征串）或
+  限流 429（按 `Retry-After` 等待重试后仍 429）时，HTTP 层抛
+  `crawler.http.SourceUnavailable`（子类 `SourceChallenge` / `SourceThrottled`），
+  worker 把任务**放回 pending（attempts 不变）**并本轮挂起该源。后者不做快速重试：
+  挑战窗口是分钟级，429 退避 2s/4s 也是白烧。
+  ⚠️ **绝不能**让这类失败被上层当成「这个源没有数据」——那会落成终态
+  `empty`/`skipped` 永久丢数据（2026-09-27 实测：429 被吞成 empty，
+  7,402 条 appdetails 任务被判「无数据」，事后重抓 93% 其实有数据）
   ⚠️ 判据必须区分**业务 403**（如全局成就率接口对「无成就」返回 403，是确定性无数据）
   与挑战 403，混淆会把游戏误判成无成就并连带剔除其余任务
+- **请求失败 ≠ 没有数据**：抓取层要么拿到数据、要么抛异常（走 error 重试），
+  **不允许**「失败 → 返回空 → 上层记 empty」的路径——empty 是终态，判错就永久丢。
+  终态可复核：`uv run python -m cleaning.requeue_empty --status empty,exhausted --apply`
 - **没有缓存层**（已废除）：防重复靠 `fetch_tasks` 的任务状态——已完成的任务不会被
   重跑；多机共享队列，不需要本地缓存
 - 失败重试 ≤ 3 次，且**重试之间必须有指数退避**（2s / 4s，封顶 30s）。没有退避时几次尝试会
