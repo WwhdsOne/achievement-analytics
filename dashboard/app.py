@@ -58,7 +58,13 @@ _fetch_state: dict[str, Any] = {"appid": None, "started_at": None, "error": None
 
 
 def _stats_payload() -> dict[str, Any]:
-    """队列总览：各状态计数 + 逐源进度（复用 ingest_progress 视图）。"""
+    """获取总览：逐源进度 + 落库数据量 + 缺口分类（复用 ingest_progress 视图）。
+
+    抓取收尾后（`fetch_tasks.pending = 0`），这个接口的重点从「还剩多少活」
+    转成「**各项差多少、差在哪**」——所以要区分四类缺口：
+    ``empty``（该源确实没有）· ``skipped``（游戏无成就被剔除）·
+    ``exhausted``（重试耗尽，可复核）· ``pending``（还没抓）。
+    """
     engine = get_engine()
     with engine.connect() as conn:
         by_status = {
@@ -74,6 +80,8 @@ def _stats_payload() -> dict[str, Any]:
                 "source": r[0], "total": r[1], "ok": r[2], "empty": r[3],
                 "skipped": r[4], "error": r[5], "exhausted": r[6],
                 "pending": r[7], "actionable": r[8],
+                # 非 ok 的都算「没拿到数据」，但要按类型分开展示
+                "missing": r[1] - r[2],
             }
             for r in conn.execute(
                 text(
@@ -83,12 +91,48 @@ def _stats_payload() -> dict[str, Any]:
                 )
             )
         ]
+        # 落库产物：每张表的真实行数（比任务计数更直接地反映「拿到多少数据」）
+        tables = {
+            "achievements": conn.execute(
+                text("SELECT count(*) FROM achievements")).scalar(),
+            "achievements_named": conn.execute(
+                text("SELECT count(*) FROM achievements WHERE display_name IS NOT NULL")
+            ).scalar(),
+            "games_with_ach": conn.execute(
+                text("SELECT count(DISTINCT appid) FROM achievements")).scalar(),
+            "steam_appdetails": conn.execute(
+                text("SELECT count(*) FROM steam_appdetails")).scalar(),
+            "steamspy_games": conn.execute(
+                text("SELECT count(*) FROM steamspy_games")).scalar(),
+            "rawg_games": conn.execute(
+                text("SELECT count(*) FROM rawg_games")).scalar(),
+            "game_tags": conn.execute(
+                text("SELECT count(*) FROM game_tags")).scalar(),
+            "games_with_tags": conn.execute(
+                text("SELECT count(DISTINCT appid) FROM game_tags"
+                     " WHERE source = 'steamspy'")).scalar(),
+        }
+        mapping_unresolved = conn.execute(
+            text("SELECT count(*) FROM mapping_issues WHERE NOT resolved")
+        ).scalar()
+        versions = [
+            {"version": r[0], "built_at": r[1].isoformat() if r[1] else None,
+             "note": r[2]}
+            for r in conn.execute(
+                text("SELECT version, built_at, note FROM dataset_versions"
+                     " ORDER BY built_at DESC NULLS LAST LIMIT 5")
+            )
+        ]
     return {
         "total": int(total),
         "games": int(games_total),
         "by_status": by_status,
         "sources": sources,
+        "tables": {k: int(v or 0) for k, v in tables.items()},
+        "mapping_unresolved": int(mapping_unresolved or 0),
+        "dataset_versions": versions,
         "remaining": by_status.get("pending", 0) + by_status.get("error", 0),
+        "finished": by_status.get("pending", 0) == 0,
         "fetching": dict(_fetch_state),
     }
 
@@ -196,11 +240,21 @@ def _game_payload(appid: int) -> dict[str, Any] | None:
         missing = status in ("pending", "error", "exhausted", "no_task") or (
             status == "ok" and not data
         )
+        # verdict 把三种情况分开，避免把「该源确实没有」误说成「缺数据要补抓」：
+        #   ok      = 拿到了
+        #   no_data = 终态判定为「该源没有这份数据」（empty / skipped）
+        #   gap     = 还没拿到、且不是确定结论（待抓 / error / exhausted / 无任务）
+        if data:
+            verdict = "ok"
+        elif status in ("empty", "skipped"):
+            verdict = "no_data"
+        else:
+            verdict = "gap"
         source_rows.append({
             "source": source, "status": status,
             "attempts": t["attempts"] if t else 0,
             "error": t["error"] if t else None,
-            "data": data, "missing": missing,
+            "data": data, "missing": missing, "verdict": verdict,
         })
 
     return {
