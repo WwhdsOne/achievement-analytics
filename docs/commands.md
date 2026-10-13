@@ -123,7 +123,9 @@ uv run python -m crawler.test_crawl          # 单款游戏六源抓取演示（
 
 ## 8. 分析与研究面板
 
+数据获取阶段汇报见 [HTML汇报](data-acquisition-report.html)，可直接打开，无需服务器；仅展示获取流程与描述性成果，数字注明统计日期。
 
+文件分工、手动训练、参数修改与独立Ridge练习见 [手动训练指南](manual-training.md)。
 ```bash
 # 首次提取：一致性读取云库，固定游戏级建模快照并登记已有版本表，执行分析
 uv run python -m modeling.regression.analysis

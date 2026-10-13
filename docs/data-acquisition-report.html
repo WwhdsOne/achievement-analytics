@@ -1,0 +1,1577 @@
+<!doctype html>
+<html lang="zh-CN">
+
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <title>Steam 成就数据获取 · 阶段汇报</title>
+  <style>
+    :root {
+      --ink: #20252c;
+      --muted: #66717c;
+      --line: #dde2e7;
+      --paper: #f7f8fa;
+      --green: #167a72;
+      --blue: #3761b7;
+      --rose: #b65267;
+      --olive: #749543
+    }
+
+    * {
+      box-sizing: border-box
+    }
+
+    html,
+    body {
+      margin: 0;
+      min-height: 100%;
+      letter-spacing: 0
+    }
+
+    body {
+      font-family: "PingFang SC", "Microsoft YaHei", sans-serif;
+      color: var(--ink);
+      background: var(--paper);
+      display: grid;
+      grid-template-columns: 220px minmax(0, 1fr);
+      grid-template-rows: 64px minmax(0, 1fr);
+      min-height: 100dvh
+    }
+
+    button,
+    select {
+      font: inherit
+    }
+
+    button,
+    a,
+    select {
+      -webkit-tap-highlight-color: transparent
+    }
+
+    a {
+      color: var(--green);
+      text-underline-offset: 4px
+    }
+
+    button:focus-visible,
+    a:focus-visible,
+    select:focus-visible {
+      outline: 2px solid var(--blue);
+      outline-offset: 4px
+    }
+
+    [hidden] {
+      display: none !important
+    }
+
+    .top {
+      grid-column: 1/-1;
+      display: flex;
+      align-items: center;
+      gap: 24px;
+      padding: 0 30px;
+      border-bottom: 1px solid var(--line);
+      background: #fff
+    }
+
+    .brand {
+      font-size: 14px;
+      font-weight: 700
+    }
+
+    .top-note {
+      margin-left: auto;
+      font-size: 12px;
+      color: var(--muted)
+    }
+
+    .top .tool {
+      margin-left: 8px
+    }
+
+    .sidebar {
+      height: calc(100dvh - 64px);
+      min-height: 0;
+      overflow-y: auto;
+      padding: 25px 16px 16px 22px;
+      border-right: 1px solid var(--line);
+      background: #fff;
+      display: flex;
+      flex-direction: column
+    }
+
+    .side-label {
+      font: 11px "SFMono-Regular", Consolas, monospace;
+      color: var(--muted);
+      margin: 0 12px 17px
+    }
+
+    .nav-link {
+      display: grid;
+      grid-template-columns: 22px 1fr;
+      gap: 10px;
+      padding: 10px 11px;
+      margin-bottom: 3px;
+      text-decoration: none;
+      color: var(--muted);
+      border-left: 2px solid transparent;
+      min-width: 0
+    }
+
+    .nav-link .n {
+      font: 11px "SFMono-Regular", Consolas, monospace;
+      padding-top: 4px
+    }
+
+    .nav-link strong {
+      display: block;
+      font-size: 13px;
+      font-weight: 600;
+      line-height: 1.5
+    }
+
+    .nav-link small {
+      display: block;
+      font-size: 10px;
+      line-height: 1.65;
+      margin-top: 2px
+    }
+
+    .nav-link:hover {
+      color: var(--ink);
+      background: #f4f6f8
+    }
+
+    .nav-link[aria-current="page"] {
+      color: var(--green);
+      border-left-color: var(--green);
+      background: #edf4f2
+    }
+
+    .side-bottom {
+      margin-top: auto;
+      padding: 14px 12px 0;
+      font-size: 10px;
+      line-height: 1.8;
+      color: var(--muted)
+    }
+
+    main {
+      min-width: 0;
+      height: calc(100dvh - 64px);
+      display: flex;
+      flex-direction: column;
+      padding: 27px 40px 0;
+      max-width: 1580px;
+      width: 100%;
+      margin: auto
+    }
+
+    .slide {
+      flex: 1;
+      min-height: 0;
+      display: flex;
+      flex-direction: column;
+      animation: enter .22s ease
+    }
+
+    .heading {
+      padding-bottom: 18px;
+      border-bottom: 1px solid var(--line);
+      flex-shrink: 0
+    }
+
+    .eyebrow {
+      font: 11px "SFMono-Regular", Consolas, monospace;
+      color: var(--green);
+      margin-bottom: 11px
+    }
+
+    h1 {
+      font-size: 34px;
+      line-height: 1.35;
+      font-weight: 650;
+      margin: 0;
+      letter-spacing: 0
+    }
+
+    h2 {
+      font-size: 21px;
+      line-height: 1.45;
+      margin: 0 0 12px;
+      font-weight: 600
+    }
+
+    h3 {
+      font-size: 16px;
+      line-height: 1.5;
+      margin: 0 0 9px;
+      font-weight: 600
+    }
+
+    p {
+      line-height: 1.85;
+      font-size: 15px;
+      margin: 0 0 12px
+    }
+
+    .description {
+      color: var(--muted);
+      font-size: 13px;
+      line-height: 1.7;
+      margin: 10px 0 0;
+      max-width: 960px
+    }
+
+    .content {
+      flex: 1;
+      min-height: 0;
+      padding: 25px 0 14px;
+      display: flex;
+      flex-direction: column;
+      gap: 22px
+    }
+
+    .cols {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 34px;
+      align-items: start;
+      min-width: 0
+    }
+
+    .cols>* {
+      min-width: 0
+    }
+
+    .three {
+      display: grid;
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+      gap: 26px
+    }
+
+    .accent {
+      color: var(--green)
+    }
+
+    .muted {
+      color: var(--muted)
+    }
+
+    .small {
+      font-size: 12px;
+      line-height: 1.75
+    }
+
+    .number {
+      font-family: "SFMono-Regular", Consolas, monospace;
+      font-variant-numeric: tabular-nums
+    }
+
+    .metrics {
+      display: grid;
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+      gap: 30px;
+      border-bottom: 1px solid var(--line);
+      padding-bottom: 26px
+    }
+
+    .metric-label {
+      font-size: 13px;
+      color: var(--muted);
+      margin-bottom: 10px
+    }
+
+    .metric-value {
+      font-size: 53px;
+      line-height: 1.2;
+      font-weight: 650;
+      overflow-wrap: anywhere
+    }
+
+    .metric:nth-child(2) .metric-value {
+      color: var(--green)
+    }
+
+    .metric:nth-child(3) .metric-value {
+      color: var(--blue)
+    }
+
+    .metric-detail {
+      font-size: 12px;
+      color: var(--muted);
+      margin-top: 9px;
+      line-height: 1.65
+    }
+
+    .takeaway {
+      border-left: 3px solid var(--green);
+      padding: 3px 0 3px 18px;
+      margin-top: auto
+    }
+
+    .takeaway p {
+      margin: 0;
+      font-size: 16px;
+      line-height: 1.8
+    }
+
+    .proof {
+      font-size: 11px;
+      line-height: 1.75;
+      color: var(--muted);
+      margin-top: auto;
+      padding-top: 10px;
+      overflow-wrap: anywhere
+    }
+
+    .rule-list {
+      list-style: none;
+      padding: 0;
+      margin: 0
+    }
+
+    .rule-list li {
+      padding: 13px 0;
+      border-bottom: 1px solid var(--line);
+      font-size: 14px;
+      line-height: 1.7
+    }
+
+    .rule-list strong {
+      display: block;
+      font-size: 15px;
+      margin-bottom: 5px
+    }
+
+    .rule-list li:first-child {
+      padding-top: 0
+    }
+
+    .mini-stat {
+      display: flex;
+      align-items: baseline;
+      gap: 10px;
+      padding: 15px 0;
+      border-bottom: 1px solid var(--line);
+      font-size: 13px
+    }
+
+    .mini-stat b {
+      font: 26px "SFMono-Regular", Consolas, monospace
+    }
+
+    .big-statement {
+      font-size: 31px;
+      line-height: 1.65;
+      margin: 0 0 8px;
+      font-weight: 550;
+      max-width: 1000px
+    }
+
+    .items-band {
+      display: grid;
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+      border-top: 1px solid var(--line);
+      border-bottom: 1px solid var(--line);
+      margin-top: 14px
+    }
+
+    .items-band>div {
+      padding: 17px 20px 16px 0
+    }
+
+    .items-band>div+div {
+      border-left: 1px solid var(--line);
+      padding-left: 20px
+    }
+
+    .items-band p {
+      font-size: 13px;
+      color: var(--muted);
+      margin: 0
+    }
+
+    .items-band b {
+      font-size: 15px;
+      display: block;
+      margin-bottom: 7px
+    }
+
+    .step-index {
+      font: 12px "SFMono-Regular", Consolas, monospace;
+      color: var(--green);
+      margin-bottom: 10px
+    }
+
+    .timeline {
+      display: flex;
+      flex-direction: column;
+      gap: 0
+    }
+
+    .event {
+      display: grid;
+      grid-template-columns: 115px 175px minmax(0, 1fr);
+      gap: 22px;
+      padding: 14px 0;
+      border-bottom: 1px solid var(--line);
+      align-items: start
+    }
+
+    .event time {
+      font: 13px "SFMono-Regular", Consolas, monospace;
+      color: var(--green);
+      padding-top: 4px
+    }
+
+    .event strong {
+      font-size: 15px;
+      line-height: 1.6
+    }
+
+    .event p {
+      font-size: 13px;
+      margin: 0;
+      color: var(--muted);
+      line-height: 1.75
+    }
+
+    .table {
+      width: 100%;
+      border-collapse: collapse;
+      font-size: 13px;
+      table-layout: fixed;
+      text-align: center
+    }
+
+    .table th {
+      font-weight: 500;
+      color: var(--muted);
+      padding: 12px 8px;
+      border-bottom: 1px solid var(--line);
+      line-height: 1.65
+    }
+
+    .table td {
+      padding: 16px 9px;
+      border-bottom: 1px solid var(--line);
+      line-height: 1.8;
+      overflow-wrap: anywhere
+    }
+
+    .table strong {
+      font-weight: 600
+    }
+
+    .table td small {
+      display: block;
+      color: var(--muted);
+      font-size: 11px
+    }
+
+    .callout {
+      background: #eef3f8;
+      padding: 16px 18px;
+      border-left: 3px solid var(--blue)
+    }
+
+    .callout p {
+      font-size: 13px;
+      margin: 0
+    }
+
+    .flow {
+      display: grid;
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+      gap: 20px 30px
+    }
+
+    .flow-node {
+      border-top: 2px solid var(--line);
+      padding-top: 16px;
+      min-width: 0
+    }
+
+    .flow-node:nth-child(3n) {
+      border-top-color: var(--green)
+    }
+
+    .flow-node p {
+      font-size: 13px;
+      color: var(--muted);
+      margin: 0
+    }
+
+    .flow-label {
+      display: flex;
+      align-items: baseline;
+      gap: 12px;
+      margin-bottom: 8px
+    }
+
+    .flow-label span {
+      font: 12px "SFMono-Regular", Consolas, monospace;
+      color: var(--muted)
+    }
+
+    .flow-label h3 {
+      margin: 0
+    }
+
+    .pipeline-end {
+      display: flex;
+      gap: 18px;
+      align-items: center;
+      border-top: 1px solid var(--line);
+      border-bottom: 1px solid var(--line);
+      padding: 18px 0
+    }
+
+    .pipeline-end b {
+      font-size: 17px;
+      color: var(--green)
+    }
+
+    .pipeline-end p {
+      margin: 0;
+      font-size: 13px;
+      color: var(--muted)
+    }
+
+    .workers {
+      display: grid;
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+      gap: 18px
+    }
+
+    .worker {
+      border-top: 2px solid var(--blue);
+      padding: 12px 0
+    }
+
+    .worker b {
+      font-size: 16px
+    }
+
+    .worker p {
+      font-size: 12px;
+      color: var(--muted);
+      margin: 6px 0
+    }
+
+    .worker .arrow {
+      font-size: 23px;
+      color: var(--blue)
+    }
+
+    .shared {
+      border-top: 2px solid var(--green);
+      border-bottom: 1px solid var(--line);
+      padding: 19px 0;
+      text-align: center
+    }
+
+    .shared h3 {
+      font-size: 21px;
+      margin-bottom: 5px
+    }
+
+    .shared p {
+      font-size: 13px;
+      color: var(--muted);
+      margin: 0
+    }
+
+    .repair {
+      border-top: 2px solid var(--line);
+      padding-top: 14px
+    }
+
+    .repair:nth-child(2) {
+      border-top-color: var(--rose)
+    }
+
+    .repair:nth-child(3) {
+      border-top-color: var(--blue)
+    }
+
+    .repair p {
+      font-size: 13px;
+      color: var(--muted)
+    }
+
+    .repair-result {
+      border-top: 1px solid var(--line);
+      padding-top: 12px;
+      font-size: 13px;
+      line-height: 1.8
+    }
+
+    .repair-result b {
+      color: var(--green)
+    }
+
+    .statement-line {
+      font-size: 23px;
+      line-height: 1.7;
+      font-weight: 550
+    }
+
+    .coverage {
+      display: grid;
+      grid-template-columns: minmax(0, 1.55fr) minmax(0, 1fr);
+      gap: 32px;
+      align-items: start
+    }
+
+    .chart {
+      margin: 0;
+      min-width: 0
+    }
+
+    .chart img {
+      display: block;
+      width: 100%;
+      height: auto;
+      max-height: 330px;
+      object-fit: contain;
+      object-position: left top
+    }
+
+    .chart figcaption {
+      font-size: 11px;
+      color: var(--muted);
+      line-height: 1.75;
+      margin-top: 10px
+    }
+
+    .chart-pair {
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 28px
+    }
+
+    .chart-pair h3 {
+      font-size: 15px;
+      margin-bottom: 2px
+    }
+
+    .chart-pair img {
+      max-height: 280px
+    }
+
+    /* 初步成果页内容较多：图放大，超出时在内容区内部滚动，表头/页脚保持固定。 */
+    .slide-dense .content {
+      overflow-y: auto
+    }
+
+    .slide-dense .chart-pair img {
+      max-height: 330px
+    }
+
+    .numbers-inline {
+      display: flex;
+      gap: 22px;
+      align-items: baseline;
+      flex-wrap: wrap
+    }
+
+    .numbers-inline span {
+      font-size: 12px;
+      color: var(--muted)
+    }
+
+    .numbers-inline b {
+      font: 23px "SFMono-Regular", Consolas, monospace;
+      color: var(--ink)
+    }
+
+    .next-step {
+      border-top: 2px solid var(--line);
+      padding-top: 16px
+    }
+
+    .next-step:nth-child(2) {
+      border-top-color: var(--blue)
+    }
+
+    .next-step:nth-child(3) {
+      border-top-color: var(--green)
+    }
+
+    .next-step p {
+      font-size: 14px;
+      color: var(--muted)
+    }
+
+    .bottom {
+      height: 61px;
+      flex-shrink: 0;
+      border-top: 1px solid var(--line);
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      margin-top: 8px
+    }
+
+    .bottom-label {
+      font-size: 10px;
+      color: var(--muted);
+      margin-right: auto
+    }
+
+    .bottom select {
+      font-size: 11px;
+      max-width: 180px;
+      border: 0;
+      background: transparent;
+      color: var(--ink);
+      padding: 8px 5px
+    }
+
+    .page-number {
+      font: 12px "SFMono-Regular", Consolas, monospace;
+      min-width: 68px;
+      text-align: center;
+      color: var(--muted)
+    }
+
+    .tool {
+      width: 34px;
+      height: 34px;
+      display: grid;
+      place-items: center;
+      background: #fff;
+      border: 1px solid var(--line);
+      border-radius: 4px;
+      cursor: pointer;
+      flex-shrink: 0
+    }
+
+    .tool img {
+      width: 16px;
+      height: 16px;
+      opacity: .75
+    }
+
+    .tool:hover {
+      border-color: var(--green);
+      background: #edf4f2
+    }
+
+    .tool:disabled {
+      opacity: .3;
+      cursor: default
+    }
+
+    .progress {
+      height: 2px;
+      width: 100%;
+      background: var(--line);
+      flex-shrink: 0;
+      position: relative
+    }
+
+    .progress span {
+      display: block;
+      height: 2px;
+      background: var(--green);
+      width: 10%;
+      transition: width .2s
+    }
+
+    .copyright {
+      font-size: 10px;
+      color: var(--muted)
+    }
+
+    @keyframes enter {
+      from {
+        opacity: .5;
+        transform: translateY(5px)
+      }
+
+      to {
+        opacity: 1;
+        transform: translateY(0)
+      }
+    }
+
+    @media(max-height:810px) and (min-width:901px) {
+      main {
+        padding-top: 18px
+      }
+
+      .sidebar {
+        padding-top: 16px
+      }
+
+      .side-label {
+        margin-bottom: 12px
+      }
+
+      .nav-link {
+        padding-top: 4px;
+        padding-bottom: 4px
+      }
+
+      .side-bottom {
+        padding-top: 10px
+      }
+
+      h1 {
+        font-size: 28px
+      }
+
+      .heading {
+        padding-bottom: 12px
+      }
+
+      .content {
+        padding-top: 17px;
+        gap: 16px
+      }
+
+      h2 {
+        font-size: 19px
+      }
+
+      p {
+        font-size: 14px;
+        line-height: 1.75
+      }
+
+      .takeaway p {
+        font-size: 14px
+      }
+
+      .description {
+        font-size: 12px
+      }
+
+      .event {
+        padding: 9px 0
+      }
+
+      .metric-value {
+        font-size: 43px
+      }
+
+      .metrics {
+        padding-bottom: 18px
+      }
+
+      .mini-stat {
+        padding: 11px 0
+      }
+
+      .mini-stat b {
+        font-size: 22px
+      }
+
+      .chart img {
+        max-height: 250px
+      }
+
+      .chart-pair img {
+        max-height: 210px
+      }
+
+      .table td {
+        padding: 12px 8px
+      }
+
+      .flow {
+        gap: 16px 26px
+      }
+
+      .flow-node {
+        padding-top: 12px
+      }
+
+      .bottom {
+        height: 51px
+      }
+
+      .rule-list li {
+        padding: 10px 0
+      }
+
+      .items-band>div {
+        padding-top: 12px;
+        padding-bottom: 12px
+      }
+
+      .proof {
+        padding-top: 7px
+      }
+
+      .big-statement {
+        font-size: 27px
+      }
+
+      .slide-dense .chart-pair img {
+        max-height: 250px
+      }
+    }
+
+    @media(max-width:1100px) and (min-width:901px) {
+      body {
+        grid-template-columns: 190px minmax(0, 1fr)
+      }
+
+      .sidebar {
+        padding-left: 13px;
+        padding-right: 10px
+      }
+
+      main {
+        padding-left: 28px;
+        padding-right: 28px
+      }
+
+      .metric-value {
+        font-size: 43px
+      }
+
+      .event {
+        grid-template-columns: 105px 145px 1fr;
+        gap: 15px
+      }
+    }
+
+    @media(max-width:900px) {
+      body {
+        display: block
+      }
+
+      .top {
+        height: 58px;
+        padding: 0 18px;
+        gap: 10px
+      }
+
+      .top-note {
+        font-size: 10px
+      }
+
+      .sidebar {
+        display: none
+      }
+
+      main {
+        height: auto;
+        min-height: calc(100dvh - 58px);
+        padding: 24px 22px 0
+      }
+
+      .slide {
+        min-height: calc(100dvh - 151px)
+      }
+
+      h1 {
+        font-size: 27px
+      }
+
+      .heading {
+        padding-bottom: 17px
+      }
+
+      .content {
+        padding-top: 22px;
+        gap: 24px
+      }
+
+      .metric-value {
+        font-size: 32px
+      }
+
+      .metrics {
+        gap: 18px
+      }
+
+      .metric-label {
+        font-size: 12px
+      }
+
+      .metric-detail {
+        font-size: 10px
+      }
+
+      .cols,
+      .coverage {
+        grid-template-columns: 1fr;
+        gap: 24px
+      }
+
+      .three {
+        grid-template-columns: 1fr;
+        gap: 22px
+      }
+
+      .big-statement {
+        font-size: 24px
+      }
+
+      .event {
+        grid-template-columns: 100px 1fr;
+        gap: 8px 14px;
+        padding: 16px 0
+      }
+
+      .event p {
+        grid-column: 2
+      }
+
+      .flow {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+        gap: 23px
+      }
+
+      .table {
+        font-size: 12px
+      }
+
+      .table td {
+        padding: 13px 5px
+      }
+
+      .items-band {
+        grid-template-columns: 1fr
+      }
+
+      .items-band>div,
+      .items-band>div+div {
+        border-left: 0;
+        border-bottom: 1px solid var(--line);
+        padding: 15px 0
+      }
+
+      .chart-pair {
+        grid-template-columns: 1fr
+      }
+
+      .chart img,
+      .chart-pair img {
+        max-height: none
+      }
+
+      .chart-pair {
+        gap: 25px
+      }
+
+      .takeaway {
+        margin-top: 16px
+      }
+
+      .proof {
+        margin-top: 14px
+      }
+
+      .bottom {
+        height: 62px;
+        gap: 7px
+      }
+
+      .bottom-label {
+        display: none
+      }
+
+      .bottom select {
+        margin-right: auto;
+        max-width: 165px
+      }
+
+      .page-number {
+        font-size: 10px;
+        min-width: 58px
+      }
+
+      .workers {
+        gap: 13px
+      }
+
+      .worker b {
+        font-size: 14px
+      }
+
+      .top .tool {
+        margin-left: 0
+      }
+
+      .top-note span {
+        display: none
+      }
+
+      .statement-line {
+        font-size: 21px
+      }
+    }
+
+    @media(max-width:450px) {
+      main {
+        padding-left: 18px;
+        padding-right: 18px
+      }
+
+      .metrics {
+        grid-template-columns: 1fr;
+        gap: 16px
+      }
+
+      .metric {
+        display: grid;
+        grid-template-columns: 105px minmax(0, 1fr);
+        align-items: center
+      }
+
+      .metric-label {
+        margin-bottom: 0
+      }
+
+      .metric-value {
+        font-size: 36px
+      }
+
+      .metric-detail {
+        grid-column: 2;
+        margin-top: 3px
+      }
+
+      .flow {
+        grid-template-columns: 1fr
+      }
+
+      .workers {
+        grid-template-columns: 1fr
+      }
+
+      .worker {
+        display: grid;
+        grid-template-columns: 100px 1fr 20px;
+        align-items: center
+      }
+
+      .worker p {
+        margin: 0
+      }
+
+      .worker .arrow {
+        transform: rotate(-90deg)
+      }
+
+      .bottom select {
+        max-width: 135px
+      }
+
+      .event {
+        grid-template-columns: 85px 1fr
+      }
+
+      .table small {
+        font-size: 10px
+      }
+
+      .table td,
+      .table th {
+        font-size: 11px
+      }
+
+      .numbers-inline {
+        gap: 13px
+      }
+
+      .numbers-inline b {
+        font-size: 21px
+      }
+    }
+
+    @media(prefers-reduced-motion:reduce) {
+      * {
+        animation: none !important;
+        transition: none !important
+      }
+    }
+
+    @media print {
+      body {
+        display: block;
+        background: white
+      }
+
+      .top,
+      .sidebar,
+      .bottom,
+      .progress {
+        display: none
+      }
+
+      main {
+        display: block;
+        height: auto;
+        padding: 0;
+        max-width: none
+      }
+
+      .slide,
+      .slide[hidden] {
+        display: block !important;
+        page-break-after: always;
+        min-height: 0;
+        padding: 20px 24px;
+        animation: none
+      }
+
+      .slide:last-of-type {
+        page-break-after: auto
+      }
+
+      .content {
+        display: block
+      }
+
+      .content>* {
+        margin-bottom: 20px
+      }
+
+      .chart img {
+        max-height: 260px
+      }
+
+      .proof {
+        margin-top: 15px
+      }
+
+      @page {
+        size: A4 landscape;
+        margin: 10mm
+      }
+    }
+  </style>
+</head>
+
+<body data-page="0">
+  <header class="top"><span class="brand">STEAM / 成就数据研究</span><span class="top-note">数据获取阶段<span> · 汇报整理
+        2026.10.08</span></span><button class="tool" id="fullscreen" type="button" aria-label="全屏汇报" title="全屏汇报"><img
+        src="assets/acquisition/maximize.svg" alt=""></button></header>
+  <aside class="sidebar">
+    <div class="side-label">阶段汇报 / DATA ACQUISITION</div>
+    <nav aria-label="汇报章节" id="chapterNav"></nav>
+    <div class="side-bottom">统计截止：2026-10-01<br>研究范围：2026年前发售的游戏<br>数据来源：Steam / SteamSpy / RAWG</div>
+  </aside>
+  <main>
+    <section class="slide" id="delivery" aria-labelledby="title-1">
+      <div class="heading">
+        <div class="eyebrow">01 / 阶段交付</div>
+        <h1 id="title-1">Steam 成就数据获取</h1>
+        <p class="description">从研究问题出发，完成数据源验证、全量枚举、多机抓取、清洗入库与质量复核。</p>
+      </div>
+      <div class="content">
+        <div class="metrics">
+          <div class="metric">
+            <div class="metric-label">研究范围内游戏</div>
+            <div class="metric-value number">50,956</div>
+            <div class="metric-detail">2026年前发售、带Steam成就</div>
+          </div>
+          <div class="metric">
+            <div class="metric-label">已入库成就</div>
+            <div class="metric-value number">197.1万</div>
+            <div class="metric-detail">准确数量：1,971,064 条</div>
+          </div>
+          <div class="metric">
+            <div class="metric-label">游戏标签明细</div>
+            <div class="metric-value number">88.9万</div>
+            <div class="metric-detail">准确数量：888,837 行（一行=游戏×来源×标签）；SteamSpy 63.9万 + RAWG 25.0万</div>
+          </div>
+        </div>
+        <div class="takeaway">
+          <p>本阶段完成：把“想研究什么”，落实为“已有可查询、可复核的数据”。</p>
+        </div>
+        <!-- <div class="proof">来源：2026-10-01《数据获取阶段报告》。数字是该阶段的统计记录，不是2026-10-08实时状态。</div> -->
+      </div>
+    </section>
+    <section class="slide" id="scope" aria-labelledby="title-2" hidden>
+      <div class="heading">
+        <div class="eyebrow">02 / 目标与边界</div>
+        <h1 id="title-2">玩家更愿意玩什么样的游戏？</h1>
+        <p class="description">先确定问题与观察单位，再决定抓什么，避免先收集大量用不到的数据。</p>
+      </div>
+      <div class="content">
+        <p class="big-statement">把“愿意玩”拆成可观察的参与信号：<br><span class="accent">玩多久、完成多深、是否仍然活跃。</span></p>
+        <div class="cols">
+          <div>
+            <h3>本阶段收集的两侧信息</h3>
+            <ul class="rule-list">
+              <li><strong>游戏是什么样</strong>类型、价格、发售年代、玩家标签、成就体系。</li>
+              <li><strong>人群参与到什么程度</strong>全局成就完成率、同时在线人数、拥有量估算及补充时长。</li>
+            </ul>
+          </div>
+          <div>
+            <h3>明确限制研究范围</h3>
+            <ul class="rule-list">
+              <li><strong>仅纳入2026年前发售的游戏</strong>排除当年新作，减轻上市初期数据（尤其是大批AI游戏）尚未稳定的影响。</li>
+            </ul>
+          </div>
+        </div>
+        <div class="takeaway">
+          <p>这些是游戏级人群数据，不能直接代表某个玩家的偏好，也不能把关联写成原因。</p>
+        </div>
+        <div class="proof">口径依据：README、AGENTS.md与阶段报告。全局完成率不是个人通关记录。</div>
+      </div>
+    </section>
+    <section class="slide" id="timeline" aria-labelledby="title-3" hidden>
+      <div class="heading">
+        <div class="eyebrow">03 / 推进时间线</div>
+        <h1 id="title-3">从少量验证，到全量交付</h1>
+        <p class="description">先跑通小样本，再扩大规模；抓取过程中持续修复问题，而不是一次性写完就放任运行。</p>
+      </div>
+      <div class="content">
+        <div class="timeline">
+          <div class="event"><time>09.08</time><strong>明确研究问题</strong>
+            <p>围绕游戏特征与参与度，裁剪不必要的研究方向。</p>
+          </div>
+          <div class="event"><time>09.15</time><strong>5款游戏冒烟测试</strong>
+            <p>验证成就率与商店信息；实测发现商店详情接口不支持批量，改用逐款请求。</p>
+          </div>
+          <div class="event"><time>09.17—18</time><strong>管道与云库落地</strong>
+            <p>切换游戏级免key方案，建立共享PostgreSQL；100款试水、600条任务跑通。</p>
+          </div>
+          <div class="event"><time>09.22</time><strong>全量多机回填</strong>
+            <p>展开约5万款游戏的任务，完善成就名称映射台账与收尾修复。</p>
+          </div>
+          <div class="event"><time>09.23—10.1</time><strong>协作与运行保障</strong>
+            <p>完成状态面板，处理反爬挑战、共享密钥识别及多机记账死锁。</p>
+          </div>
+          <div class="event"><time>09月末</time><strong>复核“假空数据”</strong>
+            <p>修正限流被误判为无数据的问题，重置终态并复抓验证。</p>
+          </div>
+          <div class="event"><time>10.01</time><strong>获取阶段收尾</strong>
+            <p>整理规模、覆盖和质量报告，形成可用于描述性统计的固定数据快照。</p>
+          </div>
+        </div>
+        <div class="proof">
+          时间线依据：learning-logs/2026-09-08、09-15、09-18、09-22、09-23、09-24与docs/data-report.md。早期设想以最终实现口径为准。</div>
+      </div>
+    </section>
+    <section class="slide" id="sources" aria-labelledby="title-4" hidden>
+      <div class="heading">
+        <div class="eyebrow">04 / 数据源选择</div>
+        <h1 id="title-4">不同来源，补齐不同信息</h1>
+        <p class="description">Steam提供官方身份与成就，SteamSpy补充玩家标签与热度，RAWG提供时长、评分与玩家状态。</p>
+      </div>
+      <div class="content">
+        <table class="table">
+          <thead>
+            <tr>
+              <th style="width:18%">来源</th>
+              <th style="width:35%">拿到什么</th>
+              <th style="width:29%">解决什么问题</th>
+              <th style="width:18%">接入方式</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td><strong>Steam 商店</strong><small>搜索 + 中英文详情</small></td>
+              <td>游戏列表、名称、类型、价格、发售日</td>
+              <td>定义研究范围，建立统一游戏身份</td>
+              <td>公开入口<small>当前流程免key</small></td>
+            </tr>
+            <tr>
+              <td><strong>Steam 成就</strong><small>全局接口 + 社区页</small></td>
+              <td>完成率、展示名称、成就描述</td>
+              <td>把数值完成率与人能看懂的名称对齐</td>
+              <td>公开入口<small>两源共同校验</small></td>
+            </tr>
+            <tr>
+              <td><strong>SteamSpy</strong></td>
+              <td>玩家标签、拥有量区间、同时在线、好差评</td>
+              <td>补充官方粗类型之外的玩家视角</td>
+              <td>公开API<small>遵守按源限速</small></td>
+            </tr>
+            <tr>
+              <td><strong>RAWG</strong></td>
+              <td>时长、评分、通关与弃坑等状态计数</td>
+              <td>补充Steam公开聚合数据的缺口</td>
+              <td>需要key<small>共享配额账本</small></td>
+            </tr>
+          </tbody>
+        </table>
+        <div class="proof">RAWG跨站匹配需校验Steam AppID。字段来自项目源模块与docs/sources.md；<a href="https://rawg.io/" target="_blank"
+            rel="noopener">RAWG 数据来源</a>。</div>
+      </div>
+    </section>
+    <section class="slide" id="pipeline" aria-labelledby="title-5" hidden>
+      <div class="heading">
+        <div class="eyebrow">05 / 抓取到入库</div>
+        <h1 id="title-5">数据怎样变成可用的表？</h1>
+        <p class="description">用一条可恢复的流水线完成枚举、排队、抓取、校验和入库，原始记录保存在PostgreSQL。</p>
+      </div>
+      <div class="content">
+        <div class="flow">
+          <div class="flow-node">
+            <div class="flow-label"><span>01</span>
+              <h3>全量枚举</h3>
+            </div>
+            <p>商店搜索筛选带成就游戏，再按发售年份确定研究帧。</p>
+          </div>
+          <div class="flow-node">
+            <div class="flow-label"><span>02</span>
+              <h3>展开任务</h3>
+            </div>
+            <p>一条任务 = 一款游戏 × 一个数据源。RAWG按评价门槛安排。</p>
+          </div>
+          <div class="flow-node">
+            <div class="flow-label"><span>03</span>
+              <h3>按缺口抓取</h3>
+            </div>
+            <p>worker领取未完成任务，按来源限速；失败退避或挂起。</p>
+          </div>
+          <div class="flow-node">
+            <div class="flow-label"><span>04</span>
+              <h3>映射与校验</h3>
+            </div>
+            <p>完成率与展示名称对齐，异常进入台账，不静默忽略。</p>
+          </div>
+          <div class="flow-node">
+            <div class="flow-label"><span>05</span>
+              <h3>分源入库</h3>
+            </div>
+            <p>各源独立写表，重复写入不产生重复记录，保留真实抓取时间。</p>
+          </div>
+          <div class="flow-node">
+            <div class="flow-label"><span>06</span>
+              <h3>复核与收尾</h3>
+            </div>
+            <p>看队列、修映射、复核终态，再整理阶段规模与质量报告。</p>
+          </div>
+        </div>
+        <div class="pipeline-end"><b>共同关联键：Steam AppID</b>
+          <p>同一游戏的商店、成就、标签与补充信息可联合查询。</p>
+        </div>
+        <div class="cols">
+          <div>
+            <h3>任务表回答：还该抓谁？</h3>
+            <p class="small muted">fetch_tasks保存当前状态、尝试次数和租约，支撑续跑。</p>
+          </div>
+          <div>
+            <h3>审计表回答：何时抓过？</h3>
+            <p class="small muted">ingest_log保存历史；请求账本单独记录实际请求消耗。</p>
+          </div>
+        </div>
+        <div class="proof">流程依据：cleaning/schema.sql、seed.py、worker.py、writers.py。采集原始事实不依赖本地文件缓存。</div>
+      </div>
+    </section>
+    <section class="slide slide-dense" id="findings" aria-labelledby="title-9" hidden>
+      <div class="heading">
+        <div class="eyebrow">06 / 初步描述性成果</div>
+        <h1 id="title-9">已经可以描述成就体系的规模与分布</h1>
+        <p class="description">固定快照共50,922款：50,705款有成就统计，50,881款有官方类型，41,281款带玩家标签。与原始研究帧不同，不混用分母。</p>
+      </div>
+      <div class="content">
+        <div class="chart-pair">
+          <figure class="chart">
+            <h3>游戏的成就数量并不均衡</h3><img src="assets/acquisition/achievement-counts.png"
+              alt="50705款游戏的成就数量分布：1至9条10373款，10至29条24686款，30至59条11002款，60至99条2767款，100条以上1877款">
+            <figcaption>按游戏计数，10—29条的区间最多。跨游戏的成就数量中位数为19条。</figcaption>
+          </figure>
+          <figure class="chart">
+            <h3>成就完成率同样呈现差异</h3><img src="assets/acquisition/completion-distribution.png"
+              alt="50705款游戏内成就完成率中位数的分布，低于20%的游戏27701款">
+            <figcaption>先在每款游戏内取完成率中位数，再观察游戏间分布，跨游戏中位数为17.5%；不是把全体玩家混在一起。</figcaption>
+          </figure>
+        </div>
+        <div class="chart-pair">
+          <figure class="chart">
+            <h3>官方类型：独立与动作类最多</h3><img src="assets/acquisition/genre-cloud.png"
+              alt="Steam官方类型词云：Indie约39476款、Action约22452款、Casual约22196款、Adventure约21368款最突出">
+            <figcaption>Steam 官方类型词云，字号代表游戏数量；一款游戏可同时属于多个类型。</figcaption>
+          </figure>
+          <figure class="chart">
+            <h3>玩家标签：单人与独立最常见</h3><img src="assets/acquisition/tag-cloud.png"
+              alt="SteamSpy玩家标签词云：Singleplayer、Indie、Action、Casual、Adventure、2D 等最突出">
+            <figcaption>SteamSpy 玩家标签词云，按带该标签的游戏数排列，粒度比官方类型更细。</figcaption>
+          </figure>
+        </div>
+        <div class="takeaway">
+          <p>这说明游戏的成就体系与完成深度存在差异；还不能据此断言“更难所以弃坑”。</p>
+        </div>
+        <div class="proof">图表仅从2026-10-01固定快照聚合，无预测结果。低完成率还可能受内容类型、隐藏条件、玩家基数和发行时间影响；类型与标签均为游戏级计数，不代表受欢迎程度或映射准确率。</div>
+      </div>
+    </section>
+    <section class="slide" id="next" aria-labelledby="title-10" hidden>
+      <div class="heading">
+        <div class="eyebrow">07 / 下一步</div>
+        <h1 id="title-10">从数据准备，走向问题解释</h1>
+        <p class="description">先稳住统计口径，再比较游戏差异，最后把发现整理成可复核的解释。</p>
+      </div>
+      <div class="content">
+        <div class="three">
+          <div class="next-step">
+            <div class="step-index">01 / 固定与复核</div>
+            <h2>让数据可复现</h2>
+            <p>保留固定数据版本，复核映射疑点与缺失字段，说明每项统计的样本范围。</p>
+          </div>
+          <div class="next-step">
+            <div class="step-index">02 / 描述与对照</div>
+            <h2>比较游戏差异</h2>
+            <p>从类型、价位、发售年代出发，比较成就规模、完成率和参与度，不急于下因果结论。</p>
+          </div>
+          <div class="next-step">
+            <div class="step-index">03 / 整理与验证</div>
+            <h2>形成可靠发现</h2>
+            <p>用具体游戏核对统计含义，检查结论是否受热门样本和数据缺口影响，再完善可视化展示。</p>
+          </div>
+        </div>
+        <p class="big-statement" style="margin-top:22px">这一阶段的成果：<br><span
+            class="accent">问题有边界，数据有规模，流程可恢复，质量可追溯。</span></p>
+        <div class="proof">资料索引：<a href="data-report.md">数据获取阶段报告</a> · <a href="data-pipeline.html">抓取流程说明</a> · <a
+            href="multi-machine.html">多机协作说明</a>。本汇报仅覆盖数据获取与描述性成果。</div>
+      </div>
+    </section>
+    <div class="progress" aria-hidden="true"><span id="progressFill"></span></div>
+    <footer class="bottom"><span class="bottom-label">统计截止 2026.10.01 · Steam / SteamSpy / <a href="https://rawg.io/"
+          target="_blank" rel="noopener">RAWG</a></span><select id="pageSelect" aria-label="选择汇报章节"></select><span
+        class="page-number" id="pageNumber" aria-live="polite">01 / 07</span><button class="tool" id="previous"
+        type="button" aria-label="上一页" title="上一页"><img src="assets/acquisition/arrow-left.svg" alt=""></button><button
+        class="tool" id="nextPage" type="button" aria-label="下一页" title="下一页"><img
+          src="assets/acquisition/arrow-right.svg" alt=""></button></footer>
+  </main>
+  <script>
+    'use strict';
+    const chapters = [['交付概览', '这阶段交付了什么'], ['目标与边界', '为什么抓这些数据'], ['推进时间线', '从试抓到全量收尾'], ['数据源选择', '每个网站提供什么'], ['抓取到入库', '数据如何变成可用表'], ['初步成果', '成就规模、完成率与类型标签'], ['下一步', '数据完成后的三件事']];
+    const slides = Array.from(document.querySelectorAll('.slide'));
+    const nav = document.getElementById('chapterNav');
+    const select = document.getElementById('pageSelect');
+    let current = 0;
+    chapters.forEach(([title, purpose], i) => {
+      const link = document.createElement('a'); link.href = '#' + slides[i].id; link.className = 'nav-link';
+      const number = document.createElement('span'); number.className = 'n'; number.textContent = String(i + 1).padStart(2, '0');
+      const group = document.createElement('span'); const name = document.createElement('strong'); name.textContent = title; const note = document.createElement('small'); note.textContent = purpose; group.append(name, note); link.append(number, group); nav.append(link);
+      const option = document.createElement('option'); option.value = String(i); option.textContent = String(i + 1).padStart(2, '0') + ' ' + title; select.append(option);
+    });
+    function render(index) {
+      current = Math.max(0, Math.min(slides.length - 1, index));
+      slides.forEach((slide, i) => { slide.hidden = i !== current; });
+      Array.from(nav.children).forEach((link, i) => { if (i === current) { link.setAttribute('aria-current', 'page'); } else { link.removeAttribute('aria-current'); } });
+      select.value = String(current); document.body.dataset.page = String(current);
+      document.getElementById('pageNumber').textContent = String(current + 1).padStart(2, '0') + ' / ' + String(slides.length).padStart(2, '0');
+      document.getElementById('progressFill').style.width = ((current + 1) / slides.length * 100) + '%';
+      document.getElementById('previous').disabled = current === 0; document.getElementById('nextPage').disabled = current === slides.length - 1;
+      window.scrollTo(0, 0);
+    }
+    function navigate(index) { const target = Math.max(0, Math.min(slides.length - 1, index)); render(target); if (location.hash !== '#' + slides[target].id) { location.hash = slides[target].id; } }
+    function fromHash() { const index = slides.findIndex(slide => '#' + slide.id === location.hash); render(index < 0 ? 0 : index); }
+    document.getElementById('previous').addEventListener('click', () => navigate(current - 1));
+    document.getElementById('nextPage').addEventListener('click', () => navigate(current + 1));
+    select.addEventListener('change', () => navigate(Number(select.value)));
+    window.addEventListener('hashchange', fromHash);
+    document.addEventListener('keydown', event => { if (['INPUT', 'SELECT', 'TEXTAREA'].includes(event.target.tagName)) return; if (event.key === 'ArrowRight' || event.key === 'PageDown') { event.preventDefault(); navigate(current + 1); } if (event.key === 'ArrowLeft' || event.key === 'PageUp') { event.preventDefault(); navigate(current - 1); } if (event.key === 'Home') { event.preventDefault(); navigate(0); } if (event.key === 'End') { event.preventDefault(); navigate(slides.length - 1); } });
+    document.getElementById('fullscreen').addEventListener('click', async () => { try { if (document.fullscreenElement) { await document.exitFullscreen(); } else { await document.documentElement.requestFullscreen(); } } catch (error) { console.info('Fullscreen unavailable', error.name); } });
+    fromHash();
+  </script>
+  <!-- Icons: Lucide, ISC license; see assets/acquisition/lucide-LICENSE. -->
+</body>
+
+</html>

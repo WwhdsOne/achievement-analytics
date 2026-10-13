@@ -32,3 +32,6 @@ node_modules/
 inkos.json
 .nvmrc
 .node-version
+
+# 图表生成的临时产物（最终稿在 docs/presentations/）
+.chart-data-*/
