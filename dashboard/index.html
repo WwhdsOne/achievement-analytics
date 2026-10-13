@@ -208,7 +208,7 @@
 <nav>
   <div class="brand">ACHIEVEMENT-ANALYTICS</div>
   <div class="tabs">
-    <button class="tab" id="tabAnalysis" onclick="switchView('analysis')">研究分析</button>
+    <button class="tab" id="tabAnalysis" onclick="switchView('analysis')">游戏数据故事</button>
     <button class="tab active" id="tabQueue" onclick="switchView('queue')">队列总览</button>
     <button class="tab" id="tabGame" onclick="switchView('game')">Steam AppID 查询</button>
     <button class="tab" id="tabCloud" onclick="switchView('cloud')">类型词云</button>
@@ -219,9 +219,9 @@
 
   <div id="viewAnalysis" class="hidden">
     <div class="analysis-shell">
-      <aside class="analysis-nav" id="analysisNav" aria-label="研究分析导航"></aside>
+      <aside class="analysis-nav" id="analysisNav" aria-label="数据故事导航"></aside>
       <main class="analysis-page" id="analysisPage" aria-live="polite">
-        <div class="analysis-status">正在读取固定数据版本的分析报告…</div>
+        <div class="analysis-status">正在读取游戏数据…</div>
       </main>
     </div>
   </div>
@@ -685,7 +685,6 @@ $('appidInput').addEventListener('keydown', e => { if (e.key === 'Enter') doLook
 
 progressLoop();
 </script>
-<script src="/assets/plotly.min.js"></script>
 <script src="/assets/analysis.js"></script>
 </body>
 </html>

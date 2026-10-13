@@ -355,15 +355,17 @@ class Handler(BaseHTTPRequestHandler):
             elif url.path in ASSETS:
                 path, content_type = ASSETS[url.path]
                 self._send(200, path.read_bytes(), content_type)
-            elif url.path == "/assets/plotly.min.js":
-                from plotly.offline import get_plotlyjs
-
-                self._send(200, get_plotlyjs().encode(), "text/javascript; charset=utf-8")
             elif url.path == "/api/analysis":
                 if REPORT_PATH.exists():
-                    self._send(200, REPORT_PATH.read_bytes(), "application/json; charset=utf-8")
+                    report = json.loads(REPORT_PATH.read_text(encoding="utf-8"))
+                    self._json({
+                        "metadata": {key: report.get("metadata", {}).get(key)
+                                     for key in ("version", "games", "built_at")},
+                        "stories": report.get("stories"),
+                        "generated_at": report.get("stories_generated_at", report.get("generated_at")),
+                    })
                 else:
-                    self._json({"error": "分析报告尚未生成，请先运行 modeling.regression.analysis。"}, 503)
+                    self._json({"error": "展示数据尚未生成，请按命令手册生成数据故事后重试。"}, 503)
             elif url.path == "/api/progress":
                 self._json(_stats_payload())
             elif url.path == "/api/genres":

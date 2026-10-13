@@ -34,14 +34,25 @@ def test_missing_report_is_explained_without_database_access(server, tmp_path, m
 
 def test_report_and_assets_are_available_without_database(server, tmp_path, monkeypatch):
     path = tmp_path / "report.json"
-    path.write_text('{"version":"test"}', encoding="utf-8")
+    path.write_text(json.dumps({
+        "metadata": {"version": "test", "games": 2, "built_at": "2026-10-01", "sha256": "internal"},
+        "stories": {"familiar_games": []}, "generated_at": "original",
+        "stories_generated_at": "updated", "models": [{"name": "RandomForest"}],
+        "parameters": {"folds": 5}, "conclusions": {"models": ["SHAP"]},
+    }), encoding="utf-8")
     monkeypatch.setattr(app, "REPORT_PATH", path)
     monkeypatch.setattr(app, "get_engine", lambda: pytest.fail("不应连接数据库"))
     with urlopen(server + "/api/analysis") as response:
-        assert json.load(response) == {"version": "test"}
+        assert json.load(response) == {
+            "metadata": {"version": "test", "games": 2, "built_at": "2026-10-01"},
+            "stories": {"familiar_games": []}, "generated_at": "updated",
+        }
     with urlopen(server + "/assets/analysis.js") as response:
         assert response.status == 200
         assert "javascript" in response.headers["Content-Type"]
     with pytest.raises(HTTPError) as exc:
         urlopen(server + "/assets/../../.env")
+    assert exc.value.code == 404
+    with pytest.raises(HTTPError) as exc:
+        urlopen(server + "/assets/plotly.min.js")
     assert exc.value.code == 404

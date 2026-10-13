@@ -134,7 +134,7 @@ uv run python -m modeling.regression.analysis --version engagement-20261001-0795
 # 面板显示最新生成的派生报告；端口已占用时换另一个
 uv run python -m dashboard.app --port 8601
 
-# 已有报告只补充同版本数据故事（不重新训练、不连接云库）
+# 从已有快照生成/更新数据故事（无需先生成完整分析报告，不连接云库）
 uv run python -m modeling.regression.stories --version engagement-20261001-079598c5d7ae
 
 # 单元测试，使用项目Python避免误用全局pytest
@@ -144,6 +144,8 @@ uv run python -m pytest -q
 uv run --with playwright python tests/check_dashboard_browser.py --url http://127.0.0.1:8601
 ```
 
-研究入口：`http://127.0.0.1:8601/#analysis/overview`。首页用成就数量、评价长尾、星露谷物语三个数据故事展示结果；“深入研究”保留六个专题，计算方法默认折叠。原有队列/查询/词云仍可访问。旧报告需用上面的 stories 命令补充数字（要求同版本快照在本机，版本和指纹均须匹配）；首次完整生成报告时自动包含故事。
+展示入口：`http://127.0.0.1:8601/#analysis/overview`。包含成就数量对比、名作口碑、通关与放下、热门之外四个页面，优先展示悟空、法环、只狼、空洞骑士等12款知名游戏。成就对比可选两款游戏，好评比例/评价数可切换，RAWG状态可逐游戏查看。原有队列/查询/词云仍可访问。旧报告需用上面的 stories 命令更新（要求同版本快照在本机，版本和指纹均须匹配）；没有报告时可以直接从已有快照生成展示数据。
+
+Dashboard已移除模型专题及其导航，旧专题地址自动回展示首页；分析API及下载只含故事与必要版本信息。研究实验脚本仍保留在 `modeling/`，与展示分开使用。
 
 建模快照和派生报告位于 `data/processed/`，全部不入Git；云库仍是原始数据的唯一事实源。该快照用于复现实验，不是抓取缓存。新机器首次运行需从云库提取自己的版本；复现旧版本需保留对应固定快照。报告缺失时页面会说明原因，分析API不自动执行实验或写库。
