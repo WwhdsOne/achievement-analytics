@@ -3,7 +3,7 @@
 <head>
 <meta charset="utf-8" />
 <meta name="viewport" content="width=device-width,initial-scale=1" />
-<title>achievement-analytics · 抓取面板</title>
+<title>achievement-analytics · 数据与研究面板</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
 <script src="https://cdn.jsdelivr.net/npm/wordcloud@1.2.2/src/wordcloud2.js"></script>
@@ -201,12 +201,14 @@
   @keyframes fade { from { opacity: 0; transform: translateY(6px); } to { opacity: 1; transform: none; } }
   @media (prefers-reduced-motion: reduce) { .fade { animation: none; } .fill { transition: none; } }
 </style>
+<link rel="stylesheet" href="/assets/analysis.css">
 </head>
 <body>
 
 <nav>
   <div class="brand">ACHIEVEMENT-ANALYTICS</div>
   <div class="tabs">
+    <button class="tab" id="tabAnalysis" onclick="switchView('analysis')">研究分析</button>
     <button class="tab active" id="tabQueue" onclick="switchView('queue')">队列总览</button>
     <button class="tab" id="tabGame" onclick="switchView('game')">Steam AppID 查询</button>
     <button class="tab" id="tabCloud" onclick="switchView('cloud')">类型词云</button>
@@ -214,6 +216,15 @@
 </nav>
 
 <div class="wrap">
+
+  <div id="viewAnalysis" class="hidden">
+    <div class="analysis-shell">
+      <aside class="analysis-nav" id="analysisNav" aria-label="研究分析导航"></aside>
+      <main class="analysis-page" id="analysisPage" aria-live="polite">
+        <div class="analysis-status">正在读取固定数据版本的分析报告…</div>
+      </main>
+    </div>
+  </div>
 
   <!-- ════ 视图一：队列总览 ════ -->
   <div id="viewQueue">
@@ -314,6 +325,9 @@ const fmt = n => (n ?? 0).toLocaleString('en-US');
 
 /* ── 视图切换 ── */
 function switchView(v) {
+  $('viewAnalysis').classList.toggle('hidden', v !== 'analysis');
+  $('tabAnalysis').classList.toggle('active', v === 'analysis');
+  document.querySelector('.wrap').classList.toggle('research-wide', v === 'analysis');
   $('viewQueue').classList.toggle('hidden', v !== 'queue');
   $('viewGame').classList.toggle('hidden', v !== 'game');
   $('viewCloud').classList.toggle('hidden', v !== 'cloud');
@@ -321,6 +335,8 @@ function switchView(v) {
   $('tabGame').classList.toggle('active', v === 'game');
   $('tabCloud').classList.toggle('active', v === 'cloud');
   if (v === 'cloud') { loadGenres(); loadTags(); }
+  if (v === 'analysis' && window.Analysis) window.Analysis.open();
+  if (v !== 'analysis' && location.hash !== '#' + v) location.hash = v;
 }
 
 /* ── 词云：wordcloud2.js 渲染，颜色每次刷新随机 ── */
@@ -669,5 +685,7 @@ $('appidInput').addEventListener('keydown', e => { if (e.key === 'Enter') doLook
 
 progressLoop();
 </script>
+<script src="/assets/plotly.min.js"></script>
+<script src="/assets/analysis.js"></script>
 </body>
 </html>

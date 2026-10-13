@@ -38,10 +38,15 @@ from sqlalchemy import text
 from cleaning.db import get_engine
 from cleaning.seed import materialize_tasks
 from cleaning.worker import run as worker_run
+from modeling.regression.dataset import REPORT_PATH
 
 logger = logging.getLogger(__name__)
 
 INDEX_HTML = Path(__file__).resolve().parent / "index.html"
+ASSETS = {
+    "/assets/analysis.js": (INDEX_HTML.parent / "analysis.js", "text/javascript; charset=utf-8"),
+    "/assets/analysis.css": (INDEX_HTML.parent / "analysis.css", "text/css; charset=utf-8"),
+}
 
 # 补抓时的默认排除源（当前为空：SteamSpy 已恢复且取消了自设日限，
 # 保留这个常量是为了临时挂起某个源时改一行即可）
@@ -347,6 +352,18 @@ class Handler(BaseHTTPRequestHandler):
         try:
             if url.path == "/":
                 self._send(200, INDEX_HTML.read_bytes(), "text/html; charset=utf-8")
+            elif url.path in ASSETS:
+                path, content_type = ASSETS[url.path]
+                self._send(200, path.read_bytes(), content_type)
+            elif url.path == "/assets/plotly.min.js":
+                from plotly.offline import get_plotlyjs
+
+                self._send(200, get_plotlyjs().encode(), "text/javascript; charset=utf-8")
+            elif url.path == "/api/analysis":
+                if REPORT_PATH.exists():
+                    self._send(200, REPORT_PATH.read_bytes(), "application/json; charset=utf-8")
+                else:
+                    self._json({"error": "分析报告尚未生成，请先运行 modeling.regression.analysis。"}, 503)
             elif url.path == "/api/progress":
                 self._json(_stats_payload())
             elif url.path == "/api/genres":
