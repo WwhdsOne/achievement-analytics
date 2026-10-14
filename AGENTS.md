@@ -1,5 +1,8 @@
 ## 项目定位
 
+> ⚠️ **任何操作之前，先 `git pull origin main`**——改代码、跑 worker、开面板、查数据、写文档都一样。
+> 理由与事故案例见「Git 工作流」一节。
+
 Steam 成就数据分析，**总目标：分析用户和玩家更愿意玩什么样的游戏**。先读 `README.md` 了解背景，再读 `docs/plan.md` 了解研究问题与排期。做任何事之前确认处于正确阶段，不要提前实现后期任务。
 
 > ⚠️ `docs/plan.md` 的**「数据源」与「清洗核心步骤」两节已过期**：它仍按「逐玩家 API + 需 key 的
@@ -27,8 +30,9 @@ cleaning/   抓取编排与入库，**产物是 PostgreSQL 数据仓库**，不�
 modeling/   Q1 与 Q2 各一个子包：irt/（Q1 难度建模，**目前仅占位**）
             · regression/（Q2 偏好归因，**尚未创建**）；一个实验一个脚本，
             实验记录统一写 modeling/experiments.md
-dashboard/  内部状态面板（标准库 http.server，零额外依赖）：队列进度 / 单游戏查询 /
-            按任务方式补抓 · `uv run python -m dashboard.app`
+dashboard/  内部状态面板，**自包含的 Go 模块**（自己的 go.mod / .env / Dockerfile /
+            docker-compose.yml / deploy.sh，仓库根目录不放任何面板相关文件）。
+            只读后端，前端三件套用 //go:embed 打进同一二进制，**没有写接口**
 viz/        图表函数，与 notebook 解耦
 notebooks/  只做探索，不放正式逻辑；正式逻辑沉淀到模块
 data/       全部不入 git。interim/ 与 processed/ 目前是**空占位**（未启用）
@@ -36,7 +40,7 @@ docs/       commands.md（命令手册，**日常先看这个**）· sources.md�
             · multi-machine.html（多机分工与防冲突讲解）· data-pipeline.html（流程讲解）
             · plan.md（研究问题与排期，数据源两节已过期）
 learning-logs/  中文日志，每天一个文件
-tests/      关键函数必须有测试（响应解析、schema 契约、队列状态机、写入层）
+scripts/    独立验收脚本（playwright 浏览器检查面板与汇报页渲染），**不是 pytest 用例**
 ```
 
 ## 数据获取流程（2026-09-17 起：gap 驱动）
@@ -62,7 +66,7 @@ tests/      关键函数必须有测试（响应解析、schema 契约、队列�
 要点：
 
 - **数据源清单与限速/配额只在 `sources` 表**（`schema.sql`）与 `crawler/registry.py`
-  两处声明，`tests/test_registry.py` 断言两者一致；加源要同时改，别只改一处
+  两处声明，**加源必须同时改两处**（原先有测试断言，2026-10-13 起没有自动兜底了）
 - **源分两类**：`bulk`（一次请求覆盖多款：商店搜索 100/次、SteamSpy `all` 1000/次）
   **不进队列**；`per_game`（一次一款）才进 `fetch_tasks`
 - `fetch_tasks`（可变**当前状态**·该抓谁）与 `ingest_log`（不可变**审计历史**·何时抓的）
@@ -144,7 +148,7 @@ uv run python -m cleaning.rawg_keys disable --key-id 3              # 停用已�
 
 - Python 3.13，统一用 **uv** 原生工作流管理依赖（`pyproject.toml` + `uv.lock`）：`uv sync` 建环境并装依赖
 - 依赖变更必须同步 `pyproject.toml` 与 `uv.lock` 并在日志中说明
-- 执行脚本统一 `uv run <cmd>`（如 `uv run pytest`），不必手动 activate
+- 执行脚本统一 `uv run <cmd>`（如 `uv run python -m cleaning.worker`），不必手动 activate
 - **数据库跑在腾讯云**（2026-09-17 起不再用本地 Docker；服务器上是 Docker 里的 PostgreSQL）：
   `.env` 里配 `POSTGRES_HOST` / `POSTGRES_PORT`（**本项目当前是 15432**，不是默认 5432）/
   `POSTGRES_DB` / `POSTGRES_USER` / `POSTGRES_PASSWORD`
@@ -158,6 +162,80 @@ uv run python -m cleaning.rawg_keys disable --key-id 3              # 停用已�
   次数归零、密钥池「看起来」满额。删库前先记下 `quota_status` 与 `rawg_key_status`
 - **只用公开数据源**；唯一的例外是 **RAWG**（评分 / 时长 / 弃坑率 / 题材标签），其 key 放项目根目录 `.env`（不入 git），读取统一走 `crawler/config.py`
 - IGDB 已于 2026-09-15 放弃，不要复活：它需 Twitch OAuth2，而 Twitch 两步验证在国内手机号上走不通；其时长/评分价值已被 RAWG 覆盖
+
+## 面板部署（2026-10-13 起：Go 单文件 + scratch 镜像）
+
+面板（`dashboard/`）后端是 **Go、只读**，前端三件套用 `//go:embed` 打进同一个二进制。
+**`dashboard/` 是自包含的**：它的 `go.mod`、`.env`、`Dockerfile`、`docker-compose.yml`、
+`deploy.sh` 全在这个目录里，仓库根目录不放任何面板相关文件。
+
+跑在腾讯云那台机器的 Docker 里，公网 `http://82.157.208.173:8600`。部署 = 在本机跑一条命令：
+
+```bash
+bash dashboard/deploy.sh
+```
+
+链路：本机 `go build` 交叉编译 linux/amd64 → 打成 tar → 上传到服务器
+`/opt/achievement-dashboard/` → `docker compose up -d --build` → 服务器本机探活 →
+本机探公网 → 确认写接口是 404。**服务器上不需要仓库、不需要 Git、不需要 Python。**
+
+凭据全在 `dashboard/.env`（**不入 git**），脚本只读同目录这一份，**不读仓库根的 `.env`**。
+`.env` 里两段**各自独立填写、原样使用**，脚本不做任何改写：
+
+- `DEPLOY_HOST` = 服务器地址，只给 `deploy.sh` 登录用
+- `POSTGRES_HOST` = 数据库地址，原样传给容器连库。面板与库同机、容器走 host 网络，
+  所以填 `127.0.0.1`
+
+本机想预览面板时用环境变量**临时覆盖**（环境变量优先于 `.env`）：
+
+```bash
+cd dashboard && POSTGRES_HOST=82.157.208.173 go run . --port 8601
+```
+
+部署脚本只把 `POSTGRES_*` 抽出来传上去，**SSH 账号密码不出本机**。面板启动时会把实际
+连的库打进日志（`数据库：host:port/db`），一眼能确认 `.env` 填对没有。
+
+登录用账号密码（sshpass 在 macOS 上没有，脚本用 `expect` 应答）。
+
+为什么从 Python 改成 Go（2026-10-13）：原版为了拿 `REPORT_PATH` 一个常量导入了
+`modeling.regression.dataset`，那个模块顶层 `import numpy/pandas`，于是把 pandas、scipy、
+scikit-learn、shap、numba、llvmlite、matplotlib、seaborn、plotly 整套科学计算栈拖进了运行
+镜像——实测 wheel 下载约 600MB、2 核服务器上构建超过 11 分钟。换 Go 后镜像 16MB、
+容器内存约 6MB、构建秒级。**别再往面板里引 Python 依赖**，这条收益就是这么来的。
+
+形态要点：
+
+- **没有写接口**。数据已抓完，原先的「立即抓取」整个删掉了（路由、前端按钮、Python 写路径）。
+  面板只读，补数据走 CLI：`uv run python -m cleaning.worker --appid <id>`。因此也不存在
+  「只读开关」——`POST /api/game/crawl` 落到兜底路由直接返回 404
+- `--rate-limit 60`：每个 IP 每分钟对 `/api/*` 的请求上限，由 compose 传入。**循环地址豁免**，
+  因为容器健康检查（每 30 秒一次）和服务器本机的浏览器验收都会连发 `/api/*` 请求。只限
+  `/api/*` 而不限静态资源——限了会让限流期间的页面渲染残缺。这只是挡手滑与爬虫的量级：
+  状态在进程内存里、重启即清零、多出口 IP 也能绕过，**不是 DDoS 防护**
+- **镜像 `FROM scratch`**：没有 shell、没有包管理器、没有第三方基础镜像。代价是容器内的
+  健康检查只能由二进制自己做（`/dashboard -health`），compose 的 `healthcheck.test` 就是这么写的
+- 容器 `network_mode: host`：容器内 `127.0.0.1:15432` 就是宿主上 Docker 里的 PostgreSQL，
+  所以 `dashboard/.env` 里的 `POSTGRES_HOST` 填 `127.0.0.1`，原样传给容器
+- 容器以 root 运行：`data/` 是 bind mount，避免容器 uid 与宿主属主两层权限打架
+- 连接池上限 4（`dashboard/db.go`）：云库连接数是**全组共享预算**，面板只是只读展示。
+  实测连接被占满时面板直接 500（`FATAL: sorry, too many clients already`），所以刻意压小并
+  **全程共用一个池**，不要改成每请求新建
+
+⚠️ **公网可达还需要在腾讯云控制台放行入站 TCP 8600**——这一步只能在控制台做。踩过一次的坑：
+没放行时表现为「curl 说 Connected，然后 Empty reply」，很像服务端故障，其实包根本没到主机
+（`tcpdump -i eth0` 一个包都没抓到；主机私网 IP 是 10.2.0.2，前面有网关做 NAT 与安全组），
+是前置网关代答了握手。遇到这个症状先查控制台，别去改代码。
+
+**部署脚本绝不碰的三件事**（既有铁律在部署场景下的延续）：
+
+1. **不跑 `cleaning.db init`**：DDL 只能由一个人手工执行一次，并发的 DDL 会把所有 worker
+   堵在锁队列上（见「环境规范」）
+2. **不把部署凭据传上服务器**：传到服务器的 `.env` 只含 `POSTGRES_*`（容器连库用），
+   SSH 账号密码留在本机 `dashboard/.env`；`.dockerignore` 第一段挡的是它进构建上下文
+3. **不在那台机器上起 `worker`**：它只有 2 核，面板和 PostgreSQL 已经在抢资源
+
+`data/processed/analysis-report.json` 是分析页的数据源，**不入 git**，由部署脚本随二进制一起
+上传。刷新方式见 `docs/commands.md` §8。
 
 ## 数据规范
 
@@ -214,6 +292,8 @@ uv run python -m cleaning.rawg_keys disable --key-id 3              # 停用已�
 ## 代码规范
 
 - 模块化优先：函数单一职责，方便后期替换（如难度建模从手工指标换成 IRT）
+- **不写测试用例**（2026-10-13 起）：项目不维护 `tests/`，**也不要新增 pytest 用例**
+  （已删除全部历史用例）。要验证改动就真实跑一遍，或用 `scripts/` 下的浏览器验收脚本
 - 公共函数必须有类型注解与 docstring
 - 统一用 `rg` 替代 grep 检索代码
 - 可视化配色遵循中国股市惯例之外的通用色板；涨跌类图表才用红涨绿跌
@@ -230,7 +310,17 @@ uv run python -m cleaning.rawg_keys disable --key-id 3              # 停用已�
 
 远程仓库：`origin` → https://github.com/WwhdsOne/achievement-analytics.git
 
-1. 分支：`main` 保护，功能开发走 `feat/xxx` 分支，合并前自测
+> ⚠️ **任何操作之前，先 `git pull origin main`**（2026-10-13 起）。
+> 不管你要做的是改代码、跑 `worker`、开面板、查数据还是写文档，**动手前第一件事就是拉最新代码**。
+> 理由：全组共用同一个云库、同一份数据，且只有 `main` 一个分支——本地落后时你跑的可能是
+> 已被修掉的旧版本。代价很实在：429 限流被吞成终态 `empty` 那次，落后一台机器就多烧一批任务；
+> RAWG 凭据判据那次也是修复只在别的分支上、跑 main 的机器拿不到。
+
+1. **只用 `main` 一个分支**（2026-10-13 起）：直接在 `main` 上提交推送，
+   **不要再建 `feat/xxx` 之类的功能分支**；本地/远程若残留其他分支，合并进 `main` 后删掉
+   （`git branch -d <名>` + `git push origin --delete <名>`，删前先确认它没有独有提交）。
+   理由：全组共用同一个云库、同一份数据，代码分支只会让各机器跑的版本不一致——
+   之前就有过「修复只在功能分支上、队友跑 main 拿不到」的情况（429 限流修复差点漏推）
 2. commit message：`<scope>: <做了什么>`，中文描述，如 `crawler: 增加成就时间戳字段`
 3. 每日流程：**code/debug → commit → 写中文日志 `learning-logs/YYYY-MM-DD.md` → push**
 4. 日志格式：今天做了什么 / 遇到什么坑 / 明天计划，坑与解法必须写清，供队友检索
@@ -244,4 +334,5 @@ uv run python -m cleaning.rawg_keys disable --key-id 3              # 停用已�
 - 禁止跳过 baseline 直接上深度模型
 - **云库必须开自动备份**（按天快照）：数据只存在库里，没有本地缓存兜底
 - 禁止用未映射的 API 内部名称（如 `NEW_ACHIEVEMENT_1_1`）出现在正式分析与报告中
+- 禁止让部署脚本跑 `cleaning.db init`、写 `.env`、或在服务器上起 `worker`（见「面板部署」）
 - 不确定的设计决策先确认，不要自行拍板改 schema

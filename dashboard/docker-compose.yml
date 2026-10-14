@@ -1,0 +1,41 @@
+# 面板的部署编排。由本机的 deploy/deploy.sh 上传到服务器
+# /opt/achievement-dashboard/ 后，在那里 `docker compose up -d --build`。
+#
+# 三个刻意的选择：
+# - **FROM scratch 的极简镜像**：运行时只有那个 Go 静态二进制，没有任何基础镜像
+#   依赖，部署不需要下载任何东西。
+# - **network_mode: host**：容器内的 127.0.0.1:15432 就是宿主上 Docker 里的
+#   PostgreSQL，所以服务器上那份 .env 可以原样复用（POSTGRES_HOST=127.0.0.1），
+#   也不必为容器另维护一套连接地址。代价：不能写 ports，端口直接落在宿主上。
+# - **没有写接口**：面板只读，补数据走 CLI。所以这里不存在「只读开关」，
+#   也不需要闸门——POST 落到兜底路由直接 404。
+#
+# ⚠️ db init 绝不能出现在这里：DDL 只能由一个人手工执行一次，并发的 DDL 会把所有
+#    worker 堵在锁队列上（AGENTS.md 硬性规矩）。
+
+services:
+  dashboard:
+    build: .
+    image: achievement-dashboard:local
+    network_mode: host
+    env_file: .env
+    volumes:
+      # 分析报告（data/processed/analysis-report.json）由部署脚本上传到这里，
+      # 也是 /api/analysis 的数据源
+      - ./data:/app/data
+    restart: unless-stopped
+    # 镜像的 ENTRYPOINT 是 /dashboard，这里只追加参数
+    command:
+      - --host
+      - 0.0.0.0        # host 网络下必须绑 0.0.0.0，绑 127.0.0.1 收不到公网流量
+      - --port
+      - "8600"
+      - --rate-limit
+      - "60"           # 每个 IP 每分钟对 /api/* 的请求上限（循环地址豁免）
+    healthcheck:
+      # scratch 里没有 shell / curl / wget，健康检查只能由二进制自己完成
+      test: ["CMD", "/dashboard", "-health", "-port", "8600"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 10s

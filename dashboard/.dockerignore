@@ -1,0 +1,29 @@
+# 构建上下文是**部署目录**（服务器上的 /opt/achievement-dashboard），里面只有
+# 交叉编译好的二进制、Dockerfile、docker-compose.yml、data/ 和 .env。
+#
+# 绝不能排除 achievement-dashboard —— Dockerfile 要 COPY 它。
+
+# 硬性安全线：.env 不该进构建上下文。它会经过 docker daemon 的临时目录，
+# 而镜像里根本用不到它（运行时由 compose 的 env_file 注入）。
+.env
+
+# 分析报告由 bind mount 提供，不打进镜像
+data/
+
+# 以下几条是为「万一在仓库根目录误用本文件构建」兜底；
+# 在部署目录里它们匹配不到任何东西，是无害的。
+.git
+.github
+.venv/
+__pycache__/
+*.py[cod]
+.pytest_cache/
+.idea/
+.vscode/
+.DS_Store
+node_modules/
+vendor/
+result/
+books/
+docs/
+learning-logs/

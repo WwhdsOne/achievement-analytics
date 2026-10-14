@@ -20,6 +20,9 @@ __pycache__/
 .venv/
 .pytest_cache/
 
+# Go 面板的交叉编译产物（由 deploy/deploy.sh 生成后上传到服务器，不入库）
+build/
+
 # Jupyter
 .ipynb_checkpoints/
 

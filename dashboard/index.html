@@ -145,7 +145,6 @@
   }
   button:hover { opacity: .82; }
   button:disabled { opacity: .35; cursor: default; }
-  button.ghost { background: transparent; color: var(--INK); border: 1.5px solid var(--INK); }
 
   /* 游戏结果 */
   .gname { font-size: 17px; font-weight: 800; letter-spacing: -.01em; margin: 6px 0 12px; }
@@ -164,12 +163,7 @@
   .st-none    { background: transparent; color: var(--FAINT); box-shadow: inset 0 0 0 1.5px var(--GRID); }
   .meta { color: var(--MUTED); font-size: 12px; line-height: 1.8; }
   .meta b { color: var(--INK); font-weight: 600; }
-  .log {
-    margin-top: 12px; font-size: 12px; line-height: 1.7; color: var(--MUTED);
-    font-variant-numeric: tabular-nums;
-  }
-  .log .err { color: var(--INK); font-weight: 600; }
-  #fetchLog:empty, #missingBox:empty, #achBox:empty { display: none; }
+  #missingBox:empty, #achBox:empty { display: none; }
 
   /* 缺失源 */
   .missing-row { display: flex; flex-wrap: wrap; gap: 8px; align-items: center; margin-bottom: 12px; }
@@ -271,16 +265,14 @@
 
   <!-- ════ 视图二：AppID 查询 ════ -->
   <div id="viewGame" class="hidden">
-    <p class="nav-purpose">Steam AppID 查询：展示单款游戏的商店信息、逐源任务状态和成就明细，也可按任务队列补抓。</p>
+    <p class="nav-purpose">Steam AppID 查询：展示单款游戏的商店信息、逐源任务状态和成就明细。</p>
     <div class="card fade">
-      <h2>Steam AppID 查询 / 补抓</h2>
-      <div class="sub">查任务状态与全部成就 · 尚未爬取的游戏可「立即抓取」（走任务队列，SteamSpy 暂挂）</div>
+      <h2>Steam AppID 查询</h2>
+      <div class="sub">查任务状态与全部成就 · 面板只读，不再提供补抓入口；要补数据用命令行 <code>uv run python -m cleaning.worker --appid &lt;id&gt;</code></div>
       <div class="lookup">
         <input id="appidInput" inputmode="numeric" placeholder="输入 AppID，如 367520" />
         <button id="lookupBtn">查询</button>
-        <button id="crawlBtn" class="ghost">立即抓取</button>
       </div>
-      <div class="log" id="fetchLog"></div>
     </div>
 
     <div class="card fade hidden" id="resultCard">
@@ -560,7 +552,6 @@ async function progressLoop() {
 }
 
 /* ── 单款查询 ── */
-let currentAppid = null;
 let currentAch = [];
 let currentSort = 'pct';
 
@@ -572,7 +563,7 @@ async function lookup(appid) {
     $('gname').textContent = `未收录 · appid ${appid}`;
     $('missingBox').innerHTML = '';
     $('taskChips').innerHTML = '';
-    $('gmeta').innerHTML = `${d.error || '不在库中'}。若它在 Steam 上真实存在，点「立即抓取」会自动补录并进队列。`;
+    $('gmeta').innerHTML = `${d.error || '不在库中'}。面板只读，不提供补录入口。`;
     $('achCard').classList.add('hidden');
     $('curveCard').classList.add('hidden');
     return { notFound: true };
@@ -802,53 +793,14 @@ function renderInfo(d) {
 async function doLookup() {
   const appid = parseInt($('appidInput').value, 10);
   if (!appid) return;
-  currentAppid = appid;
   $('lookupBtn').disabled = true;
   try { await lookup(appid); } finally { $('lookupBtn').disabled = false; }
 }
 
-/* ── 立即抓取（任务式）── */
-async function doCrawl() {
-  const appid = parseInt($('appidInput').value, 10);
-  if (!appid) { $('fetchLog').textContent = '先输入 appid'; return; }
-  currentAppid = appid;
-  $('crawlBtn').disabled = true;
-  $('fetchLog').textContent = `正在把 appid=${appid} 补进任务队列…`;
-  const res = await fetch('/api/game/crawl', {
-    method: 'POST', headers: {'Content-Type': 'application/json'},
-    body: JSON.stringify({ appid }),
-  });
-  const d = await res.json();
-  if (!res.ok || !d.ok) {
-    $('fetchLog').innerHTML = `<span class="err">${d.error || '提交失败'}</span>`;
-    $('crawlBtn').disabled = false;
-    return;
-  }
-  $('fetchLog').textContent =
-    `已物化 ${d.created_tasks} 条任务，worker 线程处理中（同队列原子抢占）…`;
-  await lookup(appid);
-  pollWhileFetching(appid);
-}
-
-async function pollWhileFetching(appid) {
-  for (;;) {
-    const d = await (await fetch('/api/game?appid=' + appid)).json();
-    const pend = (d.tasks || []).filter(t => t.status === 'pending' || t.status === 'error').length;
-    if (d.fetching && pend > 0) {
-      $('fetchLog').textContent = `处理中… 剩 ${pend} 条任务未到终态`;
-      await new Promise(r => setTimeout(r, 2000));
-      continue;
-    }
-    $('fetchLog').textContent = '本轮抓取结束。';
-    break;
-  }
-  $('crawlBtn').disabled = false;
-  await lookup(appid);
-  loadProgress();
-}
+/* 面板只读：原先的「立即抓取」入口已删除。要补数据请用命令行
+   `uv run python -m cleaning.worker --appid <id>`。 */
 
 $('lookupBtn').addEventListener('click', doLookup);
-$('crawlBtn').addEventListener('click', doCrawl);
 $('appidInput').addEventListener('keydown', e => { if (e.key === 'Enter') doLookup(); });
 
 progressLoop();
