@@ -2,28 +2,8 @@
 
 搜索游戏，选择1–3款作为种子，按年份筛选推荐，并查看每条推荐的关系贡献与事实来源。四个页面由同一条启动命令提供，导航不依赖其他端口。默认启动时从小组 PostgreSQL **只读加载一次**，自动生成本机图谱缓存；重启更新数据。正常运行不需要手动接收数据包。
 
-## 运行
-
-最新版交付包：`ZZY-site-v5.zip`，包含整合原搜索框的中文译名与简称搜索。
-
-在小组仓库根目录使用已有 `.env` 中的 `POSTGRES_*` 配置：
-
-```powershell
-uv sync
-uv run python result/ZZY/run.py serve
-```
-
-等待终端打印地址后打开 `http://127.0.0.1:8605/`。首次需要读取数据并构建图谱，不能刚启动就访问；后续启动仍读取数据库，再按内容版本复用并核验缓存。程序只执行查询，不写共享数据库。`.env` 只保留本机，不上传。
-
-配置放在其他位置时使用 `--env-file`；不会读取当前工作目录下不明来源的 `.env`。环境变量优先于配置文件。数据库连接失败明确停止，不自动使用旧缓存。
-
-```powershell
-uv run python result/ZZY/run.py serve --env-file "C:/你的路径/achievement-analytics/.env" --port 8606
-```
-
 ## 在哪里查看知识图谱和推荐解释
 
-搜索支持中文名、常用译名和简称，例如“老头环”“空洞骑士”“星露谷”；首批本地别名表覆盖44款游戏、114个搜索词，两个原搜索入口共用，不增加单独的别名入口或提示。补充方式及本次验证见[中文别名搜索](docs/SEARCH-ALIASES.md)。更新代码后需重启服务。
 
 启动后，以下地址共用当前服务端口，无需分别启动：
 
@@ -39,7 +19,6 @@ uv run python result/ZZY/run.py serve --env-file "C:/你的路径/achievement-an
 ## 成果与说明
 
 - [专题报告](report.md)：方法、功能、历史实验结果与限制。
-- [AI辅助评价对照](figures/ai-method-comparison.png)、[缺失标签上下界](figures/ai-unknown-bounds.png)。
 - [桌面截图](figures/desktop-preview.png)、[手机截图](figures/mobile-preview.png)：原冻结数据演示截图。
 - [运行说明](docs/RUN.md)、[数据库与缓存](docs/DATA.md)、[接口约定](docs/API.md)、[上传步骤](docs/GITHUB.md)。
 - [数据库加载改造](docs/database-loading-plan.md)、[数据库验证](docs/DATABASE-VERIFICATION.md)、[导航与图谱展示验证](docs/SITE-VERIFICATION.md)、[历史迁移验证](docs/VERIFICATION.md)。
@@ -57,6 +36,4 @@ result/ZZY/
   data/、runtime/            旧离线输入及运行输出，不入Git
 ```
 
-显式离线运行 `uv run python result/ZZY/run.py serve --source snapshot`，需要原冻结输入；此模式只用于历史复现。默认数据库启动不需要旧输入或数据ZIP。
 
-当前仍是独立本地演示服务，尚未接入小组Go面板。177对外部AI评分属于原冻结数据的探索性评价，不是实时数据的新评价或独立真人效果。上传本版代码不代表统一网站集成已完成。
