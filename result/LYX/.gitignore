@@ -1,8 +1,8 @@
 # 本地数据、流水线日志与运行报告；SQL、说明和程序可以跟踪。
 database/*.sqlite*
 database/*.db*
-database/remote_audit.json
-database/data/
 process/runtime/
 process/__pycache__/
 process/tests/__pycache__/
+/database/
+/docs/API_PROBE.md
