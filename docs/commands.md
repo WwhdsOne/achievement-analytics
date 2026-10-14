@@ -215,6 +215,9 @@ ls -lh /opt/achievement-dashboard                   # 看二进制/报告是什�
 - 限速与端口写在 compose 的 `command` 里，改完要**重新部署**（`bash dashboard/deploy.sh`）才生效。
   验收脚本（`scripts/check_dashboard_browser.py`）会连发几十个 `/api/*`，**从自己机器打公网
   地址时会被限速**（60 次/分钟）；要跑就先临时把 `--rate-limit 60` 去掉再部署
+- **同一 IP 累计被拒 2 次即封禁 8 小时**：封禁期间 `/api/*` 一律 429（`Retry-After` 为剩余
+  秒数），错误信息里写明原因与剩余时长。被封大多是一轮爆发超额——第 61 个请求被拒后，
+  只要再来 1 个被拒请求就封。谁被封看容器日志（`docker compose logs dashboard | grep 已封禁`）
 - 面板是课程内部工具，`net/http` 直接对公网服务，没做请求体大小/超时那类加固。
   已知限度：限速是进程级的，重启容器即清零、多出口 IP 也能绕过——挡手滑和爬虫，不挡 DDoS
 

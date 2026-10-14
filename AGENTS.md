@@ -202,6 +202,9 @@ scikit-learn、shap、numba、llvmlite、matplotlib、seaborn、plotly 整套科
   因为容器健康检查（每 30 秒一次）和服务器本机的浏览器验收都会连发 `/api/*` 请求。只限
   `/api/*` 而不限静态资源——限了会让限流期间的页面渲染残缺。这只是挡手滑与爬虫的量级：
   状态在进程内存里、重启即清零、多出口 IP 也能绕过，**不是 DDoS 防护**
+- **反复触发限速会被封禁**：同一 IP 累计被拒（429）2 次即封禁 8 小时，期间 `/api/*` 一律
+  429（`Retry-After` 为剩余秒数）。被拒计数不随窗口滑动清零，所以一轮爆发超额很多次也会
+  立刻被封。封禁同样只在进程内存里，重启容器即清零；封禁事件会打进容器日志（`已封禁 <ip>`）
 - **镜像 `FROM scratch`**：没有 shell、没有包管理器、没有第三方基础镜像。代价是容器内的
   健康检查只能由二进制自己做（`/dashboard -health`），compose 的 `healthcheck.test` 就是这么写的
 - 容器 `network_mode: host`：容器内 `127.0.0.1:15432` 就是宿主上 Docker 里的 PostgreSQL，

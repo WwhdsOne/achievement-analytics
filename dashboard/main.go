@@ -42,42 +42,85 @@ var assets = map[string]struct{ file, ctype string }{
 	"/assets/overview.js": {"overview.js", "text/javascript; charset=utf-8"},
 }
 
-// rateLimiter 每 IP 滑动窗口限速。
+// rateLimiter 每 IP 滑动窗口限速，外加「反复触发即封禁」。
 //
 // 量级只够挡住手滑和爬虫：状态在进程内存里，重启容器即清零，多出口 IP 也能绕过，
 // **不是** DDoS 防护。部署到公网时靠它给云库减负，别指望它扛流量。
+//
+// 封禁规则：同一 IP 累计被拒（429）达到 banAfter 次就封禁 banDuration 时长，
+// 期间 /api/* 一律拒绝。被拒计数不随窗口滑动清零——短时间两轮触发和一轮爆发
+// 超额很多次，在「是爬虫」这件事上证据等价。
 type rateLimiter struct {
-	mu      sync.Mutex
-	hits    map[string][]time.Time
-	limit   int
-	window  time.Duration
-	maxKeys int
+	mu          sync.Mutex
+	hits        map[string][]time.Time
+	bans        map[string]time.Time // ip → 封禁到期时刻
+	strikes     map[string]int       // ip → 累计被拒次数
+	limit       int
+	window      time.Duration
+	banAfter    int           // 第几次被拒后触发封禁
+	banDuration time.Duration // 封禁时长
+	maxKeys     int
 }
 
 func newRateLimiter(perMinute int) *rateLimiter {
 	return &rateLimiter{
-		hits:    map[string][]time.Time{},
-		limit:   perMinute,
-		window:  time.Minute,
-		maxKeys: 10_000,
+		hits:        map[string][]time.Time{},
+		bans:        map[string]time.Time{},
+		strikes:     map[string]int{},
+		limit:       perMinute,
+		window:      time.Minute,
+		banAfter:    2,
+		banDuration: 8 * time.Hour,
+		maxKeys:     10_000,
 	}
 }
 
+// verdict 是一次限速判定的结果。
+type verdict struct {
+	allow      bool          // 是否放行
+	retryAfter int           // 拒绝时建议的 Retry-After 秒数
+	banned     bool          // 拒绝是否因为处于封禁期（区别于普通超限）
+	remaining  time.Duration // 封禁剩余时长，banned 时才有意义
+}
+
 // allow 判定本次请求是否放行，放行时记一笔。
-func (l *rateLimiter) allow(ip string) bool {
+func (l *rateLimiter) allow(ip string) verdict {
 	if l.limit <= 0 {
-		return true
+		return verdict{allow: true}
 	}
 	now := time.Now()
-	cut := now.Add(-l.window)
 
 	l.mu.Lock()
 	defer l.mu.Unlock()
 
+	// 封禁期内直接拒绝；到期则解除并清空被拒计数，从头再算
+	if until, banned := l.bans[ip]; banned {
+		if now.Before(until) {
+			return verdict{retryAfter: int(until.Sub(now).Seconds()) + 1, banned: true, remaining: until.Sub(now)}
+		}
+		delete(l.bans, ip)
+		delete(l.strikes, ip)
+	}
+
+	cut := now.Add(-l.window)
 	if len(l.hits) > l.maxKeys {
 		// 兜底：IP 表异常膨胀时整体清空，避免内存无限增长
 		l.hits = map[string][]time.Time{}
 	}
+	if len(l.strikes) > l.maxKeys {
+		l.strikes = map[string]int{}
+	}
+	if len(l.bans) > l.maxKeys {
+		for k, until := range l.bans { // 先摘掉已到期的，能保住则保住
+			if now.After(until) {
+				delete(l.bans, k)
+			}
+		}
+		if len(l.bans) > l.maxKeys {
+			l.bans = map[string]time.Time{}
+		}
+	}
+
 	// 原地过滤掉窗口外的记录
 	kept := l.hits[ip][:0]
 	for _, t := range l.hits[ip] {
@@ -87,10 +130,16 @@ func (l *rateLimiter) allow(ip string) bool {
 	}
 	if len(kept) >= l.limit {
 		l.hits[ip] = kept
-		return false
+		l.strikes[ip]++
+		if l.strikes[ip] >= l.banAfter {
+			l.bans[ip] = now.Add(l.banDuration)
+			delete(l.strikes, ip)
+			log.Printf("已封禁 %s：累计触发限速 %d 次，时长 %s", ip, l.banAfter, l.banDuration)
+		}
+		return verdict{retryAfter: 60}
 	}
 	l.hits[ip] = append(kept, now)
-	return true
+	return verdict{allow: true}
 }
 
 // isLoopback 判断是否本机来源。
@@ -114,13 +163,24 @@ func clientIP(r *http.Request) string {
 }
 
 // withRateLimit 只对 /api/* 限速：静态资源很便宜，限了会让限流期间的页面渲染残缺。
+// 循环地址整段豁免（限速与封禁都不沾）——容器健康检查每 30 秒打一次，
+// 服务器本机跑浏览器验收会连发几十个 /api/*，都不能被自己的规则挡住。
 func withRateLimit(next http.Handler, l *rateLimiter) http.Handler {
 	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-		if strings.HasPrefix(r.URL.Path, "/api/") && !l.allow(clientIP(r)) {
-			w.Header().Set("Retry-After", "60")
-			writeError(w, http.StatusTooManyRequests,
-				fmt.Sprintf("请求过于频繁（每个 IP 每分钟上限 %d 次），请稍后再试", l.limit))
-			return
+		if ip := clientIP(r); strings.HasPrefix(r.URL.Path, "/api/") && !isLoopback(ip) {
+			if v := l.allow(ip); !v.allow {
+				w.Header().Set("Retry-After", fmt.Sprintf("%d", v.retryAfter))
+				if v.banned {
+					writeError(w, http.StatusTooManyRequests,
+						fmt.Sprintf("已因反复触发限速被临时封禁（每分钟上限 %d 次，触发 %d 次即封禁 %s），约剩 %s 自动解除",
+							l.limit, l.banAfter, l.banDuration, v.remaining.Round(time.Minute)))
+					return
+				}
+				writeError(w, http.StatusTooManyRequests,
+					fmt.Sprintf("请求过于频繁（每个 IP 每分钟上限 %d 次），累计触发 %d 次将被临时封禁 %s，请稍后再试",
+						l.limit, l.banAfter, l.banDuration))
+				return
+			}
 		}
 		next.ServeHTTP(w, r)
 	})
@@ -245,7 +305,9 @@ func main() {
 
 	modes := []string{}
 	if *rateLimit > 0 {
-		modes = append(modes, fmt.Sprintf("限速 %d 次/分钟/IP", *rateLimit))
+		modes = append(modes,
+			fmt.Sprintf("限速 %d 次/分钟/IP", *rateLimit),
+			"触发 2 次即封禁 8 小时（重启清零）")
 	}
 	suffix := ""
 	if len(modes) > 0 {
