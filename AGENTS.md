@@ -3,17 +3,11 @@
 > ⚠️ **任何操作之前，先 `git pull origin main`**——改代码、跑 worker、开面板、查数据、写文档都一样。
 > 理由与事故案例见「Git 工作流」一节。
 
-Steam 成就数据分析，**总目标：分析用户和玩家更愿意玩什么样的游戏**。先读 `README.md` 了解背景，再读 `docs/plan.md` 了解研究问题与排期。做任何事之前确认处于正确阶段，不要提前实现后期任务。
+Steam 成就数据分析，**总目标：分析用户和玩家更愿意玩什么样的游戏**。
 
-> ⚠️ `docs/plan.md` 的**「数据源」与「清洗核心步骤」两节已过期**：它仍按「逐玩家 API + 需 key 的
-> `GetSchemaForGame`」写，而实际在 2026-09-15 / 09-17 已改为**纯游戏级、免 key（RAWG 除外）**方案。
-> 数据侧的当前口径以本文件为准，限额速查见 `docs/sources.md`。
-
-当前研究范围（详见 `docs/plan.md`）：
-
-- **Q2（核心）**：玩家偏好特征回归 + SHAP 归因——"愿意玩"操作化为参与度指标（时长 / 完成深度 / 活跃度 / 全成就比例），归因到游戏特征；
-- **Q1（支撑）**：IRT 难度与玩家能力建模——为偏好分析提供难度结构特征；
-- 分群、弃坑生存分析、跨游戏迁移、PSN 数据源均已裁剪，不要复活。
+项目已进入**按方向分工**的阶段：`docs/plan.md` 列出 7 个候选方向，**每人认领一个**，
+产物与实验记录放自己的 `result/<缩写>/`。各人方向与进度见 `README.md` 的分工表；
+共享的采集管道、已部署面板与数据口径见下文各节。
 
 ## 目录约定
 
@@ -27,18 +21,14 @@ cleaning/   抓取编排与入库，**产物是 PostgreSQL 数据仓库**，不�
             · writers.py 单源抓取+入库 · seed.py 灌全量游戏 · worker.py gap 驱动回填
             · rawg_keys.py RAWG 密钥池（多 key 协调取用）
             · repair_mapping.py 成就名映射收尾修复（两源顺序不一致时按 percent 重对齐）
-modeling/   Q1 与 Q2 各一个子包：irt/（Q1 难度建模，**目前仅占位**）
-            · regression/（Q2 偏好归因，**尚未创建**）；一个实验一个脚本，
-            实验记录统一写 modeling/experiments.md
 dashboard/  内部状态面板，**自包含的 Go 模块**（自己的 go.mod / .env / Dockerfile /
             docker-compose.yml / deploy.sh，仓库根目录不放任何面板相关文件）。
             只读后端，前端三件套用 //go:embed 打进同一二进制，**没有写接口**
-viz/        图表函数，与 notebook 解耦
-notebooks/  只做探索，不放正式逻辑；正式逻辑沉淀到模块
-data/       全部不入 git。interim/ 与 processed/ 目前是**空占位**（未启用）
+data/       全部不入 git。processed/ 存建模快照与面板要读的分析报告
 docs/       commands.md（命令手册，**日常先看这个**）· sources.md（数据源限额速查）
-            · multi-machine.html（多机分工与防冲突讲解）· data-pipeline.html（流程讲解）
-            · plan.md（研究问题与排期，数据源两节已过期）
+            · plan.md（选题方向，**每人认领一个**）· experiments.md（面板与整体层面的实验记录）
+result/     各人独立交付目录（LYX / WWH / YJH / YMT / ZZY）：产物与实验记录都在这里，
+            **不要把个人代码写进公共目录**
 learning-logs/  中文日志，每天一个文件
 scripts/    独立验收脚本（playwright 浏览器检查面板与汇报页渲染），**不是 pytest 用例**
 ```
@@ -83,7 +73,7 @@ scripts/    独立验收脚本（playwright 浏览器检查面板与汇报页渲
 
 ### 多机并行（2026-09-17 起）
 
-用多台机器提高吞吐的做法与前提（讲解页见 `docs/multi-machine.html`）：
+用多台机器提高吞吐的做法与前提：
 
 - **没有分工表**：任务不预先分配给机器，所有 worker 对等，各自从共享队列**抢占**。
   谁快谁多做，机器下线后它没做完的任务立刻被别人抢走
@@ -234,8 +224,10 @@ scikit-learn、shap、numba、llvmlite、matplotlib、seaborn、plotly 整套科
    SSH 账号密码留在本机 `dashboard/.env`；`.dockerignore` 第一段挡的是它进构建上下文
 3. **不在那台机器上起 `worker`**：它只有 2 核，面板和 PostgreSQL 已经在抢资源
 
-`data/processed/analysis-report.json` 是分析页的数据源，**不入 git**，由部署脚本随二进制一起
-上传。刷新方式见 `docs/commands.md` §8。
+`data/processed/analysis-report.json` 是面板 `/api/analysis` 的数据源，**不入 git**，由部署脚本
+随二进制一起上传。⚠️ 它是 2026-10-01 固定快照的历史产物——生成它的 `modeling/` 已于
+2026-10-14 删除，**再也不能重新生成**；「游戏探索」入口直接只读查云库，不依赖它。
+Q2 的实验记录迁在 `docs/experiments.md`。
 
 ## 数据规范
 
@@ -244,8 +236,8 @@ scikit-learn、shap、numba、llvmlite、matplotlib、seaborn、plotly 整套科
   **因此云库必须开自动备份**（按天快照）——废缓存后「删库」等于全部重抓 + 重花 RAWG 配额
 - 抓取时间由 HTTP 层记录（`crawler.http.last_fetched_at`，成功拿到响应的时刻），
   落在 `ingest_log.fetched_at`。它是「数据何时获取」，不是「何时写库」
-- `data/` 分层：`interim/` → `processed/`。**两层目前是空占位**（建模阶段才会启用）；
-  当前管道的产物全部在 PostgreSQL
+- `data/` 分层：`interim/` → `processed/`。管道的原始产物全部在 PostgreSQL；
+  `processed/` 里只有建模快照与面板要读的分析报告（均不入 git）
 - **原始数据不进 git**，git 只跟踪代码与 schema
 - schema 变更必须同步更新 `cleaning/schema.sql`（**唯一真源**）；**建表/改表只能通过
   `uv run python -m cleaning.db init`**（幂等），worker/seed 启动时不碰 DDL、只校验就绪
@@ -291,7 +283,7 @@ scikit-learn、shap、numba、llvmlite、matplotlib、seaborn、plotly 整套科
 
 ## 代码规范
 
-- 模块化优先：函数单一职责，方便后期替换（如难度建模从手工指标换成 IRT）
+- 模块化优先：函数单一职责，方便后期替换
 - **不写测试用例**（2026-10-13 起）：项目不维护 `tests/`，**也不要新增 pytest 用例**
   （已删除全部历史用例）。要验证改动就真实跑一遍，或用 `scripts/` 下的浏览器验收脚本
 - 公共函数必须有类型注解与 docstring
@@ -299,12 +291,12 @@ scikit-learn、shap、numba、llvmlite、matplotlib、seaborn、plotly 整套科
 - 可视化配色遵循中国股市惯例之外的通用色板；涨跌类图表才用红涨绿跌
 - 随机过程必须设 `random_state=42`，保证实验可复现
 
-## 建模规范
+## 实验规范
 
-- **baseline 先行**：任何高级模型（IRT 2PL / 梯度提升树）上线前，必须先有简单对照组（原始全局完成率 / Rasch 1PL / 线性回归）
-- 每次实验记录：日期、数据版本、参数、指标，写入 `modeling/experiments.md`
-- 指标约定：回归用 R² / RMSE + 交叉验证，归因用 SHAP（须说明是模型归因而非因果）；IRT 报告收敛诊断
-- Q2 的 SHAP 结论必须区分"模型归因"与"因果效应"，报告措辞不得越界
+- 每次实验记录：日期、数据版本、口径、参数、指标与结论，写在自己的
+  `result/<缩写>/experiments.md`；与面板相关的记在 `docs/experiments.md`
+- **baseline 先行**：任何高级模型上线前，必须先有简单对照组
+- 结论措辞不得越界：观察性聚合数据只能讲相关与模型归因（如 SHAP），不能当因果结论
 
 ## Git 工作流（全组统一）
 
@@ -330,7 +322,6 @@ scikit-learn、shap、numba、llvmlite、matplotlib、seaborn、plotly 整套科
 
 - 禁止把爬取到的原始数据提交进仓库（`data/` 全部不进 git）
 - 禁止把 `.env` 提交进仓库（内含 RAWG key；`.gitignore` 已挡，但新增密钥文件时务必确认）
-- 禁止在 notebook 里写正式管道逻辑（探索可以，沉淀必须进模块）
 - 禁止跳过 baseline 直接上深度模型
 - **云库必须开自动备份**（按天快照）：数据只存在库里，没有本地缓存兜底
 - 禁止用未映射的 API 内部名称（如 `NEW_ACHIEVEMENT_1_1`）出现在正式分析与报告中

@@ -120,19 +120,15 @@ uv run python -m crawler.test_crawl          # 单款游戏六源抓取演示（
 | RAWG 快没额度了 | `rawg_keys list` 看谁还有余量；都耗尽就等下月或加 key |
 | 改了代码想提交 | **项目不维护测试用例**（`tests/` 已于 2026-10-13 删除）：把受影响的命令真跑一遍确认没问题；commit message 用 `<scope>: <中文>` |
 
-## 8. 分析与研究面板
+## 8. 状态面板
 
 数据获取阶段汇报见 [HTML汇报](data-acquisition-report.html)，可直接打开，无需服务器；仅展示获取流程与描述性成果，数字注明统计日期。
 
-文件分工、手动训练、参数修改与独立Ridge练习见 [手动训练指南](manual-training.md)。
 ```bash
-# 首次提取：一致性读取云库，固定游戏级建模快照并登记已有版本表，执行分析
-uv run python -m modeling.regression.analysis
-
-# 重放首轮固定输入（该快照须已在本机生成；不重新查询源表）
-uv run python -m modeling.regression.analysis --version engagement-20261001-079598c5d7ae
-
-# 本机起面板（Go 只读后端，前端三件套已 embed 进二进制）；端口已占用时换另一个。
+# 本机起面板（Go 只读后端，前端已 embed 进二进制）；端口已占用时换另一个。
+# 在 dashboard/ 里跑：它读同目录的 .env，报告路径自动找到 ../data/processed/。
+# ⚠️ .env 里的 POSTGRES_HOST 是给容器用的 127.0.0.1，本机预览要临时覆盖成公网地址
+cd dashboard && POSTGRES_HOST=82.157.208.173 go run . --port 8601
 # 在 dashboard/ 里跑：它读同目录的 .env，报告路径自动找到 ../data/processed/。
 # ⚠️ .env 里的 POSTGRES_HOST 是给容器用的 127.0.0.1，本机预览要临时覆盖成公网地址
 cd dashboard && POSTGRES_HOST=82.157.208.173 go run . --port 8601
@@ -140,18 +136,20 @@ cd dashboard && POSTGRES_HOST=82.157.208.173 go run . --port 8601
 # 带上与线上一致的限速（本地默认不限速）。循环地址豁免，所以本机访问不受影响
 cd dashboard && POSTGRES_HOST=82.157.208.173 go run . --port 8601 --rate-limit 60
 
-# 从已有快照生成/更新数据故事（无需先生成完整分析报告，不连接云库）
-uv run python -m modeling.regression.stories --version engagement-20261001-079598c5d7ae
-
 # 浏览器验收，临时测试依赖不改变pyproject.toml/uv.lock；需安装Google Chrome
 uv run --with playwright python scripts/check_dashboard_browser.py --url http://127.0.0.1:8601
 ```
 
-展示入口：`http://127.0.0.1:8601/#analysis/overview`。包含成就数量对比、名作口碑、通关与放下、热门之外四个页面，优先展示悟空、法环、只狼、空洞骑士等12款知名游戏。成就对比可选两款游戏，好评比例/评价数可切换，RAWG状态可逐游戏查看。原有队列/查询/词云仍可访问。旧报告需用上面的 stories 命令更新（要求同版本快照在本机，版本和指纹均须匹配）；没有报告时可以直接从已有快照生成展示数据。
+展示入口：`http://127.0.0.1:8601/#explore`。游戏数据故事与 AppID 查询已合并为「游戏探索」，直接只读查询云库，不依赖分析报告。搜索支持游戏名、AppID、Steam 商店链接；发现入口展示热门、成就数量较多、免费游戏，当前展示集合可按评价数/好评率/成就数重新排序。详情含常见/稀有成就、三平台评分、玩家标签票数、同开发商作品与同名成就趣味对照；任意两款游戏可加入对比。完整成就及数据来源状态折叠展示。旧 `#analysis/*` 和 `#game` 地址自动转到新入口。队列总览保留。
 
-Dashboard已移除模型专题及其导航，旧专题地址自动回展示首页；分析API及下载只含故事与必要版本信息。研究实验脚本仍保留在 `modeling/`，与展示分开使用。
+「类型词云」已改为「数据全景」（`#overview`），移除官方类型词云，保留玩家标签词云。新增游戏/成就/标签规模、评价数分档与前1%游戏的评价份额、成就数量中位数与千成就游戏数量、低于1%解锁率的成就占比，以及免费/付费标记分布。每块明确统计分母与缺失量，全部仅为当前库的描述性统计；`/api/overview` 一个只读SQL获取一致统计并缓存五分钟，不依赖报告文件。旧 `#cloud` 自动跳转到 `#overview`。
 
-建模快照和派生报告位于 `data/processed/`，全部不入Git；云库仍是原始数据的唯一事实源。该快照用于复现实验，不是抓取缓存。新机器首次运行需从云库提取自己的版本；复现旧版本需保留对应固定快照。报告缺失时页面会说明原因，分析API不自动执行实验或写库。
+开发口径：`随便逛逛` 在服务端按评价数量前500款均匀抽取一款，页面不展示筛选范围。评价数优先使用 SteamSpy 的好评+差评，任一字段缺失时回退商店搜索记录，同分按 appid 排序；好评率使用同源的计数，零评价时不显示比例；发现列表缓存五分钟。价格字段未保存货币，现有数据混有不同地区金额，因此只展示免费/付费并提供商店链接；在线数标明采集时口径，SteamSpy 已失效的时长字段不展示，成就名称映射有疑义时不展示具名故事。页面保留 RAWG 回链，不包含研究计划中的专题。
+
+⚠️ **原 Q2 建模代码（`modeling/`）已于 2026-10-14 删除**——项目改为按 `docs/plan.md` 的方向
+分工，各人产物放 `result/<缩写>/`，实验记录也迁到各自目录（面板相关的在
+[experiments.md](experiments.md)）。当时生成的 `data/processed/analysis-report.json`
+（不入Git）仍在，但**再也不能重新生成**。
 
 ## 9. 面板部署（腾讯云，Go 单文件）
 
