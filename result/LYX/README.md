@@ -10,6 +10,5 @@
 | [数据库说明](docs/DATABASE.md) | 六表字段、状态与连接 |
 | [数据准备](docs/IMPORT_SNAPSHOT.md) | 前1000款只读获取与迁移 |
 | [实验记录](docs/experiments.md) | 历史与本轮验证 |
-| [历史API资料](docs/API_PROBE.md) | 归档说明入口 |
 
 程序入口见[DataAgent.py](process/DataAgent.py)，SQL与本地库入口见[schema.sql](database/schema.sql)。数据、缓存和备份保持原位且Git忽略；不自动提交或推送。
