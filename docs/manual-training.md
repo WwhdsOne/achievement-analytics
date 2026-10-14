@@ -13,7 +13,6 @@
 | `modeling/experiments.md` | 人工记录数据版本、参数、指标和结论 | 每完成一次实验 |
 | `dashboard/app.py` | 启动面板，通过 `/api/analysis` 读取已有报告 | 查看结果，不负责训练 |
 | `dashboard/analysis.js` | 把报告渲染成表格、图表和结论 | 修改展示方式或同步页面方法说明 |
-| `tests/test_analysis.py` | 检查比例计算、缺失值、特征和JSON输出等契约 | 修改分析代码后检查 |
 
 不直接运行 `dataset.py`、`crawler/` 或 `cleaning.worker` 来训练。训练命令不会请求Steam/RAWG接口，不消耗抓取配额。
 
@@ -203,11 +202,11 @@ PY
 uv run python -c 'from pathlib import Path; import shutil; folder=Path("data/processed/experiments"); folder.mkdir(parents=True, exist_ok=True); shutil.copy2("data/processed/analysis-report.json", folder / "report-before-alpha30.json")'
 ```
 
-改代码后的检查：
+改代码后的检查（**项目已不维护测试用例**，`tests/` 于 2026-10-13 删除——直接重跑受影响的命令）：
 
 ```bash
-uv run python -m pytest tests/test_analysis.py tests/test_dashboard_analysis.py -q
-uv run python -m pytest -q
+uv run python -m modeling.regression.analysis --version <版本>   # 重放固定快照，看指标是否变化
+uv run python -m modeling.regression.stories  --version <版本>   # 刷新展示数据
 ```
 
 关键结果不只看最高R²，还要看误差、各折变化、跨年代结果和有效样本。用测试分数反复挑参数会产生选择偏差；需要正式调参时，应另设验证流程。SHAP仍然是模型归因，不是因果效应。
@@ -219,7 +218,7 @@ uv run python -m pytest -q
 | `--version` 报文件不存在 | 当前机器没有对应快照或元数据文件；核对 `data/processed/snapshots/`。新机器可不传版本，从云库生成自己的快照；要复现旧版，须取得匹配的两个旧文件 |
 | 提示数据快照指纹不一致 | 快照内容与元数据SHA256不符，核对是否使用了匹配的一组文件，不删除校验来继续训练 |
 | 数据库连接失败 | 首次提取需要有效 `.env`，核对15432端口及SSL配置；本机已有完整快照时可用 `--version` 离线重跑 |
-| `ModuleNotFoundError` | 在项目根目录执行 `uv sync`，并使用 `uv run python ...`；测试用 `python -m pytest`，避免落到全局pytest |
+| `ModuleNotFoundError` | 在项目根目录执行 `uv sync`，并使用 `uv run python ...` |
 | dashboard仍显示旧结果 | 确认训练已成功结束，检查报告生成时间，再完整刷新页面 |
 | 修改alpha后说明仍写10 | 训练代码、报告参数字典和页面方法说明目前有重复声明，需要同步修改；单独练习优先用第7节的小实验 |
 | Ctrl-C中断训练 | 没有模型级断点续训，下次会从头重新训练；固定数据可复用，不必重新提取 |

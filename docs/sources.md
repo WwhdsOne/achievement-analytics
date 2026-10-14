@@ -1,7 +1,7 @@
 # 数据源限额与成本
 
 > 本文是**限额速查表**。程序侧的真源是 `cleaning/schema.sql` 的 `sources` 表与
-> `crawler/registry.py`（`tests/test_registry.py` 断言两者一致），本文只做人和文档的对照。
+> `crawler/registry.py`（两边必须**手工保持一致**，没有测试兜底了），本文只做人和文档的对照。
 > 核对日期：**2026-09-17**。
 
 ## 来源等级说明（重要）

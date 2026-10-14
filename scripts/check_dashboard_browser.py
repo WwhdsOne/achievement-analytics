@@ -1,4 +1,4 @@
-"""独立浏览器验收；uv run --with playwright python tests/check_dashboard_browser.py。"""
+"""独立浏览器验收；uv run --with playwright python scripts/check_dashboard_browser.py。"""
 
 from __future__ import annotations
 

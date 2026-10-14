@@ -171,7 +171,7 @@ achievement-analytics/
 │                      # plan.md 研究问题与排期
 ├── learning-logs/     # 中文工作日志（YYYY-MM-DD.md）
 ├── data/              # 本地数据目录（全部不入 git；当前未启用）
-└── tests/             # 单元测试（schema 契约 / 抢占 SQL / 状态机 / 写入层）
+└── scripts/           # 独立验收脚本（playwright 浏览器检查面板与汇报页渲染）
 ```
 
 状态：**数据采集进行中**（队列约 27 万条任务，多机并行回填；完成后进入 Q1 IRT baseline）。

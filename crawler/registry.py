@@ -3,8 +3,8 @@
 与 ``cleaning/schema.sql`` 里 ``sources`` 表的关系：
 - **schema.sql 是唯一真源**（它是 DDL 与人读文档），这里只做「同一个清单的 Python 视图」，
   因为限速要在**进程内**生效（http.py 的节流），不能每发一次请求都去查库。
-- 两边必须一致，``tests/test_registry.py`` 会解析 schema.sql 断言这一点——防的是
-  「加了源只改一处」这类漂移。
+- 两边必须一致，**改一处就得改另一处**（原先由 ``tests/test_registry.py`` 断言，该用例
+  已于 2026-10-13 随 tests/ 一并删除，现在没有自动兜底）。
 
 ``kind`` 决定抓取范式，也决定源能不能进队列：
 

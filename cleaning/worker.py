@@ -286,7 +286,7 @@ def next_retry_at(attempts: int, now: datetime | None = None) -> datetime:
 
 
 def _priority_of(source: str) -> int:
-    """源的抓取优先级（来自 registry，已由 tests/test_registry.py 断言与库里一致）。"""
+    """源的抓取优先级（来自 registry，需与 schema.sql 的 sources 表手工保持一致）。"""
     spec = SOURCES.get(source)
     return spec.priority if spec else 100
 
