@@ -3,10 +3,7 @@
 <head>
 <meta charset="utf-8" />
 <meta name="viewport" content="width=device-width,initial-scale=1" />
-<title>achievement-analytics · 数据与研究面板</title>
-<link rel="preconnect" href="https://fonts.googleapis.com">
-<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
-<script src="https://cdn.jsdelivr.net/npm/wordcloud@1.2.2/src/wordcloud2.js"></script>
+<title>achievement-analytics · 游戏探索</title>
 <style>
   /* ── MONO tokens（对齐 lieflat-charts / mono-tokens.js）──────────── */
   :root {
@@ -219,33 +216,58 @@
   footer.icp a { color: inherit; text-decoration: none; }
   footer.icp a:hover { color: var(--INK); text-decoration: underline; }
 </style>
-<link rel="stylesheet" href="/assets/analysis.css">
+<link rel="stylesheet" href="/assets/explore.css">
 </head>
 <body>
 
 <nav>
   <div class="brand">ACHIEVEMENT-ANALYTICS</div>
   <div class="tabs">
-    <button class="tab" id="tabAnalysis" onclick="switchView('analysis')">游戏数据故事</button>
-    <button class="tab active" id="tabQueue" onclick="switchView('queue')">队列总览</button>
-    <button class="tab" id="tabGame" onclick="switchView('game')">Steam AppID 查询</button>
-    <button class="tab" id="tabCloud" onclick="switchView('cloud')">类型词云</button>
+    <button class="tab active" id="tabAnalysis" onclick="switchView('analysis')">游戏探索</button>
+    <button class="tab" id="tabQueue" onclick="switchView('queue')">队列总览</button>
+    <button class="tab" id="tabCloud" onclick="switchView('overview')">数据全景</button>
   </div>
 </nav>
 
 <div class="wrap">
 
   <div id="viewAnalysis" class="hidden">
-    <div class="analysis-shell">
-      <aside class="analysis-nav" id="analysisNav" aria-label="数据故事导航"></aside>
-      <main class="analysis-page" id="analysisPage" aria-live="polite">
-        <div class="analysis-status">正在读取游戏数据…</div>
-      </main>
-    </div>
+    <header class="explore-heading">
+      <div class="explore-eyebrow">THE GAMES, IN NUMBERS</div>
+      <h1>熟悉的游戏，<br>还有你没见过的数字。</h1>
+      <p>找一款游戏，看看成就、口碑与玩家标签。也可以把两款放在一起。</p>
+      <form id="exploreSearch" class="explore-search">
+        <label class="sr-only" for="exploreInput">游戏名称、AppID 或 Steam 商店链接</label>
+        <input id="exploreInput" placeholder="游戏名 / AppID / Steam 商店链接" autocomplete="off" maxlength="200">
+        <button type="submit" id="exploreSearchBtn">找游戏 ↗</button>
+        <button type="button" id="randomGame" class="ghost">随便逛逛 ↝</button>
+      </form>
+      <div id="exploreMessage" role="status"></div>
+    </header>
+    <section id="searchResults" class="hidden" aria-label="搜索结果"></section>
+    <section class="explore-discovery" aria-label="发现游戏">
+      <div class="section-heading"><h2>从这里开始</h2><span>点击游戏看详情，点 ＋ 加入对比</span></div>
+      <div class="discovery-tabs" role="group" aria-label="发现方式">
+        <button data-discovery="popular" aria-pressed="true">大家聊得最多</button>
+        <button data-discovery="achievements" aria-pressed="false">成就清单特别长</button>
+        <button data-discovery="free" aria-pressed="false">免费，也很热闹</button>
+      </div>
+      <div id="discoveryGames" class="game-grid" aria-live="polite">正在寻找游戏…</div>
+      <p class="explore-note">当前数据库中的游戏 · 评价数量来自 SteamSpy，缺失时使用商店搜索记录；数据为采集时快照。</p>
+    </section>
+    <div id="gameStory" class="hidden" aria-live="polite"></div>
+    <div id="gameDetailMount"></div>
+    <section class="explore-comparison" id="compareSection">
+      <div class="section-heading"><h2>两款游戏，面对面</h2><button id="clearComparison" class="text-button">清空</button></div>
+      <p class="explore-note">从游戏卡片或详情中添加两款游戏。</p>
+      <div id="compareSlots" class="compare-slots"></div>
+      <div id="compareResult" aria-live="polite"></div>
+    </section>
+    <footer class="explore-footer">来源：Steam 商店 / Steam 全局成就 / SteamSpy / <a href="https://rawg.io/" target="_blank" rel="noopener noreferrer">RAWG</a> · 游戏级公开数据，采集时间可在每款游戏的数据详情中查看。</footer>
   </div>
 
   <!-- ════ 视图一：队列总览 ════ -->
-  <div id="viewQueue">
+  <div id="viewQueue" class="hidden">
     <p class="nav-purpose">队列总览：展示抓取任务进度、各数据源缺口与真实落库数量，用于检查数据获取状态。</p>
     <div class="card fade">
       <h2>数据获取总览</h2>
@@ -279,77 +301,63 @@
 
   <!-- ════ 视图二：AppID 查询 ════ -->
   <div id="viewGame" class="hidden">
-    <p class="nav-purpose">Steam AppID 查询：展示单款游戏的商店信息、逐源任务状态和成就明细。</p>
-    <div class="card fade">
-      <h2>Steam AppID 查询</h2>
-      <div class="sub">查任务状态与全部成就 · 面板只读，不再提供补抓入口；要补数据用命令行 <code>uv run python -m cleaning.worker --appid &lt;id&gt;</code></div>
-      <div class="lookup">
-        <input id="appidInput" inputmode="numeric" placeholder="输入 AppID，如 367520" />
-        <button id="lookupBtn">查询</button>
-      </div>
-    </div>
+    <input id="appidInput" type="hidden">
+    <button id="lookupBtn" class="hidden" type="button">查询</button>
 
-    <div class="card fade hidden" id="resultCard">
+    <details class="card fade hidden" id="resultCard">
+      <summary>数据详情 · 来源与采集时间</summary>
       <div class="gname" id="gname"></div>
       <div class="missing-row" id="missingBox"></div>
       <div class="chips" id="taskChips"></div>
       <div class="meta" id="gmeta"></div>
       <div class="src">fetch_tasks · steam_appdetails · achievements · steamspy_games · rawg_games</div>
-    </div>
+    </details>
 
-    <div class="card fade hidden" id="infoCard">
-      <h2>游戏信息全览</h2>
-      <div class="sub">三个信息源的字段全量展示 · <span style="color:var(--FAINT)">–</span> 表示该源暂无数据（未抓到或游戏没有该信息）</div>
+    <details class="card fade hidden" id="infoCard">
+      <summary>更多游戏信息</summary>
+      <div class="sub">各源记录 · <span style="color:var(--FAINT)">–</span> 表示暂无有效数据</div>
       <div class="igrid">
         <div><div class="iblk-lbl">Steam 商店 · appdetails</div><div id="infoSteam"></div></div>
         <div><div class="iblk-lbl">SteamSpy</div><div id="infoSpy"></div></div>
         <div><div class="iblk-lbl">RAWG</div><div id="infoRawg"></div></div>
       </div>
       <div class="src">steam_appdetails · steamspy_games · rawg_games</div>
-    </div>
+    </details>
 
-    <div class="card fade hidden" id="achCard">
-      <h2>成就明细</h2>
+    <details class="card fade hidden" id="achCard">
+      <summary>完整成就清单</summary>
       <div class="sub" id="achSub">解锁率取自全局完成率接口 · 名称来自社区页按位映射</div>
       <div class="ach-head">
         <span class="lbl">排序</span>
         <button id="sortPct" class="active" onclick="renderAchievements('pct')">按解锁率</button>
         <button id="sortPos" onclick="renderAchievements('pos')">按游戏内顺序</button>
       </div>
+      <label class="ach-search-label">查找成就 <input id="achievementSearch" placeholder="输入成就展示名称" oninput="renderAchievements(currentSort)"></label>
       <table class="atable"><tbody id="achBody"></tbody></table>
+      <div class="achievement-pages"><button id="achPrevious" onclick="achievementPage--; renderAchievements(currentSort, false)">上一页</button><span id="achievementPageNote"></span><button id="achNext" onclick="achievementPage++; renderAchievements(currentSort, false)">下一页</button></div>
       <div class="src">条长 = 全局解锁率 · 0–100%</div>
-    </div>
+    </details>
 
-    <div class="card fade hidden" id="curveCard">
-      <h2>完成率曲线</h2>
-      <div class="sub" id="curveSub">横轴 = 数据源排列顺序，纵轴 = 全局完成率；排列不代表解锁时间，曲线不能识别弃坑关卡</div>
-      <div id="curveWrap"></div>
-      <div class="src">achievements.percent（顺序取 position）· 虚线 = 中位数 · 红点 = 该游戏最难成就</div>
-    </div>
   </div>
 
-  <!-- ════ 视图三：类型词云 ════ -->
+  <!-- ════ 视图三：数据全景 ════ -->
   <div id="viewCloud" class="hidden">
-    <p class="nav-purpose">类型词云：展示样本中的官方类型与玩家标签分布，词的大小代表游戏数量，不代表受欢迎程度。</p>
-    <div class="card fade">
-      <h2>玩家都在做哪类游戏</h2>
-      <div class="sub">Steam 官方类型 · 字号 = 游戏数量的平方根 · 颜色每次刷新随机重排</div>
-      <div class="cloud" id="cloud">
-        <canvas id="cloudCanvas"></canvas>
-        <div id="cloudTip"></div>
-      </div>
-      <div class="src">steam_appdetails.valve_genres · 覆盖 <span id="cloudGames" class="num">–</span> 款已抓取游戏 · 悬停看精确计数 · wordcloud2.js</div>
-    </div>
-
+    <header class="explore-heading">
+      <div class="explore-eyebrow">A WIDER VIEW OF GAMES</div>
+      <h1>把视野拉远，<br>游戏世界有多大？</h1>
+      <p>成就、评价和玩家标签，把数据库中的游戏放在一起看。</p>
+    </header>
+    <div id="overviewContent" aria-live="polite"><p class="explore-note">正在汇总数据…</p></div>
     <div class="card fade">
       <h2>玩家用什么词形容这些游戏</h2>
-      <div class="sub">SteamSpy 玩家标签（细粒度：Souls-like / Atmospheric / Difficult 这类）· 字号 = 带该标签游戏数的平方根 · 颜色每次刷新随机重排</div>
+      <div class="sub">玩家标签词云 · 词越大，带这个标签的游戏越多；不代表越受欢迎。悬停看游戏数量和票数。</div>
       <div class="cloud" id="tagCloud">
         <canvas id="tagCanvas"></canvas>
         <div id="tagTip"></div>
       </div>
-      <div class="src">game_tags · source=steamspy · 覆盖 <span id="tagGames" class="num">–</span> 款游戏 · 悬停看 游戏数 / 票数 · wordcloud2.js</div>
+      <div class="explore-note">来源：SteamSpy 玩家标签 · 覆盖 <span id="tagGames" class="num">–</span> 款游戏 · 一款游戏可以有多个标签。</div>
     </div>
+    <footer class="explore-footer">统计范围：当前数据库已收录的游戏，不等同于全部 Steam 游戏。数字为采集记录的汇总，缺失记录单独说明。</footer>
   </div>
 
 </div>
@@ -363,20 +371,42 @@
 <script>
 const $ = id => document.getElementById(id);
 const fmt = n => (n ?? 0).toLocaleString('en-US');
+let wordCloudRequest = null;
+
+/** 词云脚本只在访问词云时加载，不阻塞游戏探索。 */
+function ensureWordCloud() {
+  if (typeof WordCloud !== 'undefined') return Promise.resolve();
+  if (!wordCloudRequest) wordCloudRequest = new Promise(resolve => {
+    const script = document.createElement('script');
+    script.src = 'https://cdn.jsdelivr.net/npm/wordcloud@1.2.2/src/wordcloud2.js';
+    script.onload = () => resolve();
+    script.onerror = () => { wordCloudRequest = null; resolve(); };
+    document.head.appendChild(script);
+  });
+  return wordCloudRequest;
+}
 
 /* ── 视图切换 ── */
 function switchView(v) {
+  const wasOverview = !$('viewCloud').classList.contains('hidden');
+  if (v === 'game') v = 'analysis';
+  if (v === 'cloud') v = 'overview';
   $('viewAnalysis').classList.toggle('hidden', v !== 'analysis');
   $('tabAnalysis').classList.toggle('active', v === 'analysis');
-  document.querySelector('.wrap').classList.toggle('research-wide', v === 'analysis');
+  document.querySelector('.wrap').classList.toggle('research-wide', v === 'analysis' || v === 'overview');
   $('viewQueue').classList.toggle('hidden', v !== 'queue');
-  $('viewGame').classList.toggle('hidden', v !== 'game');
-  $('viewCloud').classList.toggle('hidden', v !== 'cloud');
+  $('viewCloud').classList.toggle('hidden', v !== 'overview');
   $('tabQueue').classList.toggle('active', v === 'queue');
-  $('tabGame').classList.toggle('active', v === 'game');
-  $('tabCloud').classList.toggle('active', v === 'cloud');
-  if (v === 'cloud') { loadGenres(); loadTags(); }
-  if (v === 'analysis' && window.Analysis) window.Analysis.open();
+  $('tabCloud').classList.toggle('active', v === 'overview');
+  if (v === 'overview') {
+    if (!wasOverview) window.scrollTo(0, 0);
+    if (window.Overview) window.Overview.open();
+    if (!wasOverview) ensureWordCloud().then(() => {
+      if (!$('viewCloud').classList.contains('hidden')) loadTags().catch(() => cloudNote('tagCloud', '标签数据暂时无法读取，重新进入此页可重试。'));
+    });
+  }
+  if (v === 'queue') loadProgress().catch(() => { $('ovSub').textContent = '查询失败，稍后自动重试'; });
+  if (v === 'analysis' && window.Explore) window.Explore.open();
   if (v !== 'analysis' && location.hash !== '#' + v) location.hash = v;
 }
 
@@ -446,24 +476,11 @@ function drawWordCloud({ canvasId, boxId, tipId, items }) {
   });
 }
 
-/* 词云一：Steam 官方类型（valve_genres） */
-async function loadGenres() {
-  const d = await (await fetch('/api/genres')).json();
-  $('cloudGames').textContent = fmt(d.games_with_genres);
-  const total = d.games_with_genres || 0;
-  drawWordCloud({
-    canvasId: 'cloudCanvas', boxId: 'cloud', tipId: 'cloudTip',
-    items: (d.genres || []).map(g => ({
-      text: g.genre,
-      weight: Math.sqrt(g.count),
-      tip: `${fmt(g.count)} 款 · 占已抓游戏 ${total ? (g.count / total * 100).toFixed(1) : 0}%`,
-    })),
-  });
-}
-
-/* 词云二：SteamSpy 玩家标签（细粒度） */
+/* SteamSpy 玩家标签词云 */
 async function loadTags() {
-  const d = await (await fetch('/api/tags')).json();
+  const response = await fetch('/api/tags');
+  if (!response.ok) throw new Error('标签读取失败');
+  const d = await response.json();
   $('tagGames').textContent = fmt(d.games_with_tags);
   const total = d.games_with_tags || 0;
   drawWordCloud({
@@ -561,6 +578,7 @@ async function loadProgress() {
 
 async function progressLoop() {
   for (;;) {
+    if ($('viewQueue').classList.contains('hidden')) { await sleep(5000); continue; }
     try {
       await loadProgress();
       await sleep(5000);
@@ -574,28 +592,32 @@ async function progressLoop() {
 /* ── 单款查询 ── */
 let currentAch = [];
 let currentSort = 'pct';
+let achievementPage = 0;
+const achievementPageSize = 50;
 
-async function lookup(appid) {
-  const res = await fetch('/api/game?appid=' + appid);
-  const d = await res.json();
+async function lookup(appid, data) {
+  const d = data || await (await fetch('/api/game?appid=' + appid)).json();
   $('resultCard').classList.remove('hidden');
-  if (!res.ok) {
+  if (d.error) {
     $('gname').textContent = `未收录 · appid ${appid}`;
     $('missingBox').innerHTML = '';
     $('taskChips').innerHTML = '';
     $('gmeta').innerHTML = `${d.error || '不在库中'}。面板只读，不提供补录入口。`;
     $('achCard').classList.add('hidden');
-    $('curveCard').classList.add('hidden');
+    $('infoCard').classList.add('hidden');
     return { notFound: true };
   }
 
   currentAch = d.achievements_list || [];
   currentSort = 'pct';
+  achievementPage = 0;
+  $('achievementSearch').value = '';
+  for (const key of ['resultCard', 'infoCard', 'achCard']) $(key).open = false;
   $('sortPct').classList.add('active');
   $('sortPos').classList.remove('active');
 
   $('gname').innerHTML =
-    `${d.name || '（未命名）'} <span style="color:var(--MUTED);font-weight:500">· ${d.appid}</span>`;
+    `${escapeHtml(d.name_zh || d.name || '（未命名）')} <span style="color:var(--MUTED);font-weight:500">· ${d.appid}</span>`;
 
   // 逐源判定分三类：拿到 / 该源确实没有 / 缺口（未抓或不确定）
   const srcs = d.sources || [];
@@ -638,106 +660,27 @@ async function lookup(appid) {
     ? `共 ${currentAch.length} 个成就 · 解锁率取自全局完成率接口 · 名称来自社区页按位映射`
     : '';
   renderAchievements(currentSort);
-  renderCurve(currentAch);
   return d;
 }
 
-/* ── 完成率曲线：横轴 = 游戏内成就顺序，纵轴 = 全局完成率 ──
-   为什么这条曲线值得看：它把「难度」变成一条可读的形状——
-   前段陡降 = 早期就劝退；后段贴地 = 收尾内容几乎无人完成；
-   整体平缓 = 白送型成就设计。Q1 的难度画像可以直接从它的形状取特征。 */
-function renderCurve(list) {
-  const card = $('curveCard'), wrap = $('curveWrap');
-  const pts = [...(list || [])].sort((a, b) => a.position - b.position);
-  if (pts.length < 3) { card.classList.add('hidden'); return; }
-  card.classList.remove('hidden');
-
-  const W = wrap.clientWidth || 820, H = 220;
-  const P = { l: 44, r: 16, t: 14, b: 26 };
-  const iw = W - P.l - P.r, ih = H - P.t - P.b;
-  const n = pts.length;
-  const X = i => P.l + (n === 1 ? iw / 2 : iw * i / (n - 1));
-  const Y = v => P.t + ih * (1 - Math.max(0, Math.min(100, v)) / 100);
-
-  const line = pts.map((p, i) => `${i ? 'L' : 'M'}${X(i).toFixed(1)},${Y(p.percent).toFixed(1)}`).join(' ');
-  const area = `${line} L${X(n - 1).toFixed(1)},${(P.t + ih).toFixed(1)} L${X(0).toFixed(1)},${(P.t + ih).toFixed(1)} Z`;
-  const sorted = pts.map(p => p.percent).sort((a, b) => a - b);
-  const med = sorted[Math.floor(n / 2)];
-  const hardest = pts.reduce((a, b) => (b.percent < a.percent ? b : a));
-  const easy = Math.round(pts.filter(p => p.percent >= 90).length / n * 100);
-
-  // 坐标网格（0/25/50/75/100）
-  const grid = [0, 25, 50, 75, 100].map(v =>
-    `<line x1="${P.l}" y1="${Y(v).toFixed(1)}" x2="${P.l + iw}" y2="${Y(v).toFixed(1)}"
-       stroke="var(--GRID)" stroke-width="1" ${v ? '' : 'stroke-opacity="1"'}/>` +
-    `<text x="${P.l - 7}" y="${(Y(v) + 3.5).toFixed(1)}" text-anchor="end"
-       font-size="10" fill="var(--MUTED)">${v}</text>`).join('');
-
-  wrap.innerHTML =
-    `<svg viewBox="0 0 ${W} ${H}" preserveAspectRatio="none" role="img"
-          aria-label="成就完成率随游戏内顺序变化">
-       <defs><linearGradient id="curveFill" x1="0" y1="0" x2="0" y2="1">
-         <stop offset="0%" stop-color="var(--INK)" stop-opacity="0.16"/>
-         <stop offset="100%" stop-color="var(--INK)" stop-opacity="0.02"/>
-       </linearGradient></defs>
-       ${grid}
-       <line x1="${P.l}" y1="${Y(med).toFixed(1)}" x2="${P.l + iw}" y2="${Y(med).toFixed(1)}"
-             stroke="var(--MUTED)" stroke-width="1" stroke-dasharray="4 4"/>
-       <path d="${area}" fill="url(#curveFill)"/>
-       <path d="${line}" fill="none" stroke="var(--INK)" stroke-width="2"
-             stroke-linejoin="round" stroke-linecap="round"/>
-       <circle cx="${X(pts.indexOf(hardest)).toFixed(1)}" cy="${Y(hardest.percent).toFixed(1)}"
-               r="3.5" fill="#b91c1c"/>
-       <line id="curveGuide" x1="0" y1="${P.t}" x2="0" y2="${P.t + ih}"
-             stroke="var(--MUTED)" stroke-width="1" stroke-dasharray="2 3" opacity="0"/>
-       <circle id="curveDot" r="4" fill="var(--INK)" opacity="0"/>
-       <rect id="curveHit" x="${P.l}" y="${P.t}" width="${iw}" height="${ih}" fill="transparent"/>
-       <text x="${P.l}" y="${H - 7}" font-size="10" fill="var(--MUTED)">第 1 个成就</text>
-       <text x="${P.l + iw}" y="${H - 7}" font-size="10" fill="var(--MUTED)" text-anchor="end">第 ${n} 个</text>
-     </svg><div class="curve-tip" id="curveTip"></div>`;
-
-  $('curveSub').innerHTML =
-    `横轴 = 游戏内成就顺序，纵轴 = 全局完成率（共 ${n} 个成就）· ` +
-    `中位数 <b>${med.toFixed(1)}%</b> · 最难 <b>${hardest.percent.toFixed(1)}%</b>` +
-    `（${escapeHtml(hardest.display_name)}）· 其中 <b>${easy}%</b> 的成就属于「白送」（≥90%）`;
-
-  // hover：取最近的点
-  const svg = wrap.querySelector('svg');
-  const guide = wrap.querySelector('#curveGuide');
-  const dot = wrap.querySelector('#curveDot');
-  const tip = $('curveTip');
-  wrap.querySelector('#curveHit').addEventListener('mousemove', ev => {
-    const box = svg.getBoundingClientRect();
-    const x = (ev.clientX - box.left) / box.width * W;      // 换算到 viewBox 坐标
-    const i = Math.max(0, Math.min(n - 1, Math.round((x - P.l) / (iw / (n - 1)))));
-    const p = pts[i];
-    guide.setAttribute('x1', X(i)); guide.setAttribute('x2', X(i));
-    guide.setAttribute('opacity', '1');
-    dot.setAttribute('cx', X(i)); dot.setAttribute('cy', Y(p.percent));
-    dot.setAttribute('opacity', '1');
-    tip.style.display = 'block';
-    tip.textContent = `#${p.position} ${p.display_name} · ${p.percent.toFixed(1)}%`;
-    const px = X(i) / W * box.width;
-    tip.style.left = Math.min(Math.max(px + 12, 0), box.width - 200) + 'px';
-    tip.style.top = (Y(p.percent) / H * box.height - 34) + 'px';
-  });
-  wrap.querySelector('#curveHit').addEventListener('mouseleave', () => {
-    guide.setAttribute('opacity', '0'); dot.setAttribute('opacity', '0');
-    tip.style.display = 'none';
-  });
-}
-
-function renderAchievements(sort) {
+function renderAchievements(sort, reset = true) {
+  if (reset) achievementPage = 0;
   currentSort = sort;
   $('sortPct').classList.toggle('active', sort === 'pct');
   $('sortPos').classList.toggle('active', sort === 'pos');
-  const rows = [...currentAch].sort((a, b) =>
+  const query = $('achievementSearch').value.trim().toLocaleLowerCase();
+  const matches = currentAch.filter(a => !query || (a.display_name || '').toLocaleLowerCase().includes(query)).sort((a, b) =>
     sort === 'pct' ? b.percent - a.percent : a.position - b.position);
+  const totalPages = Math.max(1, Math.ceil(matches.length / achievementPageSize));
+  achievementPage = Math.max(0, Math.min(achievementPage, totalPages - 1));
+  const rows = matches.slice(achievementPage * achievementPageSize, (achievementPage + 1) * achievementPageSize);
+  $('achPrevious').disabled = achievementPage === 0;
+  $('achNext').disabled = achievementPage >= totalPages - 1;
+  $('achievementPageNote').textContent = `第 ${achievementPage + 1} / ${totalPages} 页 · ${matches.length} 个成就`;
   $('achBody').innerHTML = rows.map(a =>
     `<tr>` +
     `<td class="pos">${a.position}</td>` +
-    `<td class="disp">${escapeHtml(a.display_name)}</td>` +
-    `<td class="api">${escapeHtml(a.api_name)}</td>` +
+    `<td class="disp">${escapeHtml(a.display_name || '名称待核对')}</td>` +
     `<td class="barc"><div class="track"><div class="fill" style="width:${a.percent}%"></div></div></td>` +
     `<td class="pct">${a.percent.toFixed(1)}%</td>` +
     `</tr>`).join('');
@@ -749,9 +692,6 @@ function escapeHtml(s) {
 }
 
 /* ── 游戏信息全览：三个源的字段全量展示 ── */
-const STATUS_ZH = { status_yet: '未玩', status_owned: '拥有', status_beaten: '通关',
-                    status_toplay: '想玩', status_dropped: '弃坑', status_playing: '在玩' };
-
 function renderInfo(d) {
   const NA = '<span class="faint">–</span>';
   const kv = (k, v) => `<div class="kvrow"><span class="k">${k}</span><span class="v">${v ?? NA}</span></div>`;
@@ -761,7 +701,7 @@ function renderInfo(d) {
   const app = d.appdetails;
   $('infoSteam').innerHTML = !app ? kv('说明', '') :
     kv('类型', app.type ? escapeHtml(app.type) : NA) +
-    kv('定价', app.is_free ? '免费' : (app.price_cents != null ? '$' + (app.price_cents / 100).toFixed(2) : NA)) +
+    kv('付费方式', app.is_free === true ? '免费' : app.is_free === false ? '付费 · 当前售价请查看 Steam 商店' : NA) +
     kv('发售日', app.release_date ? app.release_date : NA) +
     kv('开发商', arr(app.developers)) +
     kv('发行商', arr(app.publishers)) +
@@ -776,14 +716,11 @@ function renderInfo(d) {
   else {
     const totalRev = (spy.positive || 0) + (spy.negative || 0);
     const rate = totalRev ? Math.round(spy.positive / totalRev * 100) + '%' : NA;
-    const hrs = m => (m != null ? (m / 60).toFixed(1) + ' 小时' : NA);
     spyHtml =
       kv('拥有量区间', spy.owners ? escapeHtml(spy.owners) : NA) +
-      kv('同时在线', spy.ccu != null ? fmt(spy.ccu) : NA) +
+      kv('采集时在线', spy.ccu != null ? fmt(spy.ccu) : NA) +
       kv('好评 / 差评', `${fmt(spy.positive)} / ${fmt(spy.negative)}`) +
-      kv('好评率', rate) +
-      kv('平均时长', hrs(spy.average_forever)) +
-      kv('中位时长', hrs(spy.median_forever));
+      kv('好评率', rate);
   }
   $('infoSpy').innerHTML = spyHtml;
 
@@ -792,20 +729,13 @@ function renderInfo(d) {
   let rawgHtml;
   if (!rawg) rawgHtml = '';
   else {
-    const stKeys = Object.keys(STATUS_ZH);
-    const maxSt = Math.max(...stKeys.map(k => rawg[k] || 0), 1);
-    const bars = stKeys.map(k =>
-      `<div class="stbar"><span class="sk">${STATUS_ZH[k]}</span>` +
-      `<div class="track"><div class="fill" style="width:${Math.round((rawg[k] || 0) / maxSt * 100)}%"></div></div>` +
-      `<span class="sv">${fmt(rawg[k])}</span></div>`).join('');
     rawgHtml =
       kv('Metacritic', rawg.metacritic != null ? escapeHtml(rawg.metacritic) : NA) +
       kv('社区评分', rawg.rating != null ? `${rawg.rating} / 5` : NA) +
       kv('评分数', rawg.ratings_count != null ? fmt(rawg.ratings_count) : NA) +
       kv('题材', arr(rawg.genres)) +
-      kv('平均时长', rawg.playtime != null ? rawg.playtime + ' 小时' : NA) +
-      kv('被收录次数', rawg.added_count != null ? fmt(rawg.added_count) : NA) +
-      `<div style="padding:6px 0;border-top:1px solid var(--GRID)">${bars}</div>`;
+      kv('记录时长', rawg.playtime > 0 ? rawg.playtime + ' 小时' : NA) +
+      kv('被收录次数', rawg.added_count != null ? fmt(rawg.added_count) : NA);
   }
   $('infoRawg').innerHTML = rawgHtml;
 }
@@ -825,6 +755,7 @@ $('appidInput').addEventListener('keydown', e => { if (e.key === 'Enter') doLook
 
 progressLoop();
 </script>
-<script src="/assets/analysis.js"></script>
+<script src="/assets/overview.js"></script>
+<script src="/assets/explore.js"></script>
 </body>
 </html>

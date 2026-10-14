@@ -1,5 +1,5 @@
-// api.go — 六个只读接口。JSON 结构必须与前端契约逐字段对齐
-// （前端 `index.html` / `analysis.js` 直接读这些键，改名字就是静默白屏）。
+// api.go — 只读接口。JSON 结构必须与前端契约逐字段对齐
+// （前端 `index.html` / `explore.js` 直接读这些键，改名字就是静默白屏）。
 //
 // 三条最容易被忽略、踩了就静默出错的约定：
 //  1. **可空列一律用指针**。前端用 `Number.isFinite` 判有效，把 NULL 落成 0 会被当成
@@ -402,11 +402,12 @@ func (a *api) handleProgress(w http.ResponseWriter, r *http.Request) {
 
 func (a *api) handleGame(w http.ResponseWriter, r *http.Request) {
 	appid, err := strconv.Atoi(r.URL.Query().Get("appid"))
-	if err != nil || appid <= 0 {
+	if err != nil || appid <= 0 || int64(appid) > 2147483647 {
 		writeError(w, http.StatusNotFound, "appid 必须是正整数")
 		return
 	}
-	ctx := r.Context()
+	ctx, cancel := context.WithTimeout(r.Context(), 15*time.Second)
+	defer cancel()
 
 	var (
 		name   *string

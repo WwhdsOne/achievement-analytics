@@ -1,0 +1,149 @@
+/* 沿用纸灰底色，以墨绿数字、衬线标题和清晰留白组织游戏探索。 */
+nav { flex-wrap:wrap; gap:12px 24px; }
+nav .tabs { flex-wrap:wrap; gap:12px 20px; }
+.wrap.research-wide { max-width:1220px; }
+.sr-only { position:absolute; width:1px; height:1px; padding:0; margin:-1px; overflow:hidden; clip:rect(0,0,0,0); white-space:nowrap; border:0; }
+.explore-heading { padding:24px 0 30px; border-bottom:1px solid var(--FAINT); }
+.explore-eyebrow { font-size:10px; letter-spacing:.17em; color:#326963; }
+.explore-heading h1 { font-family:Georgia,'Songti SC','SimSun',serif; font-size:clamp(32px,4vw,52px); line-height:1.32; font-weight:600; letter-spacing:-.035em; margin:18px 0; }
+.explore-heading > p { color:var(--L3); font-size:14px; line-height:1.9; }
+.explore-search { display:flex; gap:10px; margin-top:26px; }
+.explore-search input { flex:1; min-width:0; background:var(--PAPER); border:1px solid var(--FAINT); border-radius:8px; padding:15px 16px; font:inherit; font-size:14px; color:var(--INK); }
+#viewAnalysis button { cursor:pointer; font:inherit; }
+.explore-search button,.game-actions button { border:1px solid #326963; background:#326963; color:var(--PAPER); padding:12px 20px; border-radius:8px; white-space:nowrap; font-size:13px !important; }
+.explore-search button.ghost { background:transparent; color:#326963; }
+#viewAnalysis button:disabled { opacity:.55; cursor:wait; }
+#viewAnalysis button:focus-visible,#viewAnalysis a:focus-visible,#viewAnalysis input:focus-visible,#viewAnalysis select:focus-visible { outline:2px solid #326963; outline-offset:4px; }
+#exploreMessage { font-size:13px; line-height:1.8; color:#805629; margin-top:10px; }
+.section-heading { display:flex; justify-content:space-between; gap:16px; align-items:baseline; margin:0 0 22px; }
+.section-heading h2 { font-size:22px; }
+.section-heading > span { font-size:11px; color:var(--L3); }
+.explore-discovery,#searchResults,.explore-comparison { padding:30px 0; }
+.discovery-tabs { display:flex; flex-wrap:wrap; gap:8px; margin-bottom:20px; }
+.discovery-tabs button { color:var(--L3); border:1px solid var(--FAINT); background:transparent; padding:9px 14px; border-radius:24px; font-size:12px !important; }
+.discovery-tabs button[aria-pressed=true] { background:var(--INK); border-color:var(--INK); color:var(--PAPER); }
+.discovery-sort { display:flex; flex-wrap:wrap; align-items:center; gap:12px; color:var(--L3); font-size:12px; margin-bottom:18px; }
+.discovery-sort select { background:var(--PAPER); color:var(--INK); font:inherit; border:1px solid var(--FAINT); padding:7px; border-radius:4px; }
+.discovery-sort small { color:var(--L3); }
+.game-grid { display:grid; grid-template-columns:repeat(3,minmax(0,1fr)); gap:12px; }
+.explore-game { background:var(--PAPER); border:1px solid transparent; padding:18px 20px 22px; border-radius:12px; min-width:0; transition:border-color .15s; }
+.explore-game:hover { border-color:#326963; }
+.game-card-top { display:flex; justify-content:space-between; align-items:center; gap:12px; color:var(--L3); font-size:10px; }
+.add-compare { color:#326963; background:transparent; border:1px solid var(--FAINT); border-radius:50%; width:32px; height:32px; flex-shrink:0; padding:0; display:grid; place-items:center; }
+.compare-icon { position:relative; display:block; width:12px; height:12px; }
+.compare-icon::before,.compare-icon::after { content:''; position:absolute; top:50%; left:50%; transform:translate(-50%,-50%); background:currentColor; }
+.compare-icon::before { width:10px; height:1px; }
+.compare-icon::after { width:1px; height:10px; }
+.explore-game h3 { margin:12px 0 20px; font-size:16px; min-height:42px; line-height:1.4; }
+#viewAnalysis .text-button { border:none; color:inherit; background:none; padding:0; text-align:left; text-decoration:underline; text-underline-offset:4px; overflow-wrap:anywhere; }
+.explore-game h3 .text-button { text-decoration:none !important; font-weight:600 !important; }
+.game-card-numbers { display:grid; grid-template-columns:1.25fr 1fr .8fr; gap:8px; }
+.game-card-numbers strong { display:block; font-size:15px; font-variant-numeric:tabular-nums; color:#326963; }
+.game-card-numbers span { display:block; font-size:10px; color:var(--L3); margin-top:6px; }
+.explore-note { font-size:12px; line-height:1.9; color:var(--L3); margin-top:14px; overflow-wrap:anywhere; }
+.game-story { background:var(--PAPER); padding:30px; border-radius:16px; margin:10px 0 20px; }
+#gameStory,#compareSection { scroll-margin-top:100px; }
+.game-story-header { display:flex; justify-content:space-between; gap:24px; align-items:start; }
+.game-story-header h2 { font-family:Georgia,'Songti SC',serif; font-size:32px; line-height:1.4; margin-top:12px; overflow-wrap:anywhere; }
+.game-english { font-size:12px; color:var(--L3); line-height:1.7; margin-top:8px; }
+.game-actions { display:flex; flex-direction:column; flex-shrink:0; gap:12px; align-items:center; }
+.game-actions a,.explore-footer a { color:#326963; font-size:12px; text-underline-offset:4px; }
+.game-stat-grid { display:grid; grid-template-columns:repeat(4,minmax(0,1fr)); gap:16px; border-top:1px solid var(--GRID); border-bottom:1px solid var(--GRID); padding:24px 0; margin-top:28px; }
+.game-stat > span { display:block; font-size:11px; color:var(--L3); }
+.game-stat > strong { display:block; font-family:Georgia,serif; font-size:36px; font-weight:400; letter-spacing:-.04em; color:#326963; margin:10px 0 8px; font-variant-numeric:tabular-nums; overflow-wrap:anywhere; }
+.game-stat small { display:block; font-size:10px; color:var(--L3); line-height:1.8; }
+.game-stat em { font:12px sans-serif; color:var(--L3); margin-left:3px; }
+.game-story-section { padding:26px 0; border-bottom:1px solid var(--GRID); }
+.game-story-section h3 { font-size:18px; margin-bottom:20px; }
+.achievement-pair { display:grid; grid-template-columns:1fr 1fr; gap:18px; }
+.achievement-tile { padding:20px; border:1px solid var(--GRID); border-radius:8px; }
+.achievement-tile > span { display:block; color:var(--L3); font-size:11px; }
+.achievement-tile strong { display:block; font-size:16px; margin:12px 0; overflow-wrap:anywhere; }
+.achievement-tile b { font-family:Georgia,serif; font-size:38px; font-weight:400; color:#326963; }
+.achievement-tile small { display:block; color:var(--L3); font-size:10px; margin-top:8px; }
+.achievement-tile:last-child b { color:#A17642; }
+.story-sentence { font-size:14px; line-height:1.9; margin-top:20px; }
+.score-grid { display:grid; grid-template-columns:repeat(3,minmax(0,1fr)); gap:20px; }
+.tag-votes { display:grid; grid-template-columns:1fr 1fr; gap:18px 24px; }
+.tag-votes > div { display:grid; grid-template-columns:minmax(0,1fr) auto; gap:8px; font-size:12px; }
+.tag-votes b { color:var(--L3); font-weight:400; }
+.tag-votes i { display:block; grid-column:1/-1; height:4px; background:#326963; max-width:100%; min-width:0; }
+.shared-rows > div { display:flex; flex-wrap:wrap; justify-content:space-between; gap:8px; padding:12px 0; border-bottom:1px solid var(--GRID); font-size:13px; }
+.shared-rows b { color:#326963; }
+.shared-rows p { width:100%; font-size:11px; color:var(--L3); line-height:1.8; }
+#gameDetailMount .card { border-radius:12px; padding:22px 28px; }
+#gameDetailMount summary { cursor:pointer; font-size:14px; font-weight:600; }
+#gameDetailMount details[open] summary { margin-bottom:20px; }
+#gameDetailMount .atable .pos { width:35px; }
+#gameDetailMount .atable .disp { overflow-wrap:anywhere; }
+#gameDetailMount .atable .barc { width:25%; }
+.ach-search-label { display:flex; flex-wrap:wrap; gap:10px; align-items:center; font-size:12px; margin:16px 0; color:var(--L3); }
+.ach-search-label input { min-width:0; flex:1; border:1px solid var(--FAINT); border-radius:4px; padding:8px; background:var(--PAPER); color:var(--INK); font:inherit; }
+.achievement-pages { display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:12px; font-size:11px; margin:20px 0 0; color:var(--L3); }
+.achievement-pages button { border:1px solid var(--FAINT); background:transparent; color:var(--INK); padding:7px 10px; border-radius:4px; }
+.compare-slots { display:grid; grid-template-columns:1fr 1fr; gap:16px; margin:18px 0; }
+.compare-slot { background:var(--PAPER); padding:20px; border:1px dashed var(--FAINT); border-radius:8px; display:flex; flex-wrap:wrap; gap:12px; align-items:baseline; }
+.compare-slot span { width:100%; font-size:11px; color:var(--L3); }
+.compare-slot strong { flex:1; font-size:18px; overflow-wrap:anywhere; }
+.compare-slot button { font-size:11px !important; }
+.comparison-table { max-width:100%; overflow-x:auto; }
+.comparison-table table { width:100%; table-layout:fixed; border-collapse:collapse; font-size:13px; }
+.comparison-table th,.comparison-table td { padding:16px 12px; border-bottom:1px solid var(--FAINT); text-align:left; overflow-wrap:anywhere; line-height:1.8; }
+.comparison-table th:first-child { width:25%; }
+.comparison-table td { font-variant-numeric:tabular-nums; }
+.explore-footer { border-top:1px solid var(--FAINT); color:var(--L3); font-size:11px; line-height:1.9; padding:20px 0; }
+.loading-story { padding:40px 20px; }
+/* 数据全景：整库规模与五个可直接阅读的统计切面。 */
+.overview-totals { display:grid; grid-template-columns:repeat(4,minmax(0,1fr)); gap:24px; padding:32px 0; border-bottom:1px solid var(--FAINT); }
+.overview-stat > span { font-size:12px; color:var(--L3); }
+.overview-stat strong { display:block; font:42px Georgia,serif; color:#326963; letter-spacing:-.04em; margin:12px 0 8px; font-variant-numeric:tabular-nums; }
+.overview-stat small { display:block; font-size:11px; color:var(--L3); line-height:1.8; }
+.overview-section { background:var(--PAPER); border-radius:16px; margin:22px 0; padding:30px; }
+.overview-section-head > span { font-size:10px; letter-spacing:.1em; color:#326963; }
+.overview-section-head h2 { font-family:Georgia,'Songti SC',serif; font-size:25px; line-height:1.5; margin:10px 0 28px; }
+.overview-columns { display:grid; grid-template-columns:minmax(0,1fr) minmax(0,1fr); gap:36px; align-items:center; }
+.overview-highlight > strong { display:block; color:#326963; font:72px Georgia,serif; letter-spacing:-.05em; font-variant-numeric:tabular-nums; }
+.overview-highlight em { font:14px sans-serif; letter-spacing:normal; margin-left:6px; color:var(--L3); }
+.overview-highlight > p { font-size:15px; line-height:1.9; margin:14px 0; }
+.overview-fact { color:var(--L3); font-size:13px; line-height:1.9; }
+.overview-fact-panel { padding:24px; border:1px solid var(--GRID); border-radius:8px; }
+.overview-fact-panel > b { display:block; color:#A17642; font:36px Georgia,'Songti SC',serif; }
+.overview-fact-panel > p { font-size:14px; line-height:1.9; margin-top:12px; }
+.overview-fact-panel > small { display:block; font-size:11px; color:var(--L3); margin-top:12px; }
+.overview-bars { display:grid; gap:18px; }
+.overview-bar-row > div:first-child { display:flex; flex-wrap:wrap; justify-content:space-between; gap:8px; font-size:12px; line-height:1.6; margin-bottom:7px; }
+.overview-bar-row b { font-weight:500; font-variant-numeric:tabular-nums; }
+.overview-bar-row small { font-size:11px; color:var(--L3); }
+.overview-track { height:8px; background:var(--GRID); }
+.overview-track span { display:block; height:100%; background:#326963; }
+.overview-waffle { justify-self:center; max-width:100%; width:270px; }
+.overview-waffle > div { display:grid; grid-template-columns:repeat(10,minmax(0,1fr)); gap:4px; }
+.overview-waffle > div i { aspect-ratio:1; background:var(--GRID); border-radius:2px; }
+.overview-waffle > div i.filled { background:#326963; }
+.overview-waffle figcaption { font-size:11px; line-height:1.9; color:var(--L3); margin-top:14px; }
+.overview-waffle figcaption i { display:inline-block; width:8px; height:8px; background:#326963; margin-right:4px; }
+.overview-loading { padding:34px 0; font-size:14px; color:var(--L3); line-height:1.9; }
+.overview-dateline { font-size:11px; line-height:1.9; color:var(--L3); padding:8px 0 26px; }
+#viewCloud .text-button { border:0; background:none; color:#326963; font:inherit; padding:0; text-decoration:underline; text-underline-offset:3px; }
+#viewCloud button:focus-visible { outline:2px solid #326963; outline-offset:4px; }
+#viewCloud .cloud { margin-top:20px; }
+@media(max-width:900px) { .game-grid { grid-template-columns:repeat(2,minmax(0,1fr)); } .game-stat-grid { grid-template-columns:repeat(2,minmax(0,1fr)); } }
+@media(max-width:540px) {
+  body { padding-left:14px; padding-right:14px; } nav .tabs { margin-left:0; } nav .tab { font-size:12px; }
+  .explore-search { flex-wrap:wrap; } .explore-search input { flex-basis:100%; }
+  .explore-search button { flex:1; } .section-heading { flex-wrap:wrap; gap:8px; }
+  .game-grid { grid-template-columns:minmax(0,1fr); } .explore-game h3 { min-height:0; }
+  .game-story { padding:22px 18px; } .game-story-header { flex-direction:column; gap:16px; }
+  .game-story-header h2 { font-size:26px; } .game-actions { flex-direction:row; }
+  .game-stat > strong { font-size:30px; } .score-grid { grid-template-columns:1fr; }
+  .achievement-pair,.tag-votes { grid-template-columns:1fr; } .compare-slot { padding:14px; }
+  #gameDetailMount .card { padding:20px 16px; } #gameDetailMount .atable { font-size:11px; }
+  .comparison-table th,.comparison-table td { padding:12px 6px; font-size:11px; }
+  .overview-totals { grid-template-columns:repeat(2,minmax(0,1fr)); gap:24px 16px; }
+  .overview-stat strong { font-size:32px; }
+  .overview-section { padding:24px 18px; }
+  .overview-section-head h2 { font-size:22px; }
+  .overview-columns { grid-template-columns:minmax(0,1fr); gap:24px; }
+  .overview-highlight > strong { font-size:60px; }
+  .overview-waffle { justify-self:start; width:240px; }
+}

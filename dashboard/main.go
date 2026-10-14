@@ -1,6 +1,6 @@
 // main.go — 面板的 HTTP 入口。
 //
-// 一个只读的展示面板：把前端三件套（index.html / analysis.js / analysis.css）编进二进制，
+// 一个只读的展示面板：把前端三件套（index.html / explore.js / explore.css）编进二进制，
 // 从共享云库读只读数据，供全组和老师从浏览器看。**没有任何写接口**——
 // 补抓数据这件事只走 CLI（`uv run python -m cleaning.worker`）。
 //
@@ -33,12 +33,13 @@ import (
 	"time"
 )
 
-//go:embed index.html analysis.js analysis.css
+//go:embed index.html explore.js explore.css overview.js
 var frontend embed.FS
 
 var assets = map[string]struct{ file, ctype string }{
-	"/assets/analysis.js":  {"analysis.js", "text/javascript; charset=utf-8"},
-	"/assets/analysis.css": {"analysis.css", "text/css; charset=utf-8"},
+	"/assets/explore.js":  {"explore.js", "text/javascript; charset=utf-8"},
+	"/assets/explore.css": {"explore.css", "text/css; charset=utf-8"},
+	"/assets/overview.js": {"overview.js", "text/javascript; charset=utf-8"},
 }
 
 // rateLimiter 每 IP 滑动窗口限速。
@@ -218,6 +219,8 @@ func main() {
 	}
 	mux.HandleFunc("GET /api/progress", srv.handleProgress)
 	mux.HandleFunc("GET /api/game", srv.handleGame)
+	mux.HandleFunc("GET /api/explore", srv.handleExplore)
+	mux.HandleFunc("GET /api/overview", srv.handleOverview)
 	mux.HandleFunc("GET /api/genres", srv.handleGenres)
 	mux.HandleFunc("GET /api/tags", srv.handleTags)
 	mux.HandleFunc("GET /api/analysis", srv.handleAnalysis)
