@@ -1,0 +1,17 @@
+# Personal secrets and raw/model data
+.env
+.env.*
+!.env.example
+*.db
+*.db-*
+*.lock
+
+# 本地 SQLite 缓存（100.9 MiB，超过 GitHub 单文件 100 MiB 硬上限，push 会被拒）。
+# 它由「从云库只读导入前 1000 款」生成（见 简明说明.md 第 ① 步与 wwh5/storage.py），
+# 随时可重建，不进 git。带 -wal/-shm/-journal 后缀的也一并挡掉。
+*.sqlite3
+*.sqlite3-*
+
+# Personal Python outputs
+__pycache__/
+*.py[cod]
