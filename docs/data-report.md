@@ -130,6 +130,9 @@
 | 全局完成率会漂移 | 随抓取批次缓慢变化，建模必须绑定 `dataset_versions` 登记的数据版本 |
 | `steamspy.owners` 是区间估算 | 只能作数量级参考，不能当精确销量 |
 | `steamspy.average_forever` / `median_forever` | 已失效恒为 0（上游问题），时长分析改用 RAWG 的 `playtime` |
+| ⚠️ **`price_cents` 币种不一致，不能当金额用** | 商店搜索与 appdetails 都按请求 IP 推断地区返回价格，而两张表**都只存整数、没存币种**。USD 是 2 位小数（`1499` = $14.99），但日元/韩元是 0 位小数（"¥1700" 被记成 `170000`，放大 100 倍）。实证：Rust 在 `store_search_games` 是 `230000`、在 `steam_appdetails` 是 `1749`（同一游戏差 130 倍）；`>10000` 的行占比分别为 9.0% 与 1.0%。**价格分析只能用 `steam_appdetails.is_free` 二值**；要金额需补采（appdetails 加 `cc=us` 并新增 currency 列） |
+| ⚠️ **`store_search_games.tag_ids` 未解码** | 存的是 Steam 官方标签**数字 ID**（全表 429 个不同标签），需要 `tagid → 名称` 字典才能变成可读标签。覆盖 100%（50,955 款），比 `game_tags`（steamspy 源文本标签，81%）更全——补齐字典即可给全量游戏配上细粒度标签 |
+| 商店评价三件套只有 72.1% | `review_label` / `review_percent` / `review_count` 缺失的 27.9% 是评价数太少、Steam 不显示评价摘要的冷门游戏——缺口本身与「冷门」高度相关，分析时需注意 |
 | 成就名映射 | 判定用逐位容差（≤0.5pp）；**未解决 3 条**（appid 627690 / 767490 / 1851090），建模时过滤 `resolved=false` |
 | `empty` 的语义 | 多数为「该游戏确实没有该数据」，但历史上有假空（问题 6）；本次已全量复核过 |
 | RAWG 使用条款 | 免费档限非商业用途，且**要求使用数据的页面加 RAWG 回链**——最终报告/展示页必须落实 |
