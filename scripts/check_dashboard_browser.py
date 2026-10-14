@@ -9,8 +9,21 @@ from pathlib import Path
 from playwright.sync_api import Page, expect, sync_playwright
 
 
+def open_search_tab(page: Page) -> None:
+    """探索页默认停在「发现游戏」，搜索表单在另一个标签页里。"""
+    page.locator('[data-explore-tab="search"]').click()
+    expect(page.locator("#exploreInput")).to_be_visible()
+
+
+def open_discover_tab(page: Page) -> None:
+    """切回「发现游戏」标签页，供发现列表与随便逛逛使用。"""
+    page.locator('[data-explore-tab="discover"]').click()
+    expect(page.locator("#discoveryGames")).to_be_visible()
+
+
 def lookup_game(page: Page, value: str, appid: int) -> None:
     """从统一搜索框打开游戏，并等待真实详情完成。"""
+    open_search_tab(page)
     page.locator("#exploreInput").fill(value)
     page.locator("#exploreSearchBtn").click()
     expect(page.locator(".game-story-header")).to_be_visible(timeout=30000)
@@ -23,7 +36,7 @@ def check_overflow(page: Page) -> None:
 
 
 def main() -> None:
-    """验收真实搜索、随机、发现、对比、详情、旧链接与错误状态。"""
+    """验收真实搜索、随机、发现、详情、旧链接与错误状态。"""
     parser = argparse.ArgumentParser()
     parser.add_argument("--url", default="http://127.0.0.1:8601")
     parser.add_argument("--output", default="/tmp/achievement-dashboard-screenshots")
@@ -64,6 +77,7 @@ def main() -> None:
                 page.locator(f'[data-discovery="{mode}"]').click()
                 expect(page.locator("#discoveryGames .explore-game").first).to_be_visible(timeout=30000)
 
+            open_search_tab(page)
             page.locator("#exploreInput").fill("Hollow Knight")
             page.locator("#exploreSearchBtn").click()
             expect(page.locator('#searchResults [data-game="367520"]')).to_be_visible(timeout=30000)
@@ -89,17 +103,6 @@ def main() -> None:
             check_overflow(page)
             page.screenshot(path=str(output / f"{label}-game.png"), full_page=True)
 
-            page.locator('.game-actions [data-compare="367520"]').click()
-            lookup_game(page, "https://store.steampowered.com/app/814380/?l=schinese", 814380)
-            page.locator('.game-actions [data-compare="814380"]').click()
-            expect(page.locator("#compareResult table")).to_be_visible(timeout=30000)
-            assert page.locator("#compareResult tbody tr").count() == 6
-            check_overflow(page)
-            page.screenshot(path=str(output / f"{label}-compare.png"), full_page=True)
-            page.locator('[data-remove="0"]').click()
-            assert page.locator("#compareResult table").count() == 0
-            page.locator("#clearComparison").click()
-
             if label == "desktop":
                 lookup_game(page, "664290", 664290)
                 page.locator("#achCard summary").click()
@@ -107,6 +110,7 @@ def main() -> None:
                 expect(page.locator("#achievementPageNote")).to_contain_text("220 页")
 
             lookup_game(page, "367520", 367520)
+            open_discover_tab(page)
             with page.expect_response("**/api/explore?mode=random"):
                 page.locator("#randomGame").click()
             page.wait_for_function("!document.getElementById('randomGame').disabled")
@@ -132,7 +136,7 @@ def main() -> None:
             assert page.locator("#gameStory").is_hidden()
             page.goto(args.url + "/#game", wait_until="networkidle")
             page.wait_for_function("location.hash === '#explore'")
-            results.append({"viewport": label, "search": True, "comparison": True, "overview": True, "overflow": False})
+            results.append({"viewport": label, "search": True, "overview": True, "overflow": False})
             page.close()
 
         page = context.new_page()
@@ -141,12 +145,14 @@ def main() -> None:
         page.goto(args.url + "/#explore", wait_until="networkidle")
         page.route("**/api/game?appid=999999999", lambda route: route.fulfill(status=404, content_type="application/json", body='{"error":"not found"}'))
         page.route("**/api/explore?appid=999999999", lambda route: route.fulfill(status=404, content_type="application/json", body='{"error":"not found"}'))
+        open_search_tab(page)
         page.locator("#exploreInput").fill("999999999")
         page.locator("#exploreSearchBtn").click()
         expect(page.locator("#gameStory")).to_contain_text("尚未收录", timeout=30000)
         assert page.locator("#achCard").is_hidden() and page.locator("#infoCard").is_hidden()
         lookup_game(page, "367520", 367520)
         page.route("**/api/explore?mode=free", lambda route: route.fulfill(status=503, content_type="application/json", body='{"error":"unavailable"}'))
+        open_discover_tab(page)
         page.locator('[data-discovery="free"]').click()
         expect(page.locator('[data-retry="discovery"]')).to_be_visible()
         page.unroute("**/api/explore?mode=free")

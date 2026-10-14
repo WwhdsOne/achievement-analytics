@@ -11,7 +11,7 @@
   const payment = game => game.is_free === true ? '免费' : game.is_free === false ? '付费' : '—';
   const cache = new Map();
   let started = false, discoveryToken = 0, searchToken = 0, gameToken = 0, lastGame = null;
-  let discovered = [], mode = 'popular', metric = 'reviews', compare = [];
+  let discovered = [], mode = 'popular', metric = 'reviews';
 
   async function json(url) {
     const res = await fetch(url);
@@ -21,11 +21,18 @@
   }
 
   function message(text) { el('exploreMessage').textContent = text; }
+
+  // 搜索与发现分成两个标签页；提示区在两页共用（见 index.html）。
+  function switchExploreTab(name) {
+    document.querySelectorAll('[data-explore-tab]').forEach(button => button.setAttribute('aria-pressed', String(button.dataset.exploreTab === name)));
+    el('exploreTabSearch').classList.toggle('hidden', name !== 'search');
+    el('exploreTabDiscover').classList.toggle('hidden', name !== 'discover');
+  }
+
   function gameButton(game) { return `<button type="button" class="text-button" data-game="${Number(game.appid)}">${esc(title(game))}</button>`; }
   function cards(games) {
     return games.map(game => `<article class="explore-game">
-      <div class="game-card-top"><span>${esc(game.release_date?.slice(0,4) || '发售日未知')} · ${game.is_free === true ? '免费游戏' : 'Steam'}</span>
-        <button type="button" class="add-compare" data-compare="${Number(game.appid)}" aria-label="将${esc(title(game))}加入对比" title="加入对比"><span class="compare-icon" aria-hidden="true"></span></button></div>
+      <div class="game-card-top"><span>${esc(game.release_date?.slice(0,4) || '发售日未知')} · ${game.is_free === true ? '免费游戏' : 'Steam'}</span></div>
       <h3>${gameButton(game)}</h3><div class="game-card-numbers">
         <div><strong>${num(game.reviews)}</strong><span>条评价</span></div>
         <div><strong>${pct(game.approval)}</strong><span>好评率</span></div>
@@ -148,8 +155,7 @@
     const meta = [g.release_date || '发售日暂无', ...(g.developers || [])].map(esc).join(' · ');
     let html = `<article class="game-story"><header class="game-story-header"><div><span class="explore-eyebrow">GAME / ${Number(g.appid)}</span>
       <h2>${esc(title(g))}</h2>${g.name_zh && g.name_zh !== g.name ? `<p class="game-english">${esc(g.name)}</p>` : ''}<p class="explore-note">${meta}</p></div>
-      <div class="game-actions"><button type="button" data-compare="${Number(g.appid)}">＋ 加入对比</button>
-      <a href="https://store.steampowered.com/app/${Number(g.appid)}/" target="_blank" rel="noopener noreferrer">去 Steam ↗</a><a href="#explore">换款游戏 ↑</a></div></header>
+      <div class="game-actions"><a href="https://store.steampowered.com/app/${Number(g.appid)}/" target="_blank" rel="noopener noreferrer">去 Steam ↗</a><a href="#explore">换款游戏 ↑</a></div></header>
       <div class="game-stat-grid">${stat('成就清单',num(g.ach_count),'个成就')}${stat('Steam 好评率',pct(g.approval),`${num(g.reviews)} 条评价`)}${stat('付费方式',payment(g),'当前售价请查看 Steam 商店')}${stat('采集时在线',num(d.steamspy?.ccu),'人 · 非实时在线')}</div>`;
     html += storySection('成就里藏着的小数字', achievements.length ?
       `<div class="achievement-pair">${achievementTile(achievements[0],'最常见的具名成就')}${achievementTile(achievements[achievements.length-1],'最稀有的具名成就')}</div>
@@ -193,50 +199,6 @@
     if (token === gameToken) el('gameStory').scrollIntoView({behavior:'smooth',block:'start'});
   }
 
-  function renderSlots() {
-    el('compareSlots').innerHTML = [0,1].map(index => {
-      const item = compare[index];
-      return `<div class="compare-slot"><span>${index === 0 ? '这款游戏' : '那款游戏'}</span>${item ? `<strong>${esc(item.name || '正在读取…')}</strong><button class="text-button" data-remove="${index}" aria-label="移除${esc(item.name || '游戏')}">移除</button>` : '<strong>等你选一款</strong>'}</div>`;
-    }).join('');
-  }
-
-  async function addComparison(id) {
-    if (compare.some(item => item.id === id)) { message('这款已经在对比中，选另一款吧。'); return; }
-    if (compare.length === 2) { message('对比区已有两款游戏，先移除一款再添加。'); el('compareSection').scrollIntoView({behavior:'smooth'}); return; }
-    const item = {id};
-    compare.push(item);
-    renderSlots();
-    message('');
-    try {
-      item.data = await bundle(id);
-      item.name = title(item.data.g);
-      if (!compare.includes(item)) return;
-      renderSlots();
-      renderComparison();
-      if (compare.length === 2) el('compareSection').scrollIntoView({behavior:'smooth'});
-    } catch (error) {
-      if (!compare.includes(item)) return;
-      compare = compare.filter(row => row !== item);
-      renderSlots(); renderComparison(); message(error.message);
-    }
-  }
-
-  function renderComparison() {
-    if (compare.length !== 2 || compare.some(item => !item.data)) { el('compareResult').innerHTML = ''; return; }
-    const [a,b] = compare.map(item => item.data);
-    const fields = [
-      ['成就数量',num(a.g.ach_count),num(b.g.ach_count)],
-      ['Steam 好评率',pct(a.g.approval),pct(b.g.approval)],
-      ['Steam 评价数量',num(a.g.reviews),num(b.g.reviews)],
-      ['付费方式',payment(a.g),payment(b.g)],
-      ['发售日期',esc(a.g.release_date || '—'),esc(b.g.release_date || '—')],
-      ['商店支持功能',esc((a.d.appdetails?.valve_categories || []).join(' / ') || '—'),esc((b.d.appdetails?.valve_categories || []).join(' / ') || '—')]
-    ];
-    const ratio = b.g.ach_count > 0 ? (a.g.ach_count/b.g.ach_count).toFixed(1) : null;
-    el('compareResult').innerHTML = `<div class="comparison-table"><table><thead><tr><th>对比项</th><th>${gameButton(a.g)}</th><th>${gameButton(b.g)}</th></tr></thead><tbody>${fields.map(([label,left,right]) => `<tr><th>${label}</th><td>${left}</td><td>${right}</td></tr>`).join('')}</tbody></table></div>
-      ${ratio ? `<p class="story-sentence">《${esc(title(a.g))}》的成就数量是《${esc(title(b.g))}》的 <b>${ratio} 倍</b>。</p>` : ''}<p class="explore-note">数量多不等于内容多或难度高；缺失数据以 — 表示。</p>`;
-  }
-
   function navigate(id) {
     ++searchToken;
     const hash = '#explore/game/' + id;
@@ -245,7 +207,7 @@
   }
 
   function open() {
-    if (!started) { started = true; discover('popular'); renderSlots(); }
+    if (!started) { started = true; discover('popular'); }
     if (!location.hash.startsWith('#explore')) location.hash = '#explore';
   }
 
@@ -274,14 +236,12 @@
   el('discoveryMetric').addEventListener('change', event => { metric = event.target.value; renderDiscovery(); });
   el('exploreSearch').addEventListener('submit', search);
   el('randomGame').addEventListener('click', random);
-  el('clearComparison').addEventListener('click', () => { compare=[]; renderSlots(); renderComparison(); });
   el('viewAnalysis').addEventListener('click', event => {
     const button = event.target.closest('button');
     if (!button) return;
     if (button.dataset.game) navigate(Number(button.dataset.game));
-    if (button.dataset.compare) addComparison(Number(button.dataset.compare));
+    if (button.dataset.exploreTab) switchExploreTab(button.dataset.exploreTab);
     if (button.dataset.discovery) discover(button.dataset.discovery);
-    if (button.dataset.remove != null) { compare.splice(Number(button.dataset.remove),1); renderSlots(); renderComparison(); }
     if (button.dataset.retry === 'discovery') discover(mode);
     if (button.dataset.retry === 'search') search();
     if (button.dataset.retry === 'game' && lastGame) { cache.delete(lastGame); selectGame(lastGame); }

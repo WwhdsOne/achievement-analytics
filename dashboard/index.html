@@ -4,6 +4,7 @@
 <meta charset="utf-8" />
 <meta name="viewport" content="width=device-width,initial-scale=1" />
 <title>achievement-analytics · 游戏探索</title>
+<link rel="icon" type="image/png" href="/favicon.png" />
 <style>
   /* ── MONO tokens（对齐 lieflat-charts / mono-tokens.js）──────────── */
   :root {
@@ -235,18 +236,24 @@
     <header class="explore-heading">
       <div class="explore-eyebrow">THE GAMES, IN NUMBERS</div>
       <h1>熟悉的游戏，<br>还有你没见过的数字。</h1>
-      <p>找一款游戏，看看成就、口碑与玩家标签。也可以把两款放在一起。</p>
+      <p>找一款游戏，看看成就、口碑与玩家标签。</p>
+      <div class="explore-view-tabs" role="group" aria-label="探索方式">
+        <button type="button" data-explore-tab="search" aria-pressed="false">搜索游戏</button>
+        <button type="button" data-explore-tab="discover" aria-pressed="true">发现游戏</button>
+      </div>
+    </header>
+    <!-- 两个探索方式的共用提示区：搜索报错与随便逛逛的状态都打在这里 -->
+    <div id="exploreMessage" role="status"></div>
+    <section id="exploreTabSearch" class="explore-tab-panel hidden" aria-label="搜索游戏">
       <form id="exploreSearch" class="explore-search">
         <label class="sr-only" for="exploreInput">游戏名称、AppID 或 Steam 商店链接</label>
         <input id="exploreInput" placeholder="游戏名 / AppID / Steam 商店链接" autocomplete="off" maxlength="200">
         <button type="submit" id="exploreSearchBtn">找游戏 ↗</button>
-        <button type="button" id="randomGame" class="ghost">随便逛逛 ↝</button>
       </form>
-      <div id="exploreMessage" role="status"></div>
-    </header>
-    <section id="searchResults" class="hidden" aria-label="搜索结果"></section>
-    <section class="explore-discovery" aria-label="发现游戏">
-      <div class="section-heading"><h2>从这里开始</h2><span>点击游戏看详情，点 ＋ 加入对比</span></div>
+      <section id="searchResults" class="hidden" aria-label="搜索结果"></section>
+    </section>
+    <section id="exploreTabDiscover" class="explore-tab-panel" aria-label="发现游戏">
+      <div class="section-heading"><h2>从这里开始</h2><button type="button" id="randomGame" class="ghost">随便逛逛 ↝</button></div>
       <div class="discovery-tabs" role="group" aria-label="发现方式">
         <button data-discovery="popular" aria-pressed="true">大家聊得最多</button>
         <button data-discovery="achievements" aria-pressed="false">成就清单特别长</button>
@@ -257,12 +264,6 @@
     </section>
     <div id="gameStory" class="hidden" aria-live="polite"></div>
     <div id="gameDetailMount"></div>
-    <section class="explore-comparison" id="compareSection">
-      <div class="section-heading"><h2>两款游戏，面对面</h2><button id="clearComparison" class="text-button">清空</button></div>
-      <p class="explore-note">从游戏卡片或详情中添加两款游戏。</p>
-      <div id="compareSlots" class="compare-slots"></div>
-      <div id="compareResult" aria-live="polite"></div>
-    </section>
     <footer class="explore-footer">来源：Steam 商店 / Steam 全局成就 / SteamSpy / <a href="https://rawg.io/" target="_blank" rel="noopener noreferrer">RAWG</a> · 游戏级公开数据，采集时间可在每款游戏的数据详情中查看。</footer>
   </div>
 
@@ -313,7 +314,7 @@
       <div class="src">fetch_tasks · steam_appdetails · achievements · steamspy_games · rawg_games</div>
     </details>
 
-    <details class="card fade hidden" id="infoCard">
+    <details class="card fade hidden" id="infoCard" open>
       <summary>更多游戏信息</summary>
       <div class="sub">各源记录 · <span style="color:var(--FAINT)">–</span> 表示暂无有效数据</div>
       <div class="igrid">
@@ -652,7 +653,9 @@ async function lookup(appid, data) {
     `最近抓取：${d.last_fetched_at ? new Date(d.last_fetched_at).toLocaleString('zh-CN') : '从未'}`;
 
   renderInfo(d);
-  $('infoCard').classList.toggle('hidden', !(d.appdetails || d.steamspy || d.rawg));
+  const hasInfo = !!(d.appdetails || d.steamspy || d.rawg);
+  $('infoCard').classList.toggle('hidden', !hasInfo);
+  if (hasInfo) $('infoCard').open = true; // 返回探索页的复位会把它关掉，详情每次都默认展开
 
   // 成就表
   $('achCard').classList.toggle('hidden', !currentAch.length);

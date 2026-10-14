@@ -33,13 +33,14 @@ import (
 	"time"
 )
 
-//go:embed index.html explore.js explore.css overview.js
+//go:embed index.html explore.js explore.css overview.js favicon.png
 var frontend embed.FS
 
 var assets = map[string]struct{ file, ctype string }{
 	"/assets/explore.js":  {"explore.js", "text/javascript; charset=utf-8"},
 	"/assets/explore.css": {"explore.css", "text/css; charset=utf-8"},
 	"/assets/overview.js": {"overview.js", "text/javascript; charset=utf-8"},
+	"/favicon.png":        {"favicon.png", "image/png"},
 }
 
 // rateLimiter 每 IP 滑动窗口限速，外加「反复触发即封禁」。
