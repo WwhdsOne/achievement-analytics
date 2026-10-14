@@ -1,6 +1,6 @@
 # 刘宇翔（LYX）工作空间
 
-当前任务是用DeepSeek对成就做八类多标签分类，直接保存至本地SQLite。所有个人编辑限于本目录，共享远端数据库永远只读。详细说明集中在[docs](docs/README.md)，子目录README保留入口索引。
+当前任务是按游戏名定位，缓存/生成背景摘要，再用DeepSeek一次性分类整款成就并保存至本地SQLite。所有个人编辑限于本目录，共享远端数据库永远只读。详细说明集中在[docs](docs/README.md)，子目录README保留入口索引。
 
 | 文档 | 内容 |
 |---|---|
@@ -12,4 +12,4 @@
 | [实验记录](docs/experiments.md) | 历史与本轮验证 |
 | [历史API资料](docs/API_PROBE.md) | 归档说明入口 |
 
-程序入口见[process/README.md](process/README.md)，SQL与本地库入口见[database/README.md](database/README.md)。数据、缓存和备份保持原位且Git忽略；不自动提交或推送。
+程序入口见[DataAgent.py](process/DataAgent.py)，SQL与本地库入口见[schema.sql](database/schema.sql)。数据、缓存和备份保持原位且Git忽略；不自动提交或推送。

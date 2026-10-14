@@ -5,40 +5,29 @@ from __future__ import annotations
 import argparse
 from contextlib import closing
 from datetime import datetime, timezone
-import hashlib
 import json
 from pathlib import Path
 import sqlite3
 from typing import Any
 
 from local_database import (
-    COLUMNS, DEFAULT_DATABASE, METHODS, TABLES, WORKSPACE, connect_local,
+    DEFAULT_DATABASE, METHODS, SCHEMA_VERSION, WORKSPACE, connect_local,
     ensure_schema, execute_schema, method_values, table_counts, workspace_path,
 )
+from migrate_display_names import data_digest, migrate as migrate_display_names, name_issues
 
 MIGRATION = WORKSPACE / "database" / "migrate_methods.sql"
 LEGACY_METHODS = {"rule", "jev", "manual", "hybrid"}
 
 
-def data_digest(con: sqlite3.Connection) -> str:
-    """按全部字段稳定排序，核对六表业务记录是否逐项保留。"""
-    sha = hashlib.sha256()
-    for table in TABLES:
-        sha.update(table.encode("utf-8"))
-        order = ",".join('"' + column + '"' for column in COLUMNS[table])
-        for row in con.execute(f'SELECT * FROM "{table}" ORDER BY {order}'):
-            sha.update((json.dumps(row, ensure_ascii=False, allow_nan=False) + "\n").encode("utf-8"))
-    return sha.hexdigest()
-
-
 def migrate(database: Path) -> dict[str, Any]:
     """备份后短事务重建类型表；失败回滚，重复运行不改库。"""
     with closing(connect_local(database)) as source:
-        ensure_schema(source, check_methods=False)
+        version = source.execute("PRAGMA user_version").fetchone()[0]
+        ensure_schema(source, check_methods=False, schema_version=version)
         existing = method_values(source)
         if existing == set(METHODS):
-            ensure_schema(source)
-            return {"already_migrated": True, "methods": list(METHODS), "counts": table_counts(source)}
+            return {**migrate_display_names(database), "methods": list(METHODS)}
         if existing != LEGACY_METHODS:
             raise ValueError("现有method定义不是预期旧结构，停止")
         if source.execute("SELECT 1 FROM achievement_types WHERE method='hybrid' LIMIT 1").fetchone():
@@ -49,12 +38,13 @@ def migrate(database: Path) -> dict[str, Any]:
         backup = workspace_path(directory / "achievements.sqlite")
         with closing(sqlite3.connect(backup)) as destination:
             source.backup(destination)
-            before = data_digest(destination)
+            before = data_digest(destination, original_only=True)
+            snapshot = data_digest(destination)
     with closing(connect_local(database, writable=True)) as con:
         con.execute("BEGIN IMMEDIATE")
         try:
-            ensure_schema(con, check_methods=False)
-            if method_values(con) != existing or data_digest(con) != before:
+            ensure_schema(con, check_methods=False, schema_version=version)
+            if method_values(con) != existing or data_digest(con) != snapshot:
                 raise ValueError("备份后原库发生变化，停止迁移，请重跑")
             counts = table_counts(con)
             triggers = {row[0] for row in con.execute("SELECT name FROM sqlite_master WHERE type='trigger'")}
@@ -66,12 +56,12 @@ def migrate(database: Path) -> dict[str, Any]:
                     pending = ""
             if pending.strip():
                 raise ValueError("迁移SQL不完整")
-            execute_schema(con)  # CREATE IF NOT EXISTS恢复索引/触发器，六表字段版本仍为2
+            execute_schema(con)  # 恢复索引/触发器；旧版同时回填展示名并升级版本。
             ensure_schema(con)
-            after = data_digest(con)
-            if after != before or table_counts(con) != counts:
+            after = data_digest(con, original_only=True)
+            if after != before or table_counts(con) != counts or name_issues(con, has_display_name=True) != (0, 0):
                 raise ValueError("迁移前后业务记录不一致，回滚")
-            if {r[0] for r in con.execute("SELECT name FROM sqlite_master WHERE type='trigger'")} != triggers:
+            if {r[0] for r in con.execute("SELECT name FROM sqlite_master WHERE type='trigger'")} != triggers | {"achievements_display_name_sync"}:
                 raise ValueError("触发器没有完整保留，回滚")
             integrity = con.execute("PRAGMA integrity_check").fetchone()[0]
             foreign_keys = con.execute("PRAGMA foreign_key_check").fetchall()
@@ -81,7 +71,7 @@ def migrate(database: Path) -> dict[str, Any]:
         except BaseException:
             con.rollback()
             raise
-    report = {"already_migrated": False, "methods": list(METHODS), "schema_version": 2,
+    report = {"already_migrated": False, "methods": list(METHODS), "schema_version": SCHEMA_VERSION,
               "database": str(database.resolve()), "backup": str(backup), "counts": counts,
               "data_sha256_before": before, "data_sha256_after": after,
               "data_unchanged": before == after, "integrity": integrity, "foreign_key_issues": len(foreign_keys)}

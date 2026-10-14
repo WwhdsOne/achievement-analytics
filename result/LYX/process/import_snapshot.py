@@ -278,8 +278,11 @@ def import_game(con: sqlite3.Connection, indexes: dict[str, Any], appid: int) ->
                     [raw_achievement(row) + (old_records.get(row["api_name"], {}).get("status", "pending"),) for row in source_records],
                 )
                 retained = [r for r in old_types if r["api_name"] in source_by_name]
-                con.executemany("INSERT INTO achievement_types VALUES (?,?,?,?,?)",
-                                [(r["appid"], r["api_name"], r["type"], r["method"], r["confidence"]) for r in retained])
+                con.executemany(
+                    "INSERT INTO achievement_types(appid,api_name,display_name,type,method,confidence) VALUES (?,?,?,?,?,?)",
+                    [(r["appid"], r["api_name"], source_by_name[r["api_name"]]["display_name"],
+                      r["type"], r["method"], r["confidence"]) for r in retained],
+                )
                 for name, old in old_records.items():
                     if name in source_by_name and old["mainline_index"] is not None:
                         con.execute("UPDATE achievements SET mainline_index=? WHERE appid=? AND api_name=?",

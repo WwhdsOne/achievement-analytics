@@ -2,6 +2,8 @@
 
 2026-10-14链路调整：本文件仅描述独立的数据准备，日常DeepSeek分类不连接远端。import_snapshot.py的完成率转换已改从local_database.py读取，旧probe依赖已解除；既有冻结清单、批次与checkpoint保持不变。当前分类执行见[PROCESS.md](PROCESS.md)，历史主线审核/分析表述不属于最新任务。
 
+下文“本轮迁移”指2026-10-14已完成的前1000款导入；其中124项FF7成就/127条旧类型及旧运行目录是当时记录，不是当前DeepSeek进度。最新表结构、类型数量和分类完成状态见[DATABASE.md](DATABASE.md)。该历史任务的schema版本2 checkpoint不改写为当前版本3。
+
 实现日期：2026-10-14。程序为[import_snapshot.py](../process/import_snapshot.py)。所有文件和SQLite写入仅限result/LYX；共享PostgreSQL只读，不调用worker、源API、配额登记、云端建表或修复程序。
 
 ## 固定人群与数据链路
@@ -23,7 +25,9 @@
 | games_rate | store_search_games + rawg_games | review_label、review_percent、review_count、metacritic、rating |
 | games_time | rawg_games | playtime；不调用攻略网站、不填guide字段 |
 | achievements | achievements | appid、position、api_name、display_name、description、percent |
-| achievement_types | 本地已有结果 | 本轮不生成新分类，保护已有type/method/confidence |
+| achievement_types | 本地已有结果 | 不生成新分类，保护已有type/method/confidence；当前版本3重写标签时同步原始成就display_name |
+
+当前本地schema版本3；旧版2的已完成checkpoint/备份属于历史产物，不改写其版本。程序继续拒绝跨schema版本续跑；需要再次导入时使用新的运行目录。日常成就分类不需要重新导入或连接远端。
 
 valve_genres使用local_database.py的CSV转义竖线分隔文本转换。BOOLEAN转0/1，DATE转YYYY-MM-DD，完成率保持两位小数；不把NULL补成0。SQLite字段结构不变，不新增game_tags、不存JSON列。
 
@@ -68,16 +72,20 @@ uv run --frozen --no-sync python -X utf8 -B process/import_snapshot.py --select-
 uv run --frozen --no-sync python -X utf8 -B process/import_snapshot.py --batch-size 50
 ~~~
 
-本轮先迁移50款验证字段、外键及已有成果保护，再使用原目录续跑：
+若新版本3导入中途暂停，可用该次输出的run_dir续跑。下列目录名须替换为你这次新导入的实际目录，不能使用历史版本2目录：
 
 ~~~powershell
-uv run --frozen --no-sync python -X utf8 -B process/import_snapshot.py --resume --run-dir process/runtime/remote_import/20261014T081042433830Z
+uv run --frozen --no-sync python -X utf8 -B process/import_snapshot.py --resume --run-dir "process/runtime/remote_import/你的本轮目录名"
 ~~~
 
 续跑使用checkpoint中的分批参数和固定快照，不重新获取已经完成的批次。全部完成后再次续跑只执行本地最终核验，不发远端请求、不重复写库。complete_with_conflicts表示已有输入被保护，需要单独核验冲突，不能当作所有成就与云库完全一致。
 
+这些续跑行为要求checkpoint、数据库、清单及schema版本与该次运行一致，且保留输入和分类符合导入时的核验口径。历史任务后已进行结构升级和新分类，不应把旧目录用于复核当前状态；当前流程不需要重新导入。
+
 ## 最终验收
 
 检查1000个AppID、四张游戏级表、每款原始成就与固定批次的字段、SQLite完整性/外键、已有类型和审核状态保留；质量报告另外列无成就、缺RAWG、版本疑点、缺发售日、未解决映射以及既有分类输入冲突。全过程不执行成就分类、人工批准、剧情排序、分析指标或外部采集。
+
+当前核验边界：verify_run对标签保留仍比较原五字段appid/api_name/type/method/confidence，没有单独比较新增display_name与来源成就；实际INSERT已写六列，名称同步触发器已生效。后续代码可补充这一独立一致性检查，本次只更新说明、不修改程序。当前名称核查可用[DATABASE.md中的只读SQL](DATABASE.md#pycharm连接与核查)。
 
 这1000款是评价数偏高的初步获取样本，尚未完成主线/类型人工审核，不代表1000款正式分析样本已经准备完成。

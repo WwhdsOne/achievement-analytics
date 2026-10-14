@@ -4,5 +4,10 @@ database/*.db*
 process/runtime/
 process/__pycache__/
 process/tests/__pycache__/
-/database/
+# 数据库目录仅保留两份固定选样 JSON，其余内容继续忽略。
+/database/*
+!/database/data/
+/database/data/*
+!/database/data/top1000_appids.json
+!/database/data/top1000_selection.json
 /docs/API_PROBE.md

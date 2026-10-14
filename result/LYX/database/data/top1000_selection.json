@@ -1,0 +1,4026 @@
+{
+  "selected_at": "2026-10-14T08:01:18.358389+00:00",
+  "selection_sql": "SELECT appid,review_count FROM store_search_games WHERE review_count IS NOT NULL ORDER BY review_count DESC,appid ASC LIMIT %s",
+  "selection_parameters": [
+    1000
+  ],
+  "selection_count": 1000,
+  "appids_file": "D:\\PycharmProjects\\achievement-analytics\\result\\LYX\\database\\data\\top1000_appids.json",
+  "appids_sha256": "4e8fafab192456653c81dbc698d249b01f3602f5a9a6d439610c528cc89ddfde",
+  "ranking": [
+    {
+      "appid": 553850,
+      "review_count": 634194
+    },
+    {
+      "appid": 105600,
+      "review_count": 602141
+    },
+    {
+      "appid": 252490,
+      "review_count": 531597
+    },
+    {
+      "appid": 1172470,
+      "review_count": 450737
+    },
+    {
+      "appid": 1086940,
+      "review_count": 449362
+    },
+    {
+      "appid": 1245620,
+      "review_count": 435449
+    },
+    {
+      "appid": 413150,
+      "review_count": 394367
+    },
+    {
+      "appid": 1091500,
+      "review_count": 390824
+    },
+    {
+      "appid": 1085660,
+      "review_count": 389759
+    },
+    {
+      "appid": 945360,
+      "review_count": 381532
+    },
+    {
+      "appid": 739630,
+      "review_count": 359437
+    },
+    {
+      "appid": 236390,
+      "review_count": 326213
+    },
+    {
+      "appid": 1174180,
+      "review_count": 313759
+    },
+    {
+      "appid": 2615310,
+      "review_count": 309398
+    },
+    {
+      "appid": 2767030,
+      "review_count": 301503
+    },
+    {
+      "appid": 230410,
+      "review_count": 301470
+    },
+    {
+      "appid": 322170,
+      "review_count": 300619
+    },
+    {
+      "appid": 381210,
+      "review_count": 267864
+    },
+    {
+      "appid": 346110,
+      "review_count": 256330
+    },
+    {
+      "appid": 292030,
+      "review_count": 241747
+    },
+    {
+      "appid": 1938090,
+      "review_count": 233628
+    },
+    {
+      "appid": 550,
+      "review_count": 232940
+    },
+    {
+      "appid": 960090,
+      "review_count": 230457
+    },
+    {
+      "appid": 304930,
+      "review_count": 221223
+    },
+    {
+      "appid": 284160,
+      "review_count": 210139
+    },
+    {
+      "appid": 3164500,
+      "review_count": 201233
+    },
+    {
+      "appid": 1808500,
+      "review_count": 199362
+    },
+    {
+      "appid": 264710,
+      "review_count": 189168
+    },
+    {
+      "appid": 275850,
+      "review_count": 185194
+    },
+    {
+      "appid": 367520,
+      "review_count": 183959
+    },
+    {
+      "appid": 377160,
+      "review_count": 183816
+    },
+    {
+      "appid": 291550,
+      "review_count": 178744
+    },
+    {
+      "appid": 221100,
+      "review_count": 178467
+    },
+    {
+      "appid": 1118200,
+      "review_count": 176863
+    },
+    {
+      "appid": 218620,
+      "review_count": 175422
+    },
+    {
+      "appid": 620,
+      "review_count": 173757
+    },
+    {
+      "appid": 548430,
+      "review_count": 171091
+    },
+    {
+      "appid": 22380,
+      "review_count": 170246
+    },
+    {
+      "appid": 2357570,
+      "review_count": 170227
+    },
+    {
+      "appid": 976730,
+      "review_count": 164478
+    },
+    {
+      "appid": 250900,
+      "review_count": 163569
+    },
+    {
+      "appid": 2073850,
+      "review_count": 158159
+    },
+    {
+      "appid": 2807960,
+      "review_count": 154804
+    },
+    {
+      "appid": 1144200,
+      "review_count": 151203
+    },
+    {
+      "appid": 1172620,
+      "review_count": 147459
+    },
+    {
+      "appid": 1063730,
+      "review_count": 146281
+    },
+    {
+      "appid": 1030300,
+      "review_count": 145600
+    },
+    {
+      "appid": 227300,
+      "review_count": 145573
+    },
+    {
+      "appid": 3527290,
+      "review_count": 144337
+    },
+    {
+      "appid": 990080,
+      "review_count": 143509
+    },
+    {
+      "appid": 238960,
+      "review_count": 143062
+    },
+    {
+      "appid": 1145360,
+      "review_count": 142456
+    },
+    {
+      "appid": 1240440,
+      "review_count": 139242
+    },
+    {
+      "appid": 526870,
+      "review_count": 137470
+    },
+    {
+      "appid": 489830,
+      "review_count": 131048
+    },
+    {
+      "appid": 648800,
+      "review_count": 130193
+    },
+    {
+      "appid": 1794680,
+      "review_count": 128007
+    },
+    {
+      "appid": 444090,
+      "review_count": 127585
+    },
+    {
+      "appid": 394360,
+      "review_count": 125149
+    },
+    {
+      "appid": 251570,
+      "review_count": 124458
+    },
+    {
+      "appid": 49520,
+      "review_count": 122847
+    },
+    {
+      "appid": 782330,
+      "review_count": 120962
+    },
+    {
+      "appid": 311210,
+      "review_count": 120019
+    },
+    {
+      "appid": 1326470,
+      "review_count": 118224
+    },
+    {
+      "appid": 427520,
+      "review_count": 117894
+    },
+    {
+      "appid": 582010,
+      "review_count": 115908
+    },
+    {
+      "appid": 107410,
+      "review_count": 111416
+    },
+    {
+      "appid": 2592160,
+      "review_count": 108489
+    },
+    {
+      "appid": 289070,
+      "review_count": 107601
+    },
+    {
+      "appid": 374320,
+      "review_count": 107289
+    },
+    {
+      "appid": 1517290,
+      "review_count": 106605
+    },
+    {
+      "appid": 1599340,
+      "review_count": 104999
+    },
+    {
+      "appid": 2379780,
+      "review_count": 104363
+    },
+    {
+      "appid": 1903340,
+      "review_count": 102662
+    },
+    {
+      "appid": 255710,
+      "review_count": 100768
+    },
+    {
+      "appid": 239140,
+      "review_count": 99114
+    },
+    {
+      "appid": 261550,
+      "review_count": 98616
+    },
+    {
+      "appid": 2183900,
+      "review_count": 97027
+    },
+    {
+      "appid": 1237970,
+      "review_count": 96573
+    },
+    {
+      "appid": 270880,
+      "review_count": 94917
+    },
+    {
+      "appid": 594650,
+      "review_count": 94842
+    },
+    {
+      "appid": 1551360,
+      "review_count": 92280
+    },
+    {
+      "appid": 700330,
+      "review_count": 91822
+    },
+    {
+      "appid": 814380,
+      "review_count": 88253
+    },
+    {
+      "appid": 1461000,
+      "review_count": 88071
+    },
+    {
+      "appid": 511960,
+      "review_count": 87954
+    },
+    {
+      "appid": 677620,
+      "review_count": 87240
+    },
+    {
+      "appid": 1716740,
+      "review_count": 85903
+    },
+    {
+      "appid": 2246340,
+      "review_count": 85201
+    },
+    {
+      "appid": 379720,
+      "review_count": 85021
+    },
+    {
+      "appid": 508440,
+      "review_count": 84603
+    },
+    {
+      "appid": 1172380,
+      "review_count": 83813
+    },
+    {
+      "appid": 435150,
+      "review_count": 83613
+    },
+    {
+      "appid": 1332010,
+      "review_count": 79503
+    },
+    {
+      "appid": 8930,
+      "review_count": 78777
+    },
+    {
+      "appid": 319630,
+      "review_count": 76969
+    },
+    {
+      "appid": 646570,
+      "review_count": 76961
+    },
+    {
+      "appid": 281990,
+      "review_count": 76785
+    },
+    {
+      "appid": 1092790,
+      "review_count": 76621
+    },
+    {
+      "appid": 3240220,
+      "review_count": 76452
+    },
+    {
+      "appid": 1167630,
+      "review_count": 76110
+    },
+    {
+      "appid": 518790,
+      "review_count": 75632
+    },
+    {
+      "appid": 2622380,
+      "review_count": 75020
+    },
+    {
+      "appid": 1361210,
+      "review_count": 74669
+    },
+    {
+      "appid": 2050650,
+      "review_count": 71562
+    },
+    {
+      "appid": 2358720,
+      "review_count": 71105
+    },
+    {
+      "appid": 362890,
+      "review_count": 70415
+    },
+    {
+      "appid": 552520,
+      "review_count": 70058
+    },
+    {
+      "appid": 534380,
+      "review_count": 69145
+    },
+    {
+      "appid": 2507950,
+      "review_count": 68945
+    },
+    {
+      "appid": 386360,
+      "review_count": 67968
+    },
+    {
+      "appid": 1771300,
+      "review_count": 67857
+    },
+    {
+      "appid": 244850,
+      "review_count": 67743
+    },
+    {
+      "appid": 714010,
+      "review_count": 66624
+    },
+    {
+      "appid": 268910,
+      "review_count": 66074
+    },
+    {
+      "appid": 433340,
+      "review_count": 65741
+    },
+    {
+      "appid": 1145350,
+      "review_count": 65644
+    },
+    {
+      "appid": 3564740,
+      "review_count": 64127
+    },
+    {
+      "appid": 379430,
+      "review_count": 63795
+    },
+    {
+      "appid": 686810,
+      "review_count": 62811
+    },
+    {
+      "appid": 813780,
+      "review_count": 61960
+    },
+    {
+      "appid": 504230,
+      "review_count": 61819
+    },
+    {
+      "appid": 3354750,
+      "review_count": 61791
+    },
+    {
+      "appid": 546560,
+      "review_count": 61607
+    },
+    {
+      "appid": 1313140,
+      "review_count": 60919
+    },
+    {
+      "appid": 1593500,
+      "review_count": 60748
+    },
+    {
+      "appid": 244210,
+      "review_count": 60455
+    },
+    {
+      "appid": 397540,
+      "review_count": 60229
+    },
+    {
+      "appid": 812140,
+      "review_count": 59976
+    },
+    {
+      "appid": 581320,
+      "review_count": 59940
+    },
+    {
+      "appid": 304390,
+      "review_count": 59252
+    },
+    {
+      "appid": 2399830,
+      "review_count": 59183
+    },
+    {
+      "appid": 629760,
+      "review_count": 59044
+    },
+    {
+      "appid": 883710,
+      "review_count": 58989
+    },
+    {
+      "appid": 1222140,
+      "review_count": 58191
+    },
+    {
+      "appid": 3405340,
+      "review_count": 58053
+    },
+    {
+      "appid": 632470,
+      "review_count": 57895
+    },
+    {
+      "appid": 1817070,
+      "review_count": 57045
+    },
+    {
+      "appid": 262060,
+      "review_count": 57030
+    },
+    {
+      "appid": 383870,
+      "review_count": 56879
+    },
+    {
+      "appid": 1142710,
+      "review_count": 56664
+    },
+    {
+      "appid": 848450,
+      "review_count": 55596
+    },
+    {
+      "appid": 1604030,
+      "review_count": 55016
+    },
+    {
+      "appid": 48700,
+      "review_count": 54992
+    },
+    {
+      "appid": 1454400,
+      "review_count": 54375
+    },
+    {
+      "appid": 1150690,
+      "review_count": 54347
+    },
+    {
+      "appid": 1289310,
+      "review_count": 54079
+    },
+    {
+      "appid": 361420,
+      "review_count": 53949
+    },
+    {
+      "appid": 203160,
+      "review_count": 53221
+    },
+    {
+      "appid": 1286830,
+      "review_count": 53001
+    },
+    {
+      "appid": 753640,
+      "review_count": 52895
+    },
+    {
+      "appid": 1222680,
+      "review_count": 52583
+    },
+    {
+      "appid": 1237950,
+      "review_count": 52531
+    },
+    {
+      "appid": 211820,
+      "review_count": 51865
+    },
+    {
+      "appid": 1151640,
+      "review_count": 51753
+    },
+    {
+      "appid": 208650,
+      "review_count": 51443
+    },
+    {
+      "appid": 1868140,
+      "review_count": 51048
+    },
+    {
+      "appid": 594570,
+      "review_count": 50759
+    },
+    {
+      "appid": 1774580,
+      "review_count": 50611
+    },
+    {
+      "appid": 524220,
+      "review_count": 50370
+    },
+    {
+      "appid": 1158310,
+      "review_count": 50361
+    },
+    {
+      "appid": 552990,
+      "review_count": 49422
+    },
+    {
+      "appid": 629730,
+      "review_count": 49370
+    },
+    {
+      "appid": 570940,
+      "review_count": 49096
+    },
+    {
+      "appid": 1203620,
+      "review_count": 49078
+    },
+    {
+      "appid": 1449850,
+      "review_count": 49040
+    },
+    {
+      "appid": 2623190,
+      "review_count": 48204
+    },
+    {
+      "appid": 1426210,
+      "review_count": 48060
+    },
+    {
+      "appid": 236850,
+      "review_count": 47828
+    },
+    {
+      "appid": 8870,
+      "review_count": 47498
+    },
+    {
+      "appid": 881100,
+      "review_count": 47485
+    },
+    {
+      "appid": 1196590,
+      "review_count": 47060
+    },
+    {
+      "appid": 212680,
+      "review_count": 46909
+    },
+    {
+      "appid": 1151340,
+      "review_count": 46778
+    },
+    {
+      "appid": 1172710,
+      "review_count": 46707
+    },
+    {
+      "appid": 1238840,
+      "review_count": 46547
+    },
+    {
+      "appid": 204360,
+      "review_count": 46290
+    },
+    {
+      "appid": 1943950,
+      "review_count": 46168
+    },
+    {
+      "appid": 1113000,
+      "review_count": 45890
+    },
+    {
+      "appid": 225540,
+      "review_count": 45738
+    },
+    {
+      "appid": 613100,
+      "review_count": 45636
+    },
+    {
+      "appid": 2231450,
+      "review_count": 45425
+    },
+    {
+      "appid": 268500,
+      "review_count": 45176
+    },
+    {
+      "appid": 588650,
+      "review_count": 44499
+    },
+    {
+      "appid": 2054970,
+      "review_count": 44408
+    },
+    {
+      "appid": 1643320,
+      "review_count": 44019
+    },
+    {
+      "appid": 1285190,
+      "review_count": 43721
+    },
+    {
+      "appid": 220240,
+      "review_count": 43534
+    },
+    {
+      "appid": 223470,
+      "review_count": 43533
+    },
+    {
+      "appid": 3590,
+      "review_count": 43163
+    },
+    {
+      "appid": 703080,
+      "review_count": 42916
+    },
+    {
+      "appid": 219150,
+      "review_count": 42596
+    },
+    {
+      "appid": 304050,
+      "review_count": 42349
+    },
+    {
+      "appid": 287700,
+      "review_count": 42294
+    },
+    {
+      "appid": 232090,
+      "review_count": 42248
+    },
+    {
+      "appid": 3224770,
+      "review_count": 42221
+    },
+    {
+      "appid": 1328670,
+      "review_count": 41556
+    },
+    {
+      "appid": 460930,
+      "review_count": 41333
+    },
+    {
+      "appid": 219990,
+      "review_count": 41140
+    },
+    {
+      "appid": 1888160,
+      "review_count": 41013
+    },
+    {
+      "appid": 305620,
+      "review_count": 40935
+    },
+    {
+      "appid": 1089980,
+      "review_count": 40752
+    },
+    {
+      "appid": 601150,
+      "review_count": 40497
+    },
+    {
+      "appid": 1363080,
+      "review_count": 40491
+    },
+    {
+      "appid": 635260,
+      "review_count": 40253
+    },
+    {
+      "appid": 205100,
+      "review_count": 39791
+    },
+    {
+      "appid": 440900,
+      "review_count": 39714
+    },
+    {
+      "appid": 239030,
+      "review_count": 39682
+    },
+    {
+      "appid": 311690,
+      "review_count": 39211
+    },
+    {
+      "appid": 1506830,
+      "review_count": 39185
+    },
+    {
+      "appid": 2215430,
+      "review_count": 39138
+    },
+    {
+      "appid": 235460,
+      "review_count": 39102
+    },
+    {
+      "appid": 323190,
+      "review_count": 39006
+    },
+    {
+      "appid": 1290000,
+      "review_count": 38501
+    },
+    {
+      "appid": 346900,
+      "review_count": 38499
+    },
+    {
+      "appid": 513710,
+      "review_count": 38149
+    },
+    {
+      "appid": 1284190,
+      "review_count": 37633
+    },
+    {
+      "appid": 431240,
+      "review_count": 37380
+    },
+    {
+      "appid": 747660,
+      "review_count": 37300
+    },
+    {
+      "appid": 516750,
+      "review_count": 37182
+    },
+    {
+      "appid": 1259420,
+      "review_count": 37040
+    },
+    {
+      "appid": 582160,
+      "review_count": 36970
+    },
+    {
+      "appid": 356190,
+      "review_count": 36801
+    },
+    {
+      "appid": 221380,
+      "review_count": 36779
+    },
+    {
+      "appid": 1217060,
+      "review_count": 36730
+    },
+    {
+      "appid": 2835570,
+      "review_count": 36200
+    },
+    {
+      "appid": 1687950,
+      "review_count": 35863
+    },
+    {
+      "appid": 222880,
+      "review_count": 35604
+    },
+    {
+      "appid": 1238810,
+      "review_count": 35525
+    },
+    {
+      "appid": 2709570,
+      "review_count": 35139
+    },
+    {
+      "appid": 335300,
+      "review_count": 34883
+    },
+    {
+      "appid": 412020,
+      "review_count": 34809
+    },
+    {
+      "appid": 2073620,
+      "review_count": 34657
+    },
+    {
+      "appid": 949230,
+      "review_count": 34637
+    },
+    {
+      "appid": 1446780,
+      "review_count": 34558
+    },
+    {
+      "appid": 2406770,
+      "review_count": 34455
+    },
+    {
+      "appid": 333930,
+      "review_count": 34357
+    },
+    {
+      "appid": 2670630,
+      "review_count": 34260
+    },
+    {
+      "appid": 233450,
+      "review_count": 34079
+    },
+    {
+      "appid": 241930,
+      "review_count": 33564
+    },
+    {
+      "appid": 588430,
+      "review_count": 33303
+    },
+    {
+      "appid": 418370,
+      "review_count": 33264
+    },
+    {
+      "appid": 1384160,
+      "review_count": 32858
+    },
+    {
+      "appid": 200210,
+      "review_count": 32790
+    },
+    {
+      "appid": 2429640,
+      "review_count": 32697
+    },
+    {
+      "appid": 420530,
+      "review_count": 32692
+    },
+    {
+      "appid": 952060,
+      "review_count": 32602
+    },
+    {
+      "appid": 1562430,
+      "review_count": 32586
+    },
+    {
+      "appid": 391220,
+      "review_count": 32328
+    },
+    {
+      "appid": 1942280,
+      "review_count": 32303
+    },
+    {
+      "appid": 1693980,
+      "review_count": 32219
+    },
+    {
+      "appid": 286160,
+      "review_count": 31921
+    },
+    {
+      "appid": 1874880,
+      "review_count": 31839
+    },
+    {
+      "appid": 1272080,
+      "review_count": 31786
+    },
+    {
+      "appid": 1149460,
+      "review_count": 31354
+    },
+    {
+      "appid": 493340,
+      "review_count": 31259
+    },
+    {
+      "appid": 389730,
+      "review_count": 31191
+    },
+    {
+      "appid": 1057090,
+      "review_count": 31183
+    },
+    {
+      "appid": 1659040,
+      "review_count": 31117
+    },
+    {
+      "appid": 35140,
+      "review_count": 30924
+    },
+    {
+      "appid": 477160,
+      "review_count": 30861
+    },
+    {
+      "appid": 307690,
+      "review_count": 30807
+    },
+    {
+      "appid": 387290,
+      "review_count": 30804
+    },
+    {
+      "appid": 213670,
+      "review_count": 30732
+    },
+    {
+      "appid": 312520,
+      "review_count": 30609
+    },
+    {
+      "appid": 224260,
+      "review_count": 30602
+    },
+    {
+      "appid": 1404210,
+      "review_count": 30588
+    },
+    {
+      "appid": 680420,
+      "review_count": 30573
+    },
+    {
+      "appid": 265930,
+      "review_count": 30242
+    },
+    {
+      "appid": 2669320,
+      "review_count": 30138
+    },
+    {
+      "appid": 3405690,
+      "review_count": 29703
+    },
+    {
+      "appid": 3419430,
+      "review_count": 29580
+    },
+    {
+      "appid": 1295660,
+      "review_count": 29556
+    },
+    {
+      "appid": 1238860,
+      "review_count": 29550
+    },
+    {
+      "appid": 823500,
+      "review_count": 29499
+    },
+    {
+      "appid": 1790600,
+      "review_count": 29435
+    },
+    {
+      "appid": 380600,
+      "review_count": 29371
+    },
+    {
+      "appid": 1030840,
+      "review_count": 29322
+    },
+    {
+      "appid": 253230,
+      "review_count": 29303
+    },
+    {
+      "appid": 238320,
+      "review_count": 29277
+    },
+    {
+      "appid": 286690,
+      "review_count": 29262
+    },
+    {
+      "appid": 1845910,
+      "review_count": 29219
+    },
+    {
+      "appid": 1888930,
+      "review_count": 29191
+    },
+    {
+      "appid": 1466860,
+      "review_count": 28854
+    },
+    {
+      "appid": 427410,
+      "review_count": 28786
+    },
+    {
+      "appid": 602960,
+      "review_count": 28756
+    },
+    {
+      "appid": 414340,
+      "review_count": 28698
+    },
+    {
+      "appid": 363970,
+      "review_count": 28663
+    },
+    {
+      "appid": 231430,
+      "review_count": 28495
+    },
+    {
+      "appid": 221910,
+      "review_count": 28346
+    },
+    {
+      "appid": 1627720,
+      "review_count": 28093
+    },
+    {
+      "appid": 383980,
+      "review_count": 27888
+    },
+    {
+      "appid": 761890,
+      "review_count": 27588
+    },
+    {
+      "appid": 365590,
+      "review_count": 27543
+    },
+    {
+      "appid": 1778820,
+      "review_count": 27414
+    },
+    {
+      "appid": 447040,
+      "review_count": 27372
+    },
+    {
+      "appid": 683320,
+      "review_count": 27328
+    },
+    {
+      "appid": 815370,
+      "review_count": 27261
+    },
+    {
+      "appid": 2707930,
+      "review_count": 27257
+    },
+    {
+      "appid": 646910,
+      "review_count": 27145
+    },
+    {
+      "appid": 1282100,
+      "review_count": 27143
+    },
+    {
+      "appid": 246620,
+      "review_count": 27055
+    },
+    {
+      "appid": 214490,
+      "review_count": 26939
+    },
+    {
+      "appid": 200260,
+      "review_count": 26933
+    },
+    {
+      "appid": 418460,
+      "review_count": 26835
+    },
+    {
+      "appid": 234140,
+      "review_count": 26821
+    },
+    {
+      "appid": 920210,
+      "review_count": 26687
+    },
+    {
+      "appid": 254700,
+      "review_count": 26587
+    },
+    {
+      "appid": 409710,
+      "review_count": 26572
+    },
+    {
+      "appid": 3008130,
+      "review_count": 26559
+    },
+    {
+      "appid": 2420510,
+      "review_count": 26550
+    },
+    {
+      "appid": 470220,
+      "review_count": 26522
+    },
+    {
+      "appid": 678950,
+      "review_count": 26248
+    },
+    {
+      "appid": 289650,
+      "review_count": 26204
+    },
+    {
+      "appid": 201810,
+      "review_count": 26147
+    },
+    {
+      "appid": 20920,
+      "review_count": 26135
+    },
+    {
+      "appid": 1222700,
+      "review_count": 26118
+    },
+    {
+      "appid": 2527500,
+      "review_count": 25957
+    },
+    {
+      "appid": 976310,
+      "review_count": 25945
+    },
+    {
+      "appid": 285900,
+      "review_count": 25941
+    },
+    {
+      "appid": 870780,
+      "review_count": 25938
+    },
+    {
+      "appid": 242920,
+      "review_count": 25800
+    },
+    {
+      "appid": 493520,
+      "review_count": 25698
+    },
+    {
+      "appid": 1248130,
+      "review_count": 25696
+    },
+    {
+      "appid": 550650,
+      "review_count": 25417
+    },
+    {
+      "appid": 1407200,
+      "review_count": 25406
+    },
+    {
+      "appid": 298110,
+      "review_count": 25156
+    },
+    {
+      "appid": 200510,
+      "review_count": 25072
+    },
+    {
+      "appid": 207610,
+      "review_count": 24991
+    },
+    {
+      "appid": 204100,
+      "review_count": 24867
+    },
+    {
+      "appid": 274170,
+      "review_count": 24813
+    },
+    {
+      "appid": 2475490,
+      "review_count": 24739
+    },
+    {
+      "appid": 1366540,
+      "review_count": 24668
+    },
+    {
+      "appid": 489520,
+      "review_count": 24636
+    },
+    {
+      "appid": 282140,
+      "review_count": 24563
+    },
+    {
+      "appid": 1703340,
+      "review_count": 24438
+    },
+    {
+      "appid": 334230,
+      "review_count": 24420
+    },
+    {
+      "appid": 617290,
+      "review_count": 24375
+    },
+    {
+      "appid": 304430,
+      "review_count": 24367
+    },
+    {
+      "appid": 750920,
+      "review_count": 24220
+    },
+    {
+      "appid": 2134320,
+      "review_count": 24206
+    },
+    {
+      "appid": 787860,
+      "review_count": 24046
+    },
+    {
+      "appid": 2321470,
+      "review_count": 24016
+    },
+    {
+      "appid": 1824220,
+      "review_count": 23875
+    },
+    {
+      "appid": 1203220,
+      "review_count": 23857
+    },
+    {
+      "appid": 2001120,
+      "review_count": 23816
+    },
+    {
+      "appid": 1657630,
+      "review_count": 23804
+    },
+    {
+      "appid": 1989270,
+      "review_count": 23725
+    },
+    {
+      "appid": 2124490,
+      "review_count": 23666
+    },
+    {
+      "appid": 238460,
+      "review_count": 23640
+    },
+    {
+      "appid": 113200,
+      "review_count": 23631
+    },
+    {
+      "appid": 313120,
+      "review_count": 23480
+    },
+    {
+      "appid": 2161700,
+      "review_count": 23479
+    },
+    {
+      "appid": 206420,
+      "review_count": 23444
+    },
+    {
+      "appid": 585420,
+      "review_count": 23399
+    },
+    {
+      "appid": 648350,
+      "review_count": 23392
+    },
+    {
+      "appid": 346010,
+      "review_count": 23342
+    },
+    {
+      "appid": 466560,
+      "review_count": 23246
+    },
+    {
+      "appid": 502500,
+      "review_count": 23118
+    },
+    {
+      "appid": 282070,
+      "review_count": 23046
+    },
+    {
+      "appid": 774801,
+      "review_count": 22985
+    },
+    {
+      "appid": 824270,
+      "review_count": 22917
+    },
+    {
+      "appid": 1135690,
+      "review_count": 22908
+    },
+    {
+      "appid": 417860,
+      "review_count": 22837
+    },
+    {
+      "appid": 460950,
+      "review_count": 22743
+    },
+    {
+      "appid": 1468260,
+      "review_count": 22588
+    },
+    {
+      "appid": 386180,
+      "review_count": 22578
+    },
+    {
+      "appid": 752590,
+      "review_count": 22465
+    },
+    {
+      "appid": 480490,
+      "review_count": 22299
+    },
+    {
+      "appid": 367500,
+      "review_count": 22260
+    },
+    {
+      "appid": 495420,
+      "review_count": 22215
+    },
+    {
+      "appid": 239820,
+      "review_count": 22210
+    },
+    {
+      "appid": 2551020,
+      "review_count": 22088
+    },
+    {
+      "appid": 219640,
+      "review_count": 21940
+    },
+    {
+      "appid": 209000,
+      "review_count": 21897
+    },
+    {
+      "appid": 34330,
+      "review_count": 21863
+    },
+    {
+      "appid": 1922560,
+      "review_count": 21862
+    },
+    {
+      "appid": 1343400,
+      "review_count": 21856
+    },
+    {
+      "appid": 1250,
+      "review_count": 21814
+    },
+    {
+      "appid": 1128810,
+      "review_count": 21773
+    },
+    {
+      "appid": 1476970,
+      "review_count": 21739
+    },
+    {
+      "appid": 645630,
+      "review_count": 21683
+    },
+    {
+      "appid": 2923300,
+      "review_count": 21589
+    },
+    {
+      "appid": 1962663,
+      "review_count": 21416
+    },
+    {
+      "appid": 1262350,
+      "review_count": 21357
+    },
+    {
+      "appid": 1501750,
+      "review_count": 21292
+    },
+    {
+      "appid": 444640,
+      "review_count": 21270
+    },
+    {
+      "appid": 2218750,
+      "review_count": 21250
+    },
+    {
+      "appid": 1817190,
+      "review_count": 21235
+    },
+    {
+      "appid": 287390,
+      "review_count": 21177
+    },
+    {
+      "appid": 1462040,
+      "review_count": 21073
+    },
+    {
+      "appid": 265630,
+      "review_count": 21047
+    },
+    {
+      "appid": 1846380,
+      "review_count": 21036
+    },
+    {
+      "appid": 1268750,
+      "review_count": 20876
+    },
+    {
+      "appid": 1364780,
+      "review_count": 20833
+    },
+    {
+      "appid": 529340,
+      "review_count": 20734
+    },
+    {
+      "appid": 1274570,
+      "review_count": 20695
+    },
+    {
+      "appid": 274190,
+      "review_count": 20563
+    },
+    {
+      "appid": 1850570,
+      "review_count": 20441
+    },
+    {
+      "appid": 601510,
+      "review_count": 20420
+    },
+    {
+      "appid": 2231380,
+      "review_count": 20386
+    },
+    {
+      "appid": 2051620,
+      "review_count": 20355
+    },
+    {
+      "appid": 1244460,
+      "review_count": 20342
+    },
+    {
+      "appid": 1809540,
+      "review_count": 20282
+    },
+    {
+      "appid": 500,
+      "review_count": 20215
+    },
+    {
+      "appid": 1388770,
+      "review_count": 20024
+    },
+    {
+      "appid": 611500,
+      "review_count": 19984
+    },
+    {
+      "appid": 3017860,
+      "review_count": 19926
+    },
+    {
+      "appid": 243470,
+      "review_count": 19915
+    },
+    {
+      "appid": 403640,
+      "review_count": 19865
+    },
+    {
+      "appid": 113400,
+      "review_count": 19855
+    },
+    {
+      "appid": 1466060,
+      "review_count": 19793
+    },
+    {
+      "appid": 1106840,
+      "review_count": 19761
+    },
+    {
+      "appid": 621060,
+      "review_count": 19737
+    },
+    {
+      "appid": 774361,
+      "review_count": 19672
+    },
+    {
+      "appid": 569480,
+      "review_count": 19638
+    },
+    {
+      "appid": 454650,
+      "review_count": 19523
+    },
+    {
+      "appid": 206440,
+      "review_count": 19437
+    },
+    {
+      "appid": 1129580,
+      "review_count": 19392
+    },
+    {
+      "appid": 2186680,
+      "review_count": 19373
+    },
+    {
+      "appid": 459820,
+      "review_count": 19326
+    },
+    {
+      "appid": 1139900,
+      "review_count": 19311
+    },
+    {
+      "appid": 678960,
+      "review_count": 19222
+    },
+    {
+      "appid": 250320,
+      "review_count": 19151
+    },
+    {
+      "appid": 1465360,
+      "review_count": 19120
+    },
+    {
+      "appid": 1222730,
+      "review_count": 19104
+    },
+    {
+      "appid": 1336490,
+      "review_count": 19086
+    },
+    {
+      "appid": 55230,
+      "review_count": 19080
+    },
+    {
+      "appid": 261640,
+      "review_count": 19052
+    },
+    {
+      "appid": 424840,
+      "review_count": 19043
+    },
+    {
+      "appid": 8190,
+      "review_count": 19023
+    },
+    {
+      "appid": 2378900,
+      "review_count": 19003
+    },
+    {
+      "appid": 644930,
+      "review_count": 18972
+    },
+    {
+      "appid": 1088850,
+      "review_count": 18926
+    },
+    {
+      "appid": 228380,
+      "review_count": 18906
+    },
+    {
+      "appid": 589290,
+      "review_count": 18878
+    },
+    {
+      "appid": 972660,
+      "review_count": 18874
+    },
+    {
+      "appid": 690790,
+      "review_count": 18860
+    },
+    {
+      "appid": 21690,
+      "review_count": 18851
+    },
+    {
+      "appid": 653530,
+      "review_count": 18647
+    },
+    {
+      "appid": 1184370,
+      "review_count": 18562
+    },
+    {
+      "appid": 501300,
+      "review_count": 18543
+    },
+    {
+      "appid": 2651280,
+      "review_count": 18424
+    },
+    {
+      "appid": 704270,
+      "review_count": 18360
+    },
+    {
+      "appid": 2918300,
+      "review_count": 18330
+    },
+    {
+      "appid": 1818450,
+      "review_count": 18303
+    },
+    {
+      "appid": 637090,
+      "review_count": 18298
+    },
+    {
+      "appid": 843380,
+      "review_count": 18294
+    },
+    {
+      "appid": 364360,
+      "review_count": 18176
+    },
+    {
+      "appid": 1343370,
+      "review_count": 18140
+    },
+    {
+      "appid": 1211020,
+      "review_count": 18106
+    },
+    {
+      "appid": 851850,
+      "review_count": 18083
+    },
+    {
+      "appid": 1056640,
+      "review_count": 18048
+    },
+    {
+      "appid": 745920,
+      "review_count": 17968
+    },
+    {
+      "appid": 637650,
+      "review_count": 17961
+    },
+    {
+      "appid": 208580,
+      "review_count": 17952
+    },
+    {
+      "appid": 397900,
+      "review_count": 17933
+    },
+    {
+      "appid": 1213210,
+      "review_count": 17916
+    },
+    {
+      "appid": 597170,
+      "review_count": 17883
+    },
+    {
+      "appid": 953490,
+      "review_count": 17863
+    },
+    {
+      "appid": 640820,
+      "review_count": 17821
+    },
+    {
+      "appid": 633230,
+      "review_count": 17771
+    },
+    {
+      "appid": 612880,
+      "review_count": 17763
+    },
+    {
+      "appid": 1451940,
+      "review_count": 17757
+    },
+    {
+      "appid": 107100,
+      "review_count": 17713
+    },
+    {
+      "appid": 3489700,
+      "review_count": 17699
+    },
+    {
+      "appid": 2221490,
+      "review_count": 17648
+    },
+    {
+      "appid": 599140,
+      "review_count": 17645
+    },
+    {
+      "appid": 413410,
+      "review_count": 17581
+    },
+    {
+      "appid": 364850,
+      "review_count": 17561
+    },
+    {
+      "appid": 200710,
+      "review_count": 17512
+    },
+    {
+      "appid": 242860,
+      "review_count": 17468
+    },
+    {
+      "appid": 779340,
+      "review_count": 17422
+    },
+    {
+      "appid": 1971870,
+      "review_count": 17420
+    },
+    {
+      "appid": 1880330,
+      "review_count": 17325
+    },
+    {
+      "appid": 532210,
+      "review_count": 17200
+    },
+    {
+      "appid": 10180,
+      "review_count": 17192
+    },
+    {
+      "appid": 1260320,
+      "review_count": 17174
+    },
+    {
+      "appid": 488790,
+      "review_count": 17173
+    },
+    {
+      "appid": 349040,
+      "review_count": 17127
+    },
+    {
+      "appid": 2386720,
+      "review_count": 17127
+    },
+    {
+      "appid": 257510,
+      "review_count": 17122
+    },
+    {
+      "appid": 1686940,
+      "review_count": 17119
+    },
+    {
+      "appid": 2138720,
+      "review_count": 17108
+    },
+    {
+      "appid": 326460,
+      "review_count": 17065
+    },
+    {
+      "appid": 1190000,
+      "review_count": 17050
+    },
+    {
+      "appid": 1241100,
+      "review_count": 17031
+    },
+    {
+      "appid": 519860,
+      "review_count": 17022
+    },
+    {
+      "appid": 108710,
+      "review_count": 16944
+    },
+    {
+      "appid": 3191030,
+      "review_count": 16864
+    },
+    {
+      "appid": 427730,
+      "review_count": 16832
+    },
+    {
+      "appid": 1337520,
+      "review_count": 16722
+    },
+    {
+      "appid": 244450,
+      "review_count": 16609
+    },
+    {
+      "appid": 1210320,
+      "review_count": 16602
+    },
+    {
+      "appid": 360430,
+      "review_count": 16578
+    },
+    {
+      "appid": 1359090,
+      "review_count": 16540
+    },
+    {
+      "appid": 337000,
+      "review_count": 16478
+    },
+    {
+      "appid": 1645820,
+      "review_count": 16352
+    },
+    {
+      "appid": 322500,
+      "review_count": 16262
+    },
+    {
+      "appid": 1817230,
+      "review_count": 16261
+    },
+    {
+      "appid": 1161580,
+      "review_count": 16250
+    },
+    {
+      "appid": 1544020,
+      "review_count": 16238
+    },
+    {
+      "appid": 2322010,
+      "review_count": 16230
+    },
+    {
+      "appid": 221040,
+      "review_count": 16228
+    },
+    {
+      "appid": 582500,
+      "review_count": 16211
+    },
+    {
+      "appid": 237930,
+      "review_count": 16163
+    },
+    {
+      "appid": 110800,
+      "review_count": 16128
+    },
+    {
+      "appid": 1282730,
+      "review_count": 16099
+    },
+    {
+      "appid": 895400,
+      "review_count": 16038
+    },
+    {
+      "appid": 1127500,
+      "review_count": 16033
+    },
+    {
+      "appid": 300,
+      "review_count": 16004
+    },
+    {
+      "appid": 860510,
+      "review_count": 15904
+    },
+    {
+      "appid": 3159330,
+      "review_count": 15897
+    },
+    {
+      "appid": 1237320,
+      "review_count": 15891
+    },
+    {
+      "appid": 312660,
+      "review_count": 15814
+    },
+    {
+      "appid": 1455840,
+      "review_count": 15773
+    },
+    {
+      "appid": 2300320,
+      "review_count": 15705
+    },
+    {
+      "appid": 2000950,
+      "review_count": 15668
+    },
+    {
+      "appid": 794260,
+      "review_count": 15655
+    },
+    {
+      "appid": 977950,
+      "review_count": 15596
+    },
+    {
+      "appid": 1082430,
+      "review_count": 15589
+    },
+    {
+      "appid": 1040200,
+      "review_count": 15577
+    },
+    {
+      "appid": 365360,
+      "review_count": 15528
+    },
+    {
+      "appid": 2437170,
+      "review_count": 15520
+    },
+    {
+      "appid": 2062430,
+      "review_count": 15436
+    },
+    {
+      "appid": 236430,
+      "review_count": 15419
+    },
+    {
+      "appid": 2768430,
+      "review_count": 15359
+    },
+    {
+      "appid": 273110,
+      "review_count": 15355
+    },
+    {
+      "appid": 1681430,
+      "review_count": 15212
+    },
+    {
+      "appid": 2208920,
+      "review_count": 15159
+    },
+    {
+      "appid": 2141730,
+      "review_count": 15118
+    },
+    {
+      "appid": 1592190,
+      "review_count": 15116
+    },
+    {
+      "appid": 99900,
+      "review_count": 15036
+    },
+    {
+      "appid": 42700,
+      "review_count": 14908
+    },
+    {
+      "appid": 248820,
+      "review_count": 14899
+    },
+    {
+      "appid": 1235140,
+      "review_count": 14762
+    },
+    {
+      "appid": 386940,
+      "review_count": 14754
+    },
+    {
+      "appid": 1171690,
+      "review_count": 14715
+    },
+    {
+      "appid": 1256670,
+      "review_count": 14684
+    },
+    {
+      "appid": 1392820,
+      "review_count": 14648
+    },
+    {
+      "appid": 1569580,
+      "review_count": 14628
+    },
+    {
+      "appid": 728880,
+      "review_count": 14575
+    },
+    {
+      "appid": 288160,
+      "review_count": 14519
+    },
+    {
+      "appid": 2531310,
+      "review_count": 14479
+    },
+    {
+      "appid": 1049410,
+      "review_count": 14464
+    },
+    {
+      "appid": 880940,
+      "review_count": 14461
+    },
+    {
+      "appid": 939960,
+      "review_count": 14407
+    },
+    {
+      "appid": 584400,
+      "review_count": 14374
+    },
+    {
+      "appid": 1549970,
+      "review_count": 14353
+    },
+    {
+      "appid": 203140,
+      "review_count": 14273
+    },
+    {
+      "appid": 1458140,
+      "review_count": 14262
+    },
+    {
+      "appid": 1583230,
+      "review_count": 14246
+    },
+    {
+      "appid": 266840,
+      "review_count": 14231
+    },
+    {
+      "appid": 418530,
+      "review_count": 14188
+    },
+    {
+      "appid": 1158160,
+      "review_count": 14184
+    },
+    {
+      "appid": 476600,
+      "review_count": 14119
+    },
+    {
+      "appid": 2679460,
+      "review_count": 14094
+    },
+    {
+      "appid": 2334730,
+      "review_count": 14011
+    },
+    {
+      "appid": 668580,
+      "review_count": 13982
+    },
+    {
+      "appid": 392160,
+      "review_count": 13927
+    },
+    {
+      "appid": 302510,
+      "review_count": 13923
+    },
+    {
+      "appid": 2878980,
+      "review_count": 13906
+    },
+    {
+      "appid": 1451190,
+      "review_count": 13899
+    },
+    {
+      "appid": 40800,
+      "review_count": 13880
+    },
+    {
+      "appid": 933110,
+      "review_count": 13790
+    },
+    {
+      "appid": 3472040,
+      "review_count": 13759
+    },
+    {
+      "appid": 3450310,
+      "review_count": 13758
+    },
+    {
+      "appid": 884660,
+      "review_count": 13719
+    },
+    {
+      "appid": 692890,
+      "review_count": 13701
+    },
+    {
+      "appid": 1096530,
+      "review_count": 13684
+    },
+    {
+      "appid": 1527950,
+      "review_count": 13638
+    },
+    {
+      "appid": 1449690,
+      "review_count": 13634
+    },
+    {
+      "appid": 337320,
+      "review_count": 13571
+    },
+    {
+      "appid": 238010,
+      "review_count": 13534
+    },
+    {
+      "appid": 2909400,
+      "review_count": 13531
+    },
+    {
+      "appid": 751780,
+      "review_count": 13495
+    },
+    {
+      "appid": 261570,
+      "review_count": 13494
+    },
+    {
+      "appid": 481510,
+      "review_count": 13467
+    },
+    {
+      "appid": 531510,
+      "review_count": 13462
+    },
+    {
+      "appid": 325610,
+      "review_count": 13461
+    },
+    {
+      "appid": 1568590,
+      "review_count": 13451
+    },
+    {
+      "appid": 236110,
+      "review_count": 13435
+    },
+    {
+      "appid": 413420,
+      "review_count": 13401
+    },
+    {
+      "appid": 1677280,
+      "review_count": 13348
+    },
+    {
+      "appid": 434570,
+      "review_count": 13341
+    },
+    {
+      "appid": 1432860,
+      "review_count": 13336
+    },
+    {
+      "appid": 304240,
+      "review_count": 13305
+    },
+    {
+      "appid": 400750,
+      "review_count": 13285
+    },
+    {
+      "appid": 285920,
+      "review_count": 13245
+    },
+    {
+      "appid": 3932890,
+      "review_count": 13217
+    },
+    {
+      "appid": 1607250,
+      "review_count": 13166
+    },
+    {
+      "appid": 269210,
+      "review_count": 13129
+    },
+    {
+      "appid": 2515020,
+      "review_count": 13112
+    },
+    {
+      "appid": 554620,
+      "review_count": 13087
+    },
+    {
+      "appid": 1931770,
+      "review_count": 13087
+    },
+    {
+      "appid": 48000,
+      "review_count": 13086
+    },
+    {
+      "appid": 813230,
+      "review_count": 13013
+    },
+    {
+      "appid": 261030,
+      "review_count": 13006
+    },
+    {
+      "appid": 2537590,
+      "review_count": 12997
+    },
+    {
+      "appid": 882100,
+      "review_count": 12975
+    },
+    {
+      "appid": 2369390,
+      "review_count": 12971
+    },
+    {
+      "appid": 429050,
+      "review_count": 12954
+    },
+    {
+      "appid": 57300,
+      "review_count": 12894
+    },
+    {
+      "appid": 1966900,
+      "review_count": 12884
+    },
+    {
+      "appid": 1977530,
+      "review_count": 12881
+    },
+    {
+      "appid": 875210,
+      "review_count": 12793
+    },
+    {
+      "appid": 638230,
+      "review_count": 12771
+    },
+    {
+      "appid": 24200,
+      "review_count": 12765
+    },
+    {
+      "appid": 310950,
+      "review_count": 12736
+    },
+    {
+      "appid": 729040,
+      "review_count": 12712
+    },
+    {
+      "appid": 535930,
+      "review_count": 12710
+    },
+    {
+      "appid": 202970,
+      "review_count": 12698
+    },
+    {
+      "appid": 590380,
+      "review_count": 12662
+    },
+    {
+      "appid": 1533420,
+      "review_count": 12662
+    },
+    {
+      "appid": 3314790,
+      "review_count": 12656
+    },
+    {
+      "appid": 736260,
+      "review_count": 12630
+    },
+    {
+      "appid": 1985690,
+      "review_count": 12622
+    },
+    {
+      "appid": 1055540,
+      "review_count": 12581
+    },
+    {
+      "appid": 247080,
+      "review_count": 12565
+    },
+    {
+      "appid": 622650,
+      "review_count": 12558
+    },
+    {
+      "appid": 509980,
+      "review_count": 12534
+    },
+    {
+      "appid": 71340,
+      "review_count": 12522
+    },
+    {
+      "appid": 872200,
+      "review_count": 12508
+    },
+    {
+      "appid": 859580,
+      "review_count": 12507
+    },
+    {
+      "appid": 1169040,
+      "review_count": 12493
+    },
+    {
+      "appid": 881020,
+      "review_count": 12488
+    },
+    {
+      "appid": 10500,
+      "review_count": 12427
+    },
+    {
+      "appid": 979690,
+      "review_count": 12420
+    },
+    {
+      "appid": 1124300,
+      "review_count": 12380
+    },
+    {
+      "appid": 1599600,
+      "review_count": 12365
+    },
+    {
+      "appid": 1999360,
+      "review_count": 12337
+    },
+    {
+      "appid": 895870,
+      "review_count": 12320
+    },
+    {
+      "appid": 2066020,
+      "review_count": 12298
+    },
+    {
+      "appid": 250600,
+      "review_count": 12280
+    },
+    {
+      "appid": 1102190,
+      "review_count": 12256
+    },
+    {
+      "appid": 409720,
+      "review_count": 12237
+    },
+    {
+      "appid": 1252330,
+      "review_count": 12217
+    },
+    {
+      "appid": 1164940,
+      "review_count": 12188
+    },
+    {
+      "appid": 2121360,
+      "review_count": 12165
+    },
+    {
+      "appid": 844870,
+      "review_count": 12154
+    },
+    {
+      "appid": 666140,
+      "review_count": 12100
+    },
+    {
+      "appid": 571740,
+      "review_count": 12077
+    },
+    {
+      "appid": 447530,
+      "review_count": 12069
+    },
+    {
+      "appid": 1940340,
+      "review_count": 12034
+    },
+    {
+      "appid": 916440,
+      "review_count": 12022
+    },
+    {
+      "appid": 55150,
+      "review_count": 12017
+    },
+    {
+      "appid": 245170,
+      "review_count": 11943
+    },
+    {
+      "appid": 1424330,
+      "review_count": 11938
+    },
+    {
+      "appid": 1948280,
+      "review_count": 11934
+    },
+    {
+      "appid": 2668510,
+      "review_count": 11929
+    },
+    {
+      "appid": 1568400,
+      "review_count": 11895
+    },
+    {
+      "appid": 373420,
+      "review_count": 11848
+    },
+    {
+      "appid": 307780,
+      "review_count": 11835
+    },
+    {
+      "appid": 3156770,
+      "review_count": 11785
+    },
+    {
+      "appid": 368260,
+      "review_count": 11764
+    },
+    {
+      "appid": 2452280,
+      "review_count": 11742
+    },
+    {
+      "appid": 494840,
+      "review_count": 11724
+    },
+    {
+      "appid": 1637320,
+      "review_count": 11703
+    },
+    {
+      "appid": 1113560,
+      "review_count": 11702
+    },
+    {
+      "appid": 763890,
+      "review_count": 11677
+    },
+    {
+      "appid": 527230,
+      "review_count": 11657
+    },
+    {
+      "appid": 544730,
+      "review_count": 11653
+    },
+    {
+      "appid": 1129190,
+      "review_count": 11563
+    },
+    {
+      "appid": 625960,
+      "review_count": 11546
+    },
+    {
+      "appid": 299740,
+      "review_count": 11545
+    },
+    {
+      "appid": 104900,
+      "review_count": 11443
+    },
+    {
+      "appid": 704850,
+      "review_count": 11401
+    },
+    {
+      "appid": 681280,
+      "review_count": 11394
+    },
+    {
+      "appid": 3244220,
+      "review_count": 11372
+    },
+    {
+      "appid": 3681810,
+      "review_count": 11370
+    },
+    {
+      "appid": 1369630,
+      "review_count": 11368
+    },
+    {
+      "appid": 35450,
+      "review_count": 11366
+    },
+    {
+      "appid": 1559390,
+      "review_count": 11360
+    },
+    {
+      "appid": 359870,
+      "review_count": 11352
+    },
+    {
+      "appid": 1286680,
+      "review_count": 11342
+    },
+    {
+      "appid": 641990,
+      "review_count": 11329
+    },
+    {
+      "appid": 1496790,
+      "review_count": 11306
+    },
+    {
+      "appid": 1782380,
+      "review_count": 11285
+    },
+    {
+      "appid": 977400,
+      "review_count": 11274
+    },
+    {
+      "appid": 2005010,
+      "review_count": 11270
+    },
+    {
+      "appid": 1766740,
+      "review_count": 11260
+    },
+    {
+      "appid": 221680,
+      "review_count": 11245
+    },
+    {
+      "appid": 424030,
+      "review_count": 11232
+    },
+    {
+      "appid": 690830,
+      "review_count": 11224
+    },
+    {
+      "appid": 719040,
+      "review_count": 11217
+    },
+    {
+      "appid": 1053330,
+      "review_count": 11193
+    },
+    {
+      "appid": 1388880,
+      "review_count": 11170
+    },
+    {
+      "appid": 967050,
+      "review_count": 11164
+    },
+    {
+      "appid": 2420110,
+      "review_count": 11163
+    },
+    {
+      "appid": 692850,
+      "review_count": 11149
+    },
+    {
+      "appid": 740130,
+      "review_count": 11146
+    },
+    {
+      "appid": 557340,
+      "review_count": 11141
+    },
+    {
+      "appid": 1029690,
+      "review_count": 11122
+    },
+    {
+      "appid": 980610,
+      "review_count": 11096
+    },
+    {
+      "appid": 312530,
+      "review_count": 11070
+    },
+    {
+      "appid": 2239150,
+      "review_count": 11034
+    },
+    {
+      "appid": 1669000,
+      "review_count": 11033
+    },
+    {
+      "appid": 2415010,
+      "review_count": 11032
+    },
+    {
+      "appid": 414700,
+      "review_count": 11013
+    },
+    {
+      "appid": 1433140,
+      "review_count": 11002
+    },
+    {
+      "appid": 1222690,
+      "review_count": 10997
+    },
+    {
+      "appid": 903950,
+      "review_count": 10995
+    },
+    {
+      "appid": 784080,
+      "review_count": 10990
+    },
+    {
+      "appid": 1147690,
+      "review_count": 10895
+    },
+    {
+      "appid": 232430,
+      "review_count": 10887
+    },
+    {
+      "appid": 233270,
+      "review_count": 10885
+    },
+    {
+      "appid": 986130,
+      "review_count": 10878
+    },
+    {
+      "appid": 291650,
+      "review_count": 10864
+    },
+    {
+      "appid": 2012840,
+      "review_count": 10834
+    },
+    {
+      "appid": 463530,
+      "review_count": 10828
+    },
+    {
+      "appid": 460790,
+      "review_count": 10818
+    },
+    {
+      "appid": 555570,
+      "review_count": 10805
+    },
+    {
+      "appid": 521890,
+      "review_count": 10792
+    },
+    {
+      "appid": 606880,
+      "review_count": 10788
+    },
+    {
+      "appid": 1659420,
+      "review_count": 10774
+    },
+    {
+      "appid": 2263010,
+      "review_count": 10774
+    },
+    {
+      "appid": 517630,
+      "review_count": 10764
+    },
+    {
+      "appid": 934700,
+      "review_count": 10759
+    },
+    {
+      "appid": 24010,
+      "review_count": 10743
+    },
+    {
+      "appid": 894020,
+      "review_count": 10731
+    },
+    {
+      "appid": 333640,
+      "review_count": 10725
+    },
+    {
+      "appid": 1985810,
+      "review_count": 10718
+    },
+    {
+      "appid": 1066780,
+      "review_count": 10713
+    },
+    {
+      "appid": 257850,
+      "review_count": 10709
+    },
+    {
+      "appid": 675010,
+      "review_count": 10703
+    },
+    {
+      "appid": 756800,
+      "review_count": 10654
+    },
+    {
+      "appid": 3167020,
+      "review_count": 10635
+    },
+    {
+      "appid": 3107330,
+      "review_count": 10633
+    },
+    {
+      "appid": 1325200,
+      "review_count": 10627
+    },
+    {
+      "appid": 1149620,
+      "review_count": 10584
+    },
+    {
+      "appid": 394690,
+      "review_count": 10580
+    },
+    {
+      "appid": 997010,
+      "review_count": 10522
+    },
+    {
+      "appid": 1928980,
+      "review_count": 10478
+    },
+    {
+      "appid": 248570,
+      "review_count": 10477
+    },
+    {
+      "appid": 1043810,
+      "review_count": 10461
+    },
+    {
+      "appid": 34030,
+      "review_count": 10443
+    },
+    {
+      "appid": 246900,
+      "review_count": 10430
+    },
+    {
+      "appid": 3595270,
+      "review_count": 10429
+    },
+    {
+      "appid": 1812450,
+      "review_count": 10417
+    },
+    {
+      "appid": 1934680,
+      "review_count": 10403
+    },
+    {
+      "appid": 1353230,
+      "review_count": 10401
+    },
+    {
+      "appid": 425580,
+      "review_count": 10390
+    },
+    {
+      "appid": 330830,
+      "review_count": 10389
+    },
+    {
+      "appid": 1604270,
+      "review_count": 10367
+    },
+    {
+      "appid": 1929610,
+      "review_count": 10361
+    },
+    {
+      "appid": 2634950,
+      "review_count": 10354
+    },
+    {
+      "appid": 1761390,
+      "review_count": 10324
+    },
+    {
+      "appid": 630,
+      "review_count": 10321
+    },
+    {
+      "appid": 50130,
+      "review_count": 10298
+    },
+    {
+      "appid": 1296610,
+      "review_count": 10291
+    },
+    {
+      "appid": 837470,
+      "review_count": 10285
+    },
+    {
+      "appid": 1987080,
+      "review_count": 10274
+    },
+    {
+      "appid": 342200,
+      "review_count": 10262
+    },
+    {
+      "appid": 553420,
+      "review_count": 10256
+    },
+    {
+      "appid": 394510,
+      "review_count": 10254
+    },
+    {
+      "appid": 239350,
+      "review_count": 10253
+    },
+    {
+      "appid": 1466640,
+      "review_count": 10247
+    },
+    {
+      "appid": 368340,
+      "review_count": 10234
+    },
+    {
+      "appid": 1046030,
+      "review_count": 10220
+    },
+    {
+      "appid": 368500,
+      "review_count": 10219
+    },
+    {
+      "appid": 2698940,
+      "review_count": 10212
+    },
+    {
+      "appid": 371970,
+      "review_count": 10206
+    },
+    {
+      "appid": 787480,
+      "review_count": 10197
+    },
+    {
+      "appid": 274520,
+      "review_count": 10191
+    },
+    {
+      "appid": 527430,
+      "review_count": 10177
+    },
+    {
+      "appid": 204450,
+      "review_count": 10166
+    },
+    {
+      "appid": 1629520,
+      "review_count": 10142
+    },
+    {
+      "appid": 701160,
+      "review_count": 10139
+    },
+    {
+      "appid": 274940,
+      "review_count": 10132
+    },
+    {
+      "appid": 2680010,
+      "review_count": 10126
+    },
+    {
+      "appid": 926990,
+      "review_count": 10124
+    },
+    {
+      "appid": 250760,
+      "review_count": 10121
+    },
+    {
+      "appid": 1238000,
+      "review_count": 10094
+    },
+    {
+      "appid": 241600,
+      "review_count": 10092
+    },
+    {
+      "appid": 65980,
+      "review_count": 10057
+    },
+    {
+      "appid": 341940,
+      "review_count": 10053
+    },
+    {
+      "appid": 2784470,
+      "review_count": 10052
+    },
+    {
+      "appid": 335670,
+      "review_count": 10034
+    },
+    {
+      "appid": 1574580,
+      "review_count": 9988
+    },
+    {
+      "appid": 492720,
+      "review_count": 9972
+    },
+    {
+      "appid": 3528450,
+      "review_count": 9928
+    },
+    {
+      "appid": 1712830,
+      "review_count": 9913
+    },
+    {
+      "appid": 384190,
+      "review_count": 9912
+    },
+    {
+      "appid": 3180070,
+      "review_count": 9899
+    },
+    {
+      "appid": 397950,
+      "review_count": 9883
+    },
+    {
+      "appid": 657200,
+      "review_count": 9878
+    },
+    {
+      "appid": 858810,
+      "review_count": 9861
+    },
+    {
+      "appid": 242680,
+      "review_count": 9809
+    },
+    {
+      "appid": 1127400,
+      "review_count": 9784
+    },
+    {
+      "appid": 2457220,
+      "review_count": 9770
+    },
+    {
+      "appid": 268650,
+      "review_count": 9757
+    },
+    {
+      "appid": 3028330,
+      "review_count": 9727
+    },
+    {
+      "appid": 1887840,
+      "review_count": 9688
+    },
+    {
+      "appid": 1601580,
+      "review_count": 9685
+    },
+    {
+      "appid": 1240210,
+      "review_count": 9684
+    },
+    {
+      "appid": 3195790,
+      "review_count": 9679
+    },
+    {
+      "appid": 954740,
+      "review_count": 9667
+    },
+    {
+      "appid": 2458530,
+      "review_count": 9665
+    },
+    {
+      "appid": 292730,
+      "review_count": 9662
+    },
+    {
+      "appid": 207140,
+      "review_count": 9656
+    },
+    {
+      "appid": 567640,
+      "review_count": 9654
+    },
+    {
+      "appid": 541570,
+      "review_count": 9619
+    },
+    {
+      "appid": 3373660,
+      "review_count": 9602
+    },
+    {
+      "appid": 1190970,
+      "review_count": 9559
+    },
+    {
+      "appid": 627690,
+      "review_count": 9555
+    },
+    {
+      "appid": 1114150,
+      "review_count": 9554
+    },
+    {
+      "appid": 1941540,
+      "review_count": 9551
+    },
+    {
+      "appid": 1949740,
+      "review_count": 9551
+    },
+    {
+      "appid": 1548850,
+      "review_count": 9543
+    },
+    {
+      "appid": 383150,
+      "review_count": 9524
+    },
+    {
+      "appid": 447820,
+      "review_count": 9517
+    },
+    {
+      "appid": 861650,
+      "review_count": 9502
+    },
+    {
+      "appid": 392110,
+      "review_count": 9493
+    },
+    {
+      "appid": 780310,
+      "review_count": 9488
+    },
+    {
+      "appid": 1574820,
+      "review_count": 9475
+    },
+    {
+      "appid": 2291760,
+      "review_count": 9462
+    },
+    {
+      "appid": 228280,
+      "review_count": 9457
+    },
+    {
+      "appid": 1150440,
+      "review_count": 9435
+    },
+    {
+      "appid": 969990,
+      "review_count": 9424
+    },
+    {
+      "appid": 292120,
+      "review_count": 9384
+    },
+    {
+      "appid": 488860,
+      "review_count": 9373
+    },
+    {
+      "appid": 298630,
+      "review_count": 9357
+    },
+    {
+      "appid": 3551340,
+      "review_count": 9340
+    },
+    {
+      "appid": 236090,
+      "review_count": 9314
+    },
+    {
+      "appid": 368230,
+      "review_count": 9303
+    },
+    {
+      "appid": 1084600,
+      "review_count": 9303
+    },
+    {
+      "appid": 350080,
+      "review_count": 9261
+    },
+    {
+      "appid": 289130,
+      "review_count": 9246
+    },
+    {
+      "appid": 589870,
+      "review_count": 9229
+    },
+    {
+      "appid": 2947440,
+      "review_count": 9229
+    },
+    {
+      "appid": 3108510,
+      "review_count": 9213
+    },
+    {
+      "appid": 996580,
+      "review_count": 9194
+    },
+    {
+      "appid": 2075070,
+      "review_count": 9179
+    },
+    {
+      "appid": 1111460,
+      "review_count": 9176
+    },
+    {
+      "appid": 427290,
+      "review_count": 9166
+    },
+    {
+      "appid": 2909110,
+      "review_count": 9161
+    },
+    {
+      "appid": 1173370,
+      "review_count": 9151
+    },
+    {
+      "appid": 485510,
+      "review_count": 9131
+    },
+    {
+      "appid": 4384550,
+      "review_count": 9128
+    },
+    {
+      "appid": 264200,
+      "review_count": 9121
+    },
+    {
+      "appid": 858210,
+      "review_count": 9113
+    },
+    {
+      "appid": 631510,
+      "review_count": 9091
+    },
+    {
+      "appid": 418240,
+      "review_count": 9072
+    },
+    {
+      "appid": 1361320,
+      "review_count": 9063
+    },
+    {
+      "appid": 2513280,
+      "review_count": 9052
+    },
+    {
+      "appid": 2113850,
+      "review_count": 9047
+    },
+    {
+      "appid": 210970,
+      "review_count": 9032
+    },
+    {
+      "appid": 743450,
+      "review_count": 9020
+    },
+    {
+      "appid": 629820,
+      "review_count": 9007
+    },
+    {
+      "appid": 3274300,
+      "review_count": 8997
+    },
+    {
+      "appid": 609320,
+      "review_count": 8992
+    },
+    {
+      "appid": 1435790,
+      "review_count": 8980
+    },
+    {
+      "appid": 1796470,
+      "review_count": 8980
+    },
+    {
+      "appid": 1430190,
+      "review_count": 8907
+    },
+    {
+      "appid": 3478870,
+      "review_count": 8902
+    },
+    {
+      "appid": 410900,
+      "review_count": 8887
+    },
+    {
+      "appid": 1030830,
+      "review_count": 8861
+    },
+    {
+      "appid": 960990,
+      "review_count": 8836
+    },
+    {
+      "appid": 335240,
+      "review_count": 8823
+    },
+    {
+      "appid": 288470,
+      "review_count": 8820
+    },
+    {
+      "appid": 241540,
+      "review_count": 8812
+    },
+    {
+      "appid": 1097840,
+      "review_count": 8810
+    },
+    {
+      "appid": 784150,
+      "review_count": 8783
+    },
+    {
+      "appid": 2840770,
+      "review_count": 8765
+    },
+    {
+      "appid": 65800,
+      "review_count": 8764
+    },
+    {
+      "appid": 3228590,
+      "review_count": 8745
+    },
+    {
+      "appid": 324800,
+      "review_count": 8738
+    },
+    {
+      "appid": 1783560,
+      "review_count": 8735
+    },
+    {
+      "appid": 282800,
+      "review_count": 8727
+    },
+    {
+      "appid": 24240,
+      "review_count": 8714
+    },
+    {
+      "appid": 42910,
+      "review_count": 8709
+    },
+    {
+      "appid": 597220,
+      "review_count": 8679
+    },
+    {
+      "appid": 2688950,
+      "review_count": 8657
+    },
+    {
+      "appid": 641320,
+      "review_count": 8620
+    },
+    {
+      "appid": 872670,
+      "review_count": 8614
+    },
+    {
+      "appid": 302670,
+      "review_count": 8610
+    },
+    {
+      "appid": 1267910,
+      "review_count": 8596
+    },
+    {
+      "appid": 2167960,
+      "review_count": 8575
+    },
+    {
+      "appid": 2486820,
+      "review_count": 8544
+    },
+    {
+      "appid": 235600,
+      "review_count": 8516
+    },
+    {
+      "appid": 1611600,
+      "review_count": 8509
+    },
+    {
+      "appid": 1606180,
+      "review_count": 8508
+    },
+    {
+      "appid": 1846170,
+      "review_count": 8479
+    },
+    {
+      "appid": 233720,
+      "review_count": 8467
+    },
+    {
+      "appid": 362680,
+      "review_count": 8465
+    },
+    {
+      "appid": 607080,
+      "review_count": 8460
+    },
+    {
+      "appid": 835960,
+      "review_count": 8457
+    },
+    {
+      "appid": 2795000,
+      "review_count": 8449
+    },
+    {
+      "appid": 2417610,
+      "review_count": 8446
+    },
+    {
+      "appid": 512900,
+      "review_count": 8404
+    },
+    {
+      "appid": 1318690,
+      "review_count": 8394
+    },
+    {
+      "appid": 2071280,
+      "review_count": 8380
+    },
+    {
+      "appid": 1139980,
+      "review_count": 8369
+    },
+    {
+      "appid": 3595230,
+      "review_count": 8329
+    },
+    {
+      "appid": 560130,
+      "review_count": 8325
+    },
+    {
+      "appid": 597820,
+      "review_count": 8322
+    },
+    {
+      "appid": 1974050,
+      "review_count": 8311
+    },
+    {
+      "appid": 918570,
+      "review_count": 8303
+    },
+    {
+      "appid": 249130,
+      "review_count": 8283
+    },
+    {
+      "appid": 2232840,
+      "review_count": 8262
+    },
+    {
+      "appid": 2138710,
+      "review_count": 8238
+    },
+    {
+      "appid": 206190,
+      "review_count": 8237
+    },
+    {
+      "appid": 885970,
+      "review_count": 8222
+    },
+    {
+      "appid": 1984270,
+      "review_count": 8195
+    },
+    {
+      "appid": 1229380,
+      "review_count": 8187
+    },
+    {
+      "appid": 1577120,
+      "review_count": 8175
+    },
+    {
+      "appid": 10680,
+      "review_count": 8160
+    },
+    {
+      "appid": 2140510,
+      "review_count": 8155
+    },
+    {
+      "appid": 1180660,
+      "review_count": 8154
+    },
+    {
+      "appid": 341800,
+      "review_count": 8113
+    },
+    {
+      "appid": 233130,
+      "review_count": 8105
+    },
+    {
+      "appid": 1604000,
+      "review_count": 8102
+    },
+    {
+      "appid": 774181,
+      "review_count": 8096
+    },
+    {
+      "appid": 1113120,
+      "review_count": 8091
+    },
+    {
+      "appid": 475150,
+      "review_count": 8087
+    },
+    {
+      "appid": 1782120,
+      "review_count": 8062
+    },
+    {
+      "appid": 1284410,
+      "review_count": 8046
+    },
+    {
+      "appid": 1490890,
+      "review_count": 8046
+    },
+    {
+      "appid": 673880,
+      "review_count": 7999
+    },
+    {
+      "appid": 445220,
+      "review_count": 7998
+    },
+    {
+      "appid": 405640,
+      "review_count": 7997
+    },
+    {
+      "appid": 1815780,
+      "review_count": 7994
+    },
+    {
+      "appid": 1285670,
+      "review_count": 7986
+    },
+    {
+      "appid": 1239080,
+      "review_count": 7980
+    },
+    {
+      "appid": 1556790,
+      "review_count": 7972
+    },
+    {
+      "appid": 2119830,
+      "review_count": 7965
+    },
+    {
+      "appid": 287450,
+      "review_count": 7942
+    },
+    {
+      "appid": 1262540,
+      "review_count": 7937
+    },
+    {
+      "appid": 732430,
+      "review_count": 7932
+    },
+    {
+      "appid": 1757300,
+      "review_count": 7931
+    },
+    {
+      "appid": 1672970,
+      "review_count": 7914
+    },
+    {
+      "appid": 285190,
+      "review_count": 7892
+    },
+    {
+      "appid": 1745510,
+      "review_count": 7888
+    },
+    {
+      "appid": 235540,
+      "review_count": 7875
+    },
+    {
+      "appid": 332950,
+      "review_count": 7866
+    },
+    {
+      "appid": 2677660,
+      "review_count": 7866
+    },
+    {
+      "appid": 814540,
+      "review_count": 7849
+    },
+    {
+      "appid": 1063660,
+      "review_count": 7839
+    },
+    {
+      "appid": 1385380,
+      "review_count": 7836
+    },
+    {
+      "appid": 2552430,
+      "review_count": 7832
+    },
+    {
+      "appid": 1182900,
+      "review_count": 7821
+    },
+    {
+      "appid": 498240,
+      "review_count": 7815
+    },
+    {
+      "appid": 244160,
+      "review_count": 7810
+    },
+    {
+      "appid": 262410,
+      "review_count": 7810
+    },
+    {
+      "appid": 1061910,
+      "review_count": 7808
+    },
+    {
+      "appid": 604240,
+      "review_count": 7798
+    },
+    {
+      "appid": 237990,
+      "review_count": 7786
+    },
+    {
+      "appid": 482400,
+      "review_count": 7780
+    },
+    {
+      "appid": 311340,
+      "review_count": 7776
+    },
+    {
+      "appid": 589590,
+      "review_count": 7776
+    },
+    {
+      "appid": 2842040,
+      "review_count": 7774
+    },
+    {
+      "appid": 268050,
+      "review_count": 7753
+    },
+    {
+      "appid": 333600,
+      "review_count": 7741
+    },
+    {
+      "appid": 315210,
+      "review_count": 7728
+    },
+    {
+      "appid": 311560,
+      "review_count": 7724
+    },
+    {
+      "appid": 1262580,
+      "review_count": 7715
+    },
+    {
+      "appid": 1253920,
+      "review_count": 7708
+    },
+    {
+      "appid": 365450,
+      "review_count": 7670
+    },
+    {
+      "appid": 2088570,
+      "review_count": 7663
+    },
+    {
+      "appid": 2290180,
+      "review_count": 7652
+    },
+    {
+      "appid": 409160,
+      "review_count": 7638
+    },
+    {
+      "appid": 1012790,
+      "review_count": 7628
+    },
+    {
+      "appid": 766570,
+      "review_count": 7619
+    },
+    {
+      "appid": 1250760,
+      "review_count": 7599
+    },
+    {
+      "appid": 2313250,
+      "review_count": 7591
+    },
+    {
+      "appid": 1170950,
+      "review_count": 7572
+    },
+    {
+      "appid": 355180,
+      "review_count": 7565
+    },
+    {
+      "appid": 1895880,
+      "review_count": 7560
+    },
+    {
+      "appid": 700600,
+      "review_count": 7551
+    },
+    {
+      "appid": 330020,
+      "review_count": 7544
+    },
+    {
+      "appid": 343780,
+      "review_count": 7539
+    },
+    {
+      "appid": 1307550,
+      "review_count": 7530
+    },
+    {
+      "appid": 239160,
+      "review_count": 7521
+    },
+    {
+      "appid": 1302240,
+      "review_count": 7521
+    },
+    {
+      "appid": 1611910,
+      "review_count": 7512
+    },
+    {
+      "appid": 406150,
+      "review_count": 7494
+    },
+    {
+      "appid": 731490,
+      "review_count": 7490
+    },
+    {
+      "appid": 732690,
+      "review_count": 7488
+    },
+    {
+      "appid": 474960,
+      "review_count": 7481
+    },
+    {
+      "appid": 2072450,
+      "review_count": 7466
+    },
+    {
+      "appid": 306020,
+      "review_count": 7463
+    },
+    {
+      "appid": 1085510,
+      "review_count": 7450
+    },
+    {
+      "appid": 2958130,
+      "review_count": 7440
+    },
+    {
+      "appid": 2968420,
+      "review_count": 7437
+    },
+    {
+      "appid": 699130,
+      "review_count": 7435
+    },
+    {
+      "appid": 1254120,
+      "review_count": 7428
+    },
+    {
+      "appid": 1369320,
+      "review_count": 7406
+    },
+    {
+      "appid": 386070,
+      "review_count": 7404
+    },
+    {
+      "appid": 1473350,
+      "review_count": 7390
+    },
+    {
+      "appid": 746850,
+      "review_count": 7388
+    },
+    {
+      "appid": 451340,
+      "review_count": 7385
+    },
+    {
+      "appid": 2763740,
+      "review_count": 7385
+    },
+    {
+      "appid": 611670,
+      "review_count": 7380
+    },
+    {
+      "appid": 874260,
+      "review_count": 7367
+    },
+    {
+      "appid": 204880,
+      "review_count": 7356
+    },
+    {
+      "appid": 2132850,
+      "review_count": 7356
+    },
+    {
+      "appid": 473690,
+      "review_count": 7354
+    },
+    {
+      "appid": 1785150,
+      "review_count": 7338
+    },
+    {
+      "appid": 445980,
+      "review_count": 7337
+    },
+    {
+      "appid": 1605220,
+      "review_count": 7326
+    }
+  ],
+  "transaction_read_only": "on",
+  "connection_attempts": [
+    {
+      "route": "pycharm_saved_config",
+      "connected": false,
+      "reason": "complete_credentials_not_available_in_project_xml"
+    },
+    {
+      "route": "dotenv",
+      "attempt": 1,
+      "connected": true
+    }
+  ],
+  "filters": "仅review_count非NULL；无年份、类型、成就数或主线筛选；同评价数按appid升序"
+}

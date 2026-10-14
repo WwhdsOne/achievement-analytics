@@ -1,5 +1,67 @@
 # 刘宇翔模块实验与实现记录
 
+以下按阶段记录当时的代码、参数与数据，旧prompt/阈值/schema和sample-size/batch-size命令保留作历史证据，不作为当前入口。日常操作以[PROCESS.md](PROCESS.md)为准，当前数据以[DATABASE.md](DATABASE.md)的带时间核查快照及SQLite查询为准。
+
+## 2026-10-14：整款入库验收、参数说明与文档核查
+
+- 重生恢复由用户执行：[report.json](../process/runtime/deepseek/runs/20261014T133727794594Z/report.json)。command=classify、游戏名精确选择、max_requests=0、prompt v5/简介v1、evidence上限150、门槛0.6；state=success，完整候选61项、写入60项/60条标签、already_classified保留1项，新请求0、缓存命中2、未处理0。读取运行前备份对照，原始成就字段/排序、四张背景表和其他游戏未变，写入标签及状态与报告一致；展示名空缺/不一致0、完整性ok、外键问题0。
+- 已完成判据核验：重生61项method均deepseek，60项suggested、1项旧uncertain保留；再次普通预检pending_count=0、already_classified_or_protected，简介与分类都不请求。保护项排除后，只有method全deepseek且status为suggested/uncertain才算完成；rule/jev旧结果仍会处理，status='pending'不是分类器剩余量的完整口径。
+- 默认清单后续运行由用户执行：[report.json](../process/runtime/deepseek/runs/20261014T135413196167Z/report.json)。默认前1000款、max_requests=2，HELLDIVERS™ 2（553850）38项成就完成，生成41条多标签关系；新请求2、errors为空，随后budget_reached正常暂停。当前累计2款、99项成就、102条DeepSeek类型关系；类别关系数与成就数不同。
+- 2026-10-14 13:58 UTC核查快照：游戏1000、成就71,465、类型关系168（deepseek102/rule66）；status为pending71,303/suggested125/uncertain37，approved0，主线排序18。默认1000款预检978 ready、16 oversized、4无成就、2已完成，待处理71,348，正常新请求估计1956、重试另计。进度已较上一轮核验增加，以带时刻快照记录；后续用户执行会继续改变数据。
+- 文档核查：读取docs全部8份说明及当前7个活动Python模块/3份本地SQL的相关路径。补充PROCESS的--game-name/--appids/--appids-file/--all-games互斥表、子命令、全部运行参数默认值、请求计数/重试/缓存/每轮重置、自动跳过及全量选择例子。同步README、plan、DATABASE、DEEPSEEK_PLAN的阶段状态与最新数据；IMPORT_SNAPSHOT标明历史导入/版本2 checkpoint及当前版本3续跑边界。历史API索引内容与链接有效，无需改动；既有历史实验不改写。
+- 今日实现主线：完成前1000款本地数据准备，收缩为DeepSeek八类多标签；常量分类prompt+独立简介prompt/缓存，按游戏名整款输入；严格confidence > 0.6逐标签入库、完整JSON保留低分；标签表增加display_name并同步写入/导入/迁移；修复60字符引用限制为150并零请求复用失败响应；用户完成两款真实链路及多标签写入验证。尚未完成全量标签或语义准确率评估，不生成主线排序与分析结论。
+- 已知核验边界：import_snapshot.verify_run仍只比较原五个类型字段，没有单独核查新增展示名与来源一致；实际六列INSERT与同步触发器已适配，本轮更新说明而未改程序。提交前留意LYX .gitignore的/database/规则还会忽略SQL；本轮没有改变Git忽略规则，也不提交原始数据/缓存/SQLite/凭据。
+- 本轮范围：只修改result/LYX/docs，未运行classify、未调用API、未连接远端、未修改程序/SQL/实际库、未提交/推送。文档修改前备份为process/runtime/archive/20261014T135807506671Z-docs-audit，含核查快照及文件哈希；参数、链接与修改边界检查见[verification.json](../process/runtime/validation/docs-audit-20261014/verification.json)。
+
+## 2026-10-14：真实试跑引用超长诊断与150字符修复
+
+- 用户实际运行：classify --game-name "FINAL FANTASY VII REBIRTH" --max-requests 2；原提示词v4、简介v1、0.6严格门槛，完整61项、待处理60、已有DeepSeek1。运行目录process/runtime/deepseek/runs/20261014T131828498819Z，简介及整款各1次真实请求，合计prompt2795/completion4716/total7511 tokens，API缓存命中0；这两次请求由用户发起。
+- 原因：分类HTTP200、finish_reason=stop，61项完整且无重复，其他字段契约通过；9段evidence为准确原文引用，长度62～84，超过原60字符上限。旧错误将超长和非原文混为“evidence必须逐字引用”，整款停止、写入0。只读对比运行前备份，实际六表业务数据一致，标签仍rule126/deepseek1。
+- 用户授权修复：evidence每段上限改为150，解释链路，不代用户运行分类。DataAgent提示词及EVIDENCE_MAX_CHARS/校验同步，版本v4→v5；保留每项1～2段、逐字来源检查，reason/uncertainty仍最多40字符。错误区分段数、空引用、超长、非原文，并显示成就ID/名称。本轮没有修改SQLite结构或写入程序。
+- 缓存恢复：仅此次长度放宽兼容相同v4完整请求；用户输入、模型、接口、生成参数或版本变化不能套用。旧响应重新完整校验，新缓存优先，原receipt不改；元数据注明源prompt_version、requested_prompt_version及compatible_cache。由此旧错误响应可在当前规则下复用，避免要求用户再次付费生成同一结果。
+- 验证：[verification.json](../process/runtime/validation/20261014T133248668332Z-evidence-150/verification.json)共6组，覆盖提示词/校验150与旧prompt精确一致、150通过/151拒绝/错误区分、真实已保存61项原样校验与零请求缓存读取、上下文/模型/参数/任务/其他版本变化不复用、坏缓存拒绝/新缓存优先、实际库及原响应/共享文件不变。仅调用缓存读取与本地validator，未执行run/classify、未新增pytest文件。
+- 结果：已保存响应最大引用84字符，61项在新规则下全部通过，候选标签61个通过0.6、低分0；这些是候选校验结果，尚未写入。简介和分类缓存均命中，预计新请求0。原始数据、原receipt、原运行report、共享依赖/SQL、game_intro/local_database/import_snapshot哈希不变，真实供应商请求0、远端连接0、数据库写入0。
+- 备份：process/runtime/archive/20261014T133042839206Z-evidence-150保存原DataAgent、说明、旧prompt及基线；数据库只读摘要前后均d730f985be46931963604e6d61a575ba60f27edbde5f7f7947d865348cffa124。
+- 用户恢复命令（LYX目录）：uv run --frozen --no-sync python -X utf8 -B process/DataAgent.py classify --game-name "FINAL FANTASY VII REBIRTH" --max-requests 0；只复用缓存，允许按现有保护规则写本地SQLite。本轮未代用户执行、未提交/推送。
+
+## 2026-10-14：标签表新增并回填display_name
+
+- 用户授权：修改本地achievement_types结构，加入展示名并补齐已有记录；远端永远只读。本轮同步main后仅修改LYX。
+- 结构：schema版本2→3；标签表为appid/api_name/display_name/type/method/confidence，主键仍(appid,api_name,type)。display_name为TEXT NOT NULL，非空白，与achievements.display_name约束一致，按(appid,api_name)回填；不新增其他业务表或JSON字段。
+- 实现：[migrate_display_names.py](../process/migrate_display_names.py)与[迁移SQL](../database/migrate_display_names.sql)先备份、事务重建并回填，恢复索引/触发器，检查原字段及名称关联、完整性和外键；失败回滚，重复运行不改库。当前版本中名称不一致也可从来源修复。local_database同步结构检查/分类INSERT，import_snapshot保留标签时同步名称，旧method迁移兼容版本2/3并填写新列。
+- 名称同步：新增achievements_display_name_sync，来源成就改名时只按完整复合键更新对应所有标签。分类提示词、API请求指纹及0.6严格门槛不变；仍保护人工/排序，仍逐标签筛选并在runtime保留低分结果。
+- 实际迁移：127条名称全部回填；原六表字段（排除新增列）SHA256前后均为175e9a19e557a3fadf7849a6b9f38f197cc1214f65469d50b40f34d72433c4ac。保留1000款、71,465项成就、127条类型（rule126/deepseek1），18个主线排序号及所有状态不变。名称空缺/来源缺失/不一致均0，integrity_check=ok、外键问题0，原6个触发器及索引保留并新增名称同步触发器。
+- 备份：[achievements.sqlite](../database/backups/20261014T125409120039Z-display-names/achievements.sqlite)，同目录migration.json。代码/说明修改前备份为process/runtime/archive/20261014T124752539110Z-display-name，附基线及before_changes.sqlite。
+- 验证：[verification.json](../process/runtime/validation/20261014T125303979722Z-display-names/verification.json)共7组检查：语法、旧版迁移/原字段保留/幂等、当前名称修复、失败回滚、旧method兼容、分类写名/0.6筛选/复合键同步/非空约束、来源快照导入保留标签并填名。使用临时数据库，不新增pytest文件；导入检查补全模拟背景的四个标志字段后通过。
+- 最终核对：[final-check.json](../process/runtime/validation/20261014T125303979722Z-display-names/final-check.json)。实际库迁移再次运行already_migrated=true、回填0；两款FF7离线plan读库成功、门槛0.6、待处理105、实际请求0。共享文件、原DataAgent/game_intro代码哈希不变；未访问远端、未调用模型、未提交/推送。PyCharm刷新/Synchronize后可直接浏览新列。
+
+## 2026-10-14：confidence 0.6逐标签写入门槛
+
+- 用户授权：默认门槛改为0.6，多标签分别筛选，仅confidence > 0.6写入SQLite；其余标签继续保留runtime JSON。等于0.6明确不通过。
+- 实现：local_database.DEFAULT_MIN_CONFIDENCE为单一默认值；partition_classification_types先校验完整结果再分流，DataAgent和SQLite入口共用。报告types保留全部标签，accepted_types/rejected_types列出筛选；写入入口再次校验筛选一致性，防止低分写入。全部未通过记below_threshold，不删除旧类型、不改status；部分通过只替换可更新自动结果中的通过标签。人工、排序和默认已有DeepSeek保护保留。
+- 状态：通过的明确标签为suggested；unknown也按相同门槛，通过后仍uncertain。全未通过的待处理成就记remaining_pending_count，运行可返回success_with_rejections。classified_count表示完整模型覆盖，accepted/rejected_label_count表示候选标签筛选（含保护项），written_label_count表示真正写入标签数，sqlite_counts.written表示更新成就数。
+- 记录与缓存：运行report.json记录min_confidence和confidence_comparison；CSV每标签保留confidence_passed/label_sqlite_outcome。API提示词/版本不变，阈值不影响请求指纹，同一响应可零请求重筛；已有机器结果需显式--reclassify。错误格式仍拒绝整款，原始响应留在receipt JSON。旧实验中的0.8仅为当时口径，不改写历史记录。
+- 验证：7组离线检查通过，使用临时SQLite和模拟HTTP；包含默认参数/语法、0.9/0.61通过与0.6/0.59拒绝、全部结果JSON/CSV、原有规则/人工/排序/已完成保护、全未通过空库与旧结果保留、零请求缓存续跑、更改门槛缓存重筛、非法类型/分数拒绝、输入改变原子回滚及SQLite完整性。共4次模拟HTTP、真实供应商请求0，没有新增pytest或持久测试程序。
+- 真实本地离线预检：FF7重制/重生完整63/61项，待处理45/60项，保护18/0项，已完成DeepSeek0/1；输出估计11104/10784。默认min_confidence=0.6、confidence_comparison=>，requests=0、database_writes=false；输入SHA256=dfe395df510d7680b216c302a0ec939e6e5972cb9d8808016d07674b67134a51。
+- 产物：[verification.json](../process/runtime/validation/20261014T123711121985Z-confidence-gate/verification.json)及同目录模拟运行report/CSV。备份：[before_changes.sqlite](../process/runtime/archive/20261014T123214458821Z-confidence-gate/before_changes.sqlite)，附原代码/说明及baseline.json。本轮只改LYX程序与说明，不迁移schema、不写实际工作库、不连接远端、不提交/推送。
+- 最终核对：[final-check.json](../process/runtime/validation/20261014T123711121985Z-confidence-gate/final-check.json)。真实SQLite六表业务数据及schema与本轮基线一致，integrity_check=ok、外键问题0；现有类型仍deepseek1/rule126。共享uv.lock、cleaning/schema.sql、docs/plan.md、LYX .gitignore和本地schema.sql哈希不变，简介程序未改，活动说明链接有效。
+
+## 2026-10-14：常量提示词、背景摘要缓存与游戏名整款分类
+
+- 用户审批范围：分类和简介prompt放在导入区之后；新增game_intro.py；按游戏名查询并整款一次分类；超大游戏先预检跳过；SQLite六表不变。本轮只实施和离线验证，未请求真实模型。
+- 提示词：DataAgent.CLASSIFICATION_PROMPT为结构化常量，版本lyx-deepseek-whole-game-v4；game_intro.GAME_INTRO_PROMPT为结构化常量，独立版本lyx-game-intro-v1。普通成长/等级门槛与挑战边界补充；两段输入固定为game_context在前、全部achievement_batch在后。
+- 摘要：只传名称/官方类型，recognized=true时40～80字符中文summary，false时空摘要与原因；标记model_generated，外部缓存/报告保存，不新增SQL表/字段，不冒充官方资料或成就证据。复用DataAgent客户端，共用请求预算、密钥、HTTP和缓存；任务/版本命名空间独立。
+- 入口：--game-name唯一完整名称匹配，大小写/Unicode/空白规范化；中文、重名、部分/近似候选行为已检查，非唯一不发请求。保留AppID/冻结清单/全库选项；移除正常入口batch-size/sample-size。
+- 全款保护：模型看到全部原始成就，默认只更新待处理项；已有DeepSeek标为already_classified，--reclassify才重判机器结果；approved/manual/非空排序始终保护。整款集合/文本变化（包括新增/删除）在写库前拒绝；响应先保存，再短事务落库。
+- 预算：输出估计1024+160*N，默认上限65536；输入字符阈值300000；超限oversized_game，不自动拆分或发简介请求。读超时默认300秒、连接15秒；请求预算包括简介/分类/重试。新增任务用量、本地复用、API命中/未命中token/比例统计，缺失字段null，缓存历史不重计。
+- 真实本地离线plan：1000款、71,465项成就；71,446待处理、18保护、已完成DeepSeek1。980款ready、16款oversized、4款无成就；冷缓存新请求估计1960是全范围估计，不会自动发出。整个输入SHA256=26a444789681404de6cc240a91bbec2416fcd8bc4c4043ef7a87799bdb0e5ae2。
+- FF7预检：重制63项、输出估计11104；重生61项、输出估计10784，默认保留已有一项，待写60项。新版分类仍要求完整响应覆盖全部输入ID。
+- 验证：临时真实SQLite+模拟HTTP共7组检查通过，覆盖名称选择、prompt排列与不泄露结果变量、摘要/分类契约、共用预算、缓存恢复、显式重判、原始集合变化回滚、保护、未识别摘要继续分类、token统计、超限无请求及离线plan不写文件。额外验证摘要格式失败不重试、截断分类不写库/不重试，两条失败路径通过。未新增pytest文件。
+- 产物：process/runtime/validation/whole-game/verification.json与failure-paths.json。模拟结果仅写临时库，真实供应商请求0，真实摘要/全款语义效果和API缓存收益尚未验证。
+- 备份：process/runtime/archive/20261014T185837-whole-game/before_changes.sqlite，附修改前代码/文档/基线。开工库SHA256=cf42623fa461869d765d20397c43406ada9f85579eef0fe5e737038579d9b1a4；最终核对时物理SHA256=b0eff3817d2c3360345c567daa8e51e9d729fd4ca2d6759558e0a0026001aac4。逐表比较发现仅games_details中appid34330的valve_genres从空文本改为Action|Strategy|Singleplayer|Multiplayer；本轮模拟写入仅针对临时库，保留工作期间该背景更新，不回退。实际成就/标签逐项一致、结构一致，类型仍rule126/deepseek1，18项排序完整保留。
+- 文档：更新plan/PROCESS/DEEPSEEK_PLAN/DATABASE及入口索引；工作区已移除的process/database README链接改为实际程序/SQL或docs入口，没有恢复旧目录README。
+- 边界：只改LYX，schema/原始数据/共享依赖/其他成员目录不改，未访问远端，未提交/推送。下一步按已确认预算对FF7做真实整款验收，先看摘要与完整分类质量，再逐游戏推进。
+
 ## 2026-10-14：单成就真实分类与SQLite写入
 
 - 用户授权：只试跑一个成就，查看完整链路效果。同步main后选2909400（FINAL FANTASY VII REBIRTH），sample-size=1、batch-size=1、max-requests=1、max-tokens=8192、阈值0.8；提示词lyx-deepseek-multilabel-v3，model=deepseek-flash。
