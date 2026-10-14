@@ -1,0 +1,99 @@
+{
+  "date": "2026-10-14",
+  "base_main": "e32d34bbcd4d65cf57761cb92d301e7bc2f46074",
+  "root_cause": "navigation hardcoded separate ports not started by serve",
+  "fix": "single serve mounts /, /baseline/, /graph/, /explain/ sharing input and inspector",
+  "actual_database_serve_startup_verified": true,
+  "data_loading": {
+    "source": "group_database",
+    "database_access": true,
+    "refresh_policy": "read_once_at_startup_restart_to_refresh",
+    "started_at": "2026-10-14T14:30:26.935305+00:00",
+    "finished_at": "2026-10-14T14:31:24.984421+00:00",
+    "database_settings": {
+      "read_only": "on",
+      "isolation": "repeatable read"
+    },
+    "query_sha256": "1246abd9b5c111b649f02cb88c91a98d70b52c2e36befcc6499fba9333fd2c3c",
+    "snapshot_games": 50925,
+    "snapshot_version": "recommendation-v1-c58f1d57439d2c28",
+    "graph_version": "kg-v1-f088d9b7c48edf0be3aa475f95ee744a62e70b5a4807861fe85541bdbbe84bc9",
+    "preparation_seconds": 104.486,
+    "fallback_to_old_cache": false
+  },
+  "graph_statistics": {
+    "candidates": 41279,
+    "entities": 114301,
+    "entities_by_type": {
+      "DeveloperName": 34475,
+      "Game": 50925,
+      "Genre": 28,
+      "PublisherName": 28426,
+      "Tag": 447
+    },
+    "evidence_items": 895044,
+    "relations": 895023,
+    "relations_by_type": {
+      "developed_by": 55791,
+      "has_genre": 147354,
+      "has_tag": 638365,
+      "published_by": 53513
+    }
+  },
+  "actual_desktop_mobile_browser_checks": 17,
+  "browser_checks": [
+    "four_pages_share_same_readonly_database_input",
+    "desktop/click_baseline_resources_api_recommendation_and_graph",
+    "desktop/baseline_return_to_main",
+    "desktop/graph_entities_relations_common_paths_and_raw_fact_proof",
+    "desktop/graph_complete_quality_json_link",
+    "desktop/single_explanation_actual_score_paths_and_two_sided_proof",
+    "desktop/main_knowledge_graph_score_contributions_and_provenance",
+    "desktop/main_raw_source_evidence_opens",
+    "desktop/responsive_page_no_overflow",
+    "mobile/click_baseline_resources_api_recommendation_and_graph",
+    "mobile/baseline_return_to_main",
+    "mobile/graph_entities_relations_common_paths_and_raw_fact_proof",
+    "mobile/graph_complete_quality_json_link",
+    "mobile/single_explanation_actual_score_paths_and_two_sided_proof",
+    "mobile/main_knowledge_graph_score_contributions_and_provenance",
+    "mobile/main_raw_source_evidence_opens",
+    "mobile/responsive_page_no_overflow"
+  ],
+  "browser_errors": [],
+  "resource_or_api_errors": [],
+  "http_checks": {
+    "passed": 12,
+    "checks": [
+      "/baseline/trailing_slash_redirect",
+      "/graph/trailing_slash_redirect",
+      "/explain/trailing_slash_redirect",
+      "/missing/not_found",
+      "/graph/missing/not_found",
+      "/graph/../../.env/not_found",
+      "POST/read_only",
+      "PUT/read_only",
+      "PATCH/read_only",
+      "DELETE/read_only",
+      "main_and_single_same_ranking_and_paths_reconstruct_scores",
+      "graph_two_sided_original_fact_evidence"
+    ]
+  },
+  "python_syntax_files": 25,
+  "source_map_entries": 31,
+  "unchanged_original_source_asset_files": 24,
+  "score_calculation_modules_changed": false,
+  "paths_reconstruct_scores": true,
+  "knowledge_graph_fact_evidence_opened_in_browser": true,
+  "independent_code_review": {
+    "blocking_findings_after_fix": 0,
+    "fixed_findings": [
+      "quality JSON link relative path",
+      "obsolete scoring description"
+    ]
+  },
+  "database_write_statements_executed": false,
+  "git_commit_or_push_performed": false,
+  "manual_data_package_required_for_default": false,
+  "group_go_dashboard_integration": false
+}

@@ -1,0 +1,93 @@
+{
+  "date": "2026-10-14",
+  "base_main": "6f368b0fe6607a67cc396c727e34a7ada7f2bcee",
+  "default_source": "group_database_readonly_at_startup",
+  "database_access": true,
+  "database_write_statements_executed": false,
+  "database_extractions_completed": 3,
+  "verified_database_settings": {
+    "read_only": "on",
+    "isolation": "repeatable read"
+  },
+  "current_snapshot_games": 50925,
+  "current_candidates": 41279,
+  "current_entities": 114301,
+  "current_relations": 895023,
+  "same_data_and_graph_versions_as_original_frozen_inputs": true,
+  "snapshot_version": "recommendation-v1-c58f1d57439d2c28",
+  "graph_version": "kg-v1-f088d9b7c48edf0be3aa475f95ee744a62e70b5a4807861fe85541bdbbe84bc9",
+  "cold": {
+    "source": "group_database",
+    "database_access": true,
+    "refresh_policy": "read_once_at_startup_restart_to_refresh",
+    "started_at": "2026-10-14T13:48:08.137627+00:00",
+    "finished_at": "2026-10-14T13:49:06.740089+00:00",
+    "database_settings": {
+      "read_only": "on",
+      "isolation": "repeatable read"
+    },
+    "query_sha256": "1246abd9b5c111b649f02cb88c91a98d70b52c2e36befcc6499fba9333fd2c3c",
+    "snapshot_games": 50925,
+    "snapshot_version": "recommendation-v1-c58f1d57439d2c28",
+    "graph_version": "kg-v1-f088d9b7c48edf0be3aa475f95ee744a62e70b5a4807861fe85541bdbbe84bc9",
+    "preparation_seconds": 318.32,
+    "fallback_to_old_cache": false
+  },
+  "warm": {
+    "source": "group_database",
+    "database_access": true,
+    "refresh_policy": "read_once_at_startup_restart_to_refresh",
+    "started_at": "2026-10-14T13:59:11.256818+00:00",
+    "finished_at": "2026-10-14T14:00:09.356087+00:00",
+    "database_settings": {
+      "read_only": "on",
+      "isolation": "repeatable read"
+    },
+    "query_sha256": "1246abd9b5c111b649f02cb88c91a98d70b52c2e36befcc6499fba9333fd2c3c",
+    "snapshot_games": 50925,
+    "snapshot_version": "recommendation-v1-c58f1d57439d2c28",
+    "graph_version": "kg-v1-f088d9b7c48edf0be3aa475f95ee744a62e70b5a4807861fe85541bdbbe84bc9",
+    "preparation_seconds": 137.318,
+    "fallback_to_old_cache": false
+  },
+  "cold_database_extract_seconds": 58.602,
+  "timing_scope": "preparation_seconds includes extraction and graph publication/verification; additional service inspector/index initialization not included",
+  "warm_graph_files_predate_new_extract": true,
+  "source_read_timestamp_updated": true,
+  "real_http_checks": 12,
+  "matching_original_calculation_response_cases": 10,
+  "real_baseline_http_checks": 3,
+  "baseline_offline_comparison": "old port 8602 not running; no new byte-equality claim",
+  "real_cli_failure_checks": 6,
+  "no_secret_marker_in_failure_output": true,
+  "failed_startup_does_not_fallback_or_overwrite_old_audit": true,
+  "explicit_offline_check": {
+    "status": "ok",
+    "database_access": false,
+    "snapshot_games": 50925
+  },
+  "configuration_check": {
+    "special_password_characters_preserved": true,
+    "environment_overrides_file": true,
+    "pool": "NullPool",
+    "hide_parameters": true,
+    "database_connection_opened": false
+  },
+  "python_syntax_files": 24,
+  "source_map_entries_verified": 31,
+  "original_modules_and_assets_unchanged": 30,
+  "changed_original_asset": "query_view_assets/index.html footer data-source wording only",
+  "independent_code_review": {
+    "blocking_findings": 0,
+    "database_connected_by_reviewer": false
+  },
+  "historical_ai_evaluation_relabelled": false,
+  "formal_human_evaluation": false,
+  "manual_data_package_required_for_default": false,
+  "shared_files_changed": [],
+  "group_member_independent_fresh_machine_run": "pending",
+  "go_dashboard_integration": "not_implemented",
+  "git_commit_or_push_performed": false,
+  "evidence_scope": "historical_v3_database_loading_only",
+  "current_site_validation": "site-verification.json"
+}

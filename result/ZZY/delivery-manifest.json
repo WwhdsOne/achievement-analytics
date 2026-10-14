@@ -1,0 +1,393 @@
+{
+  "version": "ZZY-site-v5",
+  "base_main": "e32d34bbcd4d65cf57761cb92d301e7bc2f46074",
+  "scope": "only result/ZZY",
+  "file_count": 76,
+  "payload": [
+    {
+      "path": "result/ZZY/.gitattributes",
+      "bytes": 98,
+      "sha256": "cb2f7d0698f0ea6cb45d9ffea406d1b1985a423a706af1475956d7b6719e2049"
+    },
+    {
+      "path": "result/ZZY/.gitignore",
+      "bytes": 64,
+      "sha256": "53c1e82984eb8617a0e09c8b3a60406968650fb492245dbc7690a05cc9c43a59"
+    },
+    {
+      "path": "result/ZZY/.gitkeep",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "result/ZZY/README.md",
+      "bytes": 4289,
+      "sha256": "a1f6dd8c7f188c98fbc0cb31b263e208de69c51fa6be53e7a12fd7a442f9cbee"
+    },
+    {
+      "path": "result/ZZY/docs/API.md",
+      "bytes": 2807,
+      "sha256": "5272a344b6e2529a8d5371077e9d4ba20d8bad4e6b339b1c240212ec27659efb"
+    },
+    {
+      "path": "result/ZZY/docs/DATA.md",
+      "bytes": 2427,
+      "sha256": "cec4343a001c3304af68d78b59955bda5625ce775b5f8f50bd931fa05dee6e6e"
+    },
+    {
+      "path": "result/ZZY/docs/DATABASE-VERIFICATION.md",
+      "bytes": 3142,
+      "sha256": "bece7a04e70320ac5a4a6039214a871258b67c52b6073c2fdd938005b1955c97"
+    },
+    {
+      "path": "result/ZZY/docs/GITHUB.md",
+      "bytes": 1743,
+      "sha256": "dc354cf4c4823d53e4a767af32259788007373ee970913b15f507a80c3e911c1"
+    },
+    {
+      "path": "result/ZZY/docs/RUN.md",
+      "bytes": 3740,
+      "sha256": "e9a2423250c66e7d900a4cfdf5a4f897fd5f47da9d098a29237765d43f963f2d"
+    },
+    {
+      "path": "result/ZZY/docs/SEARCH-ALIASES.md",
+      "bytes": 4504,
+      "sha256": "b41127bb9a63392d2be35c88cda9368f9bbde4a97738ec358381f71b4b462d71"
+    },
+    {
+      "path": "result/ZZY/docs/SITE-VERIFICATION.md",
+      "bytes": 2541,
+      "sha256": "2d45dbd68b8961978140f5eac17b659703dbb442425867823b3678e3ea4f5934"
+    },
+    {
+      "path": "result/ZZY/docs/VERIFICATION.md",
+      "bytes": 2830,
+      "sha256": "ca6d4ec90ed3bd898b5c1880331bf87f0d1431988c8ab9614599c14a48254e43"
+    },
+    {
+      "path": "result/ZZY/docs/database-loading-plan.md",
+      "bytes": 2590,
+      "sha256": "71027aefb8e22bb62bd14a2fa953e7b25d93309776f5fac71d3e2610e5aea43c"
+    },
+    {
+      "path": "result/ZZY/docs/migration-plan.md",
+      "bytes": 2505,
+      "sha256": "bd09117be1372cc2e74a0a5d6ab5bab5b07ddd3d1aad998cbeb6b0a6d51f882b"
+    },
+    {
+      "path": "result/ZZY/docs/site-navigation-fix.md",
+      "bytes": 842,
+      "sha256": "e89030d6c6023b594080202a0297761f6e636aaa96099a4b520405c45bb92da5"
+    },
+    {
+      "path": "result/ZZY/experiments.md",
+      "bytes": 5043,
+      "sha256": "14c29321947c03925580b698ada7b59239a1a148954eb2db8cb1f211df2b6fb3"
+    },
+    {
+      "path": "result/ZZY/figures/ai-method-comparison.png",
+      "bytes": 79150,
+      "sha256": "4b6b308435d4f8ac5f7a57a2353127c850480737bf2e0e69a2f0dcbc54385b39"
+    },
+    {
+      "path": "result/ZZY/figures/ai-unknown-bounds.png",
+      "bytes": 61196,
+      "sha256": "a25a9a088fcf9122bbccba932b4f7d036c1528be18c29ba9557fc290c6dc5bef"
+    },
+    {
+      "path": "result/ZZY/figures/current-knowledge-graph.png",
+      "bytes": 88932,
+      "sha256": "16cb5a916e220405ef40171b4630db112bd104bda43d21910af4be7785e0b4d8"
+    },
+    {
+      "path": "result/ZZY/figures/current-path-explanation.png",
+      "bytes": 51433,
+      "sha256": "7caff0ec87173480edb0d7eb29f633baa2e35f2ddd1f88848511ecbf714de87c"
+    },
+    {
+      "path": "result/ZZY/figures/desktop-preview.png",
+      "bytes": 100345,
+      "sha256": "3ff611a9631c01c6d00be1e916fbabb293918c028c9735aca9f8d4aec1d08cb7"
+    },
+    {
+      "path": "result/ZZY/figures/knowledge-graph-example.png",
+      "bytes": 11915,
+      "sha256": "1cdb33a938c8579d6b36b0a5cbeee49ed2ae95488ea207ff519f3a282e09fca2"
+    },
+    {
+      "path": "result/ZZY/figures/mobile-preview.png",
+      "bytes": 58190,
+      "sha256": "de20e5577c3cbd1fc505bc8d83af492a320e5d400b786222709b41a33e42763b"
+    },
+    {
+      "path": "result/ZZY/modeling/__init__.py",
+      "bytes": 49,
+      "sha256": "4f0239c1bff6aa28dab5e1a70492c2429e67aec2db69292be7c17a6216261067"
+    },
+    {
+      "path": "result/ZZY/modeling/recommendation/__init__.py",
+      "bytes": 73,
+      "sha256": "0856ad67922da68611627817e1a47dda796365af75a82836a24ce7d2a6ee06da"
+    },
+    {
+      "path": "result/ZZY/modeling/recommendation/baseline.py",
+      "bytes": 3744,
+      "sha256": "651691f129118c28ce7bdd276bf4eaf163e5196e10aab7afca3d6cb702bcaa01"
+    },
+    {
+      "path": "result/ZZY/modeling/recommendation/effect_metrics.py",
+      "bytes": 7599,
+      "sha256": "b36ae063d95c2dae7a728e59be31eb314eb07de0580869ccdf6c64d1115cf06c"
+    },
+    {
+      "path": "result/ZZY/modeling/recommendation/evaluation.py",
+      "bytes": 13227,
+      "sha256": "0778978f7a36637f3fb497560892af8ccd57fad99d725ec3baff61d9089ec29e"
+    },
+    {
+      "path": "result/ZZY/modeling/recommendation/game_aliases.json",
+      "bytes": 4861,
+      "sha256": "b06317b78e46e77f9338b977afa20ecc3657e402c5964c5850c9b5492586206e"
+    },
+    {
+      "path": "result/ZZY/modeling/recommendation/game_aliases.py",
+      "bytes": 1398,
+      "sha256": "dc835d44afbc8074613e3a02506ae81f76280cb875eeffb7c1cc088e2c652fe1"
+    },
+    {
+      "path": "result/ZZY/modeling/recommendation/graph.py",
+      "bytes": 1686,
+      "sha256": "f9a25dd23a6c5da441bbb0237c9485aef19f3ff9f6ac4d8df6c06ebb8e1e3353"
+    },
+    {
+      "path": "result/ZZY/modeling/recommendation/graph_recommender.py",
+      "bytes": 12255,
+      "sha256": "9d3dddc97a8e14bbd07fed8f19beb5f8663581111fc9c70307503103df699da5"
+    },
+    {
+      "path": "result/ZZY/modeling/recommendation/kg_view_assets/app.js",
+      "bytes": 7200,
+      "sha256": "1d7da6392f3902879bc547b3abf1fa58569c1e50eb8a8da0335584610c168b73"
+    },
+    {
+      "path": "result/ZZY/modeling/recommendation/kg_view_assets/index.html",
+      "bytes": 4405,
+      "sha256": "40c80c724b16a4ef29939bfdf9ab34593bd450f6d3e515d0c8408a111928004e"
+    },
+    {
+      "path": "result/ZZY/modeling/recommendation/kg_view_assets/style.css",
+      "bytes": 3956,
+      "sha256": "f905eb652c8f2370a24f27e6d5ef309ba4d011f7e19a84b7e46e575a05043b6b"
+    },
+    {
+      "path": "result/ZZY/modeling/recommendation/knowledge_graph.py",
+      "bytes": 9548,
+      "sha256": "9923022748ca80ae440852e69a9d02085049eaa64d2e996b9d2a7c17892d1dc2"
+    },
+    {
+      "path": "result/ZZY/modeling/recommendation/knowledge_graph_inspector.py",
+      "bytes": 8150,
+      "sha256": "7424f8924ebd3b09e176320b911c14e11ce7dafbbca43d3fb2eec8a446be5f18"
+    },
+    {
+      "path": "result/ZZY/modeling/recommendation/knowledge_graph_store.py",
+      "bytes": 22417,
+      "sha256": "6fbbc31e6f1b9334392bdb48beb7af8abbc8e9bf4cdb484655af72bd1063bff5"
+    },
+    {
+      "path": "result/ZZY/modeling/recommendation/knowledge_graph_view.py",
+      "bytes": 4217,
+      "sha256": "5e2015bfb0a9048e76577a5e665b9574a52a75c129ff4edca62629f0ed9e07b5"
+    },
+    {
+      "path": "result/ZZY/modeling/recommendation/multi_game_recommender.py",
+      "bytes": 10615,
+      "sha256": "788b212b9e5edfcae5e627ba19e15fc25c134aa946b81c2fc1ce2702857a9b8a"
+    },
+    {
+      "path": "result/ZZY/modeling/recommendation/query_service.py",
+      "bytes": 12988,
+      "sha256": "7745e7dcafe2ffa7572fadbd7009ae2f2e16826da52b8047c0f03cc7ce297f35"
+    },
+    {
+      "path": "result/ZZY/modeling/recommendation/query_view.py",
+      "bytes": 8623,
+      "sha256": "45b06fd8751ef8c5be1725a68558f3418c37b27aed26b86110a3e3782ef4008a"
+    },
+    {
+      "path": "result/ZZY/modeling/recommendation/query_view_assets/app.js",
+      "bytes": 9049,
+      "sha256": "e0c3fd1317c0b2380981709abe45f9a7ae01115aee720e9066b0bd892545d9aa"
+    },
+    {
+      "path": "result/ZZY/modeling/recommendation/query_view_assets/index.html",
+      "bytes": 6335,
+      "sha256": "a794a5dfc6de552a7d3ec66c06056a93582df3f4ca21dbe1beeb61098a81d4be"
+    },
+    {
+      "path": "result/ZZY/modeling/recommendation/query_view_assets/renderer.js",
+      "bytes": 9710,
+      "sha256": "a06e251e9abb13107fe48c94bd3556896f2285f04640080364be2a6e1104add3"
+    },
+    {
+      "path": "result/ZZY/modeling/recommendation/query_view_assets/style.css",
+      "bytes": 5946,
+      "sha256": "36663f8b28b54252560bcb0c67d7abd5db68c18367a94d6ca27fc86c0537622c"
+    },
+    {
+      "path": "result/ZZY/modeling/recommendation/ranking.py",
+      "bytes": 3543,
+      "sha256": "f8099a04688fdd4118a77a311f233f4ac0d5b8e0209f23f3bb677772428e0482"
+    },
+    {
+      "path": "result/ZZY/modeling/recommendation/research_metrics.py",
+      "bytes": 6899,
+      "sha256": "34e377b08e5be1bec7404fa8977b751883a0e9a57289ac94067ada59bf539e2a"
+    },
+    {
+      "path": "result/ZZY/modeling/recommendation/scoring_view.py",
+      "bytes": 12360,
+      "sha256": "aade0a618c2ec3ece9631b67e102f4c493e6c7042d9219f2de294b396cb8fa89"
+    },
+    {
+      "path": "result/ZZY/modeling/recommendation/scoring_view_assets/app.js",
+      "bytes": 10276,
+      "sha256": "551ff186aa7eb0dde2e79c38e3b0f066918ee2abbbad78ce0314bfff12d7c5b5"
+    },
+    {
+      "path": "result/ZZY/modeling/recommendation/scoring_view_assets/index.html",
+      "bytes": 3855,
+      "sha256": "04d577a2f594e5632948904318a4af95c32dc72fd7fe64f76ac2aa243b4e2485"
+    },
+    {
+      "path": "result/ZZY/modeling/recommendation/scoring_view_assets/style.css",
+      "bytes": 4500,
+      "sha256": "050d61c4172ae4ee4980b45ef5d4c4e559c5fda8d5d3ee3812667dfa3600bee2"
+    },
+    {
+      "path": "result/ZZY/modeling/recommendation/snapshot.py",
+      "bytes": 8708,
+      "sha256": "554d27132f7b725bc3d25939a9f12dfadc1800c88c8ae1efa7e9ddecd3b31118"
+    },
+    {
+      "path": "result/ZZY/modeling/recommendation/web.py",
+      "bytes": 7965,
+      "sha256": "c1e985dff05205e56b2041cba9bd3b37a8eed6c2393660376fc7d220fa467cbc"
+    },
+    {
+      "path": "result/ZZY/modeling/recommendation/web_assets/app.js",
+      "bytes": 14531,
+      "sha256": "7ae532a5640d0495eae6851dc5cfa475bcac0efc9968585e2b4919c180ab5fd9"
+    },
+    {
+      "path": "result/ZZY/modeling/recommendation/web_assets/index.html",
+      "bytes": 4818,
+      "sha256": "41ff2fa8886e48b27b59a367dab537f1ca41e5df0014923c8420dd1e8affaf8b"
+    },
+    {
+      "path": "result/ZZY/modeling/recommendation/web_assets/style.css",
+      "bytes": 9278,
+      "sha256": "4e5f8b1fcd3aaebdaba3938c9bbc5e12f0b02ff4d56879e9677301c92eb96824"
+    },
+    {
+      "path": "result/ZZY/process/__init__.py",
+      "bytes": 49,
+      "sha256": "dbd2271d8e3eebf0a3495584c69a0c34dbb3acb4a95dd1c9237b6fb7db991a20"
+    },
+    {
+      "path": "result/ZZY/process/ai_evaluation.py",
+      "bytes": 5811,
+      "sha256": "1f6cd831b199acd75e8c697709ee401ea2a26e0895368d42c1cd7f09bbba8df8"
+    },
+    {
+      "path": "result/ZZY/process/database_input.py",
+      "bytes": 5069,
+      "sha256": "b7c5b2eb976286244d58aad634b9827dae657e5b65e47c992e64898aa5f1d8dd"
+    },
+    {
+      "path": "result/ZZY/process/plot_results.py",
+      "bytes": 2972,
+      "sha256": "299dff041c4f433fef590d58da549082ca1e80275ece3679dae74650b7f75e82"
+    },
+    {
+      "path": "result/ZZY/process/site_service.py",
+      "bytes": 4293,
+      "sha256": "58de59f98622ca6cf7fe61dc7cf3629c6e0a2ce2cc91eee6d3392e9504aa04d6"
+    },
+    {
+      "path": "result/ZZY/report.md",
+      "bytes": 5620,
+      "sha256": "f040adbfbe4474ae9adab21792eb1e04d895d0984eaf797efc133b1d6ac76b25"
+    },
+    {
+      "path": "result/ZZY/reports/ai-original.json",
+      "bytes": 107685,
+      "sha256": "7e6648f6557390e55cbc2b16e293da6d868b3f9093edc613d030c9252860a614"
+    },
+    {
+      "path": "result/ZZY/reports/ai-sensitivity.json",
+      "bytes": 106659,
+      "sha256": "62f824109d9ef80fd2111896dc3b0a80a003311817f4eb8acc038244c4d1861e"
+    },
+    {
+      "path": "result/ZZY/reports/database-verification.json",
+      "bytes": 3798,
+      "sha256": "780e8a5bb8eb354895ab0afbab1d624afc1e9bea6780d1e4b4af2c56a664f72b"
+    },
+    {
+      "path": "result/ZZY/reports/input-provenance.json",
+      "bytes": 1085,
+      "sha256": "bf3ac1d1bdef150c3a6468657bf75ecc3ad4eb3fa516ffe36c55a0e5aa10ef70"
+    },
+    {
+      "path": "result/ZZY/reports/search-alias-verification.json",
+      "bytes": 4745,
+      "sha256": "70a54429e3ffa86589c887af74e6d65bd1c8c1494adfb6b1e45e9db22e1b52e8"
+    },
+    {
+      "path": "result/ZZY/reports/site-verification.json",
+      "bytes": 3638,
+      "sha256": "f0cb6271f1afa4b891cf1f27980259ea7aaf6cee4959900b5a4a12dde1ffda74"
+    },
+    {
+      "path": "result/ZZY/reports/source-map.json",
+      "bytes": 10238,
+      "sha256": "3045686147f8a4e5ec14c67822fb39fb91e26eba46d2f5fd49e66ca849c20a9c"
+    },
+    {
+      "path": "result/ZZY/reports/verification.json",
+      "bytes": 1621,
+      "sha256": "b6f53eac69cb12807814bf68f409cfa6203eff3d895584f742f028b15095f53b"
+    },
+    {
+      "path": "result/ZZY/run.py",
+      "bytes": 7336,
+      "sha256": "e47fbb733d80ba15231e528f23a11d593c8e59c2ddb926e0e4c90400f6f3bee7"
+    },
+    {
+      "path": "result/ZZY/tests/check_search_aliases.py",
+      "bytes": 7641,
+      "sha256": "7ec93e7747f25297be2c51c43c7568ff2531d64146123080f2708e5b41728332"
+    },
+    {
+      "path": "result/ZZY/tests/test_search_aliases.py",
+      "bytes": 5063,
+      "sha256": "afc80d6403ab2c998d688c754bf7d9a60e15833fb078c69b3d62529a6cfc4334"
+    }
+  ],
+  "control_files": [
+    "result/ZZY/delivery-manifest.json",
+    "result/ZZY/submit-files.txt"
+  ],
+  "default_source": "database_readonly",
+  "manual_data_package_required_for_default": false,
+  "data_and_runtime_included": false,
+  "common_secret_patterns_flagged": [],
+  "group_member_independent_run": false,
+  "formal_human_evaluation": false,
+  "shared_files_changed": false,
+  "source_files_verified": 33,
+  "search_alias_games": 44,
+  "search_alias_terms": 114,
+  "search_ui": "integrated_original_search_no_separate_alias_labels"
+}

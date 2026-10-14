@@ -1,0 +1,4431 @@
+{
+  "total_queries": 24,
+  "complete_queries": 14,
+  "complete_fraction": 0.5833333333333334,
+  "methods": {
+    "tag_jaccard": {
+      "P@5": 0.5571428571428572,
+      "strict_P@5": 0.38571428571428573,
+      "pool_nDCG@5": 0.6042684904718142,
+      "returned_slots": 120,
+      "available_slots": 120,
+      "return_rate": 1.0,
+      "empty_slot_rate": 0.0,
+      "all_query_P@5_bounds": [
+        0.5166666666666667,
+        0.6166666666666667
+      ],
+      "all_query_strict_P@5_bounds": [
+        0.3166666666666667,
+        0.4166666666666667
+      ]
+    },
+    "graph_full": {
+      "P@5": 0.6,
+      "strict_P@5": 0.41428571428571426,
+      "pool_nDCG@5": 0.6784472922844742,
+      "returned_slots": 120,
+      "available_slots": 120,
+      "return_rate": 1.0,
+      "empty_slot_rate": 0.0,
+      "all_query_P@5_bounds": [
+        0.5583333333333333,
+        0.6749999999999999
+      ],
+      "all_query_strict_P@5_bounds": [
+        0.35000000000000003,
+        0.46666666666666673
+      ]
+    },
+    "graph_no_developer": {
+      "P@5": 0.6,
+      "strict_P@5": 0.4,
+      "pool_nDCG@5": 0.6721994314505532,
+      "returned_slots": 120,
+      "available_slots": 120,
+      "return_rate": 1.0,
+      "empty_slot_rate": 0.0,
+      "all_query_P@5_bounds": [
+        0.5583333333333333,
+        0.6749999999999999
+      ],
+      "all_query_strict_P@5_bounds": [
+        0.3333333333333333,
+        0.45
+      ]
+    },
+    "graph_no_genre": {
+      "P@5": 0.6,
+      "strict_P@5": 0.42857142857142855,
+      "pool_nDCG@5": 0.7102543309436997,
+      "returned_slots": 120,
+      "available_slots": 120,
+      "return_rate": 1.0,
+      "empty_slot_rate": 0.0,
+      "all_query_P@5_bounds": [
+        0.525,
+        0.65
+      ],
+      "all_query_strict_P@5_bounds": [
+        0.35000000000000003,
+        0.47500000000000003
+      ]
+    }
+  },
+  "comparisons": {
+    "graph_full-tag_jaccard": {
+      "P@5": {
+        "queries": 14,
+        "mean_difference": 0.042857142857142864,
+        "query_bootstrap_descriptive_interval95": [
+          0.0,
+          0.08571428571428573
+        ],
+        "degenerate_n1": false
+      },
+      "strict_P@5": {
+        "queries": 14,
+        "mean_difference": 0.02857142857142857,
+        "query_bootstrap_descriptive_interval95": [
+          0.0,
+          0.07142857142857142
+        ],
+        "degenerate_n1": false
+      },
+      "pool_nDCG@5": {
+        "queries": 14,
+        "mean_difference": 0.07417880181266001,
+        "query_bootstrap_descriptive_interval95": [
+          0.003571725756074578,
+          0.18112799486524103
+        ],
+        "degenerate_n1": false
+      },
+      "per_query_differences": [
+        {
+          "query_id": "F06",
+          "P@5": 0.0,
+          "strict_P@5": 0.0,
+          "pool_nDCG@5": 0.0
+        },
+        {
+          "query_id": "F07",
+          "P@5": 0.2,
+          "strict_P@5": 0.2,
+          "pool_nDCG@5": 0.6309297535714574
+        },
+        {
+          "query_id": "F08",
+          "P@5": 0.20000000000000007,
+          "strict_P@5": 0.0,
+          "pool_nDCG@5": 0.006031136973253193
+        },
+        {
+          "query_id": "F09",
+          "P@5": 0.0,
+          "strict_P@5": 0.19999999999999996,
+          "pool_nDCG@5": 0.08747005167489452
+        },
+        {
+          "query_id": "F11",
+          "P@5": 0.2,
+          "strict_P@5": 0.0,
+          "pool_nDCG@5": 0.26406812257259094
+        },
+        {
+          "query_id": "F12",
+          "P@5": 0.0,
+          "strict_P@5": 0.0,
+          "pool_nDCG@5": -0.045278609927880686
+        },
+        {
+          "query_id": "F13",
+          "P@5": 0.0,
+          "strict_P@5": 0.0,
+          "pool_nDCG@5": 0.0
+        },
+        {
+          "query_id": "F14",
+          "P@5": 0.0,
+          "strict_P@5": 0.0,
+          "pool_nDCG@5": 0.0
+        },
+        {
+          "query_id": "F16",
+          "P@5": 0.0,
+          "strict_P@5": 0.0,
+          "pool_nDCG@5": 0.0
+        },
+        {
+          "query_id": "F17",
+          "P@5": 0.0,
+          "strict_P@5": 0.0,
+          "pool_nDCG@5": 0.09528277051292477
+        },
+        {
+          "query_id": "F18",
+          "P@5": 0.0,
+          "strict_P@5": 0.0,
+          "pool_nDCG@5": 0.0
+        },
+        {
+          "query_id": "F19",
+          "P@5": 0.0,
+          "strict_P@5": 0.0,
+          "pool_nDCG@5": 0.0
+        },
+        {
+          "query_id": "F21",
+          "P@5": 0.0,
+          "strict_P@5": 0.0,
+          "pool_nDCG@5": 0.0
+        },
+        {
+          "query_id": "F24",
+          "P@5": 0.0,
+          "strict_P@5": 0.0,
+          "pool_nDCG@5": 0.0
+        }
+      ]
+    },
+    "graph_full-graph_no_developer": {
+      "P@5": {
+        "queries": 14,
+        "mean_difference": 0.0,
+        "query_bootstrap_descriptive_interval95": [
+          0.0,
+          0.0
+        ],
+        "degenerate_n1": false
+      },
+      "strict_P@5": {
+        "queries": 14,
+        "mean_difference": 0.014285714285714282,
+        "query_bootstrap_descriptive_interval95": [
+          0.0,
+          0.04285714285714285
+        ],
+        "degenerate_n1": false
+      },
+      "pool_nDCG@5": {
+        "queries": 14,
+        "mean_difference": 0.006247860833921037,
+        "query_bootstrap_descriptive_interval95": [
+          0.0,
+          0.018743582501763112
+        ],
+        "degenerate_n1": false
+      },
+      "per_query_differences": [
+        {
+          "query_id": "F06",
+          "P@5": 0.0,
+          "strict_P@5": 0.0,
+          "pool_nDCG@5": 0.0
+        },
+        {
+          "query_id": "F07",
+          "P@5": 0.0,
+          "strict_P@5": 0.0,
+          "pool_nDCG@5": 0.0
+        },
+        {
+          "query_id": "F08",
+          "P@5": 0.0,
+          "strict_P@5": 0.0,
+          "pool_nDCG@5": 0.0
+        },
+        {
+          "query_id": "F09",
+          "P@5": 0.0,
+          "strict_P@5": 0.19999999999999996,
+          "pool_nDCG@5": 0.08747005167489452
+        },
+        {
+          "query_id": "F11",
+          "P@5": 0.0,
+          "strict_P@5": 0.0,
+          "pool_nDCG@5": 0.0
+        },
+        {
+          "query_id": "F12",
+          "P@5": 0.0,
+          "strict_P@5": 0.0,
+          "pool_nDCG@5": 0.0
+        },
+        {
+          "query_id": "F13",
+          "P@5": 0.0,
+          "strict_P@5": 0.0,
+          "pool_nDCG@5": 0.0
+        },
+        {
+          "query_id": "F14",
+          "P@5": 0.0,
+          "strict_P@5": 0.0,
+          "pool_nDCG@5": 0.0
+        },
+        {
+          "query_id": "F16",
+          "P@5": 0.0,
+          "strict_P@5": 0.0,
+          "pool_nDCG@5": 0.0
+        },
+        {
+          "query_id": "F17",
+          "P@5": 0.0,
+          "strict_P@5": 0.0,
+          "pool_nDCG@5": 0.0
+        },
+        {
+          "query_id": "F18",
+          "P@5": 0.0,
+          "strict_P@5": 0.0,
+          "pool_nDCG@5": 0.0
+        },
+        {
+          "query_id": "F19",
+          "P@5": 0.0,
+          "strict_P@5": 0.0,
+          "pool_nDCG@5": 0.0
+        },
+        {
+          "query_id": "F21",
+          "P@5": 0.0,
+          "strict_P@5": 0.0,
+          "pool_nDCG@5": 0.0
+        },
+        {
+          "query_id": "F24",
+          "P@5": 0.0,
+          "strict_P@5": 0.0,
+          "pool_nDCG@5": 0.0
+        }
+      ]
+    },
+    "graph_full-graph_no_genre": {
+      "P@5": {
+        "queries": 14,
+        "mean_difference": 0.0,
+        "query_bootstrap_descriptive_interval95": [
+          -0.042857142857142864,
+          0.042857142857142864
+        ],
+        "degenerate_n1": false
+      },
+      "strict_P@5": {
+        "queries": 14,
+        "mean_difference": -0.014285714285714282,
+        "query_bootstrap_descriptive_interval95": [
+          -0.04285714285714285,
+          0.0
+        ],
+        "degenerate_n1": false
+      },
+      "pool_nDCG@5": {
+        "queries": 14,
+        "mean_difference": -0.03180703865922556,
+        "query_bootstrap_descriptive_interval95": [
+          -0.14486666396034503,
+          0.05443500292958143
+        ],
+        "degenerate_n1": false
+      },
+      "per_query_differences": [
+        {
+          "query_id": "F06",
+          "P@5": 0.0,
+          "strict_P@5": 0.0,
+          "pool_nDCG@5": 0.0
+        },
+        {
+          "query_id": "F07",
+          "P@5": 0.0,
+          "strict_P@5": 0.0,
+          "pool_nDCG@5": 0.2002531954980643
+        },
+        {
+          "query_id": "F08",
+          "P@5": 0.0,
+          "strict_P@5": 0.0,
+          "pool_nDCG@5": -0.12517394053908848
+        },
+        {
+          "query_id": "F09",
+          "P@5": 0.0,
+          "strict_P@5": 0.0,
+          "pool_nDCG@5": 0.0
+        },
+        {
+          "query_id": "F11",
+          "P@5": 0.2,
+          "strict_P@5": 0.0,
+          "pool_nDCG@5": 0.26406812257259094
+        },
+        {
+          "query_id": "F12",
+          "P@5": 0.0,
+          "strict_P@5": -0.19999999999999996,
+          "pool_nDCG@5": -0.14265750982301828
+        },
+        {
+          "query_id": "F13",
+          "P@5": 0.0,
+          "strict_P@5": 0.0,
+          "pool_nDCG@5": 0.0
+        },
+        {
+          "query_id": "F14",
+          "P@5": 0.0,
+          "strict_P@5": 0.0,
+          "pool_nDCG@5": 0.0
+        },
+        {
+          "query_id": "F16",
+          "P@5": -0.2,
+          "strict_P@5": 0.0,
+          "pool_nDCG@5": -0.6309297535714575
+        },
+        {
+          "query_id": "F17",
+          "P@5": 0.0,
+          "strict_P@5": 0.0,
+          "pool_nDCG@5": 0.0
+        },
+        {
+          "query_id": "F18",
+          "P@5": 0.0,
+          "strict_P@5": 0.0,
+          "pool_nDCG@5": 0.0
+        },
+        {
+          "query_id": "F19",
+          "P@5": 0.0,
+          "strict_P@5": 0.0,
+          "pool_nDCG@5": -0.010858655366248748
+        },
+        {
+          "query_id": "F21",
+          "P@5": 0.0,
+          "strict_P@5": 0.0,
+          "pool_nDCG@5": 0.0
+        },
+        {
+          "query_id": "F24",
+          "P@5": 0.0,
+          "strict_P@5": 0.0,
+          "pool_nDCG@5": 0.0
+        }
+      ]
+    }
+  },
+  "schema_version": "ai-exploratory-metrics-v1",
+  "complete_query_ids": [
+    "F06",
+    "F07",
+    "F08",
+    "F09",
+    "F11",
+    "F12",
+    "F13",
+    "F14",
+    "F16",
+    "F17",
+    "F18",
+    "F19",
+    "F21",
+    "F24"
+  ],
+  "per_query": [
+    {
+      "query_id": "F01",
+      "stratum": "Action/sparse_1_5",
+      "complete": false,
+      "unique_pairs": 9,
+      "unknown_pairs": 2,
+      "idcg": null,
+      "methods": {
+        "tag_jaccard": {
+          "returned_slots": 5,
+          "empty_slots": 0,
+          "P@5": null,
+          "strict_P@5": null,
+          "pool_nDCG@5": null,
+          "P@5_bounds": [
+            0.8,
+            1.0
+          ],
+          "strict_P@5_bounds": [
+            0.8,
+            1.0
+          ]
+        },
+        "graph_full": {
+          "returned_slots": 5,
+          "empty_slots": 0,
+          "P@5": null,
+          "strict_P@5": null,
+          "pool_nDCG@5": null,
+          "P@5_bounds": [
+            0.8,
+            1.0
+          ],
+          "strict_P@5_bounds": [
+            0.6,
+            0.8
+          ]
+        },
+        "graph_no_developer": {
+          "returned_slots": 5,
+          "empty_slots": 0,
+          "P@5": null,
+          "strict_P@5": null,
+          "pool_nDCG@5": null,
+          "P@5_bounds": [
+            0.8,
+            1.0
+          ],
+          "strict_P@5_bounds": [
+            0.6,
+            0.8
+          ]
+        },
+        "graph_no_genre": {
+          "returned_slots": 5,
+          "empty_slots": 0,
+          "P@5": null,
+          "strict_P@5": null,
+          "pool_nDCG@5": null,
+          "P@5_bounds": [
+            0.6,
+            1.0
+          ],
+          "strict_P@5_bounds": [
+            0.6,
+            1.0
+          ]
+        }
+      }
+    },
+    {
+      "query_id": "F02",
+      "stratum": "Action/sparse_1_5",
+      "complete": false,
+      "unique_pairs": 6,
+      "unknown_pairs": 1,
+      "idcg": null,
+      "methods": {
+        "tag_jaccard": {
+          "returned_slots": 5,
+          "empty_slots": 0,
+          "P@5": null,
+          "strict_P@5": null,
+          "pool_nDCG@5": null,
+          "P@5_bounds": [
+            0.0,
+            0.2
+          ],
+          "strict_P@5_bounds": [
+            0.0,
+            0.2
+          ]
+        },
+        "graph_full": {
+          "returned_slots": 5,
+          "empty_slots": 0,
+          "P@5": null,
+          "strict_P@5": null,
+          "pool_nDCG@5": null,
+          "P@5_bounds": [
+            0.0,
+            0.2
+          ],
+          "strict_P@5_bounds": [
+            0.0,
+            0.2
+          ]
+        },
+        "graph_no_developer": {
+          "returned_slots": 5,
+          "empty_slots": 0,
+          "P@5": null,
+          "strict_P@5": null,
+          "pool_nDCG@5": null,
+          "P@5_bounds": [
+            0.0,
+            0.2
+          ],
+          "strict_P@5_bounds": [
+            0.0,
+            0.2
+          ]
+        },
+        "graph_no_genre": {
+          "returned_slots": 5,
+          "empty_slots": 0,
+          "P@5": null,
+          "strict_P@5": null,
+          "pool_nDCG@5": null,
+          "P@5_bounds": [
+            0.0,
+            0.2
+          ],
+          "strict_P@5_bounds": [
+            0.0,
+            0.2
+          ]
+        }
+      }
+    },
+    {
+      "query_id": "F03",
+      "stratum": "Action/dense_20_plus",
+      "complete": false,
+      "unique_pairs": 8,
+      "unknown_pairs": 1,
+      "idcg": null,
+      "methods": {
+        "tag_jaccard": {
+          "returned_slots": 5,
+          "empty_slots": 0,
+          "P@5": null,
+          "strict_P@5": null,
+          "pool_nDCG@5": null,
+          "P@5_bounds": [
+            0.8,
+            1.0
+          ],
+          "strict_P@5_bounds": [
+            0.4,
+            0.6000000000000001
+          ]
+        },
+        "graph_full": {
+          "returned_slots": 5,
+          "empty_slots": 0,
+          "P@5": null,
+          "strict_P@5": null,
+          "pool_nDCG@5": null,
+          "P@5_bounds": [
+            1.0,
+            1.0
+          ],
+          "strict_P@5_bounds": [
+            0.8,
+            0.8
+          ]
+        },
+        "graph_no_developer": {
+          "returned_slots": 5,
+          "empty_slots": 0,
+          "P@5": null,
+          "strict_P@5": null,
+          "pool_nDCG@5": null,
+          "P@5_bounds": [
+            1.0,
+            1.0
+          ],
+          "strict_P@5_bounds": [
+            0.6,
+            0.6
+          ]
+        },
+        "graph_no_genre": {
+          "returned_slots": 5,
+          "empty_slots": 0,
+          "P@5": null,
+          "strict_P@5": null,
+          "pool_nDCG@5": null,
+          "P@5_bounds": [
+            0.8,
+            1.0
+          ],
+          "strict_P@5_bounds": [
+            0.6,
+            0.8
+          ]
+        }
+      }
+    },
+    {
+      "query_id": "F04",
+      "stratum": "Action/dense_20_plus",
+      "complete": false,
+      "unique_pairs": 8,
+      "unknown_pairs": 3,
+      "idcg": null,
+      "methods": {
+        "tag_jaccard": {
+          "returned_slots": 5,
+          "empty_slots": 0,
+          "P@5": null,
+          "strict_P@5": null,
+          "pool_nDCG@5": null,
+          "P@5_bounds": [
+            0.0,
+            0.2
+          ],
+          "strict_P@5_bounds": [
+            0.0,
+            0.2
+          ]
+        },
+        "graph_full": {
+          "returned_slots": 5,
+          "empty_slots": 0,
+          "P@5": null,
+          "strict_P@5": null,
+          "pool_nDCG@5": null,
+          "P@5_bounds": [
+            0.0,
+            0.4
+          ],
+          "strict_P@5_bounds": [
+            0.0,
+            0.4
+          ]
+        },
+        "graph_no_developer": {
+          "returned_slots": 5,
+          "empty_slots": 0,
+          "P@5": null,
+          "strict_P@5": null,
+          "pool_nDCG@5": null,
+          "P@5_bounds": [
+            0.0,
+            0.4
+          ],
+          "strict_P@5_bounds": [
+            0.0,
+            0.4
+          ]
+        },
+        "graph_no_genre": {
+          "returned_slots": 5,
+          "empty_slots": 0,
+          "P@5": null,
+          "strict_P@5": null,
+          "pool_nDCG@5": null,
+          "P@5_bounds": [
+            0.0,
+            0.4
+          ],
+          "strict_P@5_bounds": [
+            0.0,
+            0.4
+          ]
+        }
+      }
+    },
+    {
+      "query_id": "F05",
+      "stratum": "Adventure/sparse_1_5",
+      "complete": false,
+      "unique_pairs": 8,
+      "unknown_pairs": 2,
+      "idcg": null,
+      "methods": {
+        "tag_jaccard": {
+          "returned_slots": 5,
+          "empty_slots": 0,
+          "P@5": null,
+          "strict_P@5": null,
+          "pool_nDCG@5": null,
+          "P@5_bounds": [
+            0.4,
+            0.6000000000000001
+          ],
+          "strict_P@5_bounds": [
+            0.0,
+            0.2
+          ]
+        },
+        "graph_full": {
+          "returned_slots": 5,
+          "empty_slots": 0,
+          "P@5": null,
+          "strict_P@5": null,
+          "pool_nDCG@5": null,
+          "P@5_bounds": [
+            0.6,
+            0.8
+          ],
+          "strict_P@5_bounds": [
+            0.0,
+            0.2
+          ]
+        },
+        "graph_no_developer": {
+          "returned_slots": 5,
+          "empty_slots": 0,
+          "P@5": null,
+          "strict_P@5": null,
+          "pool_nDCG@5": null,
+          "P@5_bounds": [
+            0.6,
+            0.8
+          ],
+          "strict_P@5_bounds": [
+            0.0,
+            0.2
+          ]
+        },
+        "graph_no_genre": {
+          "returned_slots": 5,
+          "empty_slots": 0,
+          "P@5": null,
+          "strict_P@5": null,
+          "pool_nDCG@5": null,
+          "P@5_bounds": [
+            0.2,
+            0.6000000000000001
+          ],
+          "strict_P@5_bounds": [
+            0.0,
+            0.4
+          ]
+        }
+      }
+    },
+    {
+      "query_id": "F06",
+      "stratum": "Adventure/sparse_1_5",
+      "complete": true,
+      "unique_pairs": 6,
+      "unknown_pairs": 0,
+      "idcg": 1.6309297535714575,
+      "methods": {
+        "tag_jaccard": {
+          "returned_slots": 5,
+          "empty_slots": 0,
+          "P@5": 0.4,
+          "strict_P@5": 0.0,
+          "pool_nDCG@5": 0.6509209298071326,
+          "P@5_bounds": [
+            0.4,
+            0.4
+          ],
+          "strict_P@5_bounds": [
+            0.0,
+            0.0
+          ]
+        },
+        "graph_full": {
+          "returned_slots": 5,
+          "empty_slots": 0,
+          "P@5": 0.4,
+          "strict_P@5": 0.0,
+          "pool_nDCG@5": 0.6509209298071326,
+          "P@5_bounds": [
+            0.4,
+            0.4
+          ],
+          "strict_P@5_bounds": [
+            0.0,
+            0.0
+          ]
+        },
+        "graph_no_developer": {
+          "returned_slots": 5,
+          "empty_slots": 0,
+          "P@5": 0.4,
+          "strict_P@5": 0.0,
+          "pool_nDCG@5": 0.6509209298071326,
+          "P@5_bounds": [
+            0.4,
+            0.4
+          ],
+          "strict_P@5_bounds": [
+            0.0,
+            0.0
+          ]
+        },
+        "graph_no_genre": {
+          "returned_slots": 5,
+          "empty_slots": 0,
+          "P@5": 0.4,
+          "strict_P@5": 0.0,
+          "pool_nDCG@5": 0.6509209298071326,
+          "P@5_bounds": [
+            0.4,
+            0.4
+          ],
+          "strict_P@5_bounds": [
+            0.0,
+            0.0
+          ]
+        }
+      }
+    },
+    {
+      "query_id": "F07",
+      "stratum": "Adventure/dense_20_plus",
+      "complete": true,
+      "unique_pairs": 9,
+      "unknown_pairs": 0,
+      "idcg": 3.0,
+      "methods": {
+        "tag_jaccard": {
+          "returned_slots": 5,
+          "empty_slots": 0,
+          "P@5": 0.0,
+          "strict_P@5": 0.0,
+          "pool_nDCG@5": 0.0,
+          "P@5_bounds": [
+            0.0,
+            0.0
+          ],
+          "strict_P@5_bounds": [
+            0.0,
+            0.0
+          ]
+        },
+        "graph_full": {
+          "returned_slots": 5,
+          "empty_slots": 0,
+          "P@5": 0.2,
+          "strict_P@5": 0.2,
+          "pool_nDCG@5": 0.6309297535714574,
+          "P@5_bounds": [
+            0.2,
+            0.2
+          ],
+          "strict_P@5_bounds": [
+            0.2,
+            0.2
+          ]
+        },
+        "graph_no_developer": {
+          "returned_slots": 5,
+          "empty_slots": 0,
+          "P@5": 0.2,
+          "strict_P@5": 0.2,
+          "pool_nDCG@5": 0.6309297535714574,
+          "P@5_bounds": [
+            0.2,
+            0.2
+          ],
+          "strict_P@5_bounds": [
+            0.2,
+            0.2
+          ]
+        },
+        "graph_no_genre": {
+          "returned_slots": 5,
+          "empty_slots": 0,
+          "P@5": 0.2,
+          "strict_P@5": 0.2,
+          "pool_nDCG@5": 0.4306765580733931,
+          "P@5_bounds": [
+            0.2,
+            0.2
+          ],
+          "strict_P@5_bounds": [
+            0.2,
+            0.2
+          ]
+        }
+      }
+    },
+    {
+      "query_id": "F08",
+      "stratum": "Adventure/dense_20_plus",
+      "complete": true,
+      "unique_pairs": 8,
+      "unknown_pairs": 0,
+      "idcg": 2.9484591188793923,
+      "methods": {
+        "tag_jaccard": {
+          "returned_slots": 5,
+          "empty_slots": 0,
+          "P@5": 0.6,
+          "strict_P@5": 0.0,
+          "pool_nDCG@5": 0.6548086577531307,
+          "P@5_bounds": [
+            0.6,
+            0.6
+          ],
+          "strict_P@5_bounds": [
+            0.0,
+            0.0
+          ]
+        },
+        "graph_full": {
+          "returned_slots": 5,
+          "empty_slots": 0,
+          "P@5": 0.8,
+          "strict_P@5": 0.0,
+          "pool_nDCG@5": 0.6608397947263839,
+          "P@5_bounds": [
+            0.8,
+            0.8
+          ],
+          "strict_P@5_bounds": [
+            0.0,
+            0.0
+          ]
+        },
+        "graph_no_developer": {
+          "returned_slots": 5,
+          "empty_slots": 0,
+          "P@5": 0.8,
+          "strict_P@5": 0.0,
+          "pool_nDCG@5": 0.6608397947263839,
+          "P@5_bounds": [
+            0.8,
+            0.8
+          ],
+          "strict_P@5_bounds": [
+            0.0,
+            0.0
+          ]
+        },
+        "graph_no_genre": {
+          "returned_slots": 5,
+          "empty_slots": 0,
+          "P@5": 0.8,
+          "strict_P@5": 0.0,
+          "pool_nDCG@5": 0.7860137352654724,
+          "P@5_bounds": [
+            0.8,
+            0.8
+          ],
+          "strict_P@5_bounds": [
+            0.0,
+            0.0
+          ]
+        }
+      }
+    },
+    {
+      "query_id": "F09",
+      "stratum": "RPG/sparse_1_5",
+      "complete": true,
+      "unique_pairs": 7,
+      "unknown_pairs": 0,
+      "idcg": 8.845377356638176,
+      "methods": {
+        "tag_jaccard": {
+          "returned_slots": 5,
+          "empty_slots": 0,
+          "P@5": 1.0,
+          "strict_P@5": 0.8,
+          "pool_nDCG@5": 0.9125299483251055,
+          "P@5_bounds": [
+            1.0,
+            1.0
+          ],
+          "strict_P@5_bounds": [
+            0.8,
+            0.8
+          ]
+        },
+        "graph_full": {
+          "returned_slots": 5,
+          "empty_slots": 0,
+          "P@5": 1.0,
+          "strict_P@5": 1.0,
+          "pool_nDCG@5": 1.0,
+          "P@5_bounds": [
+            1.0,
+            1.0
+          ],
+          "strict_P@5_bounds": [
+            1.0,
+            1.0
+          ]
+        },
+        "graph_no_developer": {
+          "returned_slots": 5,
+          "empty_slots": 0,
+          "P@5": 1.0,
+          "strict_P@5": 0.8,
+          "pool_nDCG@5": 0.9125299483251055,
+          "P@5_bounds": [
+            1.0,
+            1.0
+          ],
+          "strict_P@5_bounds": [
+            0.8,
+            0.8
+          ]
+        },
+        "graph_no_genre": {
+          "returned_slots": 5,
+          "empty_slots": 0,
+          "P@5": 1.0,
+          "strict_P@5": 1.0,
+          "pool_nDCG@5": 1.0,
+          "P@5_bounds": [
+            1.0,
+            1.0
+          ],
+          "strict_P@5_bounds": [
+            1.0,
+            1.0
+          ]
+        }
+      }
+    },
+    {
+      "query_id": "F10",
+      "stratum": "RPG/sparse_1_5",
+      "complete": false,
+      "unique_pairs": 6,
+      "unknown_pairs": 1,
+      "idcg": null,
+      "methods": {
+        "tag_jaccard": {
+          "returned_slots": 5,
+          "empty_slots": 0,
+          "P@5": null,
+          "strict_P@5": null,
+          "pool_nDCG@5": null,
+          "P@5_bounds": [
+            0.4,
+            0.6000000000000001
+          ],
+          "strict_P@5_bounds": [
+            0.0,
+            0.2
+          ]
+        },
+        "graph_full": {
+          "returned_slots": 5,
+          "empty_slots": 0,
+          "P@5": null,
+          "strict_P@5": null,
+          "pool_nDCG@5": null,
+          "P@5_bounds": [
+            0.4,
+            0.6000000000000001
+          ],
+          "strict_P@5_bounds": [
+            0.0,
+            0.2
+          ]
+        },
+        "graph_no_developer": {
+          "returned_slots": 5,
+          "empty_slots": 0,
+          "P@5": null,
+          "strict_P@5": null,
+          "pool_nDCG@5": null,
+          "P@5_bounds": [
+            0.4,
+            0.6000000000000001
+          ],
+          "strict_P@5_bounds": [
+            0.0,
+            0.2
+          ]
+        },
+        "graph_no_genre": {
+          "returned_slots": 5,
+          "empty_slots": 0,
+          "P@5": null,
+          "strict_P@5": null,
+          "pool_nDCG@5": null,
+          "P@5_bounds": [
+            0.4,
+            0.6000000000000001
+          ],
+          "strict_P@5_bounds": [
+            0.0,
+            0.2
+          ]
+        }
+      }
+    },
+    {
+      "query_id": "F11",
+      "stratum": "RPG/dense_20_plus",
+      "complete": true,
+      "unique_pairs": 7,
+      "unknown_pairs": 0,
+      "idcg": 1.6309297535714575,
+      "methods": {
+        "tag_jaccard": {
+          "returned_slots": 5,
+          "empty_slots": 0,
+          "P@5": 0.2,
+          "strict_P@5": 0.0,
+          "pool_nDCG@5": 0.6131471927654584,
+          "P@5_bounds": [
+            0.2,
+            0.2
+          ],
+          "strict_P@5_bounds": [
+            0.0,
+            0.0
+          ]
+        },
+        "graph_full": {
+          "returned_slots": 5,
+          "empty_slots": 0,
+          "P@5": 0.4,
+          "strict_P@5": 0.0,
+          "pool_nDCG@5": 0.8772153153380493,
+          "P@5_bounds": [
+            0.4,
+            0.4
+          ],
+          "strict_P@5_bounds": [
+            0.0,
+            0.0
+          ]
+        },
+        "graph_no_developer": {
+          "returned_slots": 5,
+          "empty_slots": 0,
+          "P@5": 0.4,
+          "strict_P@5": 0.0,
+          "pool_nDCG@5": 0.8772153153380493,
+          "P@5_bounds": [
+            0.4,
+            0.4
+          ],
+          "strict_P@5_bounds": [
+            0.0,
+            0.0
+          ]
+        },
+        "graph_no_genre": {
+          "returned_slots": 5,
+          "empty_slots": 0,
+          "P@5": 0.2,
+          "strict_P@5": 0.0,
+          "pool_nDCG@5": 0.6131471927654584,
+          "P@5_bounds": [
+            0.2,
+            0.2
+          ],
+          "strict_P@5_bounds": [
+            0.0,
+            0.0
+          ]
+        }
+      }
+    },
+    {
+      "query_id": "F12",
+      "stratum": "RPG/dense_20_plus",
+      "complete": true,
+      "unique_pairs": 6,
+      "unknown_pairs": 0,
+      "idcg": 8.845377356638176,
+      "methods": {
+        "tag_jaccard": {
+          "returned_slots": 5,
+          "empty_slots": 0,
+          "P@5": 1.0,
+          "strict_P@5": 0.8,
+          "pool_nDCG@5": 0.9026211001048624,
+          "P@5_bounds": [
+            1.0,
+            1.0
+          ],
+          "strict_P@5_bounds": [
+            0.8,
+            0.8
+          ]
+        },
+        "graph_full": {
+          "returned_slots": 5,
+          "empty_slots": 0,
+          "P@5": 1.0,
+          "strict_P@5": 0.8,
+          "pool_nDCG@5": 0.8573424901769817,
+          "P@5_bounds": [
+            1.0,
+            1.0
+          ],
+          "strict_P@5_bounds": [
+            0.8,
+            0.8
+          ]
+        },
+        "graph_no_developer": {
+          "returned_slots": 5,
+          "empty_slots": 0,
+          "P@5": 1.0,
+          "strict_P@5": 0.8,
+          "pool_nDCG@5": 0.8573424901769817,
+          "P@5_bounds": [
+            1.0,
+            1.0
+          ],
+          "strict_P@5_bounds": [
+            0.8,
+            0.8
+          ]
+        },
+        "graph_no_genre": {
+          "returned_slots": 5,
+          "empty_slots": 0,
+          "P@5": 1.0,
+          "strict_P@5": 1.0,
+          "pool_nDCG@5": 1.0,
+          "P@5_bounds": [
+            1.0,
+            1.0
+          ],
+          "strict_P@5_bounds": [
+            1.0,
+            1.0
+          ]
+        }
+      }
+    },
+    {
+      "query_id": "F13",
+      "stratum": "Strategy/sparse_1_5",
+      "complete": true,
+      "unique_pairs": 5,
+      "unknown_pairs": 0,
+      "idcg": 8.845377356638176,
+      "methods": {
+        "tag_jaccard": {
+          "returned_slots": 5,
+          "empty_slots": 0,
+          "P@5": 1.0,
+          "strict_P@5": 1.0,
+          "pool_nDCG@5": 1.0,
+          "P@5_bounds": [
+            1.0,
+            1.0
+          ],
+          "strict_P@5_bounds": [
+            1.0,
+            1.0
+          ]
+        },
+        "graph_full": {
+          "returned_slots": 5,
+          "empty_slots": 0,
+          "P@5": 1.0,
+          "strict_P@5": 1.0,
+          "pool_nDCG@5": 1.0,
+          "P@5_bounds": [
+            1.0,
+            1.0
+          ],
+          "strict_P@5_bounds": [
+            1.0,
+            1.0
+          ]
+        },
+        "graph_no_developer": {
+          "returned_slots": 5,
+          "empty_slots": 0,
+          "P@5": 1.0,
+          "strict_P@5": 1.0,
+          "pool_nDCG@5": 1.0,
+          "P@5_bounds": [
+            1.0,
+            1.0
+          ],
+          "strict_P@5_bounds": [
+            1.0,
+            1.0
+          ]
+        },
+        "graph_no_genre": {
+          "returned_slots": 5,
+          "empty_slots": 0,
+          "P@5": 1.0,
+          "strict_P@5": 1.0,
+          "pool_nDCG@5": 1.0,
+          "P@5_bounds": [
+            1.0,
+            1.0
+          ],
+          "strict_P@5_bounds": [
+            1.0,
+            1.0
+          ]
+        }
+      }
+    },
+    {
+      "query_id": "F14",
+      "stratum": "Strategy/sparse_1_5",
+      "complete": true,
+      "unique_pairs": 5,
+      "unknown_pairs": 0,
+      "idcg": 0.0,
+      "methods": {
+        "tag_jaccard": {
+          "returned_slots": 5,
+          "empty_slots": 0,
+          "P@5": 0.0,
+          "strict_P@5": 0.0,
+          "pool_nDCG@5": 0.0,
+          "P@5_bounds": [
+            0.0,
+            0.0
+          ],
+          "strict_P@5_bounds": [
+            0.0,
+            0.0
+          ]
+        },
+        "graph_full": {
+          "returned_slots": 5,
+          "empty_slots": 0,
+          "P@5": 0.0,
+          "strict_P@5": 0.0,
+          "pool_nDCG@5": 0.0,
+          "P@5_bounds": [
+            0.0,
+            0.0
+          ],
+          "strict_P@5_bounds": [
+            0.0,
+            0.0
+          ]
+        },
+        "graph_no_developer": {
+          "returned_slots": 5,
+          "empty_slots": 0,
+          "P@5": 0.0,
+          "strict_P@5": 0.0,
+          "pool_nDCG@5": 0.0,
+          "P@5_bounds": [
+            0.0,
+            0.0
+          ],
+          "strict_P@5_bounds": [
+            0.0,
+            0.0
+          ]
+        },
+        "graph_no_genre": {
+          "returned_slots": 5,
+          "empty_slots": 0,
+          "P@5": 0.0,
+          "strict_P@5": 0.0,
+          "pool_nDCG@5": 0.0,
+          "P@5_bounds": [
+            0.0,
+            0.0
+          ],
+          "strict_P@5_bounds": [
+            0.0,
+            0.0
+          ]
+        }
+      }
+    },
+    {
+      "query_id": "F15",
+      "stratum": "Strategy/dense_20_plus",
+      "complete": false,
+      "unique_pairs": 12,
+      "unknown_pairs": 1,
+      "idcg": null,
+      "methods": {
+        "tag_jaccard": {
+          "returned_slots": 5,
+          "empty_slots": 0,
+          "P@5": null,
+          "strict_P@5": null,
+          "pool_nDCG@5": null,
+          "P@5_bounds": [
+            0.8,
+            0.8
+          ],
+          "strict_P@5_bounds": [
+            0.4,
+            0.4
+          ]
+        },
+        "graph_full": {
+          "returned_slots": 5,
+          "empty_slots": 0,
+          "P@5": null,
+          "strict_P@5": null,
+          "pool_nDCG@5": null,
+          "P@5_bounds": [
+            0.8,
+            1.0
+          ],
+          "strict_P@5_bounds": [
+            0.6,
+            0.8
+          ]
+        },
+        "graph_no_developer": {
+          "returned_slots": 5,
+          "empty_slots": 0,
+          "P@5": null,
+          "strict_P@5": null,
+          "pool_nDCG@5": null,
+          "P@5_bounds": [
+            0.8,
+            1.0
+          ],
+          "strict_P@5_bounds": [
+            0.6,
+            0.8
+          ]
+        },
+        "graph_no_genre": {
+          "returned_slots": 5,
+          "empty_slots": 0,
+          "P@5": null,
+          "strict_P@5": null,
+          "pool_nDCG@5": null,
+          "P@5_bounds": [
+            0.6,
+            0.6
+          ],
+          "strict_P@5_bounds": [
+            0.4,
+            0.4
+          ]
+        }
+      }
+    },
+    {
+      "query_id": "F16",
+      "stratum": "Strategy/dense_20_plus",
+      "complete": true,
+      "unique_pairs": 10,
+      "unknown_pairs": 0,
+      "idcg": 1.0,
+      "methods": {
+        "tag_jaccard": {
+          "returned_slots": 5,
+          "empty_slots": 0,
+          "P@5": 0.0,
+          "strict_P@5": 0.0,
+          "pool_nDCG@5": 0.0,
+          "P@5_bounds": [
+            0.0,
+            0.0
+          ],
+          "strict_P@5_bounds": [
+            0.0,
+            0.0
+          ]
+        },
+        "graph_full": {
+          "returned_slots": 5,
+          "empty_slots": 0,
+          "P@5": 0.0,
+          "strict_P@5": 0.0,
+          "pool_nDCG@5": 0.0,
+          "P@5_bounds": [
+            0.0,
+            0.0
+          ],
+          "strict_P@5_bounds": [
+            0.0,
+            0.0
+          ]
+        },
+        "graph_no_developer": {
+          "returned_slots": 5,
+          "empty_slots": 0,
+          "P@5": 0.0,
+          "strict_P@5": 0.0,
+          "pool_nDCG@5": 0.0,
+          "P@5_bounds": [
+            0.0,
+            0.0
+          ],
+          "strict_P@5_bounds": [
+            0.0,
+            0.0
+          ]
+        },
+        "graph_no_genre": {
+          "returned_slots": 5,
+          "empty_slots": 0,
+          "P@5": 0.2,
+          "strict_P@5": 0.0,
+          "pool_nDCG@5": 0.6309297535714575,
+          "P@5_bounds": [
+            0.2,
+            0.2
+          ],
+          "strict_P@5_bounds": [
+            0.0,
+            0.0
+          ]
+        }
+      }
+    },
+    {
+      "query_id": "F17",
+      "stratum": "Simulation/sparse_1_5",
+      "complete": true,
+      "unique_pairs": 7,
+      "unknown_pairs": 0,
+      "idcg": 2.5616063116448506,
+      "methods": {
+        "tag_jaccard": {
+          "returned_slots": 5,
+          "empty_slots": 0,
+          "P@5": 0.6,
+          "strict_P@5": 0.0,
+          "pool_nDCG@5": 0.7365896932159578,
+          "P@5_bounds": [
+            0.6,
+            0.6
+          ],
+          "strict_P@5_bounds": [
+            0.0,
+            0.0
+          ]
+        },
+        "graph_full": {
+          "returned_slots": 5,
+          "empty_slots": 0,
+          "P@5": 0.6,
+          "strict_P@5": 0.0,
+          "pool_nDCG@5": 0.8318724637288826,
+          "P@5_bounds": [
+            0.6,
+            0.6
+          ],
+          "strict_P@5_bounds": [
+            0.0,
+            0.0
+          ]
+        },
+        "graph_no_developer": {
+          "returned_slots": 5,
+          "empty_slots": 0,
+          "P@5": 0.6,
+          "strict_P@5": 0.0,
+          "pool_nDCG@5": 0.8318724637288826,
+          "P@5_bounds": [
+            0.6,
+            0.6
+          ],
+          "strict_P@5_bounds": [
+            0.0,
+            0.0
+          ]
+        },
+        "graph_no_genre": {
+          "returned_slots": 5,
+          "empty_slots": 0,
+          "P@5": 0.6,
+          "strict_P@5": 0.0,
+          "pool_nDCG@5": 0.8318724637288826,
+          "P@5_bounds": [
+            0.6,
+            0.6
+          ],
+          "strict_P@5_bounds": [
+            0.0,
+            0.0
+          ]
+        }
+      }
+    },
+    {
+      "query_id": "F18",
+      "stratum": "Simulation/sparse_1_5",
+      "complete": true,
+      "unique_pairs": 5,
+      "unknown_pairs": 0,
+      "idcg": 0.0,
+      "methods": {
+        "tag_jaccard": {
+          "returned_slots": 5,
+          "empty_slots": 0,
+          "P@5": 0.0,
+          "strict_P@5": 0.0,
+          "pool_nDCG@5": 0.0,
+          "P@5_bounds": [
+            0.0,
+            0.0
+          ],
+          "strict_P@5_bounds": [
+            0.0,
+            0.0
+          ]
+        },
+        "graph_full": {
+          "returned_slots": 5,
+          "empty_slots": 0,
+          "P@5": 0.0,
+          "strict_P@5": 0.0,
+          "pool_nDCG@5": 0.0,
+          "P@5_bounds": [
+            0.0,
+            0.0
+          ],
+          "strict_P@5_bounds": [
+            0.0,
+            0.0
+          ]
+        },
+        "graph_no_developer": {
+          "returned_slots": 5,
+          "empty_slots": 0,
+          "P@5": 0.0,
+          "strict_P@5": 0.0,
+          "pool_nDCG@5": 0.0,
+          "P@5_bounds": [
+            0.0,
+            0.0
+          ],
+          "strict_P@5_bounds": [
+            0.0,
+            0.0
+          ]
+        },
+        "graph_no_genre": {
+          "returned_slots": 5,
+          "empty_slots": 0,
+          "P@5": 0.0,
+          "strict_P@5": 0.0,
+          "pool_nDCG@5": 0.0,
+          "P@5_bounds": [
+            0.0,
+            0.0
+          ],
+          "strict_P@5_bounds": [
+            0.0,
+            0.0
+          ]
+        }
+      }
+    },
+    {
+      "query_id": "F19",
+      "stratum": "Simulation/dense_20_plus",
+      "complete": true,
+      "unique_pairs": 5,
+      "unknown_pairs": 0,
+      "idcg": 8.071671742169093,
+      "methods": {
+        "tag_jaccard": {
+          "returned_slots": 5,
+          "empty_slots": 0,
+          "P@5": 1.0,
+          "strict_P@5": 0.8,
+          "pool_nDCG@5": 0.9891413446337513,
+          "P@5_bounds": [
+            1.0,
+            1.0
+          ],
+          "strict_P@5_bounds": [
+            0.8,
+            0.8
+          ]
+        },
+        "graph_full": {
+          "returned_slots": 5,
+          "empty_slots": 0,
+          "P@5": 1.0,
+          "strict_P@5": 0.8,
+          "pool_nDCG@5": 0.9891413446337513,
+          "P@5_bounds": [
+            1.0,
+            1.0
+          ],
+          "strict_P@5_bounds": [
+            0.8,
+            0.8
+          ]
+        },
+        "graph_no_developer": {
+          "returned_slots": 5,
+          "empty_slots": 0,
+          "P@5": 1.0,
+          "strict_P@5": 0.8,
+          "pool_nDCG@5": 0.9891413446337513,
+          "P@5_bounds": [
+            1.0,
+            1.0
+          ],
+          "strict_P@5_bounds": [
+            0.8,
+            0.8
+          ]
+        },
+        "graph_no_genre": {
+          "returned_slots": 5,
+          "empty_slots": 0,
+          "P@5": 1.0,
+          "strict_P@5": 0.8,
+          "pool_nDCG@5": 1.0,
+          "P@5_bounds": [
+            1.0,
+            1.0
+          ],
+          "strict_P@5_bounds": [
+            0.8,
+            0.8
+          ]
+        }
+      }
+    },
+    {
+      "query_id": "F20",
+      "stratum": "Simulation/dense_20_plus",
+      "complete": false,
+      "unique_pairs": 8,
+      "unknown_pairs": 1,
+      "idcg": null,
+      "methods": {
+        "tag_jaccard": {
+          "returned_slots": 5,
+          "empty_slots": 0,
+          "P@5": null,
+          "strict_P@5": null,
+          "pool_nDCG@5": null,
+          "P@5_bounds": [
+            0.8,
+            1.0
+          ],
+          "strict_P@5_bounds": [
+            0.6,
+            0.8
+          ]
+        },
+        "graph_full": {
+          "returned_slots": 5,
+          "empty_slots": 0,
+          "P@5": null,
+          "strict_P@5": null,
+          "pool_nDCG@5": null,
+          "P@5_bounds": [
+            0.8,
+            1.0
+          ],
+          "strict_P@5_bounds": [
+            0.6,
+            0.8
+          ]
+        },
+        "graph_no_developer": {
+          "returned_slots": 5,
+          "empty_slots": 0,
+          "P@5": null,
+          "strict_P@5": null,
+          "pool_nDCG@5": null,
+          "P@5_bounds": [
+            0.8,
+            1.0
+          ],
+          "strict_P@5_bounds": [
+            0.6,
+            0.8
+          ]
+        },
+        "graph_no_genre": {
+          "returned_slots": 5,
+          "empty_slots": 0,
+          "P@5": null,
+          "strict_P@5": null,
+          "pool_nDCG@5": null,
+          "P@5_bounds": [
+            0.8,
+            1.0
+          ],
+          "strict_P@5_bounds": [
+            0.8,
+            1.0
+          ]
+        }
+      }
+    },
+    {
+      "query_id": "F21",
+      "stratum": "Casual/sparse_1_5",
+      "complete": true,
+      "unique_pairs": 6,
+      "unknown_pairs": 0,
+      "idcg": 8.845377356638176,
+      "methods": {
+        "tag_jaccard": {
+          "returned_slots": 5,
+          "empty_slots": 0,
+          "P@5": 1.0,
+          "strict_P@5": 1.0,
+          "pool_nDCG@5": 1.0,
+          "P@5_bounds": [
+            1.0,
+            1.0
+          ],
+          "strict_P@5_bounds": [
+            1.0,
+            1.0
+          ]
+        },
+        "graph_full": {
+          "returned_slots": 5,
+          "empty_slots": 0,
+          "P@5": 1.0,
+          "strict_P@5": 1.0,
+          "pool_nDCG@5": 1.0,
+          "P@5_bounds": [
+            1.0,
+            1.0
+          ],
+          "strict_P@5_bounds": [
+            1.0,
+            1.0
+          ]
+        },
+        "graph_no_developer": {
+          "returned_slots": 5,
+          "empty_slots": 0,
+          "P@5": 1.0,
+          "strict_P@5": 1.0,
+          "pool_nDCG@5": 1.0,
+          "P@5_bounds": [
+            1.0,
+            1.0
+          ],
+          "strict_P@5_bounds": [
+            1.0,
+            1.0
+          ]
+        },
+        "graph_no_genre": {
+          "returned_slots": 5,
+          "empty_slots": 0,
+          "P@5": 1.0,
+          "strict_P@5": 1.0,
+          "pool_nDCG@5": 1.0,
+          "P@5_bounds": [
+            1.0,
+            1.0
+          ],
+          "strict_P@5_bounds": [
+            1.0,
+            1.0
+          ]
+        }
+      }
+    },
+    {
+      "query_id": "F22",
+      "stratum": "Casual/sparse_1_5",
+      "complete": false,
+      "unique_pairs": 7,
+      "unknown_pairs": 7,
+      "idcg": null,
+      "methods": {
+        "tag_jaccard": {
+          "returned_slots": 5,
+          "empty_slots": 0,
+          "P@5": null,
+          "strict_P@5": null,
+          "pool_nDCG@5": null,
+          "P@5_bounds": [
+            0.0,
+            1.0
+          ],
+          "strict_P@5_bounds": [
+            0.0,
+            1.0
+          ]
+        },
+        "graph_full": {
+          "returned_slots": 5,
+          "empty_slots": 0,
+          "P@5": null,
+          "strict_P@5": null,
+          "pool_nDCG@5": null,
+          "P@5_bounds": [
+            0.0,
+            1.0
+          ],
+          "strict_P@5_bounds": [
+            0.0,
+            1.0
+          ]
+        },
+        "graph_no_developer": {
+          "returned_slots": 5,
+          "empty_slots": 0,
+          "P@5": null,
+          "strict_P@5": null,
+          "pool_nDCG@5": null,
+          "P@5_bounds": [
+            0.0,
+            1.0
+          ],
+          "strict_P@5_bounds": [
+            0.0,
+            1.0
+          ]
+        },
+        "graph_no_genre": {
+          "returned_slots": 5,
+          "empty_slots": 0,
+          "P@5": null,
+          "strict_P@5": null,
+          "pool_nDCG@5": null,
+          "P@5_bounds": [
+            0.0,
+            1.0
+          ],
+          "strict_P@5_bounds": [
+            0.0,
+            1.0
+          ]
+        }
+      }
+    },
+    {
+      "query_id": "F23",
+      "stratum": "Casual/dense_20_plus",
+      "complete": false,
+      "unique_pairs": 10,
+      "unknown_pairs": 1,
+      "idcg": null,
+      "methods": {
+        "tag_jaccard": {
+          "returned_slots": 5,
+          "empty_slots": 0,
+          "P@5": null,
+          "strict_P@5": null,
+          "pool_nDCG@5": null,
+          "P@5_bounds": [
+            0.6,
+            0.6
+          ],
+          "strict_P@5_bounds": [
+            0.0,
+            0.0
+          ]
+        },
+        "graph_full": {
+          "returned_slots": 5,
+          "empty_slots": 0,
+          "P@5": null,
+          "strict_P@5": null,
+          "pool_nDCG@5": null,
+          "P@5_bounds": [
+            0.6,
+            0.8
+          ],
+          "strict_P@5_bounds": [
+            0.0,
+            0.2
+          ]
+        },
+        "graph_no_developer": {
+          "returned_slots": 5,
+          "empty_slots": 0,
+          "P@5": null,
+          "strict_P@5": null,
+          "pool_nDCG@5": null,
+          "P@5_bounds": [
+            0.6,
+            0.8
+          ],
+          "strict_P@5_bounds": [
+            0.0,
+            0.2
+          ]
+        },
+        "graph_no_genre": {
+          "returned_slots": 5,
+          "empty_slots": 0,
+          "P@5": null,
+          "strict_P@5": null,
+          "pool_nDCG@5": null,
+          "P@5_bounds": [
+            0.8,
+            0.8
+          ],
+          "strict_P@5_bounds": [
+            0.0,
+            0.0
+          ]
+        }
+      }
+    },
+    {
+      "query_id": "F24",
+      "stratum": "Casual/dense_20_plus",
+      "complete": true,
+      "unique_pairs": 9,
+      "unknown_pairs": 0,
+      "idcg": 8.845377356638176,
+      "methods": {
+        "tag_jaccard": {
+          "returned_slots": 5,
+          "empty_slots": 0,
+          "P@5": 1.0,
+          "strict_P@5": 1.0,
+          "pool_nDCG@5": 1.0,
+          "P@5_bounds": [
+            1.0,
+            1.0
+          ],
+          "strict_P@5_bounds": [
+            1.0,
+            1.0
+          ]
+        },
+        "graph_full": {
+          "returned_slots": 5,
+          "empty_slots": 0,
+          "P@5": 1.0,
+          "strict_P@5": 1.0,
+          "pool_nDCG@5": 1.0,
+          "P@5_bounds": [
+            1.0,
+            1.0
+          ],
+          "strict_P@5_bounds": [
+            1.0,
+            1.0
+          ]
+        },
+        "graph_no_developer": {
+          "returned_slots": 5,
+          "empty_slots": 0,
+          "P@5": 1.0,
+          "strict_P@5": 1.0,
+          "pool_nDCG@5": 1.0,
+          "P@5_bounds": [
+            1.0,
+            1.0
+          ],
+          "strict_P@5_bounds": [
+            1.0,
+            1.0
+          ]
+        },
+        "graph_no_genre": {
+          "returned_slots": 5,
+          "empty_slots": 0,
+          "P@5": 1.0,
+          "strict_P@5": 1.0,
+          "pool_nDCG@5": 1.0,
+          "P@5_bounds": [
+            1.0,
+            1.0
+          ],
+          "strict_P@5_bounds": [
+            1.0,
+            1.0
+          ]
+        }
+      }
+    }
+  ],
+  "strata": {
+    "Action/dense_20_plus": {
+      "total_queries": 2,
+      "complete_queries": 0,
+      "complete_fraction": 0.0,
+      "methods": {
+        "tag_jaccard": {
+          "P@5": null,
+          "strict_P@5": null,
+          "pool_nDCG@5": null,
+          "returned_slots": 10,
+          "available_slots": 10,
+          "return_rate": 1.0,
+          "empty_slot_rate": 0.0,
+          "all_query_P@5_bounds": [
+            0.4,
+            0.6
+          ],
+          "all_query_strict_P@5_bounds": [
+            0.2,
+            0.4
+          ]
+        },
+        "graph_full": {
+          "P@5": null,
+          "strict_P@5": null,
+          "pool_nDCG@5": null,
+          "returned_slots": 10,
+          "available_slots": 10,
+          "return_rate": 1.0,
+          "empty_slot_rate": 0.0,
+          "all_query_P@5_bounds": [
+            0.5,
+            0.7
+          ],
+          "all_query_strict_P@5_bounds": [
+            0.4,
+            0.6000000000000001
+          ]
+        },
+        "graph_no_developer": {
+          "P@5": null,
+          "strict_P@5": null,
+          "pool_nDCG@5": null,
+          "returned_slots": 10,
+          "available_slots": 10,
+          "return_rate": 1.0,
+          "empty_slot_rate": 0.0,
+          "all_query_P@5_bounds": [
+            0.5,
+            0.7
+          ],
+          "all_query_strict_P@5_bounds": [
+            0.3,
+            0.5
+          ]
+        },
+        "graph_no_genre": {
+          "P@5": null,
+          "strict_P@5": null,
+          "pool_nDCG@5": null,
+          "returned_slots": 10,
+          "available_slots": 10,
+          "return_rate": 1.0,
+          "empty_slot_rate": 0.0,
+          "all_query_P@5_bounds": [
+            0.4,
+            0.7
+          ],
+          "all_query_strict_P@5_bounds": [
+            0.3,
+            0.6000000000000001
+          ]
+        }
+      },
+      "comparisons": {
+        "graph_full-tag_jaccard": {
+          "P@5": {
+            "queries": 0,
+            "mean_difference": null,
+            "query_bootstrap_descriptive_interval95": [
+              null,
+              null
+            ],
+            "degenerate_n1": false
+          },
+          "strict_P@5": {
+            "queries": 0,
+            "mean_difference": null,
+            "query_bootstrap_descriptive_interval95": [
+              null,
+              null
+            ],
+            "degenerate_n1": false
+          },
+          "pool_nDCG@5": {
+            "queries": 0,
+            "mean_difference": null,
+            "query_bootstrap_descriptive_interval95": [
+              null,
+              null
+            ],
+            "degenerate_n1": false
+          },
+          "per_query_differences": []
+        },
+        "graph_full-graph_no_developer": {
+          "P@5": {
+            "queries": 0,
+            "mean_difference": null,
+            "query_bootstrap_descriptive_interval95": [
+              null,
+              null
+            ],
+            "degenerate_n1": false
+          },
+          "strict_P@5": {
+            "queries": 0,
+            "mean_difference": null,
+            "query_bootstrap_descriptive_interval95": [
+              null,
+              null
+            ],
+            "degenerate_n1": false
+          },
+          "pool_nDCG@5": {
+            "queries": 0,
+            "mean_difference": null,
+            "query_bootstrap_descriptive_interval95": [
+              null,
+              null
+            ],
+            "degenerate_n1": false
+          },
+          "per_query_differences": []
+        },
+        "graph_full-graph_no_genre": {
+          "P@5": {
+            "queries": 0,
+            "mean_difference": null,
+            "query_bootstrap_descriptive_interval95": [
+              null,
+              null
+            ],
+            "degenerate_n1": false
+          },
+          "strict_P@5": {
+            "queries": 0,
+            "mean_difference": null,
+            "query_bootstrap_descriptive_interval95": [
+              null,
+              null
+            ],
+            "degenerate_n1": false
+          },
+          "pool_nDCG@5": {
+            "queries": 0,
+            "mean_difference": null,
+            "query_bootstrap_descriptive_interval95": [
+              null,
+              null
+            ],
+            "degenerate_n1": false
+          },
+          "per_query_differences": []
+        }
+      }
+    },
+    "Action/sparse_1_5": {
+      "total_queries": 2,
+      "complete_queries": 0,
+      "complete_fraction": 0.0,
+      "methods": {
+        "tag_jaccard": {
+          "P@5": null,
+          "strict_P@5": null,
+          "pool_nDCG@5": null,
+          "returned_slots": 10,
+          "available_slots": 10,
+          "return_rate": 1.0,
+          "empty_slot_rate": 0.0,
+          "all_query_P@5_bounds": [
+            0.4,
+            0.6
+          ],
+          "all_query_strict_P@5_bounds": [
+            0.4,
+            0.6
+          ]
+        },
+        "graph_full": {
+          "P@5": null,
+          "strict_P@5": null,
+          "pool_nDCG@5": null,
+          "returned_slots": 10,
+          "available_slots": 10,
+          "return_rate": 1.0,
+          "empty_slot_rate": 0.0,
+          "all_query_P@5_bounds": [
+            0.4,
+            0.6
+          ],
+          "all_query_strict_P@5_bounds": [
+            0.3,
+            0.5
+          ]
+        },
+        "graph_no_developer": {
+          "P@5": null,
+          "strict_P@5": null,
+          "pool_nDCG@5": null,
+          "returned_slots": 10,
+          "available_slots": 10,
+          "return_rate": 1.0,
+          "empty_slot_rate": 0.0,
+          "all_query_P@5_bounds": [
+            0.4,
+            0.6
+          ],
+          "all_query_strict_P@5_bounds": [
+            0.3,
+            0.5
+          ]
+        },
+        "graph_no_genre": {
+          "P@5": null,
+          "strict_P@5": null,
+          "pool_nDCG@5": null,
+          "returned_slots": 10,
+          "available_slots": 10,
+          "return_rate": 1.0,
+          "empty_slot_rate": 0.0,
+          "all_query_P@5_bounds": [
+            0.3,
+            0.6
+          ],
+          "all_query_strict_P@5_bounds": [
+            0.3,
+            0.6
+          ]
+        }
+      },
+      "comparisons": {
+        "graph_full-tag_jaccard": {
+          "P@5": {
+            "queries": 0,
+            "mean_difference": null,
+            "query_bootstrap_descriptive_interval95": [
+              null,
+              null
+            ],
+            "degenerate_n1": false
+          },
+          "strict_P@5": {
+            "queries": 0,
+            "mean_difference": null,
+            "query_bootstrap_descriptive_interval95": [
+              null,
+              null
+            ],
+            "degenerate_n1": false
+          },
+          "pool_nDCG@5": {
+            "queries": 0,
+            "mean_difference": null,
+            "query_bootstrap_descriptive_interval95": [
+              null,
+              null
+            ],
+            "degenerate_n1": false
+          },
+          "per_query_differences": []
+        },
+        "graph_full-graph_no_developer": {
+          "P@5": {
+            "queries": 0,
+            "mean_difference": null,
+            "query_bootstrap_descriptive_interval95": [
+              null,
+              null
+            ],
+            "degenerate_n1": false
+          },
+          "strict_P@5": {
+            "queries": 0,
+            "mean_difference": null,
+            "query_bootstrap_descriptive_interval95": [
+              null,
+              null
+            ],
+            "degenerate_n1": false
+          },
+          "pool_nDCG@5": {
+            "queries": 0,
+            "mean_difference": null,
+            "query_bootstrap_descriptive_interval95": [
+              null,
+              null
+            ],
+            "degenerate_n1": false
+          },
+          "per_query_differences": []
+        },
+        "graph_full-graph_no_genre": {
+          "P@5": {
+            "queries": 0,
+            "mean_difference": null,
+            "query_bootstrap_descriptive_interval95": [
+              null,
+              null
+            ],
+            "degenerate_n1": false
+          },
+          "strict_P@5": {
+            "queries": 0,
+            "mean_difference": null,
+            "query_bootstrap_descriptive_interval95": [
+              null,
+              null
+            ],
+            "degenerate_n1": false
+          },
+          "pool_nDCG@5": {
+            "queries": 0,
+            "mean_difference": null,
+            "query_bootstrap_descriptive_interval95": [
+              null,
+              null
+            ],
+            "degenerate_n1": false
+          },
+          "per_query_differences": []
+        }
+      }
+    },
+    "Adventure/dense_20_plus": {
+      "total_queries": 2,
+      "complete_queries": 2,
+      "complete_fraction": 1.0,
+      "methods": {
+        "tag_jaccard": {
+          "P@5": 0.3,
+          "strict_P@5": 0.0,
+          "pool_nDCG@5": 0.32740432887656534,
+          "returned_slots": 10,
+          "available_slots": 10,
+          "return_rate": 1.0,
+          "empty_slot_rate": 0.0,
+          "all_query_P@5_bounds": [
+            0.3,
+            0.3
+          ],
+          "all_query_strict_P@5_bounds": [
+            0.0,
+            0.0
+          ]
+        },
+        "graph_full": {
+          "P@5": 0.5,
+          "strict_P@5": 0.1,
+          "pool_nDCG@5": 0.6458847741489206,
+          "returned_slots": 10,
+          "available_slots": 10,
+          "return_rate": 1.0,
+          "empty_slot_rate": 0.0,
+          "all_query_P@5_bounds": [
+            0.5,
+            0.5
+          ],
+          "all_query_strict_P@5_bounds": [
+            0.1,
+            0.1
+          ]
+        },
+        "graph_no_developer": {
+          "P@5": 0.5,
+          "strict_P@5": 0.1,
+          "pool_nDCG@5": 0.6458847741489206,
+          "returned_slots": 10,
+          "available_slots": 10,
+          "return_rate": 1.0,
+          "empty_slot_rate": 0.0,
+          "all_query_P@5_bounds": [
+            0.5,
+            0.5
+          ],
+          "all_query_strict_P@5_bounds": [
+            0.1,
+            0.1
+          ]
+        },
+        "graph_no_genre": {
+          "P@5": 0.5,
+          "strict_P@5": 0.1,
+          "pool_nDCG@5": 0.6083451466694327,
+          "returned_slots": 10,
+          "available_slots": 10,
+          "return_rate": 1.0,
+          "empty_slot_rate": 0.0,
+          "all_query_P@5_bounds": [
+            0.5,
+            0.5
+          ],
+          "all_query_strict_P@5_bounds": [
+            0.1,
+            0.1
+          ]
+        }
+      },
+      "comparisons": {
+        "graph_full-tag_jaccard": {
+          "P@5": {
+            "queries": 2,
+            "mean_difference": 0.20000000000000004,
+            "query_bootstrap_descriptive_interval95": [
+              0.2,
+              0.20000000000000007
+            ],
+            "degenerate_n1": false
+          },
+          "strict_P@5": {
+            "queries": 2,
+            "mean_difference": 0.1,
+            "query_bootstrap_descriptive_interval95": [
+              0.0,
+              0.2
+            ],
+            "degenerate_n1": false
+          },
+          "pool_nDCG@5": {
+            "queries": 2,
+            "mean_difference": 0.3184804452723553,
+            "query_bootstrap_descriptive_interval95": [
+              0.006031136973253193,
+              0.6309297535714574
+            ],
+            "degenerate_n1": false
+          },
+          "per_query_differences": [
+            {
+              "query_id": "F07",
+              "P@5": 0.2,
+              "strict_P@5": 0.2,
+              "pool_nDCG@5": 0.6309297535714574
+            },
+            {
+              "query_id": "F08",
+              "P@5": 0.20000000000000007,
+              "strict_P@5": 0.0,
+              "pool_nDCG@5": 0.006031136973253193
+            }
+          ]
+        },
+        "graph_full-graph_no_developer": {
+          "P@5": {
+            "queries": 2,
+            "mean_difference": 0.0,
+            "query_bootstrap_descriptive_interval95": [
+              0.0,
+              0.0
+            ],
+            "degenerate_n1": false
+          },
+          "strict_P@5": {
+            "queries": 2,
+            "mean_difference": 0.0,
+            "query_bootstrap_descriptive_interval95": [
+              0.0,
+              0.0
+            ],
+            "degenerate_n1": false
+          },
+          "pool_nDCG@5": {
+            "queries": 2,
+            "mean_difference": 0.0,
+            "query_bootstrap_descriptive_interval95": [
+              0.0,
+              0.0
+            ],
+            "degenerate_n1": false
+          },
+          "per_query_differences": [
+            {
+              "query_id": "F07",
+              "P@5": 0.0,
+              "strict_P@5": 0.0,
+              "pool_nDCG@5": 0.0
+            },
+            {
+              "query_id": "F08",
+              "P@5": 0.0,
+              "strict_P@5": 0.0,
+              "pool_nDCG@5": 0.0
+            }
+          ]
+        },
+        "graph_full-graph_no_genre": {
+          "P@5": {
+            "queries": 2,
+            "mean_difference": 0.0,
+            "query_bootstrap_descriptive_interval95": [
+              0.0,
+              0.0
+            ],
+            "degenerate_n1": false
+          },
+          "strict_P@5": {
+            "queries": 2,
+            "mean_difference": 0.0,
+            "query_bootstrap_descriptive_interval95": [
+              0.0,
+              0.0
+            ],
+            "degenerate_n1": false
+          },
+          "pool_nDCG@5": {
+            "queries": 2,
+            "mean_difference": 0.037539627479487914,
+            "query_bootstrap_descriptive_interval95": [
+              -0.12517394053908848,
+              0.2002531954980643
+            ],
+            "degenerate_n1": false
+          },
+          "per_query_differences": [
+            {
+              "query_id": "F07",
+              "P@5": 0.0,
+              "strict_P@5": 0.0,
+              "pool_nDCG@5": 0.2002531954980643
+            },
+            {
+              "query_id": "F08",
+              "P@5": 0.0,
+              "strict_P@5": 0.0,
+              "pool_nDCG@5": -0.12517394053908848
+            }
+          ]
+        }
+      }
+    },
+    "Adventure/sparse_1_5": {
+      "total_queries": 2,
+      "complete_queries": 1,
+      "complete_fraction": 0.5,
+      "methods": {
+        "tag_jaccard": {
+          "P@5": 0.4,
+          "strict_P@5": 0.0,
+          "pool_nDCG@5": 0.6509209298071326,
+          "returned_slots": 10,
+          "available_slots": 10,
+          "return_rate": 1.0,
+          "empty_slot_rate": 0.0,
+          "all_query_P@5_bounds": [
+            0.4,
+            0.5
+          ],
+          "all_query_strict_P@5_bounds": [
+            0.0,
+            0.1
+          ]
+        },
+        "graph_full": {
+          "P@5": 0.4,
+          "strict_P@5": 0.0,
+          "pool_nDCG@5": 0.6509209298071326,
+          "returned_slots": 10,
+          "available_slots": 10,
+          "return_rate": 1.0,
+          "empty_slot_rate": 0.0,
+          "all_query_P@5_bounds": [
+            0.5,
+            0.6000000000000001
+          ],
+          "all_query_strict_P@5_bounds": [
+            0.0,
+            0.1
+          ]
+        },
+        "graph_no_developer": {
+          "P@5": 0.4,
+          "strict_P@5": 0.0,
+          "pool_nDCG@5": 0.6509209298071326,
+          "returned_slots": 10,
+          "available_slots": 10,
+          "return_rate": 1.0,
+          "empty_slot_rate": 0.0,
+          "all_query_P@5_bounds": [
+            0.5,
+            0.6000000000000001
+          ],
+          "all_query_strict_P@5_bounds": [
+            0.0,
+            0.1
+          ]
+        },
+        "graph_no_genre": {
+          "P@5": 0.4,
+          "strict_P@5": 0.0,
+          "pool_nDCG@5": 0.6509209298071326,
+          "returned_slots": 10,
+          "available_slots": 10,
+          "return_rate": 1.0,
+          "empty_slot_rate": 0.0,
+          "all_query_P@5_bounds": [
+            0.30000000000000004,
+            0.5
+          ],
+          "all_query_strict_P@5_bounds": [
+            0.0,
+            0.2
+          ]
+        }
+      },
+      "comparisons": {
+        "graph_full-tag_jaccard": {
+          "P@5": {
+            "queries": 1,
+            "mean_difference": 0.0,
+            "query_bootstrap_descriptive_interval95": [
+              0.0,
+              0.0
+            ],
+            "degenerate_n1": true
+          },
+          "strict_P@5": {
+            "queries": 1,
+            "mean_difference": 0.0,
+            "query_bootstrap_descriptive_interval95": [
+              0.0,
+              0.0
+            ],
+            "degenerate_n1": true
+          },
+          "pool_nDCG@5": {
+            "queries": 1,
+            "mean_difference": 0.0,
+            "query_bootstrap_descriptive_interval95": [
+              0.0,
+              0.0
+            ],
+            "degenerate_n1": true
+          },
+          "per_query_differences": [
+            {
+              "query_id": "F06",
+              "P@5": 0.0,
+              "strict_P@5": 0.0,
+              "pool_nDCG@5": 0.0
+            }
+          ]
+        },
+        "graph_full-graph_no_developer": {
+          "P@5": {
+            "queries": 1,
+            "mean_difference": 0.0,
+            "query_bootstrap_descriptive_interval95": [
+              0.0,
+              0.0
+            ],
+            "degenerate_n1": true
+          },
+          "strict_P@5": {
+            "queries": 1,
+            "mean_difference": 0.0,
+            "query_bootstrap_descriptive_interval95": [
+              0.0,
+              0.0
+            ],
+            "degenerate_n1": true
+          },
+          "pool_nDCG@5": {
+            "queries": 1,
+            "mean_difference": 0.0,
+            "query_bootstrap_descriptive_interval95": [
+              0.0,
+              0.0
+            ],
+            "degenerate_n1": true
+          },
+          "per_query_differences": [
+            {
+              "query_id": "F06",
+              "P@5": 0.0,
+              "strict_P@5": 0.0,
+              "pool_nDCG@5": 0.0
+            }
+          ]
+        },
+        "graph_full-graph_no_genre": {
+          "P@5": {
+            "queries": 1,
+            "mean_difference": 0.0,
+            "query_bootstrap_descriptive_interval95": [
+              0.0,
+              0.0
+            ],
+            "degenerate_n1": true
+          },
+          "strict_P@5": {
+            "queries": 1,
+            "mean_difference": 0.0,
+            "query_bootstrap_descriptive_interval95": [
+              0.0,
+              0.0
+            ],
+            "degenerate_n1": true
+          },
+          "pool_nDCG@5": {
+            "queries": 1,
+            "mean_difference": 0.0,
+            "query_bootstrap_descriptive_interval95": [
+              0.0,
+              0.0
+            ],
+            "degenerate_n1": true
+          },
+          "per_query_differences": [
+            {
+              "query_id": "F06",
+              "P@5": 0.0,
+              "strict_P@5": 0.0,
+              "pool_nDCG@5": 0.0
+            }
+          ]
+        }
+      }
+    },
+    "Casual/dense_20_plus": {
+      "total_queries": 2,
+      "complete_queries": 1,
+      "complete_fraction": 0.5,
+      "methods": {
+        "tag_jaccard": {
+          "P@5": 1.0,
+          "strict_P@5": 1.0,
+          "pool_nDCG@5": 1.0,
+          "returned_slots": 10,
+          "available_slots": 10,
+          "return_rate": 1.0,
+          "empty_slot_rate": 0.0,
+          "all_query_P@5_bounds": [
+            0.8,
+            0.8
+          ],
+          "all_query_strict_P@5_bounds": [
+            0.5,
+            0.5
+          ]
+        },
+        "graph_full": {
+          "P@5": 1.0,
+          "strict_P@5": 1.0,
+          "pool_nDCG@5": 1.0,
+          "returned_slots": 10,
+          "available_slots": 10,
+          "return_rate": 1.0,
+          "empty_slot_rate": 0.0,
+          "all_query_P@5_bounds": [
+            0.8,
+            0.9
+          ],
+          "all_query_strict_P@5_bounds": [
+            0.5,
+            0.6
+          ]
+        },
+        "graph_no_developer": {
+          "P@5": 1.0,
+          "strict_P@5": 1.0,
+          "pool_nDCG@5": 1.0,
+          "returned_slots": 10,
+          "available_slots": 10,
+          "return_rate": 1.0,
+          "empty_slot_rate": 0.0,
+          "all_query_P@5_bounds": [
+            0.8,
+            0.9
+          ],
+          "all_query_strict_P@5_bounds": [
+            0.5,
+            0.6
+          ]
+        },
+        "graph_no_genre": {
+          "P@5": 1.0,
+          "strict_P@5": 1.0,
+          "pool_nDCG@5": 1.0,
+          "returned_slots": 10,
+          "available_slots": 10,
+          "return_rate": 1.0,
+          "empty_slot_rate": 0.0,
+          "all_query_P@5_bounds": [
+            0.9,
+            0.9
+          ],
+          "all_query_strict_P@5_bounds": [
+            0.5,
+            0.5
+          ]
+        }
+      },
+      "comparisons": {
+        "graph_full-tag_jaccard": {
+          "P@5": {
+            "queries": 1,
+            "mean_difference": 0.0,
+            "query_bootstrap_descriptive_interval95": [
+              0.0,
+              0.0
+            ],
+            "degenerate_n1": true
+          },
+          "strict_P@5": {
+            "queries": 1,
+            "mean_difference": 0.0,
+            "query_bootstrap_descriptive_interval95": [
+              0.0,
+              0.0
+            ],
+            "degenerate_n1": true
+          },
+          "pool_nDCG@5": {
+            "queries": 1,
+            "mean_difference": 0.0,
+            "query_bootstrap_descriptive_interval95": [
+              0.0,
+              0.0
+            ],
+            "degenerate_n1": true
+          },
+          "per_query_differences": [
+            {
+              "query_id": "F24",
+              "P@5": 0.0,
+              "strict_P@5": 0.0,
+              "pool_nDCG@5": 0.0
+            }
+          ]
+        },
+        "graph_full-graph_no_developer": {
+          "P@5": {
+            "queries": 1,
+            "mean_difference": 0.0,
+            "query_bootstrap_descriptive_interval95": [
+              0.0,
+              0.0
+            ],
+            "degenerate_n1": true
+          },
+          "strict_P@5": {
+            "queries": 1,
+            "mean_difference": 0.0,
+            "query_bootstrap_descriptive_interval95": [
+              0.0,
+              0.0
+            ],
+            "degenerate_n1": true
+          },
+          "pool_nDCG@5": {
+            "queries": 1,
+            "mean_difference": 0.0,
+            "query_bootstrap_descriptive_interval95": [
+              0.0,
+              0.0
+            ],
+            "degenerate_n1": true
+          },
+          "per_query_differences": [
+            {
+              "query_id": "F24",
+              "P@5": 0.0,
+              "strict_P@5": 0.0,
+              "pool_nDCG@5": 0.0
+            }
+          ]
+        },
+        "graph_full-graph_no_genre": {
+          "P@5": {
+            "queries": 1,
+            "mean_difference": 0.0,
+            "query_bootstrap_descriptive_interval95": [
+              0.0,
+              0.0
+            ],
+            "degenerate_n1": true
+          },
+          "strict_P@5": {
+            "queries": 1,
+            "mean_difference": 0.0,
+            "query_bootstrap_descriptive_interval95": [
+              0.0,
+              0.0
+            ],
+            "degenerate_n1": true
+          },
+          "pool_nDCG@5": {
+            "queries": 1,
+            "mean_difference": 0.0,
+            "query_bootstrap_descriptive_interval95": [
+              0.0,
+              0.0
+            ],
+            "degenerate_n1": true
+          },
+          "per_query_differences": [
+            {
+              "query_id": "F24",
+              "P@5": 0.0,
+              "strict_P@5": 0.0,
+              "pool_nDCG@5": 0.0
+            }
+          ]
+        }
+      }
+    },
+    "Casual/sparse_1_5": {
+      "total_queries": 2,
+      "complete_queries": 1,
+      "complete_fraction": 0.5,
+      "methods": {
+        "tag_jaccard": {
+          "P@5": 1.0,
+          "strict_P@5": 1.0,
+          "pool_nDCG@5": 1.0,
+          "returned_slots": 10,
+          "available_slots": 10,
+          "return_rate": 1.0,
+          "empty_slot_rate": 0.0,
+          "all_query_P@5_bounds": [
+            0.5,
+            1.0
+          ],
+          "all_query_strict_P@5_bounds": [
+            0.5,
+            1.0
+          ]
+        },
+        "graph_full": {
+          "P@5": 1.0,
+          "strict_P@5": 1.0,
+          "pool_nDCG@5": 1.0,
+          "returned_slots": 10,
+          "available_slots": 10,
+          "return_rate": 1.0,
+          "empty_slot_rate": 0.0,
+          "all_query_P@5_bounds": [
+            0.5,
+            1.0
+          ],
+          "all_query_strict_P@5_bounds": [
+            0.5,
+            1.0
+          ]
+        },
+        "graph_no_developer": {
+          "P@5": 1.0,
+          "strict_P@5": 1.0,
+          "pool_nDCG@5": 1.0,
+          "returned_slots": 10,
+          "available_slots": 10,
+          "return_rate": 1.0,
+          "empty_slot_rate": 0.0,
+          "all_query_P@5_bounds": [
+            0.5,
+            1.0
+          ],
+          "all_query_strict_P@5_bounds": [
+            0.5,
+            1.0
+          ]
+        },
+        "graph_no_genre": {
+          "P@5": 1.0,
+          "strict_P@5": 1.0,
+          "pool_nDCG@5": 1.0,
+          "returned_slots": 10,
+          "available_slots": 10,
+          "return_rate": 1.0,
+          "empty_slot_rate": 0.0,
+          "all_query_P@5_bounds": [
+            0.5,
+            1.0
+          ],
+          "all_query_strict_P@5_bounds": [
+            0.5,
+            1.0
+          ]
+        }
+      },
+      "comparisons": {
+        "graph_full-tag_jaccard": {
+          "P@5": {
+            "queries": 1,
+            "mean_difference": 0.0,
+            "query_bootstrap_descriptive_interval95": [
+              0.0,
+              0.0
+            ],
+            "degenerate_n1": true
+          },
+          "strict_P@5": {
+            "queries": 1,
+            "mean_difference": 0.0,
+            "query_bootstrap_descriptive_interval95": [
+              0.0,
+              0.0
+            ],
+            "degenerate_n1": true
+          },
+          "pool_nDCG@5": {
+            "queries": 1,
+            "mean_difference": 0.0,
+            "query_bootstrap_descriptive_interval95": [
+              0.0,
+              0.0
+            ],
+            "degenerate_n1": true
+          },
+          "per_query_differences": [
+            {
+              "query_id": "F21",
+              "P@5": 0.0,
+              "strict_P@5": 0.0,
+              "pool_nDCG@5": 0.0
+            }
+          ]
+        },
+        "graph_full-graph_no_developer": {
+          "P@5": {
+            "queries": 1,
+            "mean_difference": 0.0,
+            "query_bootstrap_descriptive_interval95": [
+              0.0,
+              0.0
+            ],
+            "degenerate_n1": true
+          },
+          "strict_P@5": {
+            "queries": 1,
+            "mean_difference": 0.0,
+            "query_bootstrap_descriptive_interval95": [
+              0.0,
+              0.0
+            ],
+            "degenerate_n1": true
+          },
+          "pool_nDCG@5": {
+            "queries": 1,
+            "mean_difference": 0.0,
+            "query_bootstrap_descriptive_interval95": [
+              0.0,
+              0.0
+            ],
+            "degenerate_n1": true
+          },
+          "per_query_differences": [
+            {
+              "query_id": "F21",
+              "P@5": 0.0,
+              "strict_P@5": 0.0,
+              "pool_nDCG@5": 0.0
+            }
+          ]
+        },
+        "graph_full-graph_no_genre": {
+          "P@5": {
+            "queries": 1,
+            "mean_difference": 0.0,
+            "query_bootstrap_descriptive_interval95": [
+              0.0,
+              0.0
+            ],
+            "degenerate_n1": true
+          },
+          "strict_P@5": {
+            "queries": 1,
+            "mean_difference": 0.0,
+            "query_bootstrap_descriptive_interval95": [
+              0.0,
+              0.0
+            ],
+            "degenerate_n1": true
+          },
+          "pool_nDCG@5": {
+            "queries": 1,
+            "mean_difference": 0.0,
+            "query_bootstrap_descriptive_interval95": [
+              0.0,
+              0.0
+            ],
+            "degenerate_n1": true
+          },
+          "per_query_differences": [
+            {
+              "query_id": "F21",
+              "P@5": 0.0,
+              "strict_P@5": 0.0,
+              "pool_nDCG@5": 0.0
+            }
+          ]
+        }
+      }
+    },
+    "RPG/dense_20_plus": {
+      "total_queries": 2,
+      "complete_queries": 2,
+      "complete_fraction": 1.0,
+      "methods": {
+        "tag_jaccard": {
+          "P@5": 0.6,
+          "strict_P@5": 0.4,
+          "pool_nDCG@5": 0.7578841464351604,
+          "returned_slots": 10,
+          "available_slots": 10,
+          "return_rate": 1.0,
+          "empty_slot_rate": 0.0,
+          "all_query_P@5_bounds": [
+            0.6,
+            0.6
+          ],
+          "all_query_strict_P@5_bounds": [
+            0.4,
+            0.4
+          ]
+        },
+        "graph_full": {
+          "P@5": 0.7,
+          "strict_P@5": 0.4,
+          "pool_nDCG@5": 0.8672789027575155,
+          "returned_slots": 10,
+          "available_slots": 10,
+          "return_rate": 1.0,
+          "empty_slot_rate": 0.0,
+          "all_query_P@5_bounds": [
+            0.7,
+            0.7
+          ],
+          "all_query_strict_P@5_bounds": [
+            0.4,
+            0.4
+          ]
+        },
+        "graph_no_developer": {
+          "P@5": 0.7,
+          "strict_P@5": 0.4,
+          "pool_nDCG@5": 0.8672789027575155,
+          "returned_slots": 10,
+          "available_slots": 10,
+          "return_rate": 1.0,
+          "empty_slot_rate": 0.0,
+          "all_query_P@5_bounds": [
+            0.7,
+            0.7
+          ],
+          "all_query_strict_P@5_bounds": [
+            0.4,
+            0.4
+          ]
+        },
+        "graph_no_genre": {
+          "P@5": 0.6,
+          "strict_P@5": 0.5,
+          "pool_nDCG@5": 0.8065735963827292,
+          "returned_slots": 10,
+          "available_slots": 10,
+          "return_rate": 1.0,
+          "empty_slot_rate": 0.0,
+          "all_query_P@5_bounds": [
+            0.6,
+            0.6
+          ],
+          "all_query_strict_P@5_bounds": [
+            0.5,
+            0.5
+          ]
+        }
+      },
+      "comparisons": {
+        "graph_full-tag_jaccard": {
+          "P@5": {
+            "queries": 2,
+            "mean_difference": 0.1,
+            "query_bootstrap_descriptive_interval95": [
+              0.0,
+              0.2
+            ],
+            "degenerate_n1": false
+          },
+          "strict_P@5": {
+            "queries": 2,
+            "mean_difference": 0.0,
+            "query_bootstrap_descriptive_interval95": [
+              0.0,
+              0.0
+            ],
+            "degenerate_n1": false
+          },
+          "pool_nDCG@5": {
+            "queries": 2,
+            "mean_difference": 0.10939475632235512,
+            "query_bootstrap_descriptive_interval95": [
+              -0.045278609927880686,
+              0.26406812257259094
+            ],
+            "degenerate_n1": false
+          },
+          "per_query_differences": [
+            {
+              "query_id": "F11",
+              "P@5": 0.2,
+              "strict_P@5": 0.0,
+              "pool_nDCG@5": 0.26406812257259094
+            },
+            {
+              "query_id": "F12",
+              "P@5": 0.0,
+              "strict_P@5": 0.0,
+              "pool_nDCG@5": -0.045278609927880686
+            }
+          ]
+        },
+        "graph_full-graph_no_developer": {
+          "P@5": {
+            "queries": 2,
+            "mean_difference": 0.0,
+            "query_bootstrap_descriptive_interval95": [
+              0.0,
+              0.0
+            ],
+            "degenerate_n1": false
+          },
+          "strict_P@5": {
+            "queries": 2,
+            "mean_difference": 0.0,
+            "query_bootstrap_descriptive_interval95": [
+              0.0,
+              0.0
+            ],
+            "degenerate_n1": false
+          },
+          "pool_nDCG@5": {
+            "queries": 2,
+            "mean_difference": 0.0,
+            "query_bootstrap_descriptive_interval95": [
+              0.0,
+              0.0
+            ],
+            "degenerate_n1": false
+          },
+          "per_query_differences": [
+            {
+              "query_id": "F11",
+              "P@5": 0.0,
+              "strict_P@5": 0.0,
+              "pool_nDCG@5": 0.0
+            },
+            {
+              "query_id": "F12",
+              "P@5": 0.0,
+              "strict_P@5": 0.0,
+              "pool_nDCG@5": 0.0
+            }
+          ]
+        },
+        "graph_full-graph_no_genre": {
+          "P@5": {
+            "queries": 2,
+            "mean_difference": 0.1,
+            "query_bootstrap_descriptive_interval95": [
+              0.0,
+              0.2
+            ],
+            "degenerate_n1": false
+          },
+          "strict_P@5": {
+            "queries": 2,
+            "mean_difference": -0.09999999999999998,
+            "query_bootstrap_descriptive_interval95": [
+              -0.19999999999999996,
+              0.0
+            ],
+            "degenerate_n1": false
+          },
+          "pool_nDCG@5": {
+            "queries": 2,
+            "mean_difference": 0.06070530637478633,
+            "query_bootstrap_descriptive_interval95": [
+              -0.14265750982301828,
+              0.26406812257259094
+            ],
+            "degenerate_n1": false
+          },
+          "per_query_differences": [
+            {
+              "query_id": "F11",
+              "P@5": 0.2,
+              "strict_P@5": 0.0,
+              "pool_nDCG@5": 0.26406812257259094
+            },
+            {
+              "query_id": "F12",
+              "P@5": 0.0,
+              "strict_P@5": -0.19999999999999996,
+              "pool_nDCG@5": -0.14265750982301828
+            }
+          ]
+        }
+      }
+    },
+    "RPG/sparse_1_5": {
+      "total_queries": 2,
+      "complete_queries": 1,
+      "complete_fraction": 0.5,
+      "methods": {
+        "tag_jaccard": {
+          "P@5": 1.0,
+          "strict_P@5": 0.8,
+          "pool_nDCG@5": 0.9125299483251055,
+          "returned_slots": 10,
+          "available_slots": 10,
+          "return_rate": 1.0,
+          "empty_slot_rate": 0.0,
+          "all_query_P@5_bounds": [
+            0.7,
+            0.8
+          ],
+          "all_query_strict_P@5_bounds": [
+            0.4,
+            0.5
+          ]
+        },
+        "graph_full": {
+          "P@5": 1.0,
+          "strict_P@5": 1.0,
+          "pool_nDCG@5": 1.0,
+          "returned_slots": 10,
+          "available_slots": 10,
+          "return_rate": 1.0,
+          "empty_slot_rate": 0.0,
+          "all_query_P@5_bounds": [
+            0.7,
+            0.8
+          ],
+          "all_query_strict_P@5_bounds": [
+            0.5,
+            0.6
+          ]
+        },
+        "graph_no_developer": {
+          "P@5": 1.0,
+          "strict_P@5": 0.8,
+          "pool_nDCG@5": 0.9125299483251055,
+          "returned_slots": 10,
+          "available_slots": 10,
+          "return_rate": 1.0,
+          "empty_slot_rate": 0.0,
+          "all_query_P@5_bounds": [
+            0.7,
+            0.8
+          ],
+          "all_query_strict_P@5_bounds": [
+            0.4,
+            0.5
+          ]
+        },
+        "graph_no_genre": {
+          "P@5": 1.0,
+          "strict_P@5": 1.0,
+          "pool_nDCG@5": 1.0,
+          "returned_slots": 10,
+          "available_slots": 10,
+          "return_rate": 1.0,
+          "empty_slot_rate": 0.0,
+          "all_query_P@5_bounds": [
+            0.7,
+            0.8
+          ],
+          "all_query_strict_P@5_bounds": [
+            0.5,
+            0.6
+          ]
+        }
+      },
+      "comparisons": {
+        "graph_full-tag_jaccard": {
+          "P@5": {
+            "queries": 1,
+            "mean_difference": 0.0,
+            "query_bootstrap_descriptive_interval95": [
+              0.0,
+              0.0
+            ],
+            "degenerate_n1": true
+          },
+          "strict_P@5": {
+            "queries": 1,
+            "mean_difference": 0.19999999999999996,
+            "query_bootstrap_descriptive_interval95": [
+              0.19999999999999996,
+              0.19999999999999996
+            ],
+            "degenerate_n1": true
+          },
+          "pool_nDCG@5": {
+            "queries": 1,
+            "mean_difference": 0.08747005167489452,
+            "query_bootstrap_descriptive_interval95": [
+              0.08747005167489452,
+              0.08747005167489452
+            ],
+            "degenerate_n1": true
+          },
+          "per_query_differences": [
+            {
+              "query_id": "F09",
+              "P@5": 0.0,
+              "strict_P@5": 0.19999999999999996,
+              "pool_nDCG@5": 0.08747005167489452
+            }
+          ]
+        },
+        "graph_full-graph_no_developer": {
+          "P@5": {
+            "queries": 1,
+            "mean_difference": 0.0,
+            "query_bootstrap_descriptive_interval95": [
+              0.0,
+              0.0
+            ],
+            "degenerate_n1": true
+          },
+          "strict_P@5": {
+            "queries": 1,
+            "mean_difference": 0.19999999999999996,
+            "query_bootstrap_descriptive_interval95": [
+              0.19999999999999996,
+              0.19999999999999996
+            ],
+            "degenerate_n1": true
+          },
+          "pool_nDCG@5": {
+            "queries": 1,
+            "mean_difference": 0.08747005167489452,
+            "query_bootstrap_descriptive_interval95": [
+              0.08747005167489452,
+              0.08747005167489452
+            ],
+            "degenerate_n1": true
+          },
+          "per_query_differences": [
+            {
+              "query_id": "F09",
+              "P@5": 0.0,
+              "strict_P@5": 0.19999999999999996,
+              "pool_nDCG@5": 0.08747005167489452
+            }
+          ]
+        },
+        "graph_full-graph_no_genre": {
+          "P@5": {
+            "queries": 1,
+            "mean_difference": 0.0,
+            "query_bootstrap_descriptive_interval95": [
+              0.0,
+              0.0
+            ],
+            "degenerate_n1": true
+          },
+          "strict_P@5": {
+            "queries": 1,
+            "mean_difference": 0.0,
+            "query_bootstrap_descriptive_interval95": [
+              0.0,
+              0.0
+            ],
+            "degenerate_n1": true
+          },
+          "pool_nDCG@5": {
+            "queries": 1,
+            "mean_difference": 0.0,
+            "query_bootstrap_descriptive_interval95": [
+              0.0,
+              0.0
+            ],
+            "degenerate_n1": true
+          },
+          "per_query_differences": [
+            {
+              "query_id": "F09",
+              "P@5": 0.0,
+              "strict_P@5": 0.0,
+              "pool_nDCG@5": 0.0
+            }
+          ]
+        }
+      }
+    },
+    "Simulation/dense_20_plus": {
+      "total_queries": 2,
+      "complete_queries": 1,
+      "complete_fraction": 0.5,
+      "methods": {
+        "tag_jaccard": {
+          "P@5": 1.0,
+          "strict_P@5": 0.8,
+          "pool_nDCG@5": 0.9891413446337513,
+          "returned_slots": 10,
+          "available_slots": 10,
+          "return_rate": 1.0,
+          "empty_slot_rate": 0.0,
+          "all_query_P@5_bounds": [
+            0.9,
+            1.0
+          ],
+          "all_query_strict_P@5_bounds": [
+            0.7,
+            0.8
+          ]
+        },
+        "graph_full": {
+          "P@5": 1.0,
+          "strict_P@5": 0.8,
+          "pool_nDCG@5": 0.9891413446337513,
+          "returned_slots": 10,
+          "available_slots": 10,
+          "return_rate": 1.0,
+          "empty_slot_rate": 0.0,
+          "all_query_P@5_bounds": [
+            0.9,
+            1.0
+          ],
+          "all_query_strict_P@5_bounds": [
+            0.7,
+            0.8
+          ]
+        },
+        "graph_no_developer": {
+          "P@5": 1.0,
+          "strict_P@5": 0.8,
+          "pool_nDCG@5": 0.9891413446337513,
+          "returned_slots": 10,
+          "available_slots": 10,
+          "return_rate": 1.0,
+          "empty_slot_rate": 0.0,
+          "all_query_P@5_bounds": [
+            0.9,
+            1.0
+          ],
+          "all_query_strict_P@5_bounds": [
+            0.7,
+            0.8
+          ]
+        },
+        "graph_no_genre": {
+          "P@5": 1.0,
+          "strict_P@5": 0.8,
+          "pool_nDCG@5": 1.0,
+          "returned_slots": 10,
+          "available_slots": 10,
+          "return_rate": 1.0,
+          "empty_slot_rate": 0.0,
+          "all_query_P@5_bounds": [
+            0.9,
+            1.0
+          ],
+          "all_query_strict_P@5_bounds": [
+            0.8,
+            0.9
+          ]
+        }
+      },
+      "comparisons": {
+        "graph_full-tag_jaccard": {
+          "P@5": {
+            "queries": 1,
+            "mean_difference": 0.0,
+            "query_bootstrap_descriptive_interval95": [
+              0.0,
+              0.0
+            ],
+            "degenerate_n1": true
+          },
+          "strict_P@5": {
+            "queries": 1,
+            "mean_difference": 0.0,
+            "query_bootstrap_descriptive_interval95": [
+              0.0,
+              0.0
+            ],
+            "degenerate_n1": true
+          },
+          "pool_nDCG@5": {
+            "queries": 1,
+            "mean_difference": 0.0,
+            "query_bootstrap_descriptive_interval95": [
+              0.0,
+              0.0
+            ],
+            "degenerate_n1": true
+          },
+          "per_query_differences": [
+            {
+              "query_id": "F19",
+              "P@5": 0.0,
+              "strict_P@5": 0.0,
+              "pool_nDCG@5": 0.0
+            }
+          ]
+        },
+        "graph_full-graph_no_developer": {
+          "P@5": {
+            "queries": 1,
+            "mean_difference": 0.0,
+            "query_bootstrap_descriptive_interval95": [
+              0.0,
+              0.0
+            ],
+            "degenerate_n1": true
+          },
+          "strict_P@5": {
+            "queries": 1,
+            "mean_difference": 0.0,
+            "query_bootstrap_descriptive_interval95": [
+              0.0,
+              0.0
+            ],
+            "degenerate_n1": true
+          },
+          "pool_nDCG@5": {
+            "queries": 1,
+            "mean_difference": 0.0,
+            "query_bootstrap_descriptive_interval95": [
+              0.0,
+              0.0
+            ],
+            "degenerate_n1": true
+          },
+          "per_query_differences": [
+            {
+              "query_id": "F19",
+              "P@5": 0.0,
+              "strict_P@5": 0.0,
+              "pool_nDCG@5": 0.0
+            }
+          ]
+        },
+        "graph_full-graph_no_genre": {
+          "P@5": {
+            "queries": 1,
+            "mean_difference": 0.0,
+            "query_bootstrap_descriptive_interval95": [
+              0.0,
+              0.0
+            ],
+            "degenerate_n1": true
+          },
+          "strict_P@5": {
+            "queries": 1,
+            "mean_difference": 0.0,
+            "query_bootstrap_descriptive_interval95": [
+              0.0,
+              0.0
+            ],
+            "degenerate_n1": true
+          },
+          "pool_nDCG@5": {
+            "queries": 1,
+            "mean_difference": -0.010858655366248748,
+            "query_bootstrap_descriptive_interval95": [
+              -0.010858655366248748,
+              -0.010858655366248748
+            ],
+            "degenerate_n1": true
+          },
+          "per_query_differences": [
+            {
+              "query_id": "F19",
+              "P@5": 0.0,
+              "strict_P@5": 0.0,
+              "pool_nDCG@5": -0.010858655366248748
+            }
+          ]
+        }
+      }
+    },
+    "Simulation/sparse_1_5": {
+      "total_queries": 2,
+      "complete_queries": 2,
+      "complete_fraction": 1.0,
+      "methods": {
+        "tag_jaccard": {
+          "P@5": 0.3,
+          "strict_P@5": 0.0,
+          "pool_nDCG@5": 0.3682948466079789,
+          "returned_slots": 10,
+          "available_slots": 10,
+          "return_rate": 1.0,
+          "empty_slot_rate": 0.0,
+          "all_query_P@5_bounds": [
+            0.3,
+            0.3
+          ],
+          "all_query_strict_P@5_bounds": [
+            0.0,
+            0.0
+          ]
+        },
+        "graph_full": {
+          "P@5": 0.3,
+          "strict_P@5": 0.0,
+          "pool_nDCG@5": 0.4159362318644413,
+          "returned_slots": 10,
+          "available_slots": 10,
+          "return_rate": 1.0,
+          "empty_slot_rate": 0.0,
+          "all_query_P@5_bounds": [
+            0.3,
+            0.3
+          ],
+          "all_query_strict_P@5_bounds": [
+            0.0,
+            0.0
+          ]
+        },
+        "graph_no_developer": {
+          "P@5": 0.3,
+          "strict_P@5": 0.0,
+          "pool_nDCG@5": 0.4159362318644413,
+          "returned_slots": 10,
+          "available_slots": 10,
+          "return_rate": 1.0,
+          "empty_slot_rate": 0.0,
+          "all_query_P@5_bounds": [
+            0.3,
+            0.3
+          ],
+          "all_query_strict_P@5_bounds": [
+            0.0,
+            0.0
+          ]
+        },
+        "graph_no_genre": {
+          "P@5": 0.3,
+          "strict_P@5": 0.0,
+          "pool_nDCG@5": 0.4159362318644413,
+          "returned_slots": 10,
+          "available_slots": 10,
+          "return_rate": 1.0,
+          "empty_slot_rate": 0.0,
+          "all_query_P@5_bounds": [
+            0.3,
+            0.3
+          ],
+          "all_query_strict_P@5_bounds": [
+            0.0,
+            0.0
+          ]
+        }
+      },
+      "comparisons": {
+        "graph_full-tag_jaccard": {
+          "P@5": {
+            "queries": 2,
+            "mean_difference": 0.0,
+            "query_bootstrap_descriptive_interval95": [
+              0.0,
+              0.0
+            ],
+            "degenerate_n1": false
+          },
+          "strict_P@5": {
+            "queries": 2,
+            "mean_difference": 0.0,
+            "query_bootstrap_descriptive_interval95": [
+              0.0,
+              0.0
+            ],
+            "degenerate_n1": false
+          },
+          "pool_nDCG@5": {
+            "queries": 2,
+            "mean_difference": 0.04764138525646239,
+            "query_bootstrap_descriptive_interval95": [
+              0.0,
+              0.09528277051292477
+            ],
+            "degenerate_n1": false
+          },
+          "per_query_differences": [
+            {
+              "query_id": "F17",
+              "P@5": 0.0,
+              "strict_P@5": 0.0,
+              "pool_nDCG@5": 0.09528277051292477
+            },
+            {
+              "query_id": "F18",
+              "P@5": 0.0,
+              "strict_P@5": 0.0,
+              "pool_nDCG@5": 0.0
+            }
+          ]
+        },
+        "graph_full-graph_no_developer": {
+          "P@5": {
+            "queries": 2,
+            "mean_difference": 0.0,
+            "query_bootstrap_descriptive_interval95": [
+              0.0,
+              0.0
+            ],
+            "degenerate_n1": false
+          },
+          "strict_P@5": {
+            "queries": 2,
+            "mean_difference": 0.0,
+            "query_bootstrap_descriptive_interval95": [
+              0.0,
+              0.0
+            ],
+            "degenerate_n1": false
+          },
+          "pool_nDCG@5": {
+            "queries": 2,
+            "mean_difference": 0.0,
+            "query_bootstrap_descriptive_interval95": [
+              0.0,
+              0.0
+            ],
+            "degenerate_n1": false
+          },
+          "per_query_differences": [
+            {
+              "query_id": "F17",
+              "P@5": 0.0,
+              "strict_P@5": 0.0,
+              "pool_nDCG@5": 0.0
+            },
+            {
+              "query_id": "F18",
+              "P@5": 0.0,
+              "strict_P@5": 0.0,
+              "pool_nDCG@5": 0.0
+            }
+          ]
+        },
+        "graph_full-graph_no_genre": {
+          "P@5": {
+            "queries": 2,
+            "mean_difference": 0.0,
+            "query_bootstrap_descriptive_interval95": [
+              0.0,
+              0.0
+            ],
+            "degenerate_n1": false
+          },
+          "strict_P@5": {
+            "queries": 2,
+            "mean_difference": 0.0,
+            "query_bootstrap_descriptive_interval95": [
+              0.0,
+              0.0
+            ],
+            "degenerate_n1": false
+          },
+          "pool_nDCG@5": {
+            "queries": 2,
+            "mean_difference": 0.0,
+            "query_bootstrap_descriptive_interval95": [
+              0.0,
+              0.0
+            ],
+            "degenerate_n1": false
+          },
+          "per_query_differences": [
+            {
+              "query_id": "F17",
+              "P@5": 0.0,
+              "strict_P@5": 0.0,
+              "pool_nDCG@5": 0.0
+            },
+            {
+              "query_id": "F18",
+              "P@5": 0.0,
+              "strict_P@5": 0.0,
+              "pool_nDCG@5": 0.0
+            }
+          ]
+        }
+      }
+    },
+    "Strategy/dense_20_plus": {
+      "total_queries": 2,
+      "complete_queries": 1,
+      "complete_fraction": 0.5,
+      "methods": {
+        "tag_jaccard": {
+          "P@5": 0.0,
+          "strict_P@5": 0.0,
+          "pool_nDCG@5": 0.0,
+          "returned_slots": 10,
+          "available_slots": 10,
+          "return_rate": 1.0,
+          "empty_slot_rate": 0.0,
+          "all_query_P@5_bounds": [
+            0.4,
+            0.4
+          ],
+          "all_query_strict_P@5_bounds": [
+            0.2,
+            0.2
+          ]
+        },
+        "graph_full": {
+          "P@5": 0.0,
+          "strict_P@5": 0.0,
+          "pool_nDCG@5": 0.0,
+          "returned_slots": 10,
+          "available_slots": 10,
+          "return_rate": 1.0,
+          "empty_slot_rate": 0.0,
+          "all_query_P@5_bounds": [
+            0.4,
+            0.5
+          ],
+          "all_query_strict_P@5_bounds": [
+            0.3,
+            0.4
+          ]
+        },
+        "graph_no_developer": {
+          "P@5": 0.0,
+          "strict_P@5": 0.0,
+          "pool_nDCG@5": 0.0,
+          "returned_slots": 10,
+          "available_slots": 10,
+          "return_rate": 1.0,
+          "empty_slot_rate": 0.0,
+          "all_query_P@5_bounds": [
+            0.4,
+            0.5
+          ],
+          "all_query_strict_P@5_bounds": [
+            0.3,
+            0.4
+          ]
+        },
+        "graph_no_genre": {
+          "P@5": 0.2,
+          "strict_P@5": 0.0,
+          "pool_nDCG@5": 0.6309297535714575,
+          "returned_slots": 10,
+          "available_slots": 10,
+          "return_rate": 1.0,
+          "empty_slot_rate": 0.0,
+          "all_query_P@5_bounds": [
+            0.4,
+            0.4
+          ],
+          "all_query_strict_P@5_bounds": [
+            0.2,
+            0.2
+          ]
+        }
+      },
+      "comparisons": {
+        "graph_full-tag_jaccard": {
+          "P@5": {
+            "queries": 1,
+            "mean_difference": 0.0,
+            "query_bootstrap_descriptive_interval95": [
+              0.0,
+              0.0
+            ],
+            "degenerate_n1": true
+          },
+          "strict_P@5": {
+            "queries": 1,
+            "mean_difference": 0.0,
+            "query_bootstrap_descriptive_interval95": [
+              0.0,
+              0.0
+            ],
+            "degenerate_n1": true
+          },
+          "pool_nDCG@5": {
+            "queries": 1,
+            "mean_difference": 0.0,
+            "query_bootstrap_descriptive_interval95": [
+              0.0,
+              0.0
+            ],
+            "degenerate_n1": true
+          },
+          "per_query_differences": [
+            {
+              "query_id": "F16",
+              "P@5": 0.0,
+              "strict_P@5": 0.0,
+              "pool_nDCG@5": 0.0
+            }
+          ]
+        },
+        "graph_full-graph_no_developer": {
+          "P@5": {
+            "queries": 1,
+            "mean_difference": 0.0,
+            "query_bootstrap_descriptive_interval95": [
+              0.0,
+              0.0
+            ],
+            "degenerate_n1": true
+          },
+          "strict_P@5": {
+            "queries": 1,
+            "mean_difference": 0.0,
+            "query_bootstrap_descriptive_interval95": [
+              0.0,
+              0.0
+            ],
+            "degenerate_n1": true
+          },
+          "pool_nDCG@5": {
+            "queries": 1,
+            "mean_difference": 0.0,
+            "query_bootstrap_descriptive_interval95": [
+              0.0,
+              0.0
+            ],
+            "degenerate_n1": true
+          },
+          "per_query_differences": [
+            {
+              "query_id": "F16",
+              "P@5": 0.0,
+              "strict_P@5": 0.0,
+              "pool_nDCG@5": 0.0
+            }
+          ]
+        },
+        "graph_full-graph_no_genre": {
+          "P@5": {
+            "queries": 1,
+            "mean_difference": -0.2,
+            "query_bootstrap_descriptive_interval95": [
+              -0.2,
+              -0.2
+            ],
+            "degenerate_n1": true
+          },
+          "strict_P@5": {
+            "queries": 1,
+            "mean_difference": 0.0,
+            "query_bootstrap_descriptive_interval95": [
+              0.0,
+              0.0
+            ],
+            "degenerate_n1": true
+          },
+          "pool_nDCG@5": {
+            "queries": 1,
+            "mean_difference": -0.6309297535714575,
+            "query_bootstrap_descriptive_interval95": [
+              -0.6309297535714575,
+              -0.6309297535714575
+            ],
+            "degenerate_n1": true
+          },
+          "per_query_differences": [
+            {
+              "query_id": "F16",
+              "P@5": -0.2,
+              "strict_P@5": 0.0,
+              "pool_nDCG@5": -0.6309297535714575
+            }
+          ]
+        }
+      }
+    },
+    "Strategy/sparse_1_5": {
+      "total_queries": 2,
+      "complete_queries": 2,
+      "complete_fraction": 1.0,
+      "methods": {
+        "tag_jaccard": {
+          "P@5": 0.5,
+          "strict_P@5": 0.5,
+          "pool_nDCG@5": 0.5,
+          "returned_slots": 10,
+          "available_slots": 10,
+          "return_rate": 1.0,
+          "empty_slot_rate": 0.0,
+          "all_query_P@5_bounds": [
+            0.5,
+            0.5
+          ],
+          "all_query_strict_P@5_bounds": [
+            0.5,
+            0.5
+          ]
+        },
+        "graph_full": {
+          "P@5": 0.5,
+          "strict_P@5": 0.5,
+          "pool_nDCG@5": 0.5,
+          "returned_slots": 10,
+          "available_slots": 10,
+          "return_rate": 1.0,
+          "empty_slot_rate": 0.0,
+          "all_query_P@5_bounds": [
+            0.5,
+            0.5
+          ],
+          "all_query_strict_P@5_bounds": [
+            0.5,
+            0.5
+          ]
+        },
+        "graph_no_developer": {
+          "P@5": 0.5,
+          "strict_P@5": 0.5,
+          "pool_nDCG@5": 0.5,
+          "returned_slots": 10,
+          "available_slots": 10,
+          "return_rate": 1.0,
+          "empty_slot_rate": 0.0,
+          "all_query_P@5_bounds": [
+            0.5,
+            0.5
+          ],
+          "all_query_strict_P@5_bounds": [
+            0.5,
+            0.5
+          ]
+        },
+        "graph_no_genre": {
+          "P@5": 0.5,
+          "strict_P@5": 0.5,
+          "pool_nDCG@5": 0.5,
+          "returned_slots": 10,
+          "available_slots": 10,
+          "return_rate": 1.0,
+          "empty_slot_rate": 0.0,
+          "all_query_P@5_bounds": [
+            0.5,
+            0.5
+          ],
+          "all_query_strict_P@5_bounds": [
+            0.5,
+            0.5
+          ]
+        }
+      },
+      "comparisons": {
+        "graph_full-tag_jaccard": {
+          "P@5": {
+            "queries": 2,
+            "mean_difference": 0.0,
+            "query_bootstrap_descriptive_interval95": [
+              0.0,
+              0.0
+            ],
+            "degenerate_n1": false
+          },
+          "strict_P@5": {
+            "queries": 2,
+            "mean_difference": 0.0,
+            "query_bootstrap_descriptive_interval95": [
+              0.0,
+              0.0
+            ],
+            "degenerate_n1": false
+          },
+          "pool_nDCG@5": {
+            "queries": 2,
+            "mean_difference": 0.0,
+            "query_bootstrap_descriptive_interval95": [
+              0.0,
+              0.0
+            ],
+            "degenerate_n1": false
+          },
+          "per_query_differences": [
+            {
+              "query_id": "F13",
+              "P@5": 0.0,
+              "strict_P@5": 0.0,
+              "pool_nDCG@5": 0.0
+            },
+            {
+              "query_id": "F14",
+              "P@5": 0.0,
+              "strict_P@5": 0.0,
+              "pool_nDCG@5": 0.0
+            }
+          ]
+        },
+        "graph_full-graph_no_developer": {
+          "P@5": {
+            "queries": 2,
+            "mean_difference": 0.0,
+            "query_bootstrap_descriptive_interval95": [
+              0.0,
+              0.0
+            ],
+            "degenerate_n1": false
+          },
+          "strict_P@5": {
+            "queries": 2,
+            "mean_difference": 0.0,
+            "query_bootstrap_descriptive_interval95": [
+              0.0,
+              0.0
+            ],
+            "degenerate_n1": false
+          },
+          "pool_nDCG@5": {
+            "queries": 2,
+            "mean_difference": 0.0,
+            "query_bootstrap_descriptive_interval95": [
+              0.0,
+              0.0
+            ],
+            "degenerate_n1": false
+          },
+          "per_query_differences": [
+            {
+              "query_id": "F13",
+              "P@5": 0.0,
+              "strict_P@5": 0.0,
+              "pool_nDCG@5": 0.0
+            },
+            {
+              "query_id": "F14",
+              "P@5": 0.0,
+              "strict_P@5": 0.0,
+              "pool_nDCG@5": 0.0
+            }
+          ]
+        },
+        "graph_full-graph_no_genre": {
+          "P@5": {
+            "queries": 2,
+            "mean_difference": 0.0,
+            "query_bootstrap_descriptive_interval95": [
+              0.0,
+              0.0
+            ],
+            "degenerate_n1": false
+          },
+          "strict_P@5": {
+            "queries": 2,
+            "mean_difference": 0.0,
+            "query_bootstrap_descriptive_interval95": [
+              0.0,
+              0.0
+            ],
+            "degenerate_n1": false
+          },
+          "pool_nDCG@5": {
+            "queries": 2,
+            "mean_difference": 0.0,
+            "query_bootstrap_descriptive_interval95": [
+              0.0,
+              0.0
+            ],
+            "degenerate_n1": false
+          },
+          "per_query_differences": [
+            {
+              "query_id": "F13",
+              "P@5": 0.0,
+              "strict_P@5": 0.0,
+              "pool_nDCG@5": 0.0
+            },
+            {
+              "query_id": "F14",
+              "P@5": 0.0,
+              "strict_P@5": 0.0,
+              "pool_nDCG@5": 0.0
+            }
+          ]
+        }
+      }
+    }
+  },
+  "coverage": {
+    "total_queries": 24,
+    "unique_pairs": 177,
+    "graded_pairs": 157,
+    "unknown_pairs": 20,
+    "unknown_rate": 0.11299435028248588,
+    "zero_idcg_queries": 2,
+    "empty_pool_queries": 0
+  },
+  "incomplete_strata": [
+    "Action/dense_20_plus",
+    "Action/sparse_1_5",
+    "Adventure/sparse_1_5",
+    "Casual/dense_20_plus",
+    "Casual/sparse_1_5",
+    "RPG/sparse_1_5",
+    "Simulation/dense_20_plus",
+    "Strategy/dense_20_plus"
+  ],
+  "interpretation": "AI生成的探索性标签；非真人评价。保留原评分，敏感性分析另存。上下界不是置信区间。",
+  "label_origin": "external_ai",
+  "formal_human_evaluation": false
+}

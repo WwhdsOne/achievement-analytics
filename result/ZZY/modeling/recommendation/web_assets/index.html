@@ -1,0 +1,26 @@
+<!doctype html>
+<html lang="zh-CN">
+<head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>游戏寻迹 · 可解释推荐</title><link rel="stylesheet" href="style.css"><script src="app.js" defer></script></head>
+<body>
+<header class="topbar"><a class="brand" href="../" aria-label="游戏寻迹首页"><span class="brand-mark">↗</span><span>游戏寻迹 <small>PLAY / TRACE</small></span></a><span class="offline"><i></i> 本次加载数据 · 标签基线</span></header>
+<main>
+  <section class="intro"><p class="eyebrow">EXPLORE WHAT CONNECTS</p><h1>从喜欢的游戏，<span>找到下一款。</span></h1><p class="subtitle">看推荐，也看它们为什么相连。</p></section>
+  <section class="query-panel" aria-label="推荐条件">
+    <div class="query-top"><div class="tabs" role="tablist" aria-label="查询方式"><button id="gameTab" role="tab" aria-selected="true" aria-controls="gameMode">喜欢的游戏</button><button id="tagTab" role="tab" aria-selected="false" aria-controls="tagMode">感兴趣的标签</button></div><button id="clear" class="quiet">清空</button></div>
+    <form id="queryForm">
+      <div class="input-row"><div class="query-input">
+        <div id="gameMode" role="tabpanel" aria-labelledby="gameTab"><label for="gameSearch">选择一款游戏</label><input id="gameSearch" placeholder="搜索中文名、英文名或 Steam appid" autocomplete="off" role="combobox" aria-autocomplete="list" aria-expanded="false" aria-controls="gameOptions"><div id="gameOptions" role="listbox" hidden></div></div>
+        <div id="tagMode" role="tabpanel" aria-labelledby="tagTab" hidden><label for="tagInput">添加喜欢的标签</label><div class="tag-entry"><input id="tagInput" list="tagOptions" placeholder="例如 RPG、Open World；按回车添加" autocomplete="off"><button id="addTag" type="button" class="secondary">添加</button></div><datalist id="tagOptions"></datalist><div id="selectedTags" class="tag-chips"></div><p class="hint">标签保留英文原名；可从列表选择，也可用逗号分隔多项。</p></div>
+      </div><div class="method-input"><label for="method">推荐方式</label><select id="method"><option value="jaccard">共同标签比例 · 原始基线</option><option value="coverage">优先满足我选的标签</option><option value="idf">突出更有区分度的标签</option></select></div><button id="recommend" type="submit" class="primary" disabled>寻找游戏 <span>↗</span></button></div>
+    </form>
+    <div class="examples"><span id="exampleLabel">试试这些游戏</span><div id="examples"></div></div>
+  </section>
+  <div id="status" role="status" aria-live="polite">正在读取本地游戏列表…</div><div id="error" role="alert" hidden><span></span><button id="retry">重试</button></div>
+  <section id="workspace" hidden>
+    <div class="results-panel"><div class="section-heading"><div><p class="eyebrow">YOUR NEXT DISCOVERY</p><h2>这些游戏，和你的选择有联系</h2></div><span id="resultCount" class="count"></span></div><p id="querySummary" class="context"></p><div id="cards"></div></div>
+    <aside class="graph-panel"><div class="section-heading"><div><p class="eyebrow">FOLLOW THE CONNECTIONS</p><h2>顺着标签，看看理由</h2></div><span class="graph-badge">关系图</span></div><p class="context">点击游戏或标签，查看它连向了谁。</p><div class="legend"><span><i class="seed-dot"></i>你的选择</span><span><i class="tag-dot"></i>共同标签</span><span><i class="game-dot"></i>推荐游戏</span></div><div class="graph-scroll"><svg id="graph" viewBox="0 0 720 520" role="img" aria-label="游戏与共同标签的连接图"></svg></div><p id="graphSelection" class="selection-note">点选一个节点，追踪它的连接。</p><p id="graphNote" class="hint"></p><p class="mobile-note">可横向滑动查看完整关系图。</p></aside>
+  </section>
+  <section id="empty" class="empty-panel" hidden><span>⌁</span><h2>还没有找到共同标签</h2><p>试着减少标签，或换一个选择。未知标签不会被悄悄忽略。</p></section>
+  <details class="about"><summary>这些推荐是怎样得出的？</summary><p>共同标签比例比较两组标签的交集与并集；匹配优先先看请求标签的覆盖率；IDF会降低通用标签的权重。分数表示标签关系，不是喜欢概率，也不能保证玩法相同。</p><p>关系图仅连接真实共同标签，最多显示8个；完整共同点和缺少的标签在每张卡片中。数据来自2026年前发售游戏的固定快照，没有使用你的个人游玩历史。</p><p id="dataset"></p></details>
+</main><footer><span>游戏寻迹 · 可解释推荐实验</span><span>看见依据，再做选择。</span></footer>
+</body></html>
