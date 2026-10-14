@@ -204,6 +204,20 @@
   .fade { animation: fade .9s ease both; }
   @keyframes fade { from { opacity: 0; transform: translateY(6px); } to { opacity: 1; transform: none; } }
   @media (prefers-reduced-motion: reduce) { .fade { animation: none; } .fill { transition: none; } }
+
+  /* ── 页脚备案号 ──
+     body 底色是 #E3E2DC、卡片才是 --PAPER，页脚直接落在底色上。
+     颜色取同色板里深一档的 --L3：--MUTED 在这个底上只有 2.5:1 对比度，
+     备案号是必显信息，太淡不合适；--L3 约 4.2:1，既看得清又仍是安静的页脚。 */
+  footer.icp {
+    max-width: 920px;              /* 与 .wrap 同宽，跟正文列对齐 */
+    margin: 4px auto 0;
+    text-align: center;
+    font-size: 11px; letter-spacing: .04em;
+    color: var(--L3);
+  }
+  footer.icp a { color: inherit; text-decoration: none; }
+  footer.icp a:hover { color: var(--INK); text-decoration: underline; }
 </style>
 <link rel="stylesheet" href="/assets/analysis.css">
 </head>
@@ -339,6 +353,12 @@
   </div>
 
 </div>
+
+<!-- 页脚备案号：服务在公网可访问，国内主机需要展示 ICP 备案号。
+     按通行做法链到工信部备案系统；样式跟随页面底色，不额外做容器。 -->
+<footer class="icp">
+  <a href="https://beian.miit.gov.cn/" target="_blank" rel="noopener noreferrer">京ICP备2025120689号-1</a>
+</footer>
 
 <script>
 const $ = id => document.getElementById(id);
