@@ -2,7 +2,7 @@
 
 2026-10-14链路调整：本文件仅描述独立的数据准备，日常DeepSeek分类不连接远端。import_snapshot.py的完成率转换已改从local_database.py读取，旧probe依赖已解除；既有冻结清单、批次与checkpoint保持不变。当前分类执行见[PROCESS.md](PROCESS.md)，历史主线审核/分析表述不属于最新任务。
 
-下文“本轮迁移”指2026-10-14已完成的前1000款导入；其中124项FF7成就/127条旧类型及旧运行目录是当时记录，不是当前DeepSeek进度。最新表结构、类型数量和分类完成状态见[DATABASE.md](DATABASE.md)。该历史任务的schema版本2 checkpoint不改写为当前版本3。
+下文“本轮迁移”指2026-10-14已完成的前1000款导入；其中124项FF7成就/127条旧类型及旧运行目录是当时记录，不是当前DeepSeek进度。最新表结构、类型数量和分类完成状态见[DATABASE.md](DATABASE.md)。该历史任务的schema版本2 checkpoint仍保留版本2，不改写为当前版本4。
 
 实现日期：2026-10-14。程序为[import_snapshot.py](../process/import_snapshot.py)。所有文件和SQLite写入仅限result/LYX；共享PostgreSQL只读，不调用worker、源API、配额登记、云端建表或修复程序。
 
@@ -23,11 +23,11 @@
 | games | games | appid、name_en、name_zh |
 | games_details | steam_appdetails | is_free、price_cents、release_date、valve_genres |
 | games_rate | store_search_games + rawg_games | review_label、review_percent、review_count、metacritic、rating |
-| games_time | rawg_games | playtime；不调用攻略网站、不填guide字段 |
+| games_time | rawg_games | 仅更新playtime；现有HLTB三列与guide_difficulty均保留，不调用攻略网站 |
 | achievements | achievements | appid、position、api_name、display_name、description、percent |
-| achievement_types | 本地已有结果 | 不生成新分类，保护已有type/method/confidence；当前版本3重写标签时同步原始成就display_name |
+| achievement_types | 本地已有结果 | 不生成新分类，保护已有type/method/confidence；当前版本4重写标签时同步原始成就display_name |
 
-当前本地schema版本3；旧版2的已完成checkpoint/备份属于历史产物，不改写其版本。程序继续拒绝跨schema版本续跑；需要再次导入时使用新的运行目录。日常成就分类不需要重新导入或连接远端。
+当前本地schema版本4，HLTB时长迁移见[HLTB_TIME.md](HLTB_TIME.md)；旧版2/3的checkpoint和备份属于历史产物，不改写其版本。程序继续拒绝跨schema版本续跑；需要再次导入时使用新的运行目录。日常成就分类不需要重新导入或连接远端。
 
 valve_genres使用local_database.py的CSV转义竖线分隔文本转换。BOOLEAN转0/1，DATE转YYYY-MM-DD，完成率保持两位小数；不把NULL补成0。SQLite字段结构不变，不新增game_tags、不存JSON列。
 
@@ -72,7 +72,7 @@ uv run --frozen --no-sync python -X utf8 -B process/import_snapshot.py --select-
 uv run --frozen --no-sync python -X utf8 -B process/import_snapshot.py --batch-size 50
 ~~~
 
-若新版本3导入中途暂停，可用该次输出的run_dir续跑。下列目录名须替换为你这次新导入的实际目录，不能使用历史版本2目录：
+若新版本4导入中途暂停，可用该次输出的run_dir续跑。下列目录名须替换为你这次新导入的实际目录，不能使用历史版本2/3目录：
 
 ~~~powershell
 uv run --frozen --no-sync python -X utf8 -B process/import_snapshot.py --resume --run-dir "process/runtime/remote_import/你的本轮目录名"

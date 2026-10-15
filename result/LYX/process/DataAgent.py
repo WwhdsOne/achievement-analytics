@@ -11,7 +11,6 @@ from collections import Counter
 from contextlib import closing, contextmanager
 from dataclasses import dataclass, field
 from datetime import datetime, timezone
-import csv
 import difflib
 import hashlib
 import json
@@ -28,6 +27,8 @@ from urllib.parse import urlsplit
 import httpx
 from dotenv import dotenv_values
 
+from deepseek_transport import AsyncHTTPTransport, TransportTimeout
+from datacache import DEFAULT_DATACACHE, update_datacache, write_classification_csv
 from game_intro import GAME_INTRO_PROMPT_VERSION, INTRO_MAX_TOKENS, INTRO_TASK, cached_intro, get_intro
 from local_database import (
     DEFAULT_DATABASE, DEFAULT_MIN_CONFIDENCE, TYPES, WORKSPACE, connect_local, decode_genres,
@@ -71,21 +72,27 @@ types是非空数组，每项只含type和confidence；类型来自上述闭集�
 confidence为各类0～1有限数，是自报置信度，不是准确率。
 reason为非空中文说明，最多40字符；uncertainty最多40字符，无具体疑点可为空。
 knowledge_used是布尔值，true时uncertainty非空。
-evidence为1～2个非空原文片段，每段最多150字符。
+evidence为1～2个非空原文片段，每段必须少于500字符。
 不输出主线顺序、参与深度或额外字段。
 json格式示例：
 {"achievements":[{"id":"a0001","types":[{"type":"unknown","confidence":0.3}],"evidence":["本项输入中的逐字片段"],"reason":"文本不足以确定具体条件","uncertainty":"缺少完成条件","knowledge_used":false}]}
 """
-PROMPT_VERSION = "lyx-deepseek-whole-game-v5"
-EVIDENCE_MAX_CHARS = 150
-# v5仅放宽引用长度；相同游戏/输入/模型/参数的v4响应可通过新校验后复用。
-COMPATIBLE_PROMPT_VERSION = "lyx-deepseek-whole-game-v4"
-COMPATIBLE_CLASSIFICATION_PROMPT = CLASSIFICATION_PROMPT.replace("每段最多150字符", "每段最多60字符")
+PROMPT_VERSION = "lyx-deepseek-whole-game-v6"
+EVIDENCE_MAX_CHARS = 500  # 严格小于此值，含空格与标点。
+# 只兼容引用长度规则不同的完整旧请求；所有响应仍须通过当前校验。
+COMPATIBLE_CLASSIFICATION_PROMPTS = (
+    ("lyx-deepseek-whole-game-v5", CLASSIFICATION_PROMPT.replace("每段必须少于500字符", "每段最多150字符")),
+    ("lyx-deepseek-whole-game-v4", CLASSIFICATION_PROMPT.replace("每段必须少于500字符", "每段最多60字符")),
+)
 CLASSIFICATION_TASK = "achievement_classification"
 USAGE_FIELDS = ("prompt_tokens", "completion_tokens", "total_tokens", "prompt_cache_hit_tokens", "prompt_cache_miss_tokens")
 PROJECT_ROOT = WORKSPACE.parents[1]
 RUNTIME = WORKSPACE / "process" / "runtime" / "deepseek"
 DEFAULT_APPIDS = WORKSPACE / "database" / "data" / "top1000_appids.json"
+INTRO_TOTAL_TIMEOUT_SECONDS = 90.0
+CLASSIFICATION_TOTAL_TIMEOUT_SECONDS = 300.0
+PROGRESS_INTERVAL_SECONDS = 15.0
+MAX_CONSECUTIVE_TIMEOUTS = 3
 Json = dict[str, Any]
 
 
@@ -95,6 +102,32 @@ class AgentError(RuntimeError):
 
 class BudgetReached(AgentError):
     """真实 HTTP 请求预算已经耗尽，已保存结果和缓存仍可使用。"""
+
+
+class ResponseValidationError(AgentError):
+    """HTTP200的模型响应不合规；保留原始响应，只跳过当前游戏。"""
+
+    def __init__(self, message: str, *, task: str, request_hash: str, receipt: str, prompt_version: str) -> None:
+        """携带已落盘响应的位置，供游戏失败报告与后续恢复使用。"""
+        super().__init__(message)
+        self.task = task
+        self.request_hash = request_hash
+        self.receipt = receipt
+        self.prompt_version = prompt_version
+
+
+class RequestTimeoutError(AgentError):
+    """请求超过总时限或读取超时；留档后跳过本款，不自动重发。"""
+
+    def __init__(self, message: str, *, task: str, request_hash: str, receipt: str,
+                 prompt_version: str, kind: str) -> None:
+        """记录超时类型、任务及响应位置，供批处理隔离与暂停判断。"""
+        super().__init__(message)
+        self.task = task
+        self.request_hash = request_hash
+        self.receipt = receipt
+        self.prompt_version = prompt_version
+        self.kind = kind
 
 
 def canonical(value: Any) -> str:
@@ -324,7 +357,7 @@ def validate_classification(data: Any, rows: list[Json]) -> Json:
             name, score = tag["type"], tag["confidence"]
             if not isinstance(name, str) or name not in TYPES or name in names:
                 raise AgentError("类型越界或重复")
-            if type(score) not in (int, float) or not math.isfinite(score) or not 0 <= score <= 1:
+            if type(score) not in (int, float) or not 0 <= score <= 1 or not math.isfinite(score):
                 raise AgentError("类型置信度必须是0～1有限数")
             names.add(name)
         if "unknown" in names and len(names) != 1:
@@ -342,8 +375,8 @@ def validate_classification(data: Any, rows: list[Json]) -> Json:
         for quote in evidence:
             if not isinstance(quote, str) or not quote.strip():
                 raise AgentError(f"{context}: evidence引用必须为非空文本")
-            if len(quote) > EVIDENCE_MAX_CHARS:
-                raise AgentError(f"{context}: evidence引用长度{len(quote)}字符，超过{EVIDENCE_MAX_CHARS}字符上限")
+            if len(quote) >= EVIDENCE_MAX_CHARS:
+                raise AgentError(f"{context}: evidence引用长度{len(quote)}字符，必须小于{EVIDENCE_MAX_CHARS}字符")
             if not (quote in original["display_name"] or quote in (original["description"] or "")):
                 raise AgentError(f"{context}: evidence必须逐字引用本成就输入文本")
     if found != set(expected):
@@ -376,7 +409,10 @@ def numeric_usage(body: Any) -> dict[str, int]:
 class DeepSeekClient:
     """串行 HTTP、成功响应复用、调用凭据脱敏以及包括重试的请求预算。"""
 
-    def __init__(self, settings: Settings, runtime: Path, max_requests: int, max_tokens: int, timeout_seconds: float = 300) -> None:
+    def __init__(self, settings: Settings, runtime: Path, max_requests: int, max_tokens: int, timeout_seconds: float = 300,
+                 *, intro_total_timeout_seconds: float = INTRO_TOTAL_TIMEOUT_SECONDS,
+                 classification_total_timeout_seconds: float = CLASSIFICATION_TOTAL_TIMEOUT_SECONDS,
+                 transport: AsyncHTTPTransport | None = None) -> None:
         self.settings = settings
         self.runtime = workspace_path(runtime)
         self.limit = max_requests
@@ -384,7 +420,15 @@ class DeepSeekClient:
         self.requests = 0
         self.cache_hits = 0
         self.receipts: list[Json] = []
-        self.http = httpx.Client(timeout=httpx.Timeout(timeout_seconds, connect=15), follow_redirects=False)
+        self.total_timeouts = {INTRO_TASK: intro_total_timeout_seconds,
+                               CLASSIFICATION_TASK: classification_total_timeout_seconds,
+                               "connection": intro_total_timeout_seconds}
+        self.consecutive_timeouts = {task: 0 for task in self.total_timeouts}
+        self.progress_path: Path | None = None
+        self.active_game: Json = {}
+        self.last_progress: Json = {}
+        self.http = transport or AsyncHTTPTransport(read_timeout_seconds=timeout_seconds,
+                                                    progress_interval_seconds=PROGRESS_INTERVAL_SECONDS)
 
     def close(self) -> None:
         """关闭 HTTP 连接池。"""
@@ -402,13 +446,14 @@ class DeepSeekClient:
                        "task": task, "prompt_version": prompt_version, "payload": payload})
 
     def cached(self, payload: Json, validator: Callable[[Any], Json], *, task: str = CLASSIFICATION_TASK, prompt_version: str = PROMPT_VERSION) -> Json | None:
-        """重新校验200响应；v5仅兼容引用长度放宽前的完整v4请求，不改旧文件。"""
+        """优先当前响应；精确匹配的v5/v4旧请求按当前规则重校验，不改旧文件。"""
         candidates = [(payload, prompt_version)]
-        if (task == CLASSIFICATION_TASK and prompt_version == PROMPT_VERSION == "lyx-deepseek-whole-game-v5"
+        if (task == CLASSIFICATION_TASK and prompt_version == PROMPT_VERSION == "lyx-deepseek-whole-game-v6"
                 and payload.get("messages") and payload["messages"][0] == {"role": "system", "content": CLASSIFICATION_PROMPT}):
-            legacy_messages = [dict(message) for message in payload["messages"]]
-            legacy_messages[0]["content"] = COMPATIBLE_CLASSIFICATION_PROMPT
-            candidates.append(({**payload, "messages": legacy_messages}, COMPATIBLE_PROMPT_VERSION))
+            for legacy_version, legacy_prompt in COMPATIBLE_CLASSIFICATION_PROMPTS:
+                legacy_messages = [dict(message) for message in payload["messages"]]
+                legacy_messages[0]["content"] = legacy_prompt
+                candidates.append(({**payload, "messages": legacy_messages}, legacy_version))
         for candidate, source_version in candidates:
             request_hash = self.request_hash(candidate, task=task, prompt_version=source_version)
             root = workspace_path(self.runtime / "cache" / request_hash)
@@ -419,6 +464,7 @@ class DeepSeekClient:
                 try:
                     receipt = strict_json(path.read_text(encoding="utf-8"))
                     if (receipt.get("request_hash") != request_hash or receipt.get("http_status") != 200
+                            or receipt.get("response_complete", True) is not True
                             or receipt.get("payload") != candidate):
                         continue
                     body = strict_json(receipt["response_text"])
@@ -431,7 +477,7 @@ class DeepSeekClient:
         return None
 
     def call(self, messages: list[Json], validator: Callable[[Any], Json], *, max_tokens: int | None = None, task: str = CLASSIFICATION_TASK, prompt_version: str = PROMPT_VERSION) -> Json:
-        """仅网络连接失败/5xx退避重试；429挂起、契约错误停止，避免同提示词烧钱。"""
+        """完整缓存优先；总时限包含重试与退避，超时不重发，部分响应不入缓存。"""
         payload = self.payload(messages, max_tokens)
         prior = self.cached(payload, validator, task=task, prompt_version=prompt_version)
         if prior:
@@ -443,29 +489,96 @@ class DeepSeekClient:
             raise AgentError("缺少 DEEPSEEK_API_KEY；plan 不需要key")
         request_hash = self.request_hash(payload, task=task, prompt_version=prompt_version)
         root = workspace_path(self.runtime / "cache" / request_hash)
-        for attempt in range(1, 4):
+        total_timeout = self.total_timeouts[task]
+        started_monotonic = time.monotonic()
+        deadline = started_monotonic + total_timeout
+        last_log_at = float("-inf")
+
+        def publish(snapshot: Json) -> None:
+            nonlocal last_log_at
+            progress = {**snapshot, **self.active_game, "task": task, "attempt": attempt,
+                        "request_count": self.requests, "max_requests": self.limit,
+                        "request_hash": request_hash, "receipt": str(path),
+                        "total_timeout_seconds": total_timeout}
+            self.last_progress = progress
+            if self.progress_path is not None:
+                write_json(self.progress_path, progress)
+            current = time.monotonic()
+            if (current - last_log_at >= PROGRESS_INTERVAL_SECONDS
+                    or snapshot["phase"] in ("timeout", "interrupted", "retry_wait", "error")):
+                last_log_at = current
+                print(f'DeepSeek task={task} request={self.requests}/{self.limit} attempt={attempt} '
+                      f'game={self.active_game.get("name_en", "-")} phase={snapshot["phase"]} '
+                      f'elapsed={snapshot["elapsed_seconds"]:.1f}s remaining={snapshot["remaining_seconds"]:.1f}s '
+                      f'bytes={snapshot.get("received_bytes", 0)} '
+                      f'non_whitespace={snapshot.get("has_non_whitespace_body", False)}', file=sys.stderr, flush=True)
+
+        def finish_progress(phase: str, snapshot: Json | None = None) -> Json:
+            progress = {**(snapshot or self.last_progress), "phase": phase, "updated_at": now(),
+                        "elapsed_seconds": round(time.monotonic() - started_monotonic, 3),
+                        "remaining_seconds": round(max(0.0, deadline - time.monotonic()), 3)}
+            receipt["progress"] = progress
+            publish(progress)
+            return progress
+
+        def timed_out(kind: str, snapshot: Json | None = None, partial: str = "") -> None:
+            progress = finish_progress("timeout", snapshot)
+            message = (f"{task}超过{total_timeout:g}秒总时限（含重试与退避）" if kind == "total"
+                       else f"{task}等待响应数据时发生读取超时")
+            receipt.update(state="timeout", timeout_kind=kind, error=message, finished_at=now(),
+                           response_complete=bool(receipt.get("response_complete", False)), usage_unknown=True)
+            if progress.get("http_status") is not None:
+                receipt["http_status"] = progress["http_status"]
+                receipt["retry_after"] = progress.get("retry_after", "")
+            if not receipt["response_complete"]:
+                receipt["partial_response_text"] = partial.replace(self.settings.api_key, "[REDACTED]")
+            write_json(path, receipt)
+            self.consecutive_timeouts[task] += 1
+            raise RequestTimeoutError(message, task=task, request_hash=request_hash, receipt=str(path),
+                                      prompt_version=prompt_version, kind=kind)
+
+        for next_attempt in range(1, 4):
+            if next_attempt > 1 and time.monotonic() >= deadline:
+                timed_out("total")
             if self.requests >= self.limit:
                 raise BudgetReached("真实请求上限已到达")
-            self.requests += 1
+            previous_attempt = (receipt, path, attempt) if next_attempt > 1 else None
+            attempt = next_attempt
             receipt: Json = {"request_hash": request_hash, "task": task, "prompt_version": prompt_version,
-                             "payload": payload, "attempt": attempt, "started_at": now(), "state": "running"}
+                             "payload": payload, "attempt": attempt, "started_at": now(), "state": "running",
+                             "response_complete": False, "total_timeout_seconds": total_timeout,
+                             "usage": {}, "usage_unknown": True}
             stamp = datetime.now(timezone.utc).strftime("%Y%m%dT%H%M%S%fZ")
             path = workspace_path(root / f"receipt-{stamp}.json")
             write_json(path, receipt)
+            if previous_attempt is not None and time.monotonic() >= deadline:
+                receipt.update(state="not_sent", finished_at=now(),
+                               error="准备重试时总时限已耗尽，未发送HTTP请求")
+                write_json(path, receipt)
+                receipt, path, attempt = previous_attempt
+                timed_out("total")
+            if attempt == 1:
+                started_monotonic = time.monotonic()
+                deadline = started_monotonic + total_timeout
+            self.last_progress = {}
+            self.requests += 1
             self.receipts.append(receipt)
-            print(f"DeepSeek task={task} request={self.requests}/{self.limit} attempt={attempt}", file=sys.stderr, flush=True)
             retry = False
             try:
-                response = self.http.post(self.settings.base_url + "/chat/completions",
-                                          headers={"Authorization": "Bearer " + self.settings.api_key}, json=payload)
+                response = self.http.request(
+                    self.settings.base_url + "/chat/completions",
+                    headers={"Authorization": "Bearer " + self.settings.api_key}, payload=payload,
+                    deadline=deadline, started_monotonic=started_monotonic, on_progress=publish,
+                )
                 receipt["http_status"] = response.status_code
                 receipt["response_text"] = response.text.replace(self.settings.api_key, "[REDACTED]")
-                receipt["retry_after"] = response.headers.get("Retry-After", "")
+                receipt["retry_after"] = response.retry_after
                 receipt["state"] = "received"
                 receipt["finished_at"] = now()
+                receipt["response_complete"] = True
+                receipt["progress"] = dict(self.last_progress)
                 write_json(path, receipt)  # 先保存响应，校验或写库失败也可重新使用
-                body = strict_json(receipt["response_text"]) if response.status_code == 200 else None
-                receipt["usage"] = numeric_usage(body)
+                receipt["usage"] = {}
                 if response.status_code == 429:
                     raise AgentError("DeepSeek HTTP 429：本轮挂起，请按 receipt 的 Retry-After 稍后续跑")
                 if response.status_code >= 500:
@@ -473,15 +586,33 @@ class DeepSeekClient:
                     raise AgentError(f"DeepSeek HTTP {response.status_code}：服务端错误")
                 if response.status_code != 200:
                     raise AgentError(f"DeepSeek HTTP {response.status_code}：检查认证、余额或请求配置")
-                result = validator(response_result(body))
+                self.consecutive_timeouts[task] = 0
+                try:
+                    body = strict_json(receipt["response_text"])
+                    receipt["usage"] = numeric_usage(body)
+                    receipt["usage_unknown"] = not all(key in receipt["usage"] for key in USAGE_FIELDS[:3])
+                    result = validator(response_result(body))
+                except (AgentError, ValueError) as exc:
+                    raise ResponseValidationError(
+                        f"{task}响应校验失败：{exc}", task=task, request_hash=request_hash,
+                        receipt=str(path), prompt_version=prompt_version,
+                    ) from exc
                 receipt["state"] = "success"
+                finish_progress("success")
                 write_json(path, receipt)
                 return {"result": result, "request_hash": request_hash, "receipt": str(path),
                         "usage": receipt["usage"], "cached": False, "task": task, "prompt_version": prompt_version}
+            except TransportTimeout as exc:
+                timed_out(exc.kind, exc.progress, exc.partial_response_text)
             except httpx.ConnectError as exc:
                 retry = "CERTIFICATE_VERIFY_FAILED" not in str(exc)
                 error = AgentError("DeepSeek 建立连接失败；保留TLS证书校验")
             except httpx.HTTPError:
+                receipt["partial_response_text"] = self.http.partial_response_text.replace(self.settings.api_key, "[REDACTED]")
+                if self.http.last_progress.get("http_status") is not None:
+                    receipt["http_status"] = self.http.last_progress["http_status"]
+                    receipt["retry_after"] = self.http.last_progress.get("retry_after", "")
+                self.last_progress.update(self.http.last_progress)
                 error = AgentError("DeepSeek 传输失败/超时；服务端可能已处理，停止自动重发")
             except AgentError as exc:
                 error = exc
@@ -490,18 +621,34 @@ class DeepSeekClient:
             except KeyboardInterrupt:
                 receipt["state"] = "interrupted"
                 receipt["finished_at"] = now()
+                receipt["partial_response_text"] = self.http.partial_response_text.replace(self.settings.api_key, "[REDACTED]")
+                if self.http.last_progress.get("http_status") is not None:
+                    receipt["http_status"] = self.http.last_progress["http_status"]
+                    receipt["retry_after"] = self.http.last_progress.get("retry_after", "")
+                finish_progress("interrupted", self.http.last_progress)
                 write_json(path, receipt)
                 raise
             receipt.update(state="error", error=str(error), finished_at=now())
+            finish_progress("response_error" if isinstance(error, ResponseValidationError) else "error")
             write_json(path, receipt)
             if not retry or attempt == 3 or self.requests >= self.limit:
                 raise error
-            time.sleep(2 ** attempt)
+            delay = min(2 ** attempt, max(0.0, deadline - time.monotonic()))
+            finish_progress("retry_wait")
+            try:
+                time.sleep(delay)
+            except KeyboardInterrupt:
+                receipt.update(state="interrupted", finished_at=now())
+                finish_progress("interrupted")
+                write_json(path, receipt)
+                raise
+            if time.monotonic() >= deadline:
+                timed_out("total")
         raise AgentError("DeepSeek 请求失败")
 
 
 def classification_rows(game: Json, rows: list[Json], reply: Json, threshold: float) -> list[Json]:
-    """关联SQLite身份，保留全部标签并单列严格通过门槛及未通过的标签。"""
+    """关联SQLite身份，按大于等于门槛分开记录合格及未通过的标签。"""
     by_id = {label["id"]: label for label in reply["result"]["achievements"]}
     output: list[Json] = []
     for row in rows:
@@ -517,32 +664,6 @@ def classification_rows(game: Json, rows: list[Json], reply: Json, threshold: fl
                        "reason": label["reason"], "uncertainty": label["uncertainty"],
                        "request_hash": reply["request_hash"]})
     return output
-
-
-def write_classification_csv(path: Path, records: list[Json]) -> None:
-    """导出全部模型标签，每类一行，区分通过门槛和实际SQLite写入结果。"""
-    target = workspace_path(path)
-    temporary = workspace_path(target.with_name(target.name + ".tmp"))
-    fields = ["appid", "name_en", "api_name", "display_name", "description", "type", "method", "confidence",
-              "status", "sqlite_outcome", "confidence_passed", "label_sqlite_outcome",
-              "knowledge_used", "evidence", "reason", "uncertainty", "request_hash"]
-    with temporary.open("w", encoding="utf-8-sig", newline="") as handle:
-        writer = csv.DictWriter(handle, fieldnames=fields)
-        writer.writeheader()
-        for item in records:
-            accepted_names = {tag["type"] for tag in item["accepted_types"]}
-            for tag in item["types"]:
-                output = {key: item.get(key, "") for key in fields}
-                passed = tag["type"] in accepted_names
-                output.update(type=tag["type"], confidence=tag["confidence"], evidence=" | ".join(item["evidence"]),
-                              confidence_passed=passed,
-                              label_sqlite_outcome=item["sqlite_outcome"] if passed else "below_threshold")
-                output = {key: "'" + value if isinstance(value, str) and value.startswith(("=", "+", "-", "@")) else value
-                          for key, value in output.items()}
-                writer.writerow(output)
-        handle.flush()
-        os.fsync(handle.fileno())
-    temporary.replace(target)
 
 
 def backup_database(database: Path, path: Path) -> None:
@@ -612,16 +733,23 @@ def run(args: argparse.Namespace) -> tuple[Json, int]:
     """按游戏执行摘要与完整分类，共用请求预算；plan不联网不写任何产物。"""
     settings = Settings.load()
     runtime = workspace_path(args.runtime)
+    datacache = workspace_path(getattr(args, "datacache", DEFAULT_DATACACHE))
     client = DeepSeekClient(settings, runtime, min(1, args.max_requests) if args.command == "check-connection" else args.max_requests,
-                            args.max_output_tokens, args.timeout_seconds)
+                            args.max_output_tokens, args.timeout_seconds,
+                            intro_total_timeout_seconds=getattr(args, "intro_total_timeout_seconds", INTRO_TOTAL_TIMEOUT_SECONDS),
+                            classification_total_timeout_seconds=getattr(args, "classification_total_timeout_seconds", CLASSIFICATION_TOTAL_TIMEOUT_SECONDS))
     report: Json = {"started_at": now(), "command": args.command, "model": settings.model,
                     "base_url": settings.base_url, "key_source": settings.key_source,
                     "prompt_version": PROMPT_VERSION, "intro_prompt_version": GAME_INTRO_PROMPT_VERSION,
-                    "evidence_max_chars": EVIDENCE_MAX_CHARS,
+                    "evidence_max_chars": EVIDENCE_MAX_CHARS, "evidence_length_comparison": "<",
                     "request_unit": "whole_game", "database_writes": False, "max_requests": client.limit,
                     "max_output_tokens": args.max_output_tokens, "max_input_chars": args.max_input_chars,
                     "timeout_seconds": args.timeout_seconds, "min_confidence": args.min_confidence,
-                    "confidence_comparison": ">"}
+                    "intro_total_timeout_seconds": client.total_timeouts[INTRO_TASK],
+                    "classification_total_timeout_seconds": client.total_timeouts[CLASSIFICATION_TASK],
+                    "progress_interval_seconds": PROGRESS_INTERVAL_SECONDS,
+                    "max_consecutive_timeouts": MAX_CONSECUTIVE_TIMEOUTS,
+                    "confidence_comparison": ">=", "datacache_path": str(datacache)}
     exit_code = 0
     try:
         if args.command != "check-connection":
@@ -630,6 +758,9 @@ def run(args: argparse.Namespace) -> tuple[Json, int]:
             report.update(database=str(args.database.resolve()), input_sha256=fingerprint, appids_source=selection,
                           game_count=len(games), reclassify=args.reclassify,
                           games=[game_plan(g, client, args) for g in games], classifications=[], calls=[], errors=[],
+                          failed_game_count=0, failed_appids=[],
+                          timeout_game_count=0, timeout_appids=[],
+                          consecutive_timeouts=dict(client.consecutive_timeouts),
                           sqlite_counts={"written": 0, "unchanged": 0, "protected": 0, "already_classified": 0, "below_threshold": 0})
             report.update(pending_achievement_count=sum(g["pending_count"] for g in games),
                           protected_achievement_count=sum(g["protected_count"] for g in games),
@@ -647,7 +778,8 @@ def run(args: argparse.Namespace) -> tuple[Json, int]:
         with run_lock(runtime):
             stamp = datetime.now(timezone.utc).strftime("%Y%m%dT%H%M%S%fZ")
             run_dir = workspace_path(runtime / "runs" / stamp)
-            report.update(report_path=str(run_dir / "report.json"), state="running")
+            client.progress_path = run_dir / "progress.json"
+            report.update(report_path=str(run_dir / "report.json"), progress_path=str(client.progress_path), state="running")
             write_json(run_dir / "report.json", report)
             try:
                 if args.command == "check-connection":
@@ -660,10 +792,12 @@ def run(args: argparse.Namespace) -> tuple[Json, int]:
                     for game, profile in zip(games, report["games"], strict=True):
                         if profile["state"] != "ready":
                             continue
+                        client.active_game = {"appid": game["appid"], "name_en": game["name_en"]}
                         try:
                             profile["state"] = "intro"
                             write_json(run_dir / "report.json", report)
                             intro_reply = get_intro(client, game)
+                            report["consecutive_timeouts"] = dict(client.consecutive_timeouts)
                             profile["intro"] = {"source": "model_generated", **intro_reply["result"]}
                             profile["intro_request_hash"] = intro_reply["request_hash"]
                             report["calls"].append({k: v for k, v in intro_reply.items() if k != "result"})
@@ -685,12 +819,44 @@ def run(args: argparse.Namespace) -> tuple[Json, int]:
                             report["state"] = "budget_reached"
                             stop = True
                             break
+                        except (ResponseValidationError, RequestTimeoutError) as exc:
+                            stage = profile["state"]
+                            failure_state = "request_timeout" if isinstance(exc, RequestTimeoutError) else "response_error"
+                            profile.update(state=failure_state, error=str(exc), failure_stage=stage,
+                                           failure_task=exc.task, failure_receipt=exc.receipt,
+                                           failed_request_hash=exc.request_hash)
+                            report["failed_game_count"] += 1
+                            report["failed_appids"].append(game["appid"])
+                            report["errors"].append(f'appid={game["appid"]} ({game["name_en"]}) {stage}: {exc}')
+                            report["consecutive_timeouts"] = dict(client.consecutive_timeouts)
+                            report["calls"].append({"task": exc.task, "request_hash": exc.request_hash,
+                                                    "receipt": exc.receipt, "prompt_version": exc.prompt_version,
+                                                    "cached": False, "state": failure_state, "error": str(exc)})
+                            exit_code = 1
+                            if isinstance(exc, RequestTimeoutError):
+                                profile["timeout_kind"] = exc.kind
+                                report["timeout_game_count"] += 1
+                                report["timeout_appids"].append(game["appid"])
+                            write_json(run_dir / "report.json", report)
+                            print(f'跳过失败游戏 appid={game["appid"]} ({game["name_en"]}) state={failure_state}: {exc}',
+                                  file=sys.stderr, flush=True)
+                            if (isinstance(exc, RequestTimeoutError)
+                                    and client.consecutive_timeouts[exc.task] >= MAX_CONSECUTIVE_TIMEOUTS):
+                                report.update(state="service_paused", paused_reason=f"{exc.task}连续{MAX_CONSECUTIVE_TIMEOUTS}次请求超时")
+                                stop = True
+                                break
+                            continue
                         records = classification_rows(game, game["achievements"], reply, args.min_confidence)
+                        report["consecutive_timeouts"] = dict(client.consecutive_timeouts)
                         for record in records:
                             record["sqlite_outcome"] = "pending"
                         report["classifications"].extend(records)
                         report["calls"].append({k: v for k, v in reply.items() if k != "result"})
                         write_json(run_dir / "report.json", report)
+                        report["datacache"] = update_datacache(
+                            datacache, records, source_csv=str(run_dir / "classifications.csv"),
+                            min_confidence=args.min_confidence, seen_at=now(),
+                        )
                         counts = store_classifications(args.database, game, records, reclassify=args.reclassify,
                                                        expected_input=game["achievements"], min_confidence=args.min_confidence)
                         for key, value in counts.items():
@@ -698,9 +864,14 @@ def run(args: argparse.Namespace) -> tuple[Json, int]:
                         report["database_writes"] |= counts["written"] > 0
                         profile.update(state="success_with_rejections" if counts["below_threshold"] else "success",
                                        sqlite_counts=counts, remaining_pending_count=counts["below_threshold"])
+                        report["datacache"] = update_datacache(
+                            datacache, records, source_csv=str(run_dir / "classifications.csv"),
+                            min_confidence=args.min_confidence, seen_at=now(),
+                        )
                         write_json(run_dir / "report.json", report)
                     if not stop:
-                        report["state"] = ("success_with_skips" if report["oversized_game_count"] else
+                        report["state"] = ("completed_with_errors" if report["failed_game_count"] else
+                                           "success_with_skips" if report["oversized_game_count"] else
                                            "success_with_rejections" if report["sqlite_counts"]["below_threshold"] else "success")
             except (AgentError, ValueError, sqlite3.Error, OSError) as exc:
                 report["state"] = "error"
@@ -718,6 +889,7 @@ def run(args: argparse.Namespace) -> tuple[Json, int]:
                 hit, miss = usage["prompt_cache_hit_tokens"], usage["prompt_cache_miss_tokens"]
                 ratio = hit / (hit + miss) if hit is not None and miss is not None and hit + miss > 0 else None
                 report.update(finished_at=now(), requests=client.requests,
+                              consecutive_timeouts=dict(client.consecutive_timeouts),
                               local_response_cache_hits=client.cache_hits, cache_hits=client.cache_hits,
                               usage_this_run=usage, api_cache_hit_tokens=hit, api_cache_miss_tokens=miss, api_cache_hit_ratio=ratio,
                               usage_by_task={task: usage_totals([r for r in client.receipts if r["task"] == task])
@@ -732,7 +904,7 @@ def run(args: argparse.Namespace) -> tuple[Json, int]:
                                   unprocessed_achievement_count=sum(p.get("remaining_pending_count", p["pending_count"]) for p in report["games"]),
                                   accepted_label_count=sum(len(a["accepted_types"]) for a in records),
                                   rejected_label_count=sum(len(a["rejected_types"]) for a in records),
-                                  written_label_count=sum(len(a["accepted_types"]) for a in records if a["sqlite_outcome"] == "written"),
+                                  written_label_count=sum(len(a.get("written_types", a["accepted_types"])) for a in records if a["sqlite_outcome"] == "written"),
                                   accepted_type_counts=dict(Counter(t["type"] for a in records for t in a["accepted_types"])),
                                   type_counts=dict(Counter(t["type"] for a in records for t in a["types"])),
                                   unknown_count=sum(a["types"][0]["type"] == "unknown" for a in records),
@@ -750,6 +922,8 @@ def main() -> int:
     parser.add_argument("command", nargs="?", choices=("plan", "check-connection", "classify"), default="plan")
     parser.add_argument("--database", type=Path, default=DEFAULT_DATABASE)
     parser.add_argument("--runtime", type=Path, default=RUNTIME)
+    parser.add_argument("--datacache", type=Path, default=DEFAULT_DATACACHE,
+                        help="累计分类CSV；默认process/datacache.csv，保留全部有效标签及入库结果")
     selection = parser.add_mutually_exclusive_group()
     selection.add_argument("--game-name", help="本地中英文完整名称；无唯一匹配则展示候选")
     selection.add_argument("--appids", type=int, nargs="+")
@@ -761,13 +935,18 @@ def main() -> int:
                         help="每款估计1024+160*N，超过此上限则跳过，不自动拆分")
     parser.add_argument("--max-input-chars", type=int, default=300000, help="本地输入字符预算；不是token数")
     parser.add_argument("--timeout-seconds", type=float, default=300, help="HTTP读超时，连接超时仍15秒")
+    parser.add_argument("--intro-total-timeout-seconds", type=float, default=INTRO_TOTAL_TIMEOUT_SECONDS,
+                        help="简介完整请求总时限，含重试与退避；默认90秒")
+    parser.add_argument("--classification-total-timeout-seconds", type=float, default=CLASSIFICATION_TOTAL_TIMEOUT_SECONDS,
+                        help="整款分类完整请求总时限，含重试与退避；默认300秒")
     parser.add_argument("--min-confidence", type=float, default=DEFAULT_MIN_CONFIDENCE,
-                        help="逐标签写入门槛，confidence必须严格大于此值；默认0.6，未通过仅保留runtime记录")
+                        help="逐标签写入门槛，confidence大于等于此值；默认0.6，低分保留runtime和datacache.csv")
     args = parser.parse_args()
     if args.max_requests < 0 or not 32 <= args.max_output_tokens <= 384000 or args.max_input_chars < 1:
         parser.error("max-requests非负，max-output-tokens为32～384000，max-input-chars为正数")
-    if not math.isfinite(args.timeout_seconds) or args.timeout_seconds <= 0:
-        parser.error("timeout-seconds必须是正有限数")
+    for name in ("timeout_seconds", "intro_total_timeout_seconds", "classification_total_timeout_seconds"):
+        if not math.isfinite(getattr(args, name)) or getattr(args, name) <= 0:
+            parser.error(name.replace("_", "-") + "必须是正有限数")
     if not math.isfinite(args.min_confidence) or not 0 <= args.min_confidence <= 1:
         parser.error("min-confidence必须在0～1")
     try:

@@ -12,7 +12,7 @@ import sqlite3
 from typing import Any
 
 from local_database import (
-    COLUMNS, DEFAULT_DATABASE, SCHEMA_VERSION, TABLES, WORKSPACE, connect_local,
+    DEFAULT_DATABASE, TABLES, WORKSPACE, connect_local,
     ensure_schema, execute_schema, table_counts, workspace_path,
 )
 
@@ -20,15 +20,16 @@ MIGRATION = WORKSPACE / "database" / "migrate_display_names.sql"
 
 
 def data_digest(con: sqlite3.Connection, *, original_only: bool = False) -> str:
-    """逐表稳定核对数据；original_only排除本次新增的展示名以比较迁移前后。"""
+    """按实际字段稳定核对所有版本数据；original_only仅排除标签展示名。"""
     sha = hashlib.sha256()
     for table in TABLES:
-        actual = {row[1] for row in con.execute(f'PRAGMA table_info("{table}")')}
-        columns = [name for name in COLUMNS[table] if name in actual and not (
+        actual = sorted(row[1] for row in con.execute(f'PRAGMA table_info("{table}")'))
+        columns = [name for name in actual if not (
             original_only and table == "achievement_types" and name == "display_name"
         )]
-        fields = ",".join('"' + name + '"' for name in columns)
+        fields = ",".join('"' + name.replace('"', '""') + '"' for name in columns)
         sha.update(table.encode("utf-8"))
+        sha.update(json.dumps(columns, ensure_ascii=False).encode("utf-8"))
         for row in con.execute(f'SELECT {fields} FROM "{table}" ORDER BY {fields}'):
             sha.update((json.dumps(row, ensure_ascii=False, allow_nan=False) + "\n").encode("utf-8"))
     return sha.hexdigest()
@@ -55,11 +56,12 @@ def migrate(database: Path) -> dict[str, Any]:
     with closing(connect_local(database)) as source:
         version = source.execute("PRAGMA user_version").fetchone()[0]
         ensure_schema(source, schema_version=version)
-        missing, changed = name_issues(source, has_display_name=version == SCHEMA_VERSION)
+        target_version = max(3, version)
+        missing, changed = name_issues(source, has_display_name=version >= 3)
         if missing:
             raise ValueError("标签缺少对应的非空成就展示名，停止迁移")
-        if version == SCHEMA_VERSION and changed == 0:
-            return {"already_migrated": True, "schema_version": SCHEMA_VERSION,
+        if version >= 3 and changed == 0:
+            return {"already_migrated": True, "schema_version": version,
                     "backfilled_rows": 0, "counts": table_counts(source)}
         stamp = datetime.now(timezone.utc).strftime("%Y%m%dT%H%M%S%fZ")
         directory = workspace_path(WORKSPACE / "database" / "backups" / (stamp + "-display-names"))
@@ -76,7 +78,7 @@ def migrate(database: Path) -> dict[str, Any]:
             if data_digest(con) != snapshot:
                 raise ValueError("备份后本地数据发生变化，停止迁移，请重跑")
             counts = table_counts(con)
-            missing, changed = name_issues(con, has_display_name=version == SCHEMA_VERSION)
+            missing, changed = name_issues(con, has_display_name=version >= 3)
             if missing:
                 raise ValueError("来源展示名缺失，停止迁移")
             triggers = {row[0] for row in con.execute("SELECT name FROM sqlite_master WHERE type='trigger'")}
@@ -97,8 +99,8 @@ def migrate(database: Path) -> dict[str, Any]:
                     "WHERE display_name IS NOT (SELECT a.display_name FROM achievements a "
                     "WHERE a.appid=achievement_types.appid AND a.api_name=achievement_types.api_name)"
                 )
-            execute_schema(con)
-            ensure_schema(con)
+            execute_schema(con, schema_version=target_version)
+            ensure_schema(con, schema_version=target_version)
             after = data_digest(con, original_only=True)
             if before != after or counts != table_counts(con) or name_issues(con, has_display_name=True) != (0, 0):
                 raise ValueError("展示名回填或原始记录保留检查失败，回滚")
@@ -114,7 +116,7 @@ def migrate(database: Path) -> dict[str, Any]:
         except BaseException:
             con.rollback()
             raise
-    report = {"already_migrated": False, "schema_version_before": version, "schema_version": SCHEMA_VERSION,
+    report = {"already_migrated": False, "schema_version_before": version, "schema_version": target_version,
               "database": str(database.resolve()), "backup": str(backup), "backfilled_rows": changed,
               "counts": counts, "original_data_sha256_before": before, "original_data_sha256_after": after,
               "original_data_unchanged": before == after, "integrity": integrity, "foreign_key_issues": len(foreign_keys)}

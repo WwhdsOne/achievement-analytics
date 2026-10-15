@@ -11,7 +11,7 @@ import sqlite3
 from typing import Any
 
 from local_database import (
-    DEFAULT_DATABASE, METHODS, SCHEMA_VERSION, WORKSPACE, connect_local,
+    DEFAULT_DATABASE, METHODS, WORKSPACE, connect_local,
     ensure_schema, execute_schema, method_values, table_counts, workspace_path,
 )
 from migrate_display_names import data_digest, migrate as migrate_display_names, name_issues
@@ -25,6 +25,7 @@ def migrate(database: Path) -> dict[str, Any]:
     with closing(connect_local(database)) as source:
         version = source.execute("PRAGMA user_version").fetchone()[0]
         ensure_schema(source, check_methods=False, schema_version=version)
+        target_version = max(3, version)
         existing = method_values(source)
         if existing == set(METHODS):
             return {**migrate_display_names(database), "methods": list(METHODS)}
@@ -56,8 +57,9 @@ def migrate(database: Path) -> dict[str, Any]:
                     pending = ""
             if pending.strip():
                 raise ValueError("迁移SQL不完整")
-            execute_schema(con)  # 恢复索引/触发器；旧版同时回填展示名并升级版本。
-            ensure_schema(con)
+            # 恢复索引/触发器；仅旧版2升到3，时长结构由独立迁移负责。
+            execute_schema(con, schema_version=target_version)
+            ensure_schema(con, schema_version=target_version)
             after = data_digest(con, original_only=True)
             if after != before or table_counts(con) != counts or name_issues(con, has_display_name=True) != (0, 0):
                 raise ValueError("迁移前后业务记录不一致，回滚")
@@ -71,7 +73,8 @@ def migrate(database: Path) -> dict[str, Any]:
         except BaseException:
             con.rollback()
             raise
-    report = {"already_migrated": False, "methods": list(METHODS), "schema_version": SCHEMA_VERSION,
+    report = {"already_migrated": False, "methods": list(METHODS),
+              "schema_version_before": version, "schema_version": target_version,
               "database": str(database.resolve()), "backup": str(backup), "counts": counts,
               "data_sha256_before": before, "data_sha256_after": after,
               "data_unchanged": before == after, "integrity": integrity, "foreign_key_issues": len(foreign_keys)}

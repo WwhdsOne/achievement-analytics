@@ -1,0 +1,4 @@
+# 全量分类结果累计缓存与跨进程锁保留在本机。
+/datacache.csv
+/datacache.csv.lock
+/datacache.csv.*.tmp
