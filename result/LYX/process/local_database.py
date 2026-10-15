@@ -62,7 +62,7 @@ def ensure_schema(con: sqlite3.Connection, *, check_methods: bool = True, schema
         raise ValueError("不支持此本地schema版本")
     found = {r[0] for r in con.execute("SELECT name FROM sqlite_master WHERE type='table' AND name NOT LIKE 'sqlite_%'")}
     if found != set(TABLES) or con.execute("PRAGMA user_version").fetchone()[0] != schema_version:
-        raise ValueError("本地数据库结构版本不一致；旧版2先运行 migrate_display_names.py，旧版3运行 import_hltb_times.py")
+        raise ValueError("本地数据库结构版本不一致；旧版2先运行 migrate_display_names.py，旧版3需迁移HLTB时长结构至版本4（原导入脚本已移除）")
     for table, expected in COLUMNS.items():
         if table == "achievement_types" and schema_version == 2:
             expected = tuple(column for column in expected if column != "display_name")

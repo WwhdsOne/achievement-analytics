@@ -2,3 +2,6 @@
 /datacache.csv
 /datacache.csv.lock
 /datacache.csv.*.tmp
+/failure_data.csv
+/failure_data.csv.*.tmp
+/old/

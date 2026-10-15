@@ -19,7 +19,7 @@
 
 分类常量[CLASSIFICATION_PROMPT](../process/DataAgent.py)位于DataAgent.py导入区之后，版本lyx-deepseek-whole-game-v6；简介常量[GAME_INTRO_PROMPT](../process/game_intro.py)位于game_intro.py导入区之后，版本lyx-game-intro-v1。用户可直接读改常量，并同步升级版本。
 
-调用链：selected_appids/resolve_game_name → load_games完整读取 → game_plan只读预检 → game_intro.get_intro → classification_messages → DeepSeekClient.call → validate_classification → classification_rows → update_datacache → store_classifications → update_datacache刷新结果。原始完整/部分响应先由客户端留在receipt，最后再导出本轮report与CSV。
+调用链：selected_appids/resolve_game_name → load_games完整读取 → game_plan只读预检 → game_intro.get_intro → classification_messages → DeepSeekClient.call → validate_classification → classification_rows → update_datacache（全量表及低分派生表）→ store_classifications → update_datacache刷新结果。原始完整/部分响应先由客户端留在receipt，最后再导出本轮report与CSV。
 
 ```mermaid
 flowchart TD
@@ -31,9 +31,9 @@ flowchart TD
     E --> F{完整响应契约校验}
     F -->|失败| G[保留响应并记录失败状态]
     F -->|通过| H[逐标签筛选 confidence 大于等于 0.6]
-    H --> I[全部有效候选先写累计CSV]
+    H --> I[全部有效候选先写累计CSV并派生低分表]
     I --> J[SQLite短事务写入并保护已有结果]
-    J --> K[刷新累计CSV及本轮报告]
+    J --> K[刷新两份累计CSV及本轮报告]
 ```
 
 图中的失败隔离适用于单款响应错误和请求超时；认证、429、文件或数据库等整体错误，以及同类连续超时达到上限时，按第5节规则停止本轮。
@@ -102,11 +102,15 @@ method=deepseek；标签每类一行。默认门槛0.6，逐类筛选confidence 
 
 每款通过完整契约校验后，全部有效候选标签先累计到process/datacache.csv，再提交SQLite，提交后刷新写入结果；低分、已有、受保护及已写标签均保留。每标签一行，按(appid,api_name,type,request_hash)去重，source_csv/first_seen_at/last_seen_at保留追溯。不同请求记录独立，原runtime CSV/JSON和报告不删不覆盖。坏格式、过期输入或无法验证证据的记录不作为有效分类导入。--datacache可指定LYX内累计CSV路径。
 
+每次累计更新同时在同目录重建process/failure_data.csv，作为datacache的低分子集；使用相同22列及去重键，按每行`confidence < min_confidence`筛选，当前默认即低于0.6。等于门槛通过，多标签仅低分标签进入该表；达到门槛但因已有结果、人工保护或conflict未写库的候选不属于低分。HTTP/结构/证据失败没有有效分类候选，仍留在report/receipt，不纳入该表。
+
+低分表保留不同request_hash的历史记录，每行采用该键最近一次累计更新的门槛；同键重新筛选通过后会移出低分表，其他历史请求不随之删除。因此它是人工复核入口，不是当前数据库未分类或未入库成就清单。更改--datacache会在新源同目录生成固定名failure_data.csv，建议一个目录只放一个累计源。可用datacache.rebuild_failure_data从已有全量表独立恢复，源CSV保持原样，不调用API、不读写数据库；plan及导入预检不创建这些输出，新逻辑自下次启动生效。
+
 历史迁移入口为process/import_classification_cache.py，默认只plan，--apply才写本地，先备份SQLite。默认source-root为process/runtime/deepseek/runs，支持--database/--datacache/--min-confidence；重新核验原始身份、当前上下文及完整响应证据，按>=0.6筛选，只补缺失标签，保留已有机器标签、人工标签和主线排序。旧上下文、坏CSV与证据不合规项拒绝导入并报告；不调用模型、不连接远端。命令及路径说明见[PROCESS.md](PROCESS.md#累计分类csv与历史结果导入)。
 
 普通分类和历史补录的已有结果策略不同：普通分类默认整项保留已有DeepSeek结果；补录只有在已有标签的类型、分数与名称都与候选一致时，才补上同一成就缺失的其他合格标签。不同请求的分类不相容时标记conflict，不自动合并。早期v3试跑只能在与现有库原文及标签一致时按legacy_existing归档，不按旧契约重新入库。
 
-累计CSV用于留档和追溯，不负责判定游戏是否完成；低分仍为待处理项。部分游戏因此会在下轮再次复用整款缓存，高分已有项跳过、低分再次留档，相同请求不新增重复CSV行。这不会自动提高低分，也不强制重新请求模型。SQLite与CSV不是跨文件原子事务：先留候选，SQLite提交后再刷新；中断时pending表示尚未确认提交，需核对数据库或安全重放，不能只凭该行断言数据库未写入。
+累计CSV用于留档和追溯，不负责判定游戏是否完成；低分仍为待处理项。部分游戏因此会在下轮再次复用整款缓存，高分已有项跳过、低分再次留档，相同请求不新增重复CSV行。这不会自动提高低分，也不强制重新请求模型。两份累计CSV在同一文件锁内各自原子替换，但与SQLite之间、两份文件之间都不是跨文件事务；低分表更新失败时可从datacache重建。先留候选，SQLite提交后再刷新；中断时pending表示尚未确认提交，需核对数据库或安全重放，不能只凭该行断言数据库未写入。
 
 ## 5. 输出预检、恢复与统计
 
@@ -127,6 +131,7 @@ local_response_cache_hits区别于API输入前缀缓存；api_cache_hit_tokens�
 | runtime/deepseek/cache/请求指纹/receipt-时间.json | 每次真实尝试的请求与完整/部分响应；只有完整且重校验通过的响应可复用 |
 | runtime/deepseek/runs/时间/report.json、classifications.csv、progress.json | 本轮选择、进度、错误、所有有效候选和写入结果；每轮独立，不覆盖上轮 |
 | process/datacache.csv | 跨轮累计全部有效标签及处理结果；按(appid,api_name,type,request_hash)去重，历史导入另保留legacy_existing与冲突 |
+| process/failure_data.csv | 累计表派生的逐标签低分子集，保留同样22列；不包含网络/契约失败，也不代表当前全部未入库成就 |
 | database/achievements.sqlite | 当前原始成就、分类标签和人工状态；实际分析及进度核对以数据库与来源记录为依据 |
 
 原始evidence、reason、uncertainty、knowledge_used等解释保留在JSON/CSV；SQLite的achievement_types保存appid/api_name/display_name/type/method/confidence，status和mainline_index在achievements。不新增JSON字段或把解释复制成数据库业务列。累计CSV字段与结果状态字典见[PROCESS.md](PROCESS.md#累计分类csv与历史结果导入)。
@@ -135,20 +140,13 @@ local_response_cache_hits区别于API输入前缀缓存；api_cache_hit_tokens�
 
 ## 6. 当前验收状态
 
-下表均为带时间的固定快照，统一使用北京时间；历史receipt和report的时间仍为UTC。后续运行会改变数据库与累计CSV，不能把以下数字当作实时计数。
+工程链路已有真实整款分类、有限预算批量、零请求缓存恢复和历史补录证据；分类仍在推进。当前覆盖统一引用[DATABASE的带时间快照](DATABASE.md#当前实际数据)，不在多份契约文档重复维护行数。
 
-| 时间/证据 | 已确认的结果 |
-|---|---|
-| 昨日《重生》真实试跑与零请求恢复 | 修复旧引用长度契约后，从完整响应缓存恢复61项候选，更新60、保留1，无新请求；证明可复用历史完整响应，不证明分类语义准确 |
-| 2026-10-15 11:06历史补录 | 从9份CSV的2666行去重得到2264行；实际新增74个0.6标签，涉及68个原未分类成就及6个已有成就补标签；107个低分标签、1条分类冲突留档；新请求0，原有标签、18个保护项和原始字段保留 |
-| 2026-10-15 14:41用户真实批量运行 | 简介1次、分类1次，星露谷49项全部写入；复用Rust、博德之门3及赛博朋克简介等缓存5次，无错误；在后续分类预算处停止，state=budget_reached |
-| 2026-10-15 14:54只读核验 | 本地1000款/71465项成就；类型表2271行覆盖2146项成就，其中DeepSeek为2205行/2083项；累计CSV2313行，低分107行，0.6标签已入库74行。类型表总数包含rule，不能当作DeepSeek完成数 |
+- 《重生》完整响应零请求恢复、HELLDIVERS™ 2多标签写入及后续星露谷批次，验证了请求、缓存、写入和预算暂停。候选统计可包含缓存与已有结果，不能当作新增完成数。
+- 2026-10-15门槛改为>=0.6后，离线补录74条边界标签；相容缺失标签可补齐，冲突保留旧结果，重复导入新增0，原始字段及18项排序保留。
+- 隔离验收覆盖引用长度、置信度边界、多标签、去重、NULL描述、人工/排序保护、输入变化回滚、总时限、心跳、部分响应隔离和中断收尾；没有新增pytest用例。
 
-11:06补录的[报告](../process/runtime/deepseek/cache_imports/20261015T030622858723Z/report.json)、[备份](../process/runtime/deepseek/cache_imports/20261015T030622858723Z/before_import.sqlite)、[验收](../process/runtime/deepseek/cache_imports/20261015T030622858723Z/verification.json)，以及14:41的[真实运行报告](../process/runtime/deepseek/runs/20261015T064109506808Z/report.json)均保留在本地忽略目录，不能随Git提交。更早的全1000款预检数字只保留在[实验记录](experiments.md)，不再作为当前进度。
-
-14:41这轮classified_count=208来自Rust105+博德之门3的54+星露谷49，包含缓存结果；已有跳过118、仍低分41、本轮新写49。accepted_label_count=167包含已入库项，successful_game_count=3也包含有低分拒绝的游戏；均不能读成“新增完成三款”。requests=2限制HTTP尝试而非游戏数，缓存5次不占预算。用量为本轮真实响应6233 tokens，API前缀命中640、未命中1680，输入命中比例约27.6%；这是单轮观察，尚无稳定成本收益结论。
-
-工程验收已覆盖：0.59/0.6/0.61门槛边界、多标签独立筛选、NULL描述保留、累计去重、重复导入新增0、人工及排序保护、相容补标签、冲突保留、整款事务回滚、缓存入口零请求运行，以及等待总时限、心跳、部分响应、连续超时暂停和中断收尾。当前链路代码未新增依赖或pytest用例，验证依据为真实用户运行及隔离本地数据库/离线传输验收。详情见[experiments.md](experiments.md)。
+参数、用量、来源报告与验收路径统一见[按日实验记录](experiments.md)。这些证据证明工程行为；目前没有人工金标集、分类准确率或稳定API缓存成本收益结论，离线传输验收也不证明真实服务持续可用。
 
 ## 7. 后续工作及完成边界
 
@@ -157,4 +155,4 @@ local_response_cache_hits区别于API输入前缀缓存；api_cache_hit_tokens�
 3. 由人工确认主线节点、必经性和叙事顺序，再填写mainline_index；当前模型不输出顺序，不按完成率猜排序。
 4. 分类与人工核验充分后，再开展游戏类型与主线完成率、各类成就参与方式的聚合比较；观察性结果不能直接解释为用户留存或因果影响。
 
-以上是下一阶段任务，不能把链路验收、提示词规则或缓存命中率写成已经完成的分析结论。运行命令以[PROCESS.md](PROCESS.md)为准。
+后续分析范围与实施前提见[data_plan.md](data_plan.md)，由负责人在分类完成后决定是否开展。不能把链路验收、提示词规则或缓存命中率写成已完成的分析结论。运行命令以[PROCESS.md](PROCESS.md)为准。

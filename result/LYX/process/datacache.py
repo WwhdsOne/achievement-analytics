@@ -1,4 +1,4 @@
-"""分类 CSV 导出与去重累计缓存；只访问 LYX 工作空间，不连接数据库或 API。"""
+"""分类CSV导出、全量累计缓存及低分子表；只访问LYX，不连接数据库或API。"""
 
 from __future__ import annotations
 
@@ -15,6 +15,7 @@ from typing import Any, Iterator
 from local_database import TYPES, WORKSPACE, workspace_path
 
 DEFAULT_DATACACHE = WORKSPACE / "process" / "datacache.csv"
+DEFAULT_FAILURE_DATA = DEFAULT_DATACACHE.with_name("failure_data.csv")
 CLASSIFICATION_CSV_FIELDS = (
     "appid", "name_en", "api_name", "display_name", "description", "type", "method", "confidence",
     "status", "sqlite_outcome", "confidence_passed", "label_sqlite_outcome",
@@ -187,10 +188,37 @@ def _read_cache(path: Path) -> list[dict[str, Any]]:
         raise ValueError(f"无法完整解析 datacache CSV：{exc}") from exc
 
 
+def failure_data_path(datacache: Path) -> Path:
+    """低分表固定放在全量缓存同目录，禁止覆盖全量缓存本身。"""
+    source = workspace_path(datacache)
+    target = workspace_path(source.with_name("failure_data.csv"))
+    if source == target:
+        raise ValueError("全量datacache不能命名为failure_data.csv")
+    return target
+
+
+def _write_failure_data(datacache: Path, rows: list[dict[str, Any]]) -> int:
+    # 调用方持有全量缓存锁；行已经过完整校验及公式转义，直接保留全部22列。
+    rejected = [row for row in rows if float(row["confidence"]) < float(row["min_confidence"])]
+    _atomic_write(failure_data_path(datacache), rejected, DATACACHE_FIELDS)
+    return len(rejected)
+
+
+def rebuild_failure_data(datacache: Path = DEFAULT_DATACACHE) -> dict[str, int]:
+    """从现有全量缓存初始化或重建低分表，不改源CSV，不访问SQLite或模型。"""
+    source = workspace_path(datacache, must_exist=True)
+    failure_data_path(source)
+    with _file_lock(source):
+        rows = _read_cache(source)
+        rejected_count = _write_failure_data(source, rows)
+    return {"row_count": len(rows), "failure_row_count": rejected_count}
+
+
 def update_datacache(path: Path, records: list[dict[str, Any]], *, source_csv: str,
                      min_confidence: float, seen_at: str) -> dict[str, int]:
-    """带文件锁合并全部已校验标签，按成就、标签、请求哈希去重并保留首次出现时间。"""
+    """带锁合并全部标签并刷新低分子表；去重身份与首次出现时间保持不变。"""
     target = workspace_path(path)
+    failure_data_path(target)
     source = str(workspace_path(Path(source_csv)))
     threshold = _validate_threshold(min_confidence)
     _validate_timestamp(seen_at, field="seen_at")
@@ -223,7 +251,8 @@ def update_datacache(path: Path, records: list[dict[str, Any]], *, source_csv: s
             merged[identity] = row
         rows = list(merged.values())
         _atomic_write(target, rows, DATACACHE_FIELDS)
+        rejected_count = _write_failure_data(target, rows)
     accepted = sum(str(row["confidence_passed"]) == "True" for row in rows)
     return {"row_count": len(rows), "accepted_label_count": accepted,
             "rejected_label_count": len(rows) - accepted, "inserted_count": inserted,
-            "updated_count": updated}
+            "updated_count": updated, "failure_row_count": rejected_count}

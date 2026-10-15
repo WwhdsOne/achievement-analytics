@@ -12,11 +12,12 @@ DeepSeek在此承担LLM as Judge的语义标签判定：依据固定八类规则
 | [deepseek_transport.py](../process/deepseek_transport.py) | 可取消HTTP传输、请求总时限、接收进度和部分响应记录；业务仍逐款串行 |
 | [game_intro.py](../process/game_intro.py) | 游戏背景摘要提示词、响应校验和缓存调用 |
 | [local_database.py](../process/local_database.py) | 本地连接、字段转换、结构检查、整款输入核对与原子存储 |
-| [datacache.py](../process/datacache.py) | 当轮17列CSV导出、累计22列CSV校验与去重；带文件锁和原子替换，不连接API或数据库 |
+| [datacache.py](../process/datacache.py) | 当轮17列CSV导出、累计22列CSV校验与去重，并同步派生低分failure_data.csv；带文件锁和原子替换，不连接API或数据库 |
 | [import_classification_cache.py](../process/import_classification_cache.py) | 离线核验历史分类CSV与原始响应，只补符合门槛且本地缺失的标签，并汇总累计缓存 |
 | [import_snapshot.py](../process/import_snapshot.py)、[inspect_remote.py](../process/inspect_remote.py) | 独立的只读数据准备，已有迁移完成 |
 | [migrate_methods.py](../process/migrate_methods.py) | 已完成的一次性method维护 |
 | [migrate_display_names.py](../process/migrate_display_names.py) | 已完成的本地版本2→3迁移，给标签表添加并回填展示名 |
+| [old/](../process/old/README.md) | 已弃用的Gamer Guides五个源码文件，仅作历史归档 |
 
 分类常量CLASSIFICATION_PROMPT在DataAgent.py的导入区之后，版本lyx-deepseek-whole-game-v6；简介常量GAME_INTRO_PROMPT在game_intro.py的导入区之后，版本lyx-game-intro-v1。修改相应提示词时同步升级其版本。简介与分类使用不同任务命名空间，分类版本更新不会连带使简介缓存失效。
 
@@ -27,7 +28,9 @@ DeepSeek在此承担LLM as Judge的语义标签判定：依据固定八类规则
 先在项目根目录同步main，再进入LYX。使用已有环境，不修改共享依赖：
 
 ~~~powershell
-Set-Location D:\PycharmProjects\achievement-analytics\result\LYX
+Set-Location D:\PycharmProjects\achievement-analytics
+git pull origin main
+Set-Location result\LYX
 $env:UV_CACHE_DIR = "$PWD\process\runtime\uv-cache"
 $env:PYTHONDONTWRITEBYTECODE = "1"
 uv run --frozen --no-sync python -X utf8 -B process/DataAgent.py plan --game-name "FINAL FANTASY VII REBIRTH"
@@ -54,7 +57,7 @@ uv run --frozen --no-sync python -X utf8 -B process/DataAgent.py plan --game-nam
 
 | 子命令 | 行为 |
 |---|---|
-| `plan`，或不写子命令 | 离线读取本地输入/缓存并打印预检；不调用API、不写库或运行报告 |
+| `plan`，或不写子命令 | 离线读取本地输入/缓存并打印预检；不调用API、不写库、运行报告或两份累计CSV |
 | `classify` | 对选中游戏执行缓存/简介/整款分类，并按门槛自动写本地SQLite；有运行报告及备份 |
 | `check-connection` | 极小JSON响应检查，可复用缓存，最多1次新请求；不分类成就、不写SQLite |
 
@@ -70,7 +73,7 @@ uv run --frozen --no-sync python -X utf8 -B process/DataAgent.py plan --game-nam
 | `--classification-total-timeout-seconds N` | `300` | 一次整款分类调用的总时限，须为正有限秒数；保活空行不延长时限 |
 | `--database PATH` | `database/achievements.sqlite` | 已存在的LYX内SQLite文件，不自动创建或改表；日常要求schema版本4 |
 | `--runtime PATH` | `process/runtime/deepseek` | LYX内的缓存、运行报告与进程锁目录；更换目录不会沿用原目录缓存 |
-| `--datacache PATH` | `process/datacache.csv` | LYX内的累计有效分类CSV；包括低分、已有、受保护和本轮写入结果，不取代每轮报告或原始响应 |
+| `--datacache PATH` | `process/datacache.csv` | LYX内的累计有效分类CSV；包括低分、已有、受保护和本轮写入结果，并在同目录自动刷新failure_data.csv，不取代每轮报告或原始响应 |
 
 路径默认值按程序所在的LYX工作空间定位；手动传入的相对路径按当前终端目录解析，因此以下命令统一从LYX运行。简介输出上限单独固定512 tokens，连接检查为32，不随分类输出预算增加。
 
@@ -81,7 +84,7 @@ uv run --frozen --no-sync python -X utf8 -B process/DataAgent.py plan
 
 plan完全离线，不调用模型、不写数据库或运行报告。显示每款完整成就数、待写项、保护项、输入字符/字节、输出预算和本地缓存。简介缺失时用最大长度预留估计输入，不将占位文本发给模型；字符数不是token，输出预算也不是实际用量或费用报价。
 
-2026-10-14 13:58 UTC核查快照：《重生》61项已全部取得DeepSeek结果，待处理0；再次普通运行直接跳过。默认1000款预检为978款ready、16款oversized、4款无成就、2款已完成；71,348项待处理包含超规模游戏，正常路径预计新请求1956，重试另计。统计会随运行变化，以新的plan输出为准。
+历史默认预检有16款超规模游戏；ready、已完成与待处理数量会随运行变化，以本轮plan为准。带时间的验收快照统一见[实验记录](experiments.md)。
 
 ## 实际整款分类
 
@@ -120,6 +123,12 @@ uv run --frozen --no-sync python -X utf8 -B process/DataAgent.py classify --all-
 
 [process/datacache.csv](../process/datacache.csv)是跨运行累计分类表，每个标签一行，覆盖通过和未通过门槛、已有结果、受保护及本轮写入项。每款完整响应通过当前校验后，先保存所有候选标签到该表，再提交SQLite；提交后刷新标签对应的写入结果。按`(appid,api_name,type,request_hash)`去重，同一请求的重复回放不会不断增加重复行；`source_csv`、`first_seen_at`、`last_seen_at`用于追溯。不同请求产生的同一标签保留各自记录，累计CSV行数不能直接当成唯一标签数或已写库数。原始runtime CSV、JSON和历史报告继续保留，不删除或覆盖。
 
+同目录的[failure_data.csv](../process/failure_data.csv)是累计表中**未通过置信度门槛的逐标签子集**，列名、22列顺序和去重键与datacache一致。筛选条件为本行`confidence < min_confidence`，当前默认门槛0.6；恰为0.6的标签通过，不进入低分表。多标签成就只抽取其中低分标签，其他合格标签仍按原逻辑入库。这个文件便于集中人工复核，保留游戏名、成就名、原文、理由、分数、门槛及请求来源。
+
+普通`classify`及历史导入`--apply`每次更新累计表时，在同一文件锁内由完整datacache重建低分表；不改变模型调用、预算、SQLite写入和已有结果保护。`--datacache`改到其他路径时，低分表仍命名failure_data.csv，位于所选累计表的同一目录，不增加单独参数；建议每个目录仅放一个累计源，避免多个源共用同名派生文件。独立`rebuild_failure_data(datacache_path)`可从现有累计表初始化或恢复低分表，只读源CSV，不调用API、不读写SQLite、不改datacache；源不存在则报错，不用空表覆盖已有派生文件，没有低分时输出仅含表头的CSV。`plan`和历史导入预检均不生成或刷新它；新逻辑自下次启动任务生效。
+
+低分表按每行最近累计更新记录的门槛筛选，改命令行门槛不会重写未被再次处理的历史行；同一请求重新评判后会更新对应去重键，达到新门槛的行会从低分表移除。不同request_hash的历史判断仍分别保留，所以某成就后来已有合格分类，也可能保留旧请求的低分记录。不能用低分表行数当作当前SQLite未分类成就数。结构、证据或网络失败没有有效候选，不进入该表；已达门槛但因`conflict`、已有结果或人工保护未写库的行也不属于低分，仍查看datacache及report/receipt。
+
 ### 四层产物与累计表字段
 
 | 产物 | 保存内容与用途 | 是否决定普通分类跳过 |
@@ -127,6 +136,7 @@ uv run --frozen --no-sync python -X utf8 -B process/DataAgent.py classify --all-
 | `runtime/deepseek/cache/<请求指纹>/receipt-*.json` | 请求payload、原始响应、HTTP/usage/阶段；完整有效响应可复用，错误或部分响应保留供排查 | 否；只决定能否免新请求复用 |
 | `runtime/deepseek/runs/<UTC时间>/report.json`及`classifications.csv` | 本轮游戏/调用/错误统计，以及有效分类候选的逐标签明细；CSV是17列 | 否；不是全局进度表 |
 | `process/datacache.csv` | 跨轮累计有效分类候选、门槛结果、存储结果与追溯信息；包括低分、已有和写入项，共22列 | 否；仍低分的成就可以继续pending |
+| `process/failure_data.csv`（累计层派生表） | datacache中confidence低于本行min_confidence的22列逐标签快照，供人工复核 | 否；不新增任务状态或写入规则 |
 | `database/achievements.sqlite` | 通过门槛且允许写入的标签关系，以及成就状态、人工确认和排序 | 是；以状态、已有标签方法及保护规则计算待处理项 |
 
 累计CSV的前17列与每轮CSV相同，最后5列用于累计追溯：
@@ -158,7 +168,7 @@ uv run --frozen --no-sync python -X utf8 -B process/DataAgent.py classify --all-
 
 `written`表示写入，`already_classified`表示保留已有机器结果，`protected`表示人工/排序保护，`unchanged`表示目标与当前结果一致，`below_threshold`表示该标签未达门槛。离线补录还可能出现`conflict`和`legacy_existing`；`pending`仅表示候选已保存、尚未确认SQLite提交。上述结果不能只看`confidence_passed`替代：例如一个多标签成就可同时有already_classified、written和below_threshold三种标签结果。
 
-累计表使用UTF-8 BOM、标准CSV转义，表格公式前缀会加单引号以便安全浏览；核验原始文本仍以SQLite和receipt/JSON为准。更新采用文件锁、校验旧表头/行及临时文件原子替换；这保证的是CSV单文件更新，**CSV与SQLite不是跨文件事务**。若先留档后数据库失败，可能保留pending；若数据库已提交而CSV结果刷新失败，累计结果可能滞后，应查询SQLite并依据原始响应、报告恢复，不能仅凭CSV状态推断回滚。
+两份累计表使用相同的UTF-8 BOM、标准CSV转义，表格公式前缀会加单引号以便安全浏览；核验原始文本仍以SQLite和receipt/JSON为准。更新采用同一文件锁、校验旧表头/行及临时文件原子替换；这保证的是CSV单文件更新，**datacache、failure_data与SQLite不是跨文件事务**。若先留档后数据库失败，可能保留pending；若数据库已提交而CSV结果刷新失败，累计结果可能滞后，应查询SQLite并依据原始响应、报告恢复，不能仅凭CSV状态推断回滚。低分派生表若因文件错误未刷新，可从完整datacache单独重建；不要用它反向覆盖全量表或数据库。
 
 缓存表收录的是格式、身份与证据校验有效的分类；低置信度有效结果可以留档，坏CSV、非原文evidence、无法验证的响应和过期游戏上下文不能冒充有效结果导入。旧CSV当时的`confidence_passed=false`是历史标记，导入时使用当前`>=0.6`重新筛选，并核对当前SQLite原始成就和所关联的完整响应。
 
@@ -175,7 +185,7 @@ uv run --frozen --no-sync python -X utf8 -B process/import_classification_cache.
 
 普通`classify`的already_classified保护与离线补录的`merge_existing=True`用途不同：普通运行不补齐已完成成就的机器标签；需要整体重筛机器结果时用`--reclassify`。离线工具在不覆盖已有结果的前提下补缺，要求全部已有标签都是当前合格目标中的同类型、同方法、同分数、同展示名记录；只要有不相容项，整项记conflict而不补写。manual/approved/非空mainline_index在两条链路中都优先保护。
 
-2026-10-15 11:06北京时间已实际完成一次零API补录：新增74条标签，其中68项原未分类成就取得结果，另6项已有成就补齐标签；保留1项冲突，累计CSV2264行、低分107行。该时点SQLite标签2222行、覆盖2097项成就；原始字段、既有标签及18项主线排序均保留，schema仍为4。[迁移报告](../process/runtime/deepseek/cache_imports/20261015T030622858723Z/report.json)与[核验记录](../process/runtime/deepseek/cache_imports/20261015T030622858723Z/verification.json)是历史证据，不代表后续任务后的现时行数。
+2026-10-15已完成一次历史缓存零API补录，具体数量和核验见[实验记录](experiments.md#2026-10-15)。后续分类数量以当前SQLite为准。
 
 v6要求每段evidence严格小于500字符，即最多499字符；报告同时记录evidence_max_chars=500与evidence_length_comparison="<"，不能将500理解为允许的最大长度。v5原为最多150字符，v4原为最多60字符。当前仅对版本号和这条长度规则不同的v5/v4完整请求提供兼容回放：游戏输入、摘要、模型、接口及生成参数必须完全相同，响应重新通过v6的全部校验；其他版本或变化的输入不能套用。新v6缓存优先，旧receipt保留原样，调用元数据保留源prompt_version（v5或v4），并记录requested_prompt_version=v6及compatible_cache=true。此前因长度超限失败的响应可尝试--max-requests 0恢复；仍有其他错误时不会入库，失败游戏仍待处理。
 
@@ -201,7 +211,7 @@ uv run --frozen --no-sync python -X utf8 -B process/DataAgent.py classify --max-
 
 简介和分类分别累计连续超时次数。同类实际收到完整HTTP 200响应即清零（即使后续内容校验失败），缓存命中不清零；同类连续3次超时暂停整轮，报告`state=service_paused`、`paused_reason`及`consecutive_timeouts`，退出码1。零星超时后遍历结束记`completed_with_errors`、退出码1；`timeout_game_count`和`timeout_appids`列出超时款，并同时计入`failed_game_count/failed_appids`。预算先耗尽仍为`budget_reached`，之前的失败记录保留。
 
-429、TLS/认证/余额错误、其他非读超时网络故障以及SQLite/文件错误仍停止整轮；连接错误或5xx仅沿用有限退避，共享本次总时限和请求预算，不无限重试。Ctrl+C沿用正常中断收尾，保存`interrupted`；本次不增加独立停止命令或停止标记。
+429、TLS/认证/余额错误、其他非读超时网络故障以及SQLite/文件错误仍停止整轮；连接错误或5xx仅沿用有限退避，共享本次总时限和请求预算，不无限重试。Ctrl+C沿用正常中断收尾，保存`interrupted`；没有独立停止命令或停止标记。
 
 ## 简介、结构化输入与结果
 
@@ -213,7 +223,7 @@ uv run --frozen --no-sync python -X utf8 -B process/DataAgent.py classify --max-
 
 SQLite标签表保存appid/api_name/display_name/type/method/confidence，成就表保存状态。display_name来自对应原始成就，分类入库自动填写，来源改名时触发器同步；当前user_version=4。--min-confidence默认0.6，是逐标签写入门槛：confidence >= 0.6通过，等于0.6也通过。例如mainline=0.6、challenge=0.55只存mainline；低分标签不拖累高分标签。confidence是模型自报的判断信心，不是经过校准的正确概率，0.6不能直接解释为60%准确率。通过的明确类别为suggested；独占的unknown也按相同门槛筛选，通过后仍为uncertain。不生成approved或排序号。
 
-所有原始模型标签保留在runtime JSON的types中，同时单列accepted_types和rejected_types；有效分类的全部标签也累计到process/datacache.csv，包含未过门槛和已有结果。全部未通过时sqlite_outcome=below_threshold，不删除旧标签、不改原有status，仍计入待处理；原先pending继续pending。已有DeepSeek/人工结果的保护规则仍生效，不主动清理历史低分结果。普通分类需要重筛已有机器结果时显式加--reclassify；历史导入工具只补新标签，不覆盖已有机器/人工结果。阈值是本地后处理参数，不进入API提示词或请求指纹；本轮仅将比较符改为>=，分类prompt仍为v6，同一完整输入可用--max-requests 0复用缓存筛选，无额外请求。report记录confidence_comparison=">="，CSV的confidence_passed和各类入库计数使用同一比较规则。格式错误仍拒绝整款，原始错误响应留在receipt JSON；该游戏记录response_error及失败阶段，继续处理后续游戏，不把错误转换为unknown。
+所有原始模型标签保留在runtime JSON的types中，同时单列accepted_types和rejected_types；有效分类的全部标签也累计到process/datacache.csv，包含未过门槛和已有结果。全部未通过时sqlite_outcome=below_threshold，不删除旧标签、不改原有status，仍计入待处理；原先pending继续pending。已有DeepSeek/人工结果的保护规则仍生效，不主动清理历史低分结果。普通分类需要重筛已有机器结果时显式加--reclassify；历史导入工具只补新标签，不覆盖已有机器/人工结果。阈值是本地后处理参数，不进入API提示词或请求指纹；比较符为>=，分类prompt为v6，同一完整输入可用--max-requests 0复用缓存筛选，无额外请求。report记录confidence_comparison=">="，CSV的confidence_passed和各类入库计数使用同一比较规则。格式错误仍拒绝整款，原始错误响应留在receipt JSON；该游戏记录response_error及失败阶段，继续处理后续游戏，不把错误转换为unknown。
 
 ## 预算、恢复与缓存统计
 
@@ -229,8 +239,6 @@ report.type_counts/unknown_count统计本轮完整模型候选，并非SQLite累
 
 local_response_cache_hits（兼容旧cache_hits）是本地响应复用次数。api_cache_hit_tokens/api_cache_miss_tokens/api_cache_hit_ratio来自本轮真实API响应，usage_by_task分开汇总简介与分类；缺失用量保持null，历史缓存用量不重复统计。
 
-例如2026-10-15 09:30北京时间的历史运行，在旧`>0.6`规则下先复用了Rust、博德之门3、艾尔登法环共201项成就的完整结果：141项已有、60项未过门槛，因而classified_count=201却written=0。三款简介及分类共6次缓存命中，后来又复用赛博朋克2077简介，所以cache_hits=7；两次新请求额度则全部消耗在星露谷简介的503重试及随后超时上。终端只显示新HTTP请求不表示先前没有处理缓存；本案例的60项拒绝数不能直接套用当前`>=0.6`规则。[当轮报告](../process/runtime/deepseek/runs/20261015T013045953361Z/report.json)。
+历史运行曾在大量缓存复用后仅对下一款发出新请求，也曾在预算暂停前成功提交部分游戏；这些都符合上述预算与缓存规则。实际请求、候选及写入量分别核对，案例和报告见[实验记录](experiments.md)。
 
-随后2026-10-15 14:41北京时间的实际运行已按`>=0.6`和累计缓存链路执行：新请求2次、缓存命中5次、写入49项成就/49条标签，未记录失败，最终budget_reached；累计CSV增至2313行，其中低分仍107行。这证明预算暂停前的有效结果已提交，不表示1000款全部完成，也不构成语义准确率评估。[当轮报告](../process/runtime/deepseek/runs/20261015T064109506808Z/report.json)。
-
-环境变量优先、根.env回退：DEEPSEEK_API_KEY / DEEPSEEK_BASE_URL / DEEPSEEK_MODEL。官方HTTPS入口、TLS校验和密钥脱敏保留。用户已完成《重生》61项零请求恢复，以及HELLDIVERS™ 2的38项分类（41条多标签关系）；后者默认选1000款、预算2次后正常暂停。本次文档更新不调用API或写库，记录见[experiments.md](experiments.md)。
+环境变量优先、根.env回退：DEEPSEEK_API_KEY / DEEPSEEK_BASE_URL / DEEPSEEK_MODEL。官方HTTPS入口、TLS校验和密钥脱敏保留。真实验收记录见[experiments.md](experiments.md)，当前覆盖见[DATABASE.md](DATABASE.md)。
