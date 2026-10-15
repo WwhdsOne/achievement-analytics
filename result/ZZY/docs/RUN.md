@@ -63,3 +63,19 @@ uv run python result/ZZY/run.py evaluate --output-dir result/ZZY/runtime/replay-
 - 端口占用：指定 `--port`，不停止其他人的服务。
 - 校验失败：检查文件版本和Git换行，保留原记录，不修改manifest绕过校验。
 - 与组员统一Go网站的接入仍为后续工作；本次只改变个人服务的数据来源。
+
+
+## 可选：DeepSeek 个性化点评（v9）
+
+后端读取个人目录 `result/ZZY/.env.deepseek` 或同名环境变量，环境变量优先。该私有文件不进入交付包；无Key时正常推荐与图谱仍可使用。配置后重启serve。
+
+```dotenv
+DEEPSEEK_API_KEY=在本机填写你的Key
+DEEPSEEK_MODEL=deepseek-flash
+```
+
+用户点击生成才请求官方 `https://api.deepseek.com/chat/completions`，只发送所选游戏和匹配关系。网络操作超时20秒，最多2个并发生成，成功结果按模型/数据/查询绑定缓存1小时；取消是停止等待，已发给供应商的请求仍可能计费。JSON结构和引用范围检查不能证明生成内容完全正确。
+
+协议依据：[DeepSeek Chat Completions](https://api-docs.deepseek.com/api/create-chat-completion/)、[JSON Output](https://api-docs.deepseek.com/guides/json_mode/)。默认模型以本轮官方文档为据，可在私有配置中替换为账号支持的模型名。
+
+本轮用户尚未配置Key；通过的是模拟传输、实际本机HTTP与浏览器夹具，真实DeepSeek外部调用待本机配置后验证。README保持v8原字节。

@@ -1,0 +1,22 @@
+{
+  "version": "ZZY-site-v8",
+  "date": "2026-10-15",
+  "changes": [
+    "Chinese primary title with English subtitle; source names unchanged",
+    "up to three positive-path reasons, different contributing seeds and distinctive returned-set evidence",
+    "300ms input debounce, IME safe search, collapse after selection and scroll to results"
+  ],
+  "tests": {
+    "pytest_private": 18,
+    "pytest_existing_query_contracts": 112,
+    "node_presentation": 8,
+    "browser_usability": 19,
+    "browser_existing": 47,
+    "historical_queries": 6
+  },
+  "readme_sha256": "dde6e4cebdc06bda96e1813b3022fe713724928259cb68b4725c32fb4ac2baf5",
+  "readme_unchanged_vs_v7": true,
+  "database_access": false,
+  "recommendation_scoring_unchanged": true,
+  "formal_human_evaluation": false
+}

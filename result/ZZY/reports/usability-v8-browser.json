@@ -1,0 +1,30 @@
+{
+  "status": "passed",
+  "database_access": false,
+  "checks": [
+    "debounce: rapid typing makes one request",
+    "Chinese primary and English subtitle; original API name retained",
+    "selection closes candidates and displays bilingual seed",
+    "successful recommendation scrolls directly to results",
+    "single-query cards use multiple traceable positive reasons",
+    "Chinese explanation title and graph remain selectable",
+    "multi-query reasons cover each contributing selected game",
+    "bilingual cards and multiple reasons fit 390px viewport",
+    "IME composition suppresses partial requests and searches on completion",
+    "clear cancels pending debounce timer",
+    "Enter submits immediately without duplicate delayed search",
+    "late old response cannot overwrite new automatic search",
+    "cancel search prevents delayed candidates from returning",
+    "automatic-search failure can retry successfully",
+    "replacement works with collapsed search",
+    "blank input avoids scan and keeps selected preference usable",
+    "empty year-filtered result stays empty",
+    "cleared query cannot restore delayed result",
+    "no browser JavaScript errors"
+  ],
+  "fixture_tests": "explicit delayed response, IME events and request errors",
+  "screenshots": [
+    "runtime/usability-v8/desktop.png",
+    "runtime/usability-v8/mobile.png"
+  ]
+}

@@ -1,0 +1,21 @@
+{
+  "status": "passed",
+  "actual_external_call": false,
+  "actual_api_key_configured": false,
+  "tests_use_browser_response_fixtures": true,
+  "checks": [
+    "top navigation keeps only brand and learn-more menu",
+    "actual no-key state disables paid call and keeps graph/existing reasons",
+    "fixture: configured state still requires explicit click",
+    "fixture: summary, two reasons, caution and collapsed/expandable evidence",
+    "fixture: switching candidate discards pending old commentary",
+    "fixture: cancel stops waiting and preserves retry",
+    "fixture: provider failure leaves real graph and retry available",
+    "fixture: output is text-only and cache status displayed",
+    "fixture: old unstructured response rejected without partial output",
+    "fixture: one reason supported without padding",
+    "390px commentary controls and evidence have no horizontal overflow",
+    "fixture: clear query discards pending commentary",
+    "no browser JavaScript errors"
+  ]
+}

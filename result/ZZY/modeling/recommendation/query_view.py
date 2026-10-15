@@ -19,10 +19,13 @@ from .knowledge_graph_inspector import GraphInspector
 from .query_service import RecommendationQueryService
 from .scoring_view import build_explanation
 from .snapshot import SNAPSHOTS
+from . import presentation_names
 
 ASSET_ROOT = Path(__file__).parent / "query_view_assets"
-ASSETS = {"/": ("index.html", "text/html"), "/app.js": ("app.js", "text/javascript"),
-          "/renderer.js": ("renderer.js", "text/javascript"), "/style.css": ("style.css", "text/css")}
+ASSETS = {"/": ("discovery.html", "text/html"), "/app.js": ("app.js", "text/javascript"),
+          "/discovery.js": ("discovery.js", "text/javascript"),
+          "/commentary.js": ("commentary.js", "text/javascript"),
+          "/renderer.js": ("renderer.js", "text/javascript"), "/style.css": ("discovery.css", "text/css")}
 
 
 class QueryViewService:
@@ -38,6 +41,8 @@ class QueryViewService:
                         "clip_policy": "display_only_full_ranking_and_paths_retained",
                         "source_sha256": {"query_view.py": digest_file(Path(__file__)),
                             "scoring_view.py": digest_file(Path(scoring_view.__file__)),
+                            "presentation_names.py": digest_file(Path(presentation_names.__file__)),
+                            "display_names_zh.json": digest_file(presentation_names.NAME_PATH),
                             **{name: hashlib.sha256(self._assets[url][1]).hexdigest() for url, (name, _) in ASSETS.items()}}}
         self.view_version = "query-view-v1-" + hashlib.sha256(json_text(self.binding).encode("utf-8")).hexdigest()
 
@@ -59,6 +64,9 @@ class QueryViewService:
         report = build_explanation(ranking, path_limit)
         report.update(query_games=copy.deepcopy(ranking["seed_checks"]), view_version=self.view_version,
                       view_binding=copy.deepcopy(self.binding))
+        ids = set(seeds) | {r['appid'] for r in ranking['results']}
+        report['display_names'] = {str(appid): presentation_names.display_title(self.query.base.inspector._rows[appid])
+                                   for appid in sorted(ids)}
         for item in report["explanations"]:
             for node in item["display_graph"]["nodes"]:
                 if node["type"] == "Game":
@@ -95,7 +103,10 @@ def route(service: QueryViewService, target: str) -> tuple[int, str, bytes]:
             return int(value)
 
         if url.path == "/api/search":
-            return encoded(service.query.search(params.get("q", [""])[0], integer("limit", "20"), integer("offset", "0")))
+            results = service.query.search(params.get("q", [""])[0], integer("limit", "20"), integer("offset", "0"))
+            for game in results['results']:
+                game.update(presentation_names.display_title(game))
+            return encoded(results)
         raw = params.get("appids", [""])[0]
         if not re.fullmatch(r"[0-9]{1,10}(?:,[0-9]{1,10}){0,9}", raw):
             raise ValueError("appids须为逗号分隔的1–3个唯一游戏appid")
@@ -118,7 +129,7 @@ def make_handler(service: QueryViewService) -> type[BaseHTTPRequestHandler]:
                 status, mime, body = 500, "application/json; charset=utf-8", b'{"error":"Service error"}'
             self.send_response(status)
             for key, value in {"Content-Type": mime, "Content-Length": str(len(body)), "Cache-Control": "no-store",
-                "X-Content-Type-Options": "nosniff", "Content-Security-Policy": "default-src 'self'; style-src 'self'; object-src 'none'; base-uri 'none'; frame-ancestors 'none'"}.items():
+                "X-Content-Type-Options": "nosniff", "Content-Security-Policy": "default-src 'self'; img-src 'self' https://cdn.akamai.steamstatic.com; style-src 'self'; object-src 'none'; base-uri 'none'; frame-ancestors 'none'"}.items():
                 self.send_header(key, value)
             self.end_headers()
             try:

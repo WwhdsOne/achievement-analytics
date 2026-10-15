@@ -1,6 +1,6 @@
-# 上传最新版v5
+# 上传最新版v10
 
-当前交付为 `ZZY-site-v5.zip`：单服务四页面，中文名、常用译名和简称整合原搜索框；默认只读小组数据库，正常运行无需旧数据包。只上传展开后的 `result/ZZY/`，个人缓存、.env和密码不上传。旧v2/v3/v4代码包保留为历史版本。
+当前交付为 `ZZY-site-v10.zip`：包含结构化点评、可配置网站来源和新增POST接口文档；单服务四页面、中文搜索和默认只读数据库启动均保留。只上传展开后的 `result/ZZY/`，个人缓存、.env和密码不上传。v9及更早包保留为历史版本，README保持原样。组长接入见 `docs/API.md`。
 
 ## 网页上传
 
@@ -8,10 +8,10 @@
 2. 登录GitHub，打开仓库首页 https://github.com/WwhdsOne/achievement-analytics ，确认main。
 3. 从仓库根页面选择 Add file → Upload files，把整个result文件夹拖入。
 4. 核对路径为result/ZZY/run.py、result/ZZY/process/database_input.py等，未多一层result；保留.gitattributes和.gitignore。数量以delivery-manifest.json为准。
-5. 提交说明可填写 `ZZY: 单服务推荐页支持中文名和简称搜索`，按小组规则提交。
+5. 提交说明可填写 `ZZY: 推荐页改为面向玩家的游戏发现界面`，按小组规则提交。
 6. 打开result/ZZY/README.md确认新说明为默认数据库启动。上传是覆盖同名文件，不会自动删除旧文件。
 
-不上传ZIP本身，而是展开后的目录；数据、runtime、虚拟环境和凭据均不在新版包内。GitHub网页上传不会应用.gitattributes，新版包本身统一为LF，仍保留属性文件供后续Git使用。
+不上传ZIP本身，而是展开后的目录；数据、runtime、虚拟环境和凭据均不在新版包内。保留.gitattributes供后续Git使用，计算源码字节与v5一致。
 
 ## 已准备的本地Git副本
 
