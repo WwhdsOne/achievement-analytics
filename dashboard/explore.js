@@ -6,6 +6,8 @@
   const valid = value => typeof value === 'number' && Number.isFinite(value);
   const num = value => valid(value) ? value.toLocaleString('zh-CN') : '—';
   const pct = value => valid(value) ? value.toFixed(1) + '%' : '—';
+  // HowLongToBeat 时长（小时）。名称匹配导入、覆盖不全，缺数据显示「无」。
+  const hours = value => valid(value) && value >= 0 ? value.toFixed(1) + '<em>小时</em>' : '无';
   const title = game => game.name_zh || game.name || '未命名游戏';
   // 旧价格字段未保存货币，现有数据混有不同地区金额；不据此标美元价。
   const payment = game => game.is_free === true ? '免费' : game.is_free === false ? '付费' : '—';
@@ -156,7 +158,7 @@
     let html = `<article class="game-story"><header class="game-story-header"><div><span class="explore-eyebrow">GAME / ${Number(g.appid)}</span>
       <h2>${esc(title(g))}</h2>${g.name_zh && g.name_zh !== g.name ? `<p class="game-english">${esc(g.name)}</p>` : ''}<p class="explore-note">${meta}</p></div>
       <div class="game-actions"><a href="https://store.steampowered.com/app/${Number(g.appid)}/" target="_blank" rel="noopener noreferrer">去 Steam ↗</a><a href="#explore">换款游戏 ↑</a></div></header>
-      <div class="game-stat-grid">${stat('成就清单',num(g.ach_count),'个成就')}${stat('Steam 好评率',pct(g.approval),`${num(g.reviews)} 条评价`)}${stat('付费方式',payment(g),'当前售价请查看 Steam 商店')}${stat('采集时在线',num(d.steamspy?.ccu),'人 · 非实时在线')}</div>`;
+      <div class="game-stat-grid">${stat('成就清单',num(g.ach_count),'个成就')}${stat('Steam 好评率',pct(g.approval),`${num(g.reviews)} 条评价`)}${stat('付费方式',payment(g),'当前售价请查看 Steam 商店')}${stat('采集时在线',num(d.steamspy?.ccu),'人 · 非实时在线')}${stat('主线时长',hours(g.hltb_main),'HowLongToBeat 玩家提交')}${stat('主线+支线',hours(g.hltb_extra),'HowLongToBeat 玩家提交')}${stat('完美通关',hours(g.hltb_completionist),'HowLongToBeat 玩家提交')}</div>`;
     html += storySection('成就里藏着的小数字', achievements.length ?
       `<div class="achievement-pair">${achievementTile(achievements[0],'最常见的具名成就')}${achievementTile(achievements[achievements.length-1],'最稀有的具名成就')}</div>
       <p class="story-sentence">这款游戏有 <b>${num(rare)}</b> 个成就的全局解锁率低于 1%。</p>` :

@@ -13,6 +13,7 @@ import (
 
 // 探索直接读取现有源表；不运行分析脚本、不抓取外部站点、不写共享库。
 // 排名按 SteamSpy 好评+差评数量，缺失任一项时回退到商店搜索的评价数。
+// hltb_* 三列是 HowLongToBeat 时长分解（名称匹配导入，覆盖不全，NULL 表示无数据）。
 const exploreBase = `SELECT g.appid, g.name_en, g.name_zh,
  CASE WHEN s.positive IS NOT NULL AND s.negative IS NOT NULL
       THEN s.positive::bigint + s.negative ELSE ss.review_count::bigint END AS reviews,
@@ -20,24 +21,29 @@ const exploreBase = `SELECT g.appid, g.name_en, g.name_zh,
       THEN CASE WHEN s.positive::bigint+s.negative > 0 THEN 100.0*s.positive/(s.positive::bigint+s.negative) END
       ELSE CASE WHEN ss.review_count > 0 THEN ss.review_percent::float8 END END AS approval,
  d.is_free, d.price_cents, d.release_date::text, d.developers,
- (SELECT count(*) FROM achievements ac WHERE ac.appid = g.appid) AS ach_count
+ (SELECT count(*) FROM achievements ac WHERE ac.appid = g.appid) AS ach_count,
+ h.main_hours::float8, h.extra_hours::float8, h.completionist_hours::float8
  FROM games g LEFT JOIN steamspy_games s USING(appid)
- LEFT JOIN store_search_games ss USING(appid) LEFT JOIN steam_appdetails d USING(appid)`
+ LEFT JOIN store_search_games ss USING(appid) LEFT JOIN steam_appdetails d USING(appid)
+ LEFT JOIN hltb_games h USING(appid)`
 
 const exploreReviews = `CASE WHEN s.positive IS NOT NULL AND s.negative IS NOT NULL
  THEN s.positive::bigint+s.negative ELSE ss.review_count::bigint END`
 
 type exploreGame struct {
-	AppID      int      `json:"appid"`
-	Name       string   `json:"name"`
-	NameZh     *string  `json:"name_zh"`
-	Reviews    *int64   `json:"reviews"`
-	Approval   *float64 `json:"approval"`
-	IsFree     *bool    `json:"is_free"`
-	PriceCents *int64   `json:"price_cents"`
-	Release    *string  `json:"release_date"`
-	Developers []string `json:"developers"`
-	AchCount   int64    `json:"ach_count"`
+	AppID           int      `json:"appid"`
+	Name            string   `json:"name"`
+	NameZh          *string  `json:"name_zh"`
+	Reviews         *int64   `json:"reviews"`
+	Approval        *float64 `json:"approval"`
+	IsFree          *bool    `json:"is_free"`
+	PriceCents      *int64   `json:"price_cents"`
+	Release         *string  `json:"release_date"`
+	Developers      []string `json:"developers"`
+	AchCount        int64    `json:"ach_count"`
+	HltbMain        *float64 `json:"hltb_main"`
+	HltbExtra       *float64 `json:"hltb_extra"`
+	HltbCompletion  *float64 `json:"hltb_completionist"`
 }
 
 type exploreTag struct {
@@ -83,7 +89,8 @@ func (a *api) exploreGames(ctx context.Context, query string, args ...any) ([]ex
 	for rows.Next() {
 		var g exploreGame
 		if err := rows.Scan(&g.AppID, &g.Name, &g.NameZh, &g.Reviews, &g.Approval,
-			&g.IsFree, &g.PriceCents, &g.Release, &g.Developers, &g.AchCount); err != nil {
+			&g.IsFree, &g.PriceCents, &g.Release, &g.Developers, &g.AchCount,
+			&g.HltbMain, &g.HltbExtra, &g.HltbCompletion); err != nil {
 			return nil, err
 		}
 		if g.Developers == nil {
