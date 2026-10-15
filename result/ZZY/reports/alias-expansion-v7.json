@@ -1,0 +1,603 @@
+{
+  "revision": "ZZY-site-v7",
+  "date": "2026-10-15",
+  "added_games": 52,
+  "added_terms": 123,
+  "total_games": 96,
+  "total_terms": 237,
+  "name_policy": "maintainer curated search aliases; not all official localized titles; original names unchanged",
+  "database_access": false,
+  "records": [
+    {
+      "appid": 268910,
+      "name_en": "Cuphead",
+      "name_zh_in_snapshot": "Cuphead",
+      "aliases": [
+        "茶杯头",
+        "杯头"
+      ],
+      "identity_evidence": "existing frozen Steam snapshot row; no database access",
+      "store_url": "https://store.steampowered.com/app/268910/"
+    },
+    {
+      "appid": 504230,
+      "name_en": "Celeste",
+      "name_zh_in_snapshot": "Celeste",
+      "aliases": [
+        "蔚蓝"
+      ],
+      "identity_evidence": "existing frozen Steam snapshot row; no database access",
+      "store_url": "https://store.steampowered.com/app/504230/"
+    },
+    {
+      "appid": 753640,
+      "name_en": "Outer Wilds",
+      "name_zh_in_snapshot": "Outer Wilds",
+      "aliases": [
+        "星际拓荒",
+        "星際拓荒"
+      ],
+      "identity_evidence": "existing frozen Steam snapshot row; no database access",
+      "store_url": "https://store.steampowered.com/app/753640/"
+    },
+    {
+      "appid": 275850,
+      "name_en": "No Man's Sky",
+      "name_zh_in_snapshot": "No Man's Sky 无人深空",
+      "aliases": [
+        "无人深空",
+        "無人深空"
+      ],
+      "identity_evidence": "existing frozen Steam snapshot row; no database access",
+      "store_url": "https://store.steampowered.com/app/275850/"
+    },
+    {
+      "appid": 427520,
+      "name_en": "Factorio",
+      "name_zh_in_snapshot": "Factorio",
+      "aliases": [
+        "异星工厂"
+      ],
+      "identity_evidence": "existing frozen Steam snapshot row; no database access",
+      "store_url": "https://store.steampowered.com/app/427520/"
+    },
+    {
+      "appid": 526870,
+      "name_en": "Satisfactory",
+      "name_zh_in_snapshot": "幸福工厂",
+      "aliases": [
+        "幸福工厂",
+        "满意工厂"
+      ],
+      "identity_evidence": "existing frozen Steam snapshot row; no database access",
+      "store_url": "https://store.steampowered.com/app/526870/"
+    },
+    {
+      "appid": 1366540,
+      "name_en": "Dyson Sphere Program",
+      "name_zh_in_snapshot": "戴森球计划",
+      "aliases": [
+        "戴森球计划",
+        "戴森球",
+        "DSP"
+      ],
+      "identity_evidence": "existing frozen Steam snapshot row; no database access",
+      "store_url": "https://store.steampowered.com/app/1366540/"
+    },
+    {
+      "appid": 1326470,
+      "name_en": "Sons Of The Forest",
+      "name_zh_in_snapshot": "Sons Of The Forest",
+      "aliases": [
+        "森林之子",
+        "森林2"
+      ],
+      "identity_evidence": "existing frozen Steam snapshot row; no database access",
+      "store_url": "https://store.steampowered.com/app/1326470/"
+    },
+    {
+      "appid": 648800,
+      "name_en": "Raft",
+      "name_zh_in_snapshot": "Raft",
+      "aliases": [
+        "木筏求生",
+        "木筏生存"
+      ],
+      "identity_evidence": "existing frozen Steam snapshot row; no database access",
+      "store_url": "https://store.steampowered.com/app/648800/"
+    },
+    {
+      "appid": 251570,
+      "name_en": "7 Days to Die",
+      "name_zh_in_snapshot": "7 Days to Die",
+      "aliases": [
+        "七日杀",
+        "7日杀"
+      ],
+      "identity_evidence": "existing frozen Steam snapshot row; no database access",
+      "store_url": "https://store.steampowered.com/app/251570/"
+    },
+    {
+      "appid": 239140,
+      "name_en": "Dying Light",
+      "name_zh_in_snapshot": "Dying Light",
+      "aliases": [
+        "消逝的光芒",
+        "消逝的光芒1",
+        "消光1"
+      ],
+      "identity_evidence": "existing frozen Steam snapshot row; no database access",
+      "store_url": "https://store.steampowered.com/app/239140/"
+    },
+    {
+      "appid": 534380,
+      "name_en": "Dying Light 2 Stay Human: Reloaded Edition",
+      "name_zh_in_snapshot": "消逝的光芒2: 重装上阵版",
+      "aliases": [
+        "消逝的光芒2",
+        "消逝的光芒 2",
+        "消光2"
+      ],
+      "identity_evidence": "existing frozen Steam snapshot row; no database access",
+      "store_url": "https://store.steampowered.com/app/534380/"
+    },
+    {
+      "appid": 1426210,
+      "name_en": "It Takes Two",
+      "name_zh_in_snapshot": "双人成行",
+      "aliases": [
+        "双人成行",
+        "雙人成行"
+      ],
+      "identity_evidence": "existing frozen Steam snapshot row; no database access",
+      "store_url": "https://store.steampowered.com/app/1426210/"
+    },
+    {
+      "appid": 1222700,
+      "name_en": "A Way Out",
+      "name_zh_in_snapshot": "A Way Out",
+      "aliases": [
+        "逃出生天"
+      ],
+      "identity_evidence": "existing frozen Steam snapshot row; no database access",
+      "store_url": "https://store.steampowered.com/app/1222700/"
+    },
+    {
+      "appid": 728880,
+      "name_en": "Overcooked! 2",
+      "name_zh_in_snapshot": "Overcooked! 2",
+      "aliases": [
+        "胡闹厨房2",
+        "胡闹厨房 2",
+        "分手厨房2",
+        "煮糊了2"
+      ],
+      "identity_evidence": "existing frozen Steam snapshot row; no database access",
+      "store_url": "https://store.steampowered.com/app/728880/"
+    },
+    {
+      "appid": 448510,
+      "name_en": "Overcooked",
+      "name_zh_in_snapshot": "Overcooked",
+      "aliases": [
+        "胡闹厨房",
+        "胡闹厨房1",
+        "分手厨房1",
+        "煮糊了"
+      ],
+      "identity_evidence": "existing frozen Steam snapshot row; no database access",
+      "store_url": "https://store.steampowered.com/app/448510/"
+    },
+    {
+      "appid": 238460,
+      "name_en": "BattleBlock Theater®",
+      "name_zh_in_snapshot": "BattleBlock Theater®",
+      "aliases": [
+        "战斗砖块剧场",
+        "战斗方块剧场"
+      ],
+      "identity_evidence": "existing frozen Steam snapshot row; no database access",
+      "store_url": "https://store.steampowered.com/app/238460/"
+    },
+    {
+      "appid": 204360,
+      "name_en": "Castle Crashers®",
+      "name_zh_in_snapshot": "Castle Crashers®",
+      "aliases": [
+        "城堡破坏者",
+        "城堡毁灭者"
+      ],
+      "identity_evidence": "existing frozen Steam snapshot row; no database access",
+      "store_url": "https://store.steampowered.com/app/204360/"
+    },
+    {
+      "appid": 477160,
+      "name_en": "Human Fall Flat",
+      "name_zh_in_snapshot": "人类一败涂地 / Human Fall Flat",
+      "aliases": [
+        "人类一败涂地",
+        "人類一敗塗地"
+      ],
+      "identity_evidence": "existing frozen Steam snapshot row; no database access",
+      "store_url": "https://store.steampowered.com/app/477160/"
+    },
+    {
+      "appid": 285900,
+      "name_en": "Gang Beasts",
+      "name_zh_in_snapshot": "Gang Beasts",
+      "aliases": [
+        "基佬大乱斗"
+      ],
+      "identity_evidence": "existing frozen Steam snapshot row; no database access",
+      "store_url": "https://store.steampowered.com/app/285900/"
+    },
+    {
+      "appid": 1260320,
+      "name_en": "Party Animals",
+      "name_zh_in_snapshot": "猛兽派对",
+      "aliases": [
+        "猛兽派对",
+        "动物派对"
+      ],
+      "identity_evidence": "existing frozen Steam snapshot row; no database access",
+      "store_url": "https://store.steampowered.com/app/1260320/"
+    },
+    {
+      "appid": 1172620,
+      "name_en": "Sea of Thieves: 2026 Edition",
+      "name_zh_in_snapshot": "Sea of Thieves: 2026 Edition",
+      "aliases": [
+        "盗贼之海",
+        "盜賊之海"
+      ],
+      "identity_evidence": "existing frozen Steam snapshot row; no database access",
+      "store_url": "https://store.steampowered.com/app/1172620/"
+    },
+    {
+      "appid": 739630,
+      "name_en": "Phasmophobia",
+      "name_zh_in_snapshot": "Phasmophobia 恐鬼症",
+      "aliases": [
+        "恐鬼症"
+      ],
+      "identity_evidence": "existing frozen Steam snapshot row; no database access",
+      "store_url": "https://store.steampowered.com/app/739630/"
+    },
+    {
+      "appid": 2379780,
+      "name_en": "Balatro",
+      "name_zh_in_snapshot": "Balatro",
+      "aliases": [
+        "小丑牌"
+      ],
+      "identity_evidence": "existing frozen Steam snapshot row; no database access",
+      "store_url": "https://store.steampowered.com/app/2379780/"
+    },
+    {
+      "appid": 1794680,
+      "name_en": "Vampire Survivors",
+      "name_zh_in_snapshot": "Vampire Survivors - 吸血鬼幸存者",
+      "aliases": [
+        "吸血鬼幸存者",
+        "吸血鬼倖存者"
+      ],
+      "identity_evidence": "existing frozen Steam snapshot row; no database access",
+      "store_url": "https://store.steampowered.com/app/1794680/"
+    },
+    {
+      "appid": 1942280,
+      "name_en": "Brotato",
+      "name_zh_in_snapshot": "土豆兄弟(Brotato)",
+      "aliases": [
+        "土豆兄弟",
+        "马铃薯兄弟"
+      ],
+      "identity_evidence": "existing frozen Steam snapshot row; no database access",
+      "store_url": "https://store.steampowered.com/app/1942280/"
+    },
+    {
+      "appid": 1092790,
+      "name_en": "Inscryption",
+      "name_zh_in_snapshot": "邪恶冥刻",
+      "aliases": [
+        "邪恶冥刻"
+      ],
+      "identity_evidence": "existing frozen Steam snapshot row; no database access",
+      "store_url": "https://store.steampowered.com/app/1092790/"
+    },
+    {
+      "appid": 1868140,
+      "name_en": "DAVE THE DIVER",
+      "name_zh_in_snapshot": "潜水员戴夫 DAVE THE DIVER",
+      "aliases": [
+        "潜水员戴夫",
+        "潜水戴夫",
+        "戴夫"
+      ],
+      "identity_evidence": "existing frozen Steam snapshot row; no database access",
+      "store_url": "https://store.steampowered.com/app/1868140/"
+    },
+    {
+      "appid": 1562430,
+      "name_en": "DREDGE",
+      "name_zh_in_snapshot": "《渔帆暗涌》",
+      "aliases": [
+        "渔帆暗涌",
+        "漁帆暗湧"
+      ],
+      "identity_evidence": "existing frozen Steam snapshot row; no database access",
+      "store_url": "https://store.steampowered.com/app/1562430/"
+    },
+    {
+      "appid": 1313140,
+      "name_en": "Cult of the Lamb",
+      "name_zh_in_snapshot": "咩咩启示录",
+      "aliases": [
+        "咩咩启示录"
+      ],
+      "identity_evidence": "existing frozen Steam snapshot row; no database access",
+      "store_url": "https://store.steampowered.com/app/1313140/"
+    },
+    {
+      "appid": 813230,
+      "name_en": "ANIMAL WELL",
+      "name_zh_in_snapshot": "ANIMAL WELL",
+      "aliases": [
+        "动物井",
+        "動物井"
+      ],
+      "identity_evidence": "existing frozen Steam snapshot row; no database access",
+      "store_url": "https://store.steampowered.com/app/813230/"
+    },
+    {
+      "appid": 553420,
+      "name_en": "TUNIC",
+      "name_zh_in_snapshot": "TUNIC",
+      "aliases": [
+        "小狐狸",
+        "TUNIC小狐狸"
+      ],
+      "identity_evidence": "existing frozen Steam snapshot row; no database access",
+      "store_url": "https://store.steampowered.com/app/553420/"
+    },
+    {
+      "appid": 1332010,
+      "name_en": "Stray",
+      "name_zh_in_snapshot": "Stray",
+      "aliases": [
+        "迷失",
+        "流浪猫",
+        "Stray迷失"
+      ],
+      "identity_evidence": "existing frozen Steam snapshot row; no database access",
+      "store_url": "https://store.steampowered.com/app/1332010/"
+    },
+    {
+      "appid": 2358720,
+      "name_en": "Black Myth: Wukong",
+      "name_zh_in_snapshot": "黑神话：悟空",
+      "aliases": [
+        "黑神话悟空",
+        "黑神话：悟空",
+        "黑神话",
+        "黑猴"
+      ],
+      "identity_evidence": "existing frozen Steam snapshot row; no database access",
+      "store_url": "https://store.steampowered.com/app/2358720/"
+    },
+    {
+      "appid": 1809540,
+      "name_en": "Nine Sols",
+      "name_zh_in_snapshot": "九日",
+      "aliases": [
+        "九日"
+      ],
+      "identity_evidence": "existing frozen Steam snapshot row; no database access",
+      "store_url": "https://store.steampowered.com/app/1809540/"
+    },
+    {
+      "appid": 1687950,
+      "name_en": "Persona 5 Royal",
+      "name_zh_in_snapshot": "女神异闻录5皇家版",
+      "aliases": [
+        "女神异闻录5皇家版",
+        "女神异闻录5",
+        "P5R",
+        "P5皇家版"
+      ],
+      "identity_evidence": "existing frozen Steam snapshot row; no database access",
+      "store_url": "https://store.steampowered.com/app/1687950/"
+    },
+    {
+      "appid": 1113000,
+      "name_en": "Persona 4 Golden",
+      "name_zh_in_snapshot": "女神异闻录４ 黄金版",
+      "aliases": [
+        "女神异闻录4黄金版",
+        "女神异闻录4",
+        "P4G"
+      ],
+      "identity_evidence": "existing frozen Steam snapshot row; no database access",
+      "store_url": "https://store.steampowered.com/app/1113000/"
+    },
+    {
+      "appid": 2161700,
+      "name_en": "Persona 3 Reload",
+      "name_zh_in_snapshot": "女神异闻录３ Reload",
+      "aliases": [
+        "女神异闻录3重制版",
+        "女神异闻录3 Reload",
+        "P3R"
+      ],
+      "identity_evidence": "existing frozen Steam snapshot row; no database access",
+      "store_url": "https://store.steampowered.com/app/2161700/"
+    },
+    {
+      "appid": 524220,
+      "name_en": "NieR:Automata™",
+      "name_zh_in_snapshot": "NieR:Automata™",
+      "aliases": [
+        "尼尔机械纪元",
+        "尼尔：机械纪元",
+        "尼尔自动人形"
+      ],
+      "identity_evidence": "existing frozen Steam snapshot row; no database access",
+      "store_url": "https://store.steampowered.com/app/524220/"
+    },
+    {
+      "appid": 2050650,
+      "name_en": "Resident Evil 4",
+      "name_zh_in_snapshot": "Resident Evil 4",
+      "aliases": [
+        "生化危机4重制版",
+        "生化4重制版",
+        "RE4重制版"
+      ],
+      "identity_evidence": "existing frozen Steam snapshot row; no database access",
+      "store_url": "https://store.steampowered.com/app/2050650/"
+    },
+    {
+      "appid": 883710,
+      "name_en": "Resident Evil 2",
+      "name_zh_in_snapshot": "Resident Evil 2",
+      "aliases": [
+        "生化危机2重制版",
+        "生化2重制版",
+        "RE2重制版"
+      ],
+      "identity_evidence": "existing frozen Steam snapshot row; no database access",
+      "store_url": "https://store.steampowered.com/app/883710/"
+    },
+    {
+      "appid": 952060,
+      "name_en": "Resident Evil 3",
+      "name_zh_in_snapshot": "Resident Evil 3",
+      "aliases": [
+        "生化危机3重制版",
+        "生化3重制版",
+        "RE3重制版"
+      ],
+      "identity_evidence": "existing frozen Steam snapshot row; no database access",
+      "store_url": "https://store.steampowered.com/app/952060/"
+    },
+    {
+      "appid": 418370,
+      "name_en": "Resident Evil 7 Biohazard",
+      "name_zh_in_snapshot": "Resident Evil 7 Biohazard",
+      "aliases": [
+        "生化危机7",
+        "生化7",
+        "RE7"
+      ],
+      "identity_evidence": "existing frozen Steam snapshot row; no database access",
+      "store_url": "https://store.steampowered.com/app/418370/"
+    },
+    {
+      "appid": 1196590,
+      "name_en": "Resident Evil Village",
+      "name_zh_in_snapshot": "Resident Evil Village",
+      "aliases": [
+        "生化危机8",
+        "生化8",
+        "生化危机村庄",
+        "RE8"
+      ],
+      "identity_evidence": "existing frozen Steam snapshot row; no database access",
+      "store_url": "https://store.steampowered.com/app/1196590/"
+    },
+    {
+      "appid": 208650,
+      "name_en": "Batman™: Arkham Knight",
+      "name_zh_in_snapshot": "Batman™: Arkham Knight",
+      "aliases": [
+        "蝙蝠侠阿卡姆骑士",
+        "蝙蝠侠：阿卡姆骑士",
+        "阿卡姆骑士"
+      ],
+      "identity_evidence": "existing frozen Steam snapshot row; no database access",
+      "store_url": "https://store.steampowered.com/app/208650/"
+    },
+    {
+      "appid": 552520,
+      "name_en": "Far Cry® 5",
+      "name_zh_in_snapshot": "Far Cry® 5",
+      "aliases": [
+        "孤岛惊魂5",
+        "孤岛惊魂 5"
+      ],
+      "identity_evidence": "existing frozen Steam snapshot row; no database access",
+      "store_url": "https://store.steampowered.com/app/552520/"
+    },
+    {
+      "appid": 812140,
+      "name_en": "Assassin's Creed® Odyssey",
+      "name_zh_in_snapshot": "Assassin's Creed® Odyssey",
+      "aliases": [
+        "刺客信条奥德赛",
+        "刺客信条：奥德赛",
+        "奥德赛"
+      ],
+      "identity_evidence": "existing frozen Steam snapshot row; no database access",
+      "store_url": "https://store.steampowered.com/app/812140/"
+    },
+    {
+      "appid": 582160,
+      "name_en": "Assassin's Creed® Origins",
+      "name_zh_in_snapshot": "刺客信条：起源",
+      "aliases": [
+        "刺客信条起源",
+        "刺客信条：起源"
+      ],
+      "identity_evidence": "existing frozen Steam snapshot row; no database access",
+      "store_url": "https://store.steampowered.com/app/582160/"
+    },
+    {
+      "appid": 289070,
+      "name_en": "Sid Meier’s Civilization® VI",
+      "name_zh_in_snapshot": "Sid Meier’s Civilization® VI",
+      "aliases": [
+        "文明6",
+        "文明 6",
+        "文明VI",
+        "席德梅尔的文明6"
+      ],
+      "identity_evidence": "existing frozen Steam snapshot row; no database access",
+      "store_url": "https://store.steampowered.com/app/289070/"
+    },
+    {
+      "appid": 1466860,
+      "name_en": "Age of Empires IV: Anniversary Edition",
+      "name_zh_in_snapshot": "Age of Empires IV: Anniversary Edition",
+      "aliases": [
+        "帝国时代4",
+        "帝国时代 4",
+        "帝国4",
+        "AOE4"
+      ],
+      "identity_evidence": "existing frozen Steam snapshot row; no database access",
+      "store_url": "https://store.steampowered.com/app/1466860/"
+    },
+    {
+      "appid": 1084600,
+      "name_en": "My Time at Sandrock",
+      "name_zh_in_snapshot": "沙石镇时光",
+      "aliases": [
+        "沙石镇时光",
+        "沙石镇"
+      ],
+      "identity_evidence": "existing frozen Steam snapshot row; no database access",
+      "store_url": "https://store.steampowered.com/app/1084600/"
+    },
+    {
+      "appid": 504210,
+      "name_en": "SHENZHEN I/O",
+      "name_zh_in_snapshot": "SHENZHEN I/O",
+      "aliases": [
+        "深圳IO",
+        "深圳 I/O"
+      ],
+      "identity_evidence": "existing frozen Steam snapshot row; no database access",
+      "store_url": "https://store.steampowered.com/app/504210/"
+    }
+  ]
+}

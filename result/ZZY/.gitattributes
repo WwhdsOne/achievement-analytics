@@ -1,0 +1,2 @@
+# Preserve delivery bytes used by source-map and graph bindings.
+* -text
