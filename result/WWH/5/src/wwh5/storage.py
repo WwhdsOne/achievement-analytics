@@ -1,4 +1,5 @@
 """Read-only PostgreSQL export and isolated, versioned SQLite persistence."""
+
 from __future__ import annotations
 
 from contextlib import contextmanager
@@ -17,7 +18,7 @@ from sqlalchemy.engine import URL
 from . import config
 
 TASK_ROOT = config.TASK_ROOT
-DEFAULT_DB = TASK_ROOT / "wwh5.sqlite3"
+DEFAULT_DB = TASK_ROOT / "data" / "wwh5.sqlite3"  # 本地缓存，见 5/data/（Git 忽略）
 SCHEMA = TASK_ROOT / "schema.sql"
 EXPORT_VERSION = "wwh5-export-v1"
 RANK_SQL = """
@@ -41,14 +42,22 @@ def now() -> str:
 
 def canonical(value: Any) -> str:
     """Serialize reproducibly without losing source timestamps/decimals."""
+
     def convert(obj: Any) -> Any:
         if isinstance(obj, Decimal):
             return float(obj)
         if hasattr(obj, "isoformat"):
             return obj.isoformat()
         raise TypeError(f"Unsupported snapshot type: {type(obj).__name__}")
-    return json.dumps(value, ensure_ascii=False, sort_keys=True, separators=(",", ":"),
-                      default=convert, allow_nan=False)
+
+    return json.dumps(
+        value,
+        ensure_ascii=False,
+        sort_keys=True,
+        separators=(",", ":"),
+        default=convert,
+        allow_nan=False,
+    )
 
 
 def digest(value: Any) -> str:
@@ -60,10 +69,14 @@ def numeric_usage(value: Any) -> dict[str, int | float]:
     """Normalize optional provider usage to finite numeric fields, rejecting booleans."""
     if not isinstance(value, dict):
         return {}
-    return {key: count for key, count in value.items()
-            if isinstance(key, str) and not isinstance(count, bool)
-            and isinstance(count, (int, float))
-            and (isinstance(count, int) or math.isfinite(count))}
+    return {
+        key: count
+        for key, count in value.items()
+        if isinstance(key, str)
+        and not isinstance(count, bool)
+        and isinstance(count, (int, float))
+        and (isinstance(count, int) or math.isfinite(count))
+    }
 
 
 def rank_games(rows: list[dict], limit: int = 1000) -> list[dict]:
@@ -74,12 +87,21 @@ def rank_games(rows: list[dict], limit: int = 1000) -> list[dict]:
     for row in rows:
         p, n = row.get("positive"), row.get("negative")
         release = row.get("release_date")
-        if row.get("type") != "game" or not release or str(release)[:10] >= "2026-01-01":
+        if (
+            row.get("type") != "game"
+            or not release
+            or str(release)[:10] >= "2026-01-01"
+        ):
             continue
-        if any(isinstance(v, bool) or not isinstance(v, (int, float, Decimal))
-               or not math.isfinite(float(v)) or v < 0 for v in (p, n)):
+        if any(
+            isinstance(v, bool)
+            or not isinstance(v, (int, float, Decimal))
+            or not math.isfinite(float(v))
+            or v < 0
+            for v in (p, n)
+        ):
             continue
-        valid.append({**row, "review_count": int(p+n)})
+        valid.append({**row, "review_count": int(p + n)})
     return sorted(valid, key=lambda r: (-r["review_count"], r["appid"]))[:limit]
 
 
@@ -92,7 +114,9 @@ def owned_path(path: str | Path) -> Path:
 
 
 @contextmanager
-def connect(path: str | Path, *, check_same_thread: bool = True) -> Iterator[sqlite3.Connection]:
+def connect(
+    path: str | Path, *, check_same_thread: bool = True
+) -> Iterator[sqlite3.Connection]:
     """Open SQLite using the single local schema; commit/rollback atomically.
 
     ``check_same_thread=False`` 供标注阶段的多线程使用：那种场景下**所有**数据库访问
@@ -119,12 +143,16 @@ def connect(path: str | Path, *, check_same_thread: bool = True) -> Iterator[sql
 
 def metadata(conn: sqlite3.Connection) -> dict:
     """Read JSON metadata without any external connection."""
-    return {r["key"]: json.loads(r["value"]) for r in conn.execute("SELECT * FROM metadata")}
+    return {
+        r["key"]: json.loads(r["value"]) for r in conn.execute("SELECT * FROM metadata")
+    }
 
 
 def put_metadata(conn: sqlite3.Connection, key: str, value: Any) -> None:
     """Write metadata within the caller's SQLite transaction."""
-    conn.execute("INSERT OR REPLACE INTO metadata VALUES (?,?)", (key, canonical(value)))
+    conn.execute(
+        "INSERT OR REPLACE INTO metadata VALUES (?,?)", (key, canonical(value))
+    )
 
 
 def blocked_reason(game: dict) -> str | None:
@@ -142,20 +170,40 @@ def blocked_reason(game: dict) -> str | None:
 def import_snapshot(path: str | Path, games: list[dict], meta: dict) -> dict:
     """Atomically import a fixed frame, rejecting all overwrites of an existing version."""
     frozen = json.loads(canonical(games))
-    built = {**meta, "input_sha256": digest(frozen), "export_version": EXPORT_VERSION,
-             "exported_at": now(), "frame_count": len(frozen),
-             "ranking_rule": "type=game; release<2026; positive+negative DESC, appid ASC"}
+    built = {
+        **meta,
+        "input_sha256": digest(frozen),
+        "export_version": EXPORT_VERSION,
+        "exported_at": now(),
+        "frame_count": len(frozen),
+        "ranking_rule": "type=game; release<2026; positive+negative DESC, appid ASC",
+    }
     with connect(path) as conn:
         conn.execute("BEGIN IMMEDIATE")
-        if metadata(conn).get("dataset_version") or conn.execute("SELECT count(*) FROM games").fetchone()[0]:
-            raise RuntimeError("Snapshot already exists; choose a new --db for a new version")
+        if (
+            metadata(conn).get("dataset_version")
+            or conn.execute("SELECT count(*) FROM games").fetchone()[0]
+        ):
+            raise RuntimeError(
+                "Snapshot already exists; choose a new --db for a new version"
+            )
         for rank, game in enumerate(frozen, 1):
             count = game.get("review_count", game["positive"] + game["negative"])
-            conn.execute("INSERT INTO games VALUES (?,?,?,?,?)", (
-                game["appid"], rank, count, blocked_reason(game), canonical(game)))
+            conn.execute(
+                "INSERT INTO games VALUES (?,?,?,?,?)",
+                (game["appid"], rank, count, blocked_reason(game), canonical(game)),
+            )
             for a in game.get("achievements", []):
-                conn.execute("INSERT INTO achievements VALUES (?,?,?,?,?)", (
-                    game["appid"], str(a["local_id"]), a["display_name"], a.get("description"), a["percent"]))
+                conn.execute(
+                    "INSERT INTO achievements VALUES (?,?,?,?,?)",
+                    (
+                        game["appid"],
+                        str(a["local_id"]),
+                        a["display_name"],
+                        a.get("description"),
+                        a["percent"],
+                    ),
+                )
         for key, value in built.items():
             put_metadata(conn, key, value)
     return built
@@ -163,35 +211,58 @@ def import_snapshot(path: str | Path, games: list[dict], meta: dict) -> dict:
 
 def load_games(conn: sqlite3.Connection) -> list[dict]:
     """Return frozen source payloads in original frame ranking."""
-    return [json.loads(row[0]) for row in conn.execute("SELECT payload FROM games ORDER BY frame_rank")]
+    return [
+        json.loads(row[0])
+        for row in conn.execute("SELECT payload FROM games ORDER BY frame_rank")
+    ]
 
 
-def export_snapshot(path: str | Path = DEFAULT_DB, limit: int = 1000,
-                    dataset_version: str | None = None) -> dict:
+def export_snapshot(
+    path: str | Path = DEFAULT_DB, limit: int = 1000, dataset_version: str | None = None
+) -> dict:
     """Export in one read-only repeatable-read PG transaction; never execute cloud DDL."""
     if limit < 1:
         raise ValueError("limit must be positive")
     with connect(path) as local:
         if metadata(local).get("dataset_version"):
             raise RuntimeError("Snapshot already exists; choose a new --db")
-    url = URL.create("postgresql+psycopg", username=config.DB_USER, password=config.DB_PASSWORD,
-                     host=config.DB_HOST, port=config.DB_PORT, database=config.DB_NAME,
-                     query={"sslmode": config.DB_SSLMODE} if config.DB_SSLMODE else {})
-    engine = create_engine(url, connect_args={"connect_timeout": 10}, pool_pre_ping=True)
+    url = URL.create(
+        "postgresql+psycopg",
+        username=config.DB_USER,
+        password=config.DB_PASSWORD,
+        host=config.DB_HOST,
+        port=config.DB_PORT,
+        database=config.DB_NAME,
+        query={"sslmode": config.DB_SSLMODE} if config.DB_SSLMODE else {},
+    )
+    engine = create_engine(
+        url, connect_args={"connect_timeout": 10}, pool_pre_ping=True
+    )
     queries = {"ranking": RANK_SQL}
     try:
-        with engine.connect().execution_options(isolation_level="REPEATABLE READ") as conn:
+        with engine.connect().execution_options(
+            isolation_level="REPEATABLE READ"
+        ) as conn:
             with conn.begin():
                 conn.execute(text("SET TRANSACTION READ ONLY"))
                 conn.execute(text("SET LOCAL statement_timeout = '120s'"))
-                games = [dict(r) for r in conn.execute(text(RANK_SQL), {"limit": limit}).mappings()]
+                games = [
+                    dict(r)
+                    for r in conn.execute(text(RANK_SQL), {"limit": limit}).mappings()
+                ]
                 if not games:
                     raise RuntimeError("No eligible games found")
                 ids = [g["appid"] for g in games]
                 by_id = {g["appid"]: g for g in games}
                 for g in games:
-                    g.update(achievements=[], tags=[], rawg=None, mapping_unresolved=False,
-                             mapping_issue=None, source_success_times={})
+                    g.update(
+                        achievements=[],
+                        tags=[],
+                        rawg=None,
+                        mapping_unresolved=False,
+                        mapping_issue=None,
+                        source_success_times={},
+                    )
                 sqls = {
                     "achievements": "SELECT appid, position, display_name, description, percent FROM achievements WHERE appid=ANY(:ids) ORDER BY appid,position",
                     "tags": "SELECT appid,source,tag,votes,kind FROM game_tags WHERE appid=ANY(:ids) ORDER BY appid,source,tag",
@@ -215,21 +286,41 @@ def export_snapshot(path: str | Path = DEFAULT_DB, limit: int = 1000,
                             g["mapping_issue"] = item
                             g["mapping_unresolved"] = not item["resolved"]
                         else:
-                            g["source_success_times"][item["source"]] = item["fetched_at"]
+                            g["source_success_times"][item["source"]] = item[
+                                "fetched_at"
+                            ]
     finally:
         engine.dispose()
-    return import_snapshot(path, games, {"dataset_version": dataset_version or "wwh5-" + now(),
-        "sql": queries, "requested_limit": limit, "source": "PostgreSQL read-only repeatable-read",
-        "source_database": config.DB_NAME, "transaction_snapshot": "repeatable-read"})
+    return import_snapshot(
+        path,
+        games,
+        {
+            "dataset_version": dataset_version or "wwh5-" + now(),
+            "sql": queries,
+            "requested_limit": limit,
+            "source": "PostgreSQL read-only repeatable-read",
+            "source_database": config.DB_NAME,
+            "transaction_snapshot": "repeatable-read",
+        },
+    )
 
 
 def status(path: str | Path = DEFAULT_DB) -> dict:
     """Summarize frame and local processing coverage without making network calls."""
     with connect(path) as conn:
-        counts = {"frame": conn.execute("SELECT count(*) FROM games").fetchone()[0],
-                  "blocked": conn.execute("SELECT count(*) FROM games WHERE blocked_reason IS NOT NULL").fetchone()[0],
-                  "labeled": conn.execute("SELECT count(*) FROM story_labels").fetchone()[0]}
+        counts = {
+            "frame": conn.execute("SELECT count(*) FROM games").fetchone()[0],
+            "blocked": conn.execute(
+                "SELECT count(*) FROM games WHERE blocked_reason IS NOT NULL"
+            ).fetchone()[0],
+            "labeled": conn.execute("SELECT count(*) FROM story_labels").fetchone()[0],
+        }
         counts["pending"] = counts["frame"] - counts["blocked"] - counts["labeled"]
-        counts["call_status"] = {r[0]: r[1] for r in conn.execute("SELECT status,count(*) FROM model_calls GROUP BY status")}
+        counts["call_status"] = {
+            r[0]: r[1]
+            for r in conn.execute(
+                "SELECT status,count(*) FROM model_calls GROUP BY status"
+            )
+        }
         counts["metadata"] = metadata(conn)
         return counts

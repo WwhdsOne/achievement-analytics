@@ -8,7 +8,10 @@ from pathlib import Path
 
 from dotenv import dotenv_values
 
-TASK_ROOT = Path(__file__).resolve().parent.parent
+# 锚点是任务目录 5/（本文件在 src/wwh5/ 下，所以上溯三级）。
+# .env、data/wwh5.sqlite3、schema.sql、report.md 与 figures/ 都挂在它下面，
+# 挪动 src/ 的层级时必须同步改这一行。
+TASK_ROOT = Path(__file__).resolve().parents[2]
 PERSON_ROOT = TASK_ROOT.parent
 PROJECT_ROOT = TASK_ROOT.parents[2]
 
@@ -31,8 +34,10 @@ def settings_values(
         "POSTGRES_SSLMODE": "",
     }
     return {
-        name: environment.get(name) or personal.get(name)
-        or (shared.get(name) if name.startswith("POSTGRES_") else None) or default
+        name: environment.get(name)
+        or personal.get(name)
+        or (shared.get(name) if name.startswith("POSTGRES_") else None)
+        or default
         for name, default in defaults.items()
     }
 

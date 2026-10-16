@@ -406,7 +406,11 @@ def _execute(
             attempt,
         )
         body_text, usage, delay, http_status = (
-            None, None, params.RETRY_BACKOFF_BASE ** attempt, None)
+            None,
+            None,
+            params.RETRY_BACKOFF_BASE**attempt,
+            None,
+        )
         fatal = False
         try:
             response = client.request(messages)  # 网络：不持 db_lock
@@ -546,13 +550,19 @@ def _process_game(
         messages = classification_messages(game, batch, None if offset == 0 else dims)
         with db_lock:
             prior = _successful(
-                conn, appid, client.model, client.prompt_version, storage.digest(messages)
+                conn,
+                appid,
+                client.model,
+                client.prompt_version,
+                storage.digest(messages),
             )
         if prior:
             # 已成功过：直接复用已存响应，不发请求（断点续跑靠这条，也避免重复付费）
             if offset == 0:
                 dims = json.loads(
-                    json.loads(prior["response_body"])["choices"][0]["message"]["content"]
+                    json.loads(prior["response_body"])["choices"][0]["message"][
+                        "content"
+                    ]
                 )["game_dimensions"]
             continue
         with stats_lock:
@@ -569,7 +579,9 @@ def _process_game(
                 raise ValueError("game dimensions changed between batches")
             return data
 
-        def save(call_id: int, data: dict, offset: int = offset, appid: int = appid) -> None:
+        def save(
+            call_id: int, data: dict, offset: int = offset, appid: int = appid
+        ) -> None:
             if offset == 0:
                 conn.execute(
                     "INSERT OR REPLACE INTO game_labels VALUES (?,?,?)",
@@ -582,7 +594,15 @@ def _process_game(
                 )
 
         data = _execute(
-            conn, db_lock, game, "classification", messages, validator, client, budget, save
+            conn,
+            db_lock,
+            game,
+            "classification",
+            messages,
+            validator,
+            client,
+            budget,
+            save,
         )
         if data is None:
             # 3 次都没过校验：记 error，该游戏本轮不排主线，下次重跑再补
@@ -610,10 +630,13 @@ def _process_game(
         known = {
             row[0]: json.loads(row[1])
             for row in conn.execute(
-                "SELECT local_id,payload FROM achievement_labels WHERE appid=?", (appid,)
+                "SELECT local_id,payload FROM achievement_labels WHERE appid=?",
+                (appid,),
             )
         }
-    candidates = [a for a in labels if known[a["local_id"]]["primary_category"] == "main"]
+    candidates = [
+        a for a in labels if known[a["local_id"]]["primary_category"] == "main"
+    ]
     messages = story_messages(game, candidates)
 
     def save_story(call_id: int, data: dict, appid: int = appid) -> None:
@@ -726,22 +749,38 @@ def run_labeling(
                             "game=%s/%s appid=%s", index, len(selected), game["appid"]
                         )
                     _process_game(
-                        conn, db_lock, game, client, budget, batch_size, dry_run,
-                        result, stats_lock,
+                        conn,
+                        db_lock,
+                        game,
+                        client,
+                        budget,
+                        batch_size,
+                        dry_run,
+                        result,
+                        stats_lock,
                     )
             else:
                 lanes = min(workers, len(selected))
                 logger.info(
                     "开始标注：%s 款游戏，%s 路并行（同一游戏内批次仍串行）",
-                    len(selected), lanes,
+                    len(selected),
+                    lanes,
                 )
                 with ThreadPoolExecutor(
                     max_workers=lanes, thread_name_prefix="label"
                 ) as pool:
                     futures = [
                         pool.submit(
-                            _process_game, conn, db_lock, game, client, budget,
-                            batch_size, False, result, stats_lock,
+                            _process_game,
+                            conn,
+                            db_lock,
+                            game,
+                            client,
+                            budget,
+                            batch_size,
+                            False,
+                            result,
+                            stats_lock,
                         )
                         for game in selected
                     ]

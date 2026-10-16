@@ -1,7 +1,7 @@
 # DeepSeek 标注接口文档
 
 本文件说明**实际发给模型的请求长什么样、期望返回什么、拿到后怎么算指标**。
-内容以代码为准（[wwh5/deepseek.py](./wwh5/deepseek.py)，提示词版本 `wwh5-ds-v2`）；
+内容以代码为准（[wwh5/deepseek.py](../src/wwh5/deepseek.py)，提示词版本 `wwh5-ds-v2`）；
 **发给模型的指令原文与字段含义见 [指令文档.md](./指令文档.md)**。
 没有真实 key 时也可照本文件用 curl 手工验证协议。
 
@@ -258,7 +258,7 @@ curl -s https://api.deepseek.com/chat/completions \
 ## 8. 什么样的返回才"能用"（分析侧的额外条件）
 
 校验通过只代表**格式合格**。`analysis.py` 还会在此基础上筛，主线曲线要满足
-（**下面每个门槛都能在 [wwh5/params.py](./wwh5/params.py) 里调**，改完重跑 `analyze` 即可、不花钱）：
+（**下面每个门槛都能在 [wwh5/params.py](../src/wwh5/params.py) 里调**，改完重跑 `analyze` 即可、不花钱）：
 
 - 主线标签整体 `confidence ≥ 0.6`（原本是 0.8，见下方说明）；
 - 至少 **2 个** `route=common` 的节点，且至少有一个 `stage=end`；
@@ -336,8 +336,8 @@ curl -s https://api.deepseek.com/chat/completions \
 任何共享状态，所以并行不改变结果，只是把网络等待重叠起来。
 
 ```bash
-uv run python result/WWH/5/run.py label --workers 4    # 默认：同时处理 4 款游戏
-uv run python result/WWH/5/run.py label --workers 1    # 串行（改造前的行为）
+uv run python result/WWH/5/src/run.py label --workers 4    # 默认：同时处理 4 款游戏
+uv run python result/WWH/5/src/run.py label --workers 1    # 串行（改造前的行为）
 ```
 
 | 项 | 说明 |

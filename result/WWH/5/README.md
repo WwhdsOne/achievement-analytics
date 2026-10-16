@@ -13,7 +13,7 @@
 | 通关 / 弃坑 | 云库里已抓好的 RAWG 数据 |
 | 分类和剧情顺序 | **DeepSeek 逐个判断**（这是本任务的核心工作量） |
 
-导入之后所有东西都放在本目录的本地 SQLite（`wwh5.sqlite3`），分析不再需要联网。
+导入之后所有东西都放在本目录的本地 SQLite（`data/wwh5.sqlite3`），分析不再需要联网。
 
 ## 三张图怎么看
 
@@ -58,36 +58,51 @@
 所以**现在三张图上都写着"尚无…"，这是正常的**——先把 1000 款喂给 DeepSeek
 标注完，图里才会出现真实数字。
 
+## 文件都在哪
+
+```
+5/
+├── README.md       ← 本文件（目录入口）
+├── report.md       ← 分析报告（交付物）
+├── figures/        ← 报告里的三张图
+├── src/            ← 代码：run.py 与 wwh5/ 包
+├── docs/           ← 过程文档：指令文档 · api-contract · experiments
+├── data/           ← 本地 SQLite（不入 Git，重跑 export 即可重建）
+├── schema.sql      ← 本地库的表结构
+├── learning-logs/  ← 工作日志
+└── .env            ← 个人密钥（不入 Git，照 .env.example 填）
+```
+
 ## 想自己跑出结果
 
 在项目根目录依次执行：
 
 ```bash
 # ① 从云库导入前 1000 款（只读，不改云库）
-uv run python result/WWH/5/run.py export
+uv run python result/WWH/5/src/run.py export
 
 # ② 先看看要调用多少次模型（不花钱）
-uv run python result/WWH/5/run.py label --dry-run
+uv run python result/WWH/5/src/run.py label --dry-run
 
 # ③ 先用 3 次真实请求验证 key 配好了没
-uv run python result/WWH/5/run.py label --max-requests 3
+uv run python result/WWH/5/src/run.py label --max-requests 3
 
 # ④ 正式标注（会持续花钱，中断了重跑同一条命令即可续做；默认 4 款游戏并行，想串行加 --workers 1）
-uv run python result/WWH/5/run.py label
+uv run python result/WWH/5/src/run.py label
 
 # ⑤ 出图和报告
-uv run python result/WWH/5/run.py analyze
+uv run python result/WWH/5/src/run.py analyze
 ```
 
 密钥写在同目录的 `.env`（照 `.env.example` 填 `DEEPSEEK_API_KEY`），**不要提交进 Git**。
 
 ## 想把口径调松或调紧
 
-所有门槛集中在 **`wwh5/params.py`**（每个参数都写了「调大会怎样、调小会怎样」和实测样本数）。
+所有门槛集中在 **`src/wwh5/params.py`**（每个参数都写了「调大会怎样、调小会怎样」和实测样本数）。
 改完重跑 `analyze` 就行——它只读本地数据库，**不发请求、不花钱**：
 
 ```bash
-uv run python result/WWH/5/run.py analyze
+uv run python result/WWH/5/src/run.py analyze
 ```
 
 报告和图表里的措辞会自动跟着参数变。
