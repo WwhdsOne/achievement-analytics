@@ -112,7 +112,12 @@ def register_key(
         return int(
             conn.execute(
                 UPSERT_KEY,
-                {"api_key": api_key.strip(), "label": label, "quota": quota, "note": note},
+                {
+                    "api_key": api_key.strip(),
+                    "label": label,
+                    "quota": quota,
+                    "note": note,
+                },
             ).scalar_one()
         )
 
@@ -156,9 +161,7 @@ def reserve_key(engine: Engine) -> str | None:
         row = conn.execute(RESERVE_KEY).first()
         if row is None:
             return None
-        return conn.execute(
-            SELECT_KEY_BY_ID, {"key_id": row[0]}
-        ).scalar_one()
+        return conn.execute(SELECT_KEY_BY_ID, {"key_id": row[0]}).scalar_one()
 
 
 def list_keys(engine: Engine) -> list[dict[str, Any]]:
@@ -166,8 +169,14 @@ def list_keys(engine: Engine) -> list[dict[str, Any]]:
     with engine.connect() as conn:
         rows = conn.execute(SELECT_STATUS).all()
         keys = [
-            "key_id", "label", "enabled", "key_hint", "monthly_quota",
-            "used_this_month", "remaining_this_month", "used_today",
+            "key_id",
+            "label",
+            "enabled",
+            "key_hint",
+            "monthly_quota",
+            "used_this_month",
+            "remaining_this_month",
+            "used_today",
         ]
         return [dict(zip(keys, r)) for r in rows]
 
@@ -225,7 +234,11 @@ def main() -> None:
         return
 
     changed = set_enabled(engine, args.key_id, args.cmd == "enable")
-    print(f"{args.cmd} key_id={args.key_id}：影响 {changed} 行" if changed else "没找到该 key_id")
+    print(
+        f"{args.cmd} key_id={args.key_id}：影响 {changed} 行"
+        if changed
+        else "没找到该 key_id"
+    )
 
 
 if __name__ == "__main__":

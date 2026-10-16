@@ -18,7 +18,7 @@
 --          FROM information_schema.columns WHERE table_name='games';
 --   6. 数据源：Steam 商店搜索（全量枚举，bulk）/ Steam appdetails / 全局成就完成率 /
 --      Steam 社区成就页 / SteamSpy / RAWG。**源的清单与限速配额都在 sources 表里**，
---      加源只改那张表。
+--      加源须同时更新 sources 与 crawler/registry.py。
 --      **IGDB 已于 2026-09-15 放弃**：它需 Twitch OAuth2，而 Twitch 两步验证在国内
 --      手机号上走不通；其时长（RAWG playtime 已覆盖）、评分（RAWG metacritic 已覆盖）
 --      价值已由 RAWG 承接，只剩系列归属属加分项，故整表移除。
@@ -860,6 +860,7 @@ SELECT
     max(t.updated_at)                                       AS last_activity_at
 FROM sources s
 LEFT JOIN fetch_tasks t ON t.source = s.source
+WHERE s.kind = 'per_game'
 GROUP BY s.source, s.kind, s.daily_quota, s.monthly_quota;
 
 -- 配额余额：日限与月限都要看（SteamSpy 是日限 1000，RAWG 是月限 20000）

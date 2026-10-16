@@ -48,6 +48,7 @@ _last_ts: dict[str, float] = {}
 # 每个源最近一次**成功响应**的时刻（UTC）。替代旧版「缓存文件 mtime」：
 # 没有缓存文件之后，真实抓取时间只能由请求本身记录。
 _last_fetched_at: dict[str, datetime] = {}
+_last_http_status: dict[str, int | None] = {}
 
 # 真实请求计数回调，由调用方（worker）注入以写 api_usage
 _call_recorder: Callable[[str], None] | None = None
@@ -71,6 +72,11 @@ def last_fetched_at(source: str | None) -> datetime | None:
     if source is None:
         return None
     return _last_fetched_at.get(source)
+
+
+def last_http_status(source: str) -> int | None:
+    """返回某源最近一次 JSON 请求的响应码；请求未拿到响应时为 None。"""
+    return _last_http_status.get(source)
 
 
 def _host_of(url: str) -> str:
@@ -107,11 +113,22 @@ class HttpStatusError(RuntimeError):
 
     Attributes:
         status: 最后一次响应的 HTTP 状态码；连不上时为 None。
+        response_data: 最后响应可解析的 JSON；只供调用方判定业务语义，不参与错误消息。
+        response_at: 最后响应实际收到的 UTC 时间。
     """
 
-    def __init__(self, message: str, status: int | None = None) -> None:
+    def __init__(
+        self,
+        message: str,
+        status: int | None = None,
+        *,
+        response_data: Any = None,
+        response_at: datetime | None = None,
+    ) -> None:
         super().__init__(message)
         self.status = status
+        self.response_data = response_data
+        self.response_at = response_at
 
 
 class SourceUnavailable(HttpStatusError):
@@ -154,6 +171,12 @@ class SourceThrottled(SourceUnavailable):
     当成「无数据」落成终态 ``empty``（2026-09-27 的实际事故）。
     """
 
+    def __init__(
+        self, message: str, status: int | None = None, *, retry_after: float = 60.0
+    ) -> None:
+        super().__init__(message, status)
+        self.retry_after = retry_after
+
 
 # 429 的默认等待时长（秒）与合理区间：站点给了 Retry-After 就听它的，否则等 1 分钟
 _THROTTLE_WAIT_DEFAULT_SEC = 60.0
@@ -188,9 +211,7 @@ _CHALLENGE_BODY_MARKERS = (
 )
 
 
-def is_cloudflare_challenge(
-    status: int | None, headers: Any, body: str
-) -> bool:
+def is_cloudflare_challenge(status: int | None, headers: Any, body: str) -> bool:
     """判断响应是否为 Cloudflare 之类的反爬挑战页。
 
     Args:
@@ -231,6 +252,10 @@ def request_json(
     *,
     source: str | None = None,
     interval_sec: float | None = None,
+    no_retry_statuses: frozenset[int] = frozenset(),
+    max_attempts: int | None = None,
+    follow_redirects: bool = True,
+    client: httpx.Client | None = None,
 ) -> Any:
     """GET 并解析 JSON：限速 + 失败重试 <= MAX_RETRIES。
 
@@ -239,34 +264,57 @@ def request_json(
         params: query 参数。
         source: 源标识（crawler.registry 的键），用于取该源的限速间隔并记账。
         interval_sec: 显式覆盖限速间隔（秒）；给了就不查注册表。
+        no_retry_statuses: 调用方明确不重试的 HTTP 状态；挑战／429 仍优先走源级处理。
+        max_attempts: 本次最多请求次数（1..MAX_RETRIES）；默认使用 MAX_RETRIES。
+        follow_redirects: 是否自动跟随跳转；按请求逐次预留预算的客户端必须禁用。
+        client: 可选的可复用连接客户端；未传时保持每次使用 httpx.get 的行为。
 
     Returns:
         解析后的 JSON。
 
     Raises:
-        HttpStatusError: 重试耗尽仍失败（带最后一次的 HTTP 状态码）。
+        HttpStatusError: 命中不重试状态，或重试耗尽仍失败（带最后一次的 HTTP 状态码）。
     """
+    attempts = MAX_RETRIES if max_attempts is None else max_attempts
+    if (
+        isinstance(attempts, bool)
+        or not isinstance(attempts, int)
+        or not 1 <= attempts <= MAX_RETRIES
+    ):
+        raise ValueError("max_attempts 必须在 1..MAX_RETRIES 之间")
     interval = _resolve_interval(source, interval_sec)
+    _last_http_status[source or _host_of(url)] = None
     last_exc: Exception | None = None
     last_status: int | None = None
-    for attempt in range(1, MAX_RETRIES + 1):
+    response_data: Any = None
+    response_at: datetime | None = None
+    for attempt in range(1, attempts + 1):
         try:
             _throttle(url, interval)
             # follow_redirects 必须开：Steam 社区页对改过名的老游戏会把
             # /stats/{appid}/achievements 302 到 /stats/{别名}/achievements
             # （实测 appid=300 → DOD:S），默认不跟随会被 raise_for_status 当错误
             # 白白重试 3 次（2026-09-22 踩到）。
-            resp = httpx.get(
-                url, params=params, headers=REQUEST_HEADERS, timeout=30.0,
-                follow_redirects=True,
+            get = client.get if client is not None else httpx.get
+            resp = get(
+                url,
+                params=params,
+                headers=REQUEST_HEADERS,
+                timeout=30.0,
+                follow_redirects=follow_redirects,
             )
             last_status = resp.status_code
+            response_at = datetime.now(timezone.utc)
+            response_data = None
+            _last_http_status[source or _host_of(url)] = last_status
             # 反爬挑战：立即抛出，不做快速重试（挑战窗口是分钟级，2s/4s 退避纯属浪费），
             # 让 worker 把它当作「源临时不可用」处理（2026-09-24）
             if is_cloudflare_challenge(last_status, resp.headers, resp.text):
                 logger.warning(
                     "被反爬挑战拦截（status=%s，cf-mitigated=%s）：%s",
-                    last_status, resp.headers.get("cf-mitigated"), url,
+                    last_status,
+                    resp.headers.get("cf-mitigated"),
+                    url,
                 )
                 raise SourceChallenge(
                     f"被反爬挑战拦截：{url}（status={last_status}）", last_status
@@ -278,15 +326,30 @@ def request_json(
                 wait = _throttle_wait(resp)
                 logger.warning(
                     "被限流（429）：%s，等待 %.0fs 后重试（%d/%d）",
-                    url, wait, attempt, MAX_RETRIES,
+                    url,
+                    wait,
+                    attempt,
+                    attempts,
                 )
-                if attempt < MAX_RETRIES:
+                if attempt < attempts:
                     time.sleep(wait)
                     continue
-                raise SourceThrottled(f"限流持续（429）：{url}", 429)
+                raise SourceThrottled(f"限流持续（429）：{url}", 429, retry_after=wait)
+            if not 200 <= last_status < 300:
+                try:
+                    response_data = resp.json()
+                except ValueError:
+                    pass  # 坏 JSON 保持原 HTTP 失败语义，不将响应体放进日志。
+            if last_status in no_retry_statuses:
+                raise HttpStatusError(
+                    f"接口返回 HTTP {last_status}，不重试：{url}",
+                    last_status,
+                    response_data=response_data,
+                    response_at=response_at,
+                )
             resp.raise_for_status()
             key = source or _host_of(url)
-            _last_fetched_at[key] = datetime.now(timezone.utc)
+            _last_fetched_at[key] = response_at
             if _call_recorder is not None:
                 _call_recorder(source or _host_of(url))
             return resp.json()
@@ -295,12 +358,15 @@ def request_json(
         except (httpx.HTTPError, json.JSONDecodeError) as exc:
             last_exc = exc
             logger.warning(
-                "请求失败（%d/%d）%s %s：%s", attempt, MAX_RETRIES, url, params, exc
+                "请求失败（%d/%d）%s %s：%s", attempt, attempts, url, params, exc
             )
-            if attempt < MAX_RETRIES:
+            if attempt < attempts:
                 _backoff(attempt)
     raise HttpStatusError(
-        f"重试耗尽：{url} {params}（最后状态码 {last_status}）", last_status
+        f"重试耗尽：{url} {params}（最后状态码 {last_status}）",
+        last_status,
+        response_data=response_data,
+        response_at=response_at,
     ) from last_exc
 
 
@@ -326,9 +392,7 @@ def request_text(
             )
             last_status = resp.status_code
             if is_cloudflare_challenge(last_status, resp.headers, resp.text):
-                logger.warning(
-                    "被反爬挑战拦截（status=%s）：%s", last_status, url
-                )
+                logger.warning("被反爬挑战拦截（status=%s）：%s", last_status, url)
                 raise SourceChallenge(
                     f"被反爬挑战拦截：{url}（status={last_status}）", last_status
                 )
@@ -336,12 +400,15 @@ def request_text(
                 wait = _throttle_wait(resp)
                 logger.warning(
                     "被限流（429）：%s，等待 %.0fs 后重试（%d/%d）",
-                    url, wait, attempt, MAX_RETRIES,
+                    url,
+                    wait,
+                    attempt,
+                    MAX_RETRIES,
                 )
                 if attempt < MAX_RETRIES:
                     time.sleep(wait)
                     continue
-                raise SourceThrottled(f"限流持续（429）：{url}", 429)
+                raise SourceThrottled(f"限流持续（429）：{url}", 429, retry_after=wait)
             resp.raise_for_status()
             key = source or _host_of(url)
             _last_fetched_at[key] = datetime.now(timezone.utc)
@@ -355,4 +422,6 @@ def request_text(
             logger.warning("请求失败（%d/%d）%s：%s", attempt, MAX_RETRIES, url, exc)
             if attempt < MAX_RETRIES:
                 _backoff(attempt)
-    raise HttpStatusError(f"重试耗尽：{url}（最后状态码 {last_status}）", last_status) from last_exc
+    raise HttpStatusError(
+        f"重试耗尽：{url}（最后状态码 {last_status}）", last_status
+    ) from last_exc

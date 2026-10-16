@@ -223,11 +223,13 @@ def none_if_nan(v):
 def main() -> None:
     """CLI：读 CSV → 匹配 → upsert，打印各级匹配统计。"""
     logging.basicConfig(level=logging.INFO, format="%(levelname)s %(message)s")
-    parser = argparse.ArgumentParser(description="HowLongToBeat 时长 CSV 按名导入 hltb_games")
-    parser.add_argument("--csv", required=True, type=Path, help="HLTB 风格快照 CSV 路径")
-    parser.add_argument(
-        "--dry-run", action="store_true", help="只匹配统计，不写库"
+    parser = argparse.ArgumentParser(
+        description="HowLongToBeat 时长 CSV 按名导入 hltb_games"
     )
+    parser.add_argument(
+        "--csv", required=True, type=Path, help="HLTB 风格快照 CSV 路径"
+    )
+    parser.add_argument("--dry-run", action="store_true", help="只匹配统计，不写库")
     args = parser.parse_args()
 
     engine = get_engine()
@@ -239,7 +241,9 @@ def main() -> None:
     n_exact = (matched["match_method"] == "exact").sum()
     n_relaxed = (matched["match_method"] == "relaxed").sum()
     n_multi = matched["appids"].map(len).gt(1).sum()
-    print(f"匹配成功 {len(matched)} / {len(df)}（exact={n_exact}, relaxed={n_relaxed}）")
+    print(
+        f"匹配成功 {len(matched)} / {len(df)}（exact={n_exact}, relaxed={n_relaxed}）"
+    )
     print(f"一个名字对应多个 appid 的行数: {n_multi}（每个 appid 各写一行）")
     print(f"upsert 参数行数（= 写入行数）: {matched['appids'].map(len).sum()}")
 

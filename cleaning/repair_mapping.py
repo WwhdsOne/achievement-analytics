@@ -53,8 +53,8 @@ logger = logging.getLogger(__name__)
 QUANTIZE = 1
 
 # 对齐结果状态
-ALIGNED = "aligned"            # 量化多重集相同且无同分歧义，重对齐确定性正确
-AMBIGUOUS = "ambiguous"        # 有同分成就，组内配对不可证，保持原状
+ALIGNED = "aligned"  # 量化多重集相同且无同分歧义，重对齐确定性正确
+AMBIGUOUS = "ambiguous"  # 有同分成就，组内配对不可证，保持原状
 INCOMPATIBLE = "incompatible"  # 量化多重集都对不上，无法自动修复
 
 # 台账读写（与 writers.py 的同名常量保持同一 SQL 语义）
@@ -144,10 +144,14 @@ def judge_and_write(
     if not valve or not community:
         logger.warning(
             "appid=%s 修复时源返回空（valve=%d / community=%d）",
-            appid, len(valve), len(community),
+            appid,
+            len(valve),
+            len(community),
         )
         if not dry_run:
-            conn.execute(UPSERT_ISSUE, {"appid": appid, "reason": "修复时源返回空，无法核验"})
+            conn.execute(
+                UPSERT_ISSUE, {"appid": appid, "reason": "修复时源返回空，无法核验"}
+            )
         return "empty_now"
 
     valve_pct = [round(float(a["percent"]), QUANTIZE) for a in valve]
@@ -193,7 +197,9 @@ def gather_appids(
         if from_issues:
             appids.update(int(r[0]) for r in conn.execute(SELECT_OPEN_ISSUES))
         if before:
-            appids.update(int(r[0]) for r in conn.execute(SELECT_COHORT_BEFORE, {"t": before}))
+            appids.update(
+                int(r[0]) for r in conn.execute(SELECT_COHORT_BEFORE, {"t": before})
+            )
         if appid is not None:
             appids.add(appid)
     return sorted(appids)
@@ -206,11 +212,13 @@ def main() -> None:
         description="成就名映射修复：对两源顺序不一致的游戏按 percent 重对齐"
     )
     parser.add_argument(
-        "--from-issues", action="store_true",
+        "--from-issues",
+        action="store_true",
         help="处理 mapping_issues 里 resolved=false 的游戏",
     )
     parser.add_argument(
-        "--before", default=None,
+        "--before",
+        default=None,
         help="复验该 ISO 时刻之前处理的所有游戏（部署标记前完成的老数据用）",
     )
     parser.add_argument("--appid", type=int, default=None, help="只处理这一款（调试）")

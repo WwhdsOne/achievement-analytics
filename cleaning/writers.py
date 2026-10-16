@@ -167,9 +167,7 @@ INSERT_INGEST = text(
     """
 )
 
-SELECT_GAME_NAMES = text(
-    "SELECT name_en, name_zh FROM games WHERE appid = :appid"
-)
+SELECT_GAME_NAMES = text("SELECT name_en, name_zh FROM games WHERE appid = :appid")
 
 
 # ── 工具 ──────────────────────────────────────────────────
@@ -181,8 +179,14 @@ _DATE_FORMATS = ("%b %d, %Y", "%d %b, %Y", "%Y-%m-%d", "%b %Y", "%Y")
 # 商店/接口里表示「还没发售」的已知取值 —— 它们解析不出日期是**正确行为**，
 # 不该按告警刷屏（实测一次枚举会打印上万行，把真正的异常淹没）
 _KNOWN_NON_DATES = {
-    "coming soon", "to be announced", "tba", "tbd", "待定", "即将推出",
-    "wishlist now", "not yet announced",
+    "coming soon",
+    "to be announced",
+    "tba",
+    "tbd",
+    "待定",
+    "即将推出",
+    "wishlist now",
+    "not yet announced",
 }
 
 
@@ -334,9 +338,7 @@ def write_appdetails(conn: Any, appid: int, en: dict[str, Any]) -> None:
     )
 
 
-def write_achievement_pairs(
-    conn: Any, appid: int, pairs: list[dict[str, Any]]
-) -> None:
+def write_achievement_pairs(conn: Any, appid: int, pairs: list[dict[str, Any]]) -> None:
     """把配好对的成就行写入 ``achievements``（先删后插，position 从 1 连续编号）。
 
     供 :func:`rebuild_achievements`（按位对齐）与 ``cleaning.repair_mapping``
@@ -411,7 +413,7 @@ def rebuild_achievements(
     page_pct = [r["percent"] for r in community]
     if not sequences_within_tolerance(valve_pct, page_pct):
         # 按位对齐的根基被动摇：长度不同，或某些位置 percent 差距超出容差
-        #（疑似排序不同）。落台账（repair_mapping 之后会尝试重对齐），
+        # （疑似排序不同）。落台账（repair_mapping 之后会尝试重对齐），
         # 建模侧过滤 resolved=false 的游戏。
         logger.warning(
             "成就两源不一致：appid=%s 全局接口 %d 项 / 社区页 %d 项，逐位容差内=%s",

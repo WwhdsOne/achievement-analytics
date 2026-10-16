@@ -364,9 +364,7 @@ def prune_no_achievement_siblings(conn: Any, appid: int) -> int:
     在 ``global_ach`` 判为 ``empty`` 后立刻调用：既然这游戏根本没有成就，它不可能
     进 Q1/Q2（依赖成就完成率），继续抓其余源纯属浪费——RAWG 尤其贵。
     """
-    rows = conn.execute(
-        PRUNE_SIBLINGS, {"appid": appid, "reason": PRUNE_REASON}
-    ).all()
+    rows = conn.execute(PRUNE_SIBLINGS, {"appid": appid, "reason": PRUNE_REASON}).all()
     return len(rows)
 
 
@@ -551,8 +549,8 @@ def run(
         while True:
             if limit is not None and done >= limit:
                 break
-            batch_size = CLAIM_BATCH if limit is None else min(
-                CLAIM_BATCH, limit - done
+            batch_size = (
+                CLAIM_BATCH if limit is None else min(CLAIM_BATCH, limit - done)
             )
             # 抢占在一个独立短事务里提交：租约必须先落库，别的机器才会让开
             with engine.begin() as conn:
@@ -560,8 +558,11 @@ def run(
                 # 配额用尽 / 命令行 --exclude / 被反爬挑战
                 quota_blocked = quota_exhausted(conn) | extra_exclude
                 rows = claim(
-                    conn, source, batch_size,
-                    exclude=quota_blocked | unavailable, appid=appid,
+                    conn,
+                    source,
+                    batch_size,
+                    exclude=quota_blocked | unavailable,
+                    appid=appid,
                 )
             if not rows:
                 if quota_blocked:
@@ -584,7 +585,9 @@ def run(
             # 在 100 款试跑时踩到：claim 拿数 20→4→0，实为 appid 过滤越缩越窄）。
             for task_appid, task_source in rows:
                 if dry_run:
-                    logger.info("[dry-run] 待抓 appid=%s source=%s", task_appid, task_source)
+                    logger.info(
+                        "[dry-run] 待抓 appid=%s source=%s", task_appid, task_source
+                    )
                     stats["dry_run"] += 1
                     done += 1
                     continue
@@ -592,7 +595,11 @@ def run(
                 # 光改库里的 status 不够——这批任务是**开始前一次性抢下**的，
                 # 内存里的待办列表不会自动跟着变（2026-09-17 踩到：rawg 照样跑了）。
                 if task_appid in pruned_in_batch:
-                    logger.debug("跳过已被剔除的游戏：appid=%s source=%s", task_appid, task_source)
+                    logger.debug(
+                        "跳过已被剔除的游戏：appid=%s source=%s",
+                        task_appid,
+                        task_source,
+                    )
                     continue
                 # 该源本轮已被确认临时不可用：把抢到的任务原样放回队列，
                 # 不占着租约（否则别的机器要等 5 分钟才能接手）
@@ -600,7 +607,11 @@ def run(
                     with engine.begin() as conn:
                         conn.execute(
                             RELEASE_TASK,
-                            {"appid": task_appid, "source": task_source, "worker": WORKER_ID},
+                            {
+                                "appid": task_appid,
+                                "source": task_source,
+                                "worker": WORKER_ID,
+                            },
                         )
                     continue
                 # 每个任务一个短事务：网络请求可能耗时数秒，不该握着事务等
@@ -611,7 +622,9 @@ def run(
                         # 停在 pending、进度无法解释。这里兜成 error 走正常退避。
                         try:
                             with conn.begin_nested():
-                                task_status, err = run_source(conn, task_appid, task_source)
+                                task_status, err = run_source(
+                                    conn, task_appid, task_source
+                                )
                         except SourceUnavailable:
                             raise  # 反爬挑战必须交给外层做源级处理，不能记成 error
                         except Exception as exc:  # noqa: BLE001
@@ -631,7 +644,14 @@ def run(
                             ).scalar()
                             or 1
                         )
-                        complete(conn, task_appid, task_source, task_status, err, int(attempts_after))
+                        complete(
+                            conn,
+                            task_appid,
+                            task_source,
+                            task_status,
+                            err,
+                            int(attempts_after),
+                        )
                         # 一旦确认这个游戏没有成就，立刻取消它剩下的任务——
                         # 它进不了 Q1/Q2（两者都依赖成就完成率），继续抓纯属浪费配额
                         if task_source == "global_ach" and task_status == "empty":
@@ -640,7 +660,9 @@ def run(
                                 pruned_in_batch.add(task_appid)
                                 stats["pruned"] += pruned
                                 logger.info(
-                                    "appid=%s 无成就 → 取消其余 %d 个任务", task_appid, pruned
+                                    "appid=%s 无成就 → 取消其余 %d 个任务",
+                                    task_appid,
+                                    pruned,
                                 )
                 except SourceUnavailable as exc:
                     # 源级临时不可用（反爬挑战 / 限流 429）：任务**放回 pending**
@@ -651,13 +673,18 @@ def run(
                     with engine.begin() as conn:
                         conn.execute(
                             RELEASE_TASK,
-                            {"appid": task_appid, "source": task_source, "worker": WORKER_ID},
+                            {
+                                "appid": task_appid,
+                                "source": task_source,
+                                "worker": WORKER_ID,
+                            },
                         )
                     stats["unavailable"] += 1
                     logger.warning(
                         "源 %s 临时不可用（挑战/限流），本轮挂起"
                         "（任务已放回队列、不计重试次数）：%s",
-                        task_source, exc,
+                        task_source,
+                        exc,
                     )
                     continue
                 # 记账在任务事务**之外**的独立短事务里刷：死锁只回滚记账本身，
@@ -685,9 +712,7 @@ def run(
             # dry-run 只是为了看「还要抓什么」，不该把租约留在库里 5 分钟、
             # 让真正的 worker 干等——所以立刻释放本次抢到的租约
             with engine.begin() as conn:
-                conn.execute(
-                    RELEASE_LEASE, {"worker": WORKER_ID}
-                )
+                conn.execute(RELEASE_LEASE, {"worker": WORKER_ID})
 
     return dict(stats)
 
@@ -715,30 +740,30 @@ def print_progress(engine: Engine) -> None:
 def main() -> None:
     """CLI 入口。"""
     logging.basicConfig(level=logging.INFO, format="%(levelname)s %(message)s")
-    parser = argparse.ArgumentParser(
-        description="gap 驱动回填：反复取缺口 → 抓 → 回填"
-    )
+    parser = argparse.ArgumentParser(description="gap 驱动回填：反复取缺口 → 抓 → 回填")
     parser.add_argument("--source", default=None, help="只跑某个源")
     parser.add_argument(
-        "--appid", type=int, default=None,
+        "--appid",
+        type=int,
+        default=None,
         help="只跑这一款游戏的所有源（调试单个游戏的全流程）",
     )
     parser.add_argument("--limit", type=int, default=None, help="最多处理多少个任务")
     parser.add_argument(
-        "--exclude", default=None,
+        "--exclude",
+        default=None,
         help="跳过的源，逗号分隔（如 --exclude steamspy）。"
-             "用于源临时不可用时挂起它跑其他源，任务不丢、不耗重试次数",
+        "用于源临时不可用时挂起它跑其他源，任务不丢、不耗重试次数",
     )
     parser.add_argument(
         "--dry-run", action="store_true", help="只看还要抓什么，不发请求不写库"
     )
+    parser.add_argument("--progress", action="store_true", help="打印进度后退出")
     parser.add_argument(
-        "--progress", action="store_true", help="打印进度后退出"
-    )
-    parser.add_argument(
-        "--prune", action="store_true",
+        "--prune",
+        action="store_true",
         help="批量剔除：取消所有「global_ach 已判无成就」游戏的剩余任务，然后退出。"
-             "用于 global_ach 已经跑过一轮、才补上这条规则的历史数据清理",
+        "用于 global_ach 已经跑过一轮、才补上这条规则的历史数据清理",
     )
     args = parser.parse_args()
 
@@ -760,7 +785,9 @@ def main() -> None:
             appid=args.appid,
             limit=args.limit,
             dry_run=args.dry_run,
-            exclude={s.strip() for s in args.exclude.split(",")} if args.exclude else None,
+            exclude={s.strip() for s in args.exclude.split(",")}
+            if args.exclude
+            else None,
         )
     except RuntimeError as exc:
         # ensure_ready 的报错要原样透出——它会直接告诉你该跑哪条命令

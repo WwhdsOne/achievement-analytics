@@ -13,6 +13,8 @@ secrets.*
 data/raw/
 data/interim/
 data/processed/
+# 后台采集的聚合进度日志与进程元数据
+data/run/
 
 # Python
 __pycache__/

@@ -160,8 +160,8 @@ def iter_apps(
         last_appid = int(next_cursor)
 
 
-def count_apps(
-    *, include_dlc: bool = False, include_software: bool = False
-) -> int:
+def count_apps(*, include_dlc: bool = False, include_software: bool = False) -> int:
     """枚举并返回总条数（会翻完全部页）。用于核对总体规模。"""
-    return sum(1 for _ in iter_apps(include_dlc=include_dlc, include_software=include_software))
+    return sum(
+        1 for _ in iter_apps(include_dlc=include_dlc, include_software=include_software)
+    )
