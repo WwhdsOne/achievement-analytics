@@ -33,6 +33,15 @@ nav .tabs { flex-wrap:wrap; gap:12px 20px; }
 .game-grid { display:grid; grid-template-columns:repeat(3,minmax(0,1fr)); gap:12px; }
 .explore-game { background:var(--PAPER); border:1px solid transparent; padding:18px 20px 22px; border-radius:12px; min-width:0; transition:border-color .15s; }
 .explore-game:hover { border-color:#326963; }
+#viewAnalysis .game-cover { position:relative; display:flex; align-items:center; justify-content:center; aspect-ratio:460/215; padding:0; border:0; border-radius:8px; overflow:hidden; background:var(--GRID); color:var(--L3); text-decoration:none; }
+#viewAnalysis .game-cover:hover { opacity:1; }
+.game-cover > span { padding:16px; text-align:center; font-size:13px; line-height:1.8; overflow-wrap:anywhere; }
+.game-cover img { position:absolute; inset:0; display:block; width:100%; height:100%; object-fit:cover; }
+.game-cover img[hidden] { display:none; }
+.game-card-cover { width:100%; margin-bottom:16px; }
+.game-story-identity { display:flex; flex:1; align-items:start; gap:24px; min-width:0; }
+.game-story-heading { min-width:0; flex:1; }
+.game-story-cover { width:280px; flex-shrink:0; }
 .game-card-top { display:flex; justify-content:space-between; align-items:center; gap:12px; color:var(--L3); font-size:10px; }
 .explore-game h3 { margin:12px 0 20px; font-size:16px; min-height:42px; line-height:1.4; }
 #viewAnalysis .text-button { border:none; color:inherit; background:none; padding:0; text-align:left; text-decoration:underline; text-underline-offset:4px; overflow-wrap:anywhere; }
@@ -117,13 +126,19 @@ nav .tabs { flex-wrap:wrap; gap:12px 20px; }
 #viewCloud .text-button { border:0; background:none; color:#326963; font:inherit; padding:0; text-decoration:underline; text-underline-offset:3px; }
 #viewCloud button:focus-visible { outline:2px solid #326963; outline-offset:4px; }
 #viewCloud .cloud { margin-top:20px; }
-@media(max-width:900px) { .game-grid { grid-template-columns:repeat(2,minmax(0,1fr)); } .game-stat-grid { grid-template-columns:repeat(2,minmax(0,1fr)); } }
+@media(max-width:900px) {
+  .game-grid { grid-template-columns:repeat(2,minmax(0,1fr)); }
+  .game-stat-grid { grid-template-columns:repeat(2,minmax(0,1fr)); }
+  .game-story-identity { flex-direction:column; gap:18px; }
+  .game-story-cover { width:100%; max-width:360px; }
+}
 @media(max-width:540px) {
   body { padding-left:14px; padding-right:14px; } nav .tabs { margin-left:0; } nav .tab { font-size:12px; }
   .explore-search { flex-wrap:wrap; } .explore-search input { flex-basis:100%; }
   .explore-search button { flex:1; } .section-heading { flex-wrap:wrap; gap:8px; }
   .game-grid { grid-template-columns:minmax(0,1fr); } .explore-game h3 { min-height:0; }
   .game-story { padding:22px 18px; } .game-story-header { flex-direction:column; gap:16px; }
+  .game-story-identity { width:100%; }
   .game-story-header h2 { font-size:26px; } .game-actions { flex-direction:row; }
   .game-stat > strong { font-size:30px; } .score-grid { grid-template-columns:1fr; }
   .achievement-pair,.tag-votes { grid-template-columns:1fr; }

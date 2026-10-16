@@ -32,8 +32,19 @@
   }
 
   function gameButton(game) { return `<button type="button" class="text-button" data-game="${Number(game.appid)}">${esc(title(game))}</button>`; }
+
+  /** 与 ZZY 推荐页使用同一 Steam 封面地址；列表进入详情，详情封面进入商店。 */
+  function cover(game, detail = false) {
+    const id = Number(game.appid);
+    if (!Number.isSafeInteger(id) || id <= 0) return '';
+    const name = esc(title(game));
+    const content = `<span aria-hidden="true">${name}</span><img src="https://cdn.akamai.steamstatic.com/steam/apps/${id}/header.jpg" alt="" width="460" height="215" loading="${detail ? 'eager' : 'lazy'}" decoding="async" referrerpolicy="no-referrer">`;
+    return detail ? `<a class="game-cover game-story-cover" href="https://store.steampowered.com/app/${id}/" target="_blank" rel="noopener noreferrer" aria-label="在 Steam 查看《${name}》">${content}</a>` : `<button type="button" class="game-cover game-card-cover" data-game="${id}" aria-label="查看《${name}》的游戏数据">${content}</button>`;
+  }
+
   function cards(games) {
     return games.map(game => `<article class="explore-game">
+      ${cover(game)}
       <div class="game-card-top"><span>${esc(game.release_date?.slice(0,4) || '发售日未知')} · ${game.is_free === true ? '免费游戏' : 'Steam'}</span></div>
       <h3>${gameButton(game)}</h3><div class="game-card-numbers">
         <div><strong>${num(game.reviews)}</strong><span>条评价</span></div>
@@ -155,8 +166,8 @@
     const tags = x?.tags || [];
     const maxVotes = Math.max(1, ...tags.map(tag => tag.votes || 0));
     const meta = [g.release_date || '发售日暂无', ...(g.developers || [])].map(esc).join(' · ');
-    let html = `<article class="game-story"><header class="game-story-header"><div><span class="explore-eyebrow">GAME / ${Number(g.appid)}</span>
-      <h2>${esc(title(g))}</h2>${g.name_zh && g.name_zh !== g.name ? `<p class="game-english">${esc(g.name)}</p>` : ''}<p class="explore-note">${meta}</p></div>
+    let html = `<article class="game-story"><header class="game-story-header"><div class="game-story-identity">${cover(g, true)}<div class="game-story-heading"><span class="explore-eyebrow">GAME / ${Number(g.appid)}</span>
+      <h2>${esc(title(g))}</h2>${g.name_zh && g.name_zh !== g.name ? `<p class="game-english">${esc(g.name)}</p>` : ''}<p class="explore-note">${meta}</p></div></div>
       <div class="game-actions"><a href="https://store.steampowered.com/app/${Number(g.appid)}/" target="_blank" rel="noopener noreferrer">去 Steam ↗</a><a href="#explore">换款游戏 ↑</a></div></header>
       <div class="game-stat-grid">${stat('成就清单',num(g.ach_count),'个成就')}${stat('Steam 好评率',pct(g.approval),`${num(g.reviews)} 条评价`)}${stat('付费方式',payment(g),'当前售价请查看 Steam 商店')}${stat('采集时在线',num(d.steamspy?.ccu),'人 · 非实时在线')}${stat('主线时长',hours(g.hltb_main),'HowLongToBeat 玩家提交')}${stat('主线+支线',hours(g.hltb_extra),'HowLongToBeat 玩家提交')}${stat('完美通关',hours(g.hltb_completionist),'HowLongToBeat 玩家提交')}</div>`;
     html += storySection('成就里藏着的小数字', achievements.length ?
@@ -215,6 +226,7 @@
 
   function route() {
     const hash = location.hash;
+    if (/^#research(?:\/|$)/.test(hash)) { ++gameToken; switchView('research'); return; }
     if (hash === '#cloud') { location.hash = '#overview'; return; }
     if (hash === '#queue' || hash === '#overview') { ++gameToken; switchView(hash.slice(1)); return; }
     if (!/^#explore(?:\/game\/[1-9]\d*)?$/.test(hash)) { location.hash = '#explore'; return; }
@@ -248,6 +260,12 @@
     if (button.dataset.retry === 'search') search();
     if (button.dataset.retry === 'game' && lastGame) { cache.delete(lastGame); selectGame(lastGame); }
   });
+  el('viewAnalysis').addEventListener('error', event => {
+    const img = event.target;
+    if (img.tagName !== 'IMG' || !img.closest('.game-cover')) return;
+    img.hidden = true;
+    img.closest('.game-cover').classList.add('cover-missing');
+  }, true);
   window.Explore = {open};
   window.addEventListener('hashchange', route);
   route();

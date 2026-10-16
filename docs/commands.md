@@ -17,7 +17,7 @@ cp .env.example .env                     # 然后填好数据库与 key
 | 变量 | 说明 |
 |---|---|
 | `POSTGRES_HOST` / `POSTGRES_PORT` / `POSTGRES_DB` / `POSTGRES_USER` / `POSTGRES_PASSWORD` | 共享云库（所有人填同一组值，这是多机并行的前提） |
-| `STEAM_API_KEY` | 仅全量 appid 枚举用，可共用 |
+| `STEAM_API_KEY` | 全量 appid 枚举使用；key 保密，不在聊天或日志中传递 |
 | `RAWG_API_KEY` | 可不填——key 应注册进密钥池（见 §4）；没有 key 的机器上 RAWG 任务会退避重试，不阻塞其他源 |
 
 ⚠ 自建库**不要**设 `POSTGRES_SSLMODE`（服务器不支持 SSL）。
@@ -144,7 +144,11 @@ uv run --with playwright python scripts/check_dashboard_browser.py --url http://
 
 「类型词云」已改为「数据全景」（`#overview`），移除官方类型词云，保留玩家标签词云。新增游戏/成就/标签规模、评价数分档与前1%游戏的评价份额、成就数量中位数与千成就游戏数量、低于1%解锁率的成就占比，以及免费/付费标记分布。每块明确统计分母与缺失量，全部仅为当前库的描述性统计；`/api/overview` 一个只读SQL获取一致统计并缓存五分钟，不依赖报告文件。旧 `#cloud` 自动跳转到 `#overview`。
 
-开发口径：`随便逛逛` 在服务端按评价数量前500款均匀抽取一款，页面不展示筛选范围。评价数优先使用 SteamSpy 的好评+差评，任一字段缺失时回退商店搜索记录，同分按 appid 排序；好评率使用同源的计数，零评价时不显示比例；发现列表缓存五分钟。价格字段未保存货币，现有数据混有不同地区金额，因此只展示免费/付费并提供商店链接；在线数标明采集时口径，SteamSpy 已失效的时长字段不展示，成就名称映射有疑义时不展示具名故事。页面保留 RAWG 回链，不包含研究计划中的专题。
+开发口径：`随便逛逛` 在服务端按评价数量前500款均匀抽取一款，页面不展示筛选范围。评价数优先使用 SteamSpy 的好评+差评，任一字段缺失时回退商店搜索记录，同分按 appid 排序；好评率使用同源的计数，零评价时不显示比例；发现列表缓存五分钟。价格字段未保存货币，现有数据混有不同地区金额，因此只展示免费/付费并提供商店链接；在线数标明采集时口径，SteamSpy 已失效的时长字段不展示，成就名称映射有疑义时不展示具名故事。页面保留 RAWG 回链。研究专题通过独立的「研究成果」标签进入。
+
+「研究成果」入口为 `/#research/recommendation`，侧栏列出五个方向。目前接入朱政宇的可解释推荐，其余方向展示负责人、研究范围及待接入状态。本机推荐可另开终端运行 `uv run python result/ZZY/dashboard_service.py`；远程推荐用独立的 `bash result/ZZY/deploy.sh` 部署。Go 从 `dashboard/.env` 的 `RECOMMENDATION_HOST` / `RECOMMENDATION_PORT` 读取上游地址（默认127.0.0.1:8605），也可用 `--recommendation-url` 临时覆盖。启动、配置和验收见 [dashboard/RESEARCH.md](../dashboard/RESEARCH.md) 与 [推荐部署说明](../result/ZZY/deploy/README.md)。
+
+「游戏探索」的发现列表、搜索结果、同开发商作品和详情页均显示 Steam 封面，地址沿用 ZZY 推荐页的 `https://cdn.akamai.steamstatic.com/steam/apps/<appid>/header.jpg`。由浏览器直接联网加载，不入库；列表封面可点击进入原游戏详情，详情封面链接商店，图片失败保留游戏名占位。
 
 ⚠️ **原 Q2 建模代码（`modeling/`）已于 2026-10-14 删除**——项目改为按 `docs/plan.md` 的方向
 分工，各人产物放 `result/<缩写>/`，实验记录也迁到各自目录（面板相关的在
@@ -164,7 +168,7 @@ uv run --with playwright python scripts/check_dashboard_browser.py --url http://
 bash dashboard/deploy.sh
 ```
 
-脚本做四件事：交叉编译 linux/amd64 → **从 `dashboard/.env` 抽出容器连库需要的 `POSTGRES_*`**
+脚本做四件事：交叉编译 linux/amd64 → **从 `dashboard/.env` 抽出 `POSTGRES_*` 与 `RECOMMENDATION_HOST/PORT`**
 （值原样照搬，不做任何改写）→ 打成 tar 上传到服务器 `/opt/achievement-dashboard/` →
 `docker compose up -d --build` → 远端探活 → 本机探公网 → 确认补抓接口是 404。
 **服务器上不需要仓库、不需要 Git、不需要 Python。**
@@ -178,6 +182,7 @@ bash dashboard/deploy.sh
 | `DEPLOY_PASSWORD` | SSH 密码，脚本用 `expect` 免交互应答（macOS 没有 sshpass） |
 | `DEPLOY_PATH` / `DEPLOY_PORT` | 部署目录（默认 `/opt/achievement-dashboard`）与端口（默认 8600） |
 | `POSTGRES_HOST` / `PORT` / `DB` / `USER` / `PASSWORD` | 数据库地址与凭据，原样传给容器。面板与库同机、容器走 host 网络，所以 `HOST` 填 `127.0.0.1` |
+| `RECOMMENDATION_HOST` / `RECOMMENDATION_PORT` | Go面板访问推荐服务的主机与端口，默认127.0.0.1/8605；不用填写http协议 |
 
 **本机预览面板**时把数据库地址临时覆盖成公网地址（环境变量优先于 `.env`）：
 
@@ -189,8 +194,19 @@ cd dashboard && POSTGRES_HOST=82.157.208.173 go run . --port 8601
 
 **首次在一台新机器上部署前的准备**：服务器装好 Docker 与 compose 插件；在**腾讯云控制台
 放行入站 TCP 8600**。就这两步——部署目录、容器 `.env`、报告文件都由脚本自动铺好。
-每次部署都会重新上传那份容器 `.env`，它只有 `POSTGRES_*` 五个键，
+每次部署都会重新上传那份容器 `.env`，它只含 `POSTGRES_*` 与 `RECOMMENDATION_HOST/PORT`，
 **SSH 账号密码不会离开本机**。
+
+推荐服务有独立部署包、Compose项目和runtime挂载，默认部署到同一服务器的 `/opt/achievement-recommendation/`：
+
+```bash
+bash result/ZZY/deploy.sh --prepare-only  # 本机生成部署包，不连接服务器或数据库
+bash result/ZZY/deploy.sh                 # 仅部署推荐服务并等待数据/图谱准备就绪
+bash result/ZZY/deploy.sh --refresh-data  # 仅需要更新数据时，显式从共享库刷新
+bash dashboard/deploy.sh                  # 仅更新面板与推荐连接配置
+```
+
+推荐脚本复用 `dashboard/.env` 的部署账号与数据库设置，数据库/API源不重新采集；服务器需Docker和Compose≥2.30，不需仓库或宿主Python。`/opt/achievement-recommendation/runtime` 绑定到容器 `/runtime`，首次生成后普通部署和重启均直接复用，只有 `--refresh-data` 显式读库更新。DeepSeek配置从本机 `result/WWH/5/.env` 读取，仅进入推荐容器运行环境。独立最小依赖锁在 `result/ZZY/deploy/pyproject.toml` / `uv.lock`，不会引入Go镜像。改地址后重新部署面板生效，服务端口改变时也要部署推荐服务。跨机监听及独立凭据覆盖见 [推荐部署说明](../result/ZZY/deploy/README.md)。
 
 服务器上的排障命令（都在 `/opt/achievement-dashboard` 下）：
 

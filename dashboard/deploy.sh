@@ -5,14 +5,14 @@
 #
 # 做四件事：
 #   1. 交叉编译 linux/amd64 静态二进制（面板不需要 CGO）
-#   2. 从 .env 抽出**容器需要的那几个键**（只含 POSTGRES_*，值原样照搬、不做改写）
+#   2. 从 .env 抽出 POSTGRES_* 与推荐服务 HOST/PORT，值原样照搬
 #   3. 把二进制 / Dockerfile / compose / 抽出的 env / 分析报告打包传到服务器固定目录
 #   4. 远端 `docker compose up -d --build` → 远端探活 → 本机探公网 → 确认写接口不存在
 #
 # 凭据都在 dashboard/.env（不入 git）。.env 里两段各自独立填写：
 #   DEPLOY_HOST   服务器地址（只给本脚本登录用）
 #   POSTGRES_HOST 数据库地址（面板连库用，原样传给容器；面板与库同机所以是 127.0.0.1）
-# 部署凭据与 SQL 密码都不会离开本机——传上去的那份 env 只有 POSTGRES_*。
+# SSH 部署凭据留在本机；传上去的 env 只有 POSTGRES_* 与推荐连接 HOST/PORT。
 #
 # 登录用账号密码（sshpass 在 macOS 上默认没有，所以用 expect 应答）。
 set -euo pipefail
@@ -104,9 +104,9 @@ printf '    %s\n' "$(ls -lh "$BINARY" | awk '{print $5}')"
 echo "==> 2/4 抽出容器连库配置（原样，不改写）"
 {
   echo "# 由 dashboard/deploy.sh 从本机 dashboard/.env 抽出，**不要手改**。"
-  echo "# 只含容器连库需要的 POSTGRES_*，值原样照搬。"
+  echo "# 只含 POSTGRES_* 与 RECOMMENDATION_HOST/PORT，值原样照搬。"
   echo "# 只读面板不需要任何 API key，所以 STEAM/RAWG 之类不会传上来。"
-  awk -F= '/^POSTGRES_[A-Z_]*=/{print}' .env
+  awk -F= '/^POSTGRES_[A-Z_]*=|^RECOMMENDATION_(HOST|PORT)=/{print}' .env
 } > "$CONTAINER_ENV"
 chmod 600 "$CONTAINER_ENV"
 awk -F= '/^[A-Z_]+=/{print "    "$1}' "$CONTAINER_ENV"

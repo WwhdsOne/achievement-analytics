@@ -218,6 +218,7 @@
   footer.icp a:hover { color: var(--INK); text-decoration: underline; }
 </style>
 <link rel="stylesheet" href="/assets/explore.css">
+<link rel="stylesheet" href="/assets/research.css">
 </head>
 <body>
 
@@ -227,10 +228,33 @@
     <button class="tab active" id="tabAnalysis" onclick="switchView('analysis')">游戏探索</button>
     <button class="tab" id="tabQueue" onclick="switchView('queue')">队列总览</button>
     <button class="tab" id="tabCloud" onclick="switchView('overview')">数据全景</button>
+    <button class="tab" id="tabResearch" onclick="switchView('research')">研究成果</button>
   </div>
 </nav>
 
 <div class="wrap">
+
+  <div id="viewResearch" class="hidden">
+    <header class="explore-heading research-heading">
+      <div class="explore-eyebrow">FIVE PERSPECTIVES ON PLAY</div>
+      <h1>我们为什么，<br>选择这些游戏？</h1>
+      <p>从类型潮流到玩家偏好，看看五个方向的研究成果。</p>
+      <div class="research-dashboard-links" role="group" aria-label="Dashboard 原有内容">
+        <a href="#explore"><strong>游戏探索 ↗</strong><span>查看单款游戏、成就与口碑</span></a>
+        <a href="#overview"><strong>数据全景 ↗</strong><span>游戏规模、评价分布与玩家标签</span></a>
+        <a href="#queue"><strong>队列总览 ↗</strong><span>采集进度与各数据源获取情况</span></a>
+      </div>
+    </header>
+    <div class="research-layout">
+      <aside class="research-sidebar" aria-label="研究方向">
+        <p class="research-label">研究目录 / 05</p>
+        <div id="researchNav"></div>
+        <p class="research-side-note">公开游戏数据中的线索，<br>与可以追溯的分析依据。</p>
+      </aside>
+      <main id="researchContent" class="research-content"></main>
+    </div>
+    <footer class="explore-footer">来源：Steam / SteamSpy / <a href="https://rawg.io/" target="_blank" rel="noopener noreferrer">RAWG</a> · 各方向的数据范围与版本以成果说明为准。</footer>
+  </div>
 
   <div id="viewAnalysis" class="hidden">
     <header class="explore-heading">
@@ -264,7 +288,7 @@
     </section>
     <div id="gameStory" class="hidden" aria-live="polite"></div>
     <div id="gameDetailMount"></div>
-    <footer class="explore-footer">来源：Steam 商店 / Steam 全局成就 / SteamSpy / <a href="https://rawg.io/" target="_blank" rel="noopener noreferrer">RAWG</a> · 游戏级公开数据，采集时间可在每款游戏的数据详情中查看。</footer>
+    <footer class="explore-footer">来源：Steam 商店 / Steam 全局成就 / SteamSpy / <a href="https://rawg.io/" target="_blank" rel="noopener noreferrer">RAWG</a> · 封面来自 Steam 图片 CDN，联网加载。游戏级公开数据的采集时间可在每款游戏的数据详情中查看。</footer>
   </div>
 
   <!-- ════ 视图一：队列总览 ════ -->
@@ -390,11 +414,14 @@ function ensureWordCloud() {
 /* ── 视图切换 ── */
 function switchView(v) {
   const wasOverview = !$('viewCloud').classList.contains('hidden');
+  const wasResearch = !$('viewResearch').classList.contains('hidden');
   if (v === 'game') v = 'analysis';
   if (v === 'cloud') v = 'overview';
   $('viewAnalysis').classList.toggle('hidden', v !== 'analysis');
   $('tabAnalysis').classList.toggle('active', v === 'analysis');
-  document.querySelector('.wrap').classList.toggle('research-wide', v === 'analysis' || v === 'overview');
+  document.querySelector('.wrap').classList.toggle('research-wide', v === 'analysis' || v === 'overview' || v === 'research');
+  $('viewResearch').classList.toggle('hidden', v !== 'research');
+  $('tabResearch').classList.toggle('active', v === 'research');
   $('viewQueue').classList.toggle('hidden', v !== 'queue');
   $('viewCloud').classList.toggle('hidden', v !== 'overview');
   $('tabQueue').classList.toggle('active', v === 'queue');
@@ -408,6 +435,12 @@ function switchView(v) {
   }
   if (v === 'queue') loadProgress().catch(() => { $('ovSub').textContent = '查询失败，稍后自动重试'; });
   if (v === 'analysis' && window.Explore) window.Explore.open();
+  if (v === 'research') {
+    if (!wasResearch) window.scrollTo(0, 0);
+    if (!location.hash.startsWith('#research/')) location.hash = '#research/recommendation';
+    if (window.Research) window.Research.open();
+    return;
+  }
   if (v !== 'analysis' && location.hash !== '#' + v) location.hash = v;
 }
 
@@ -759,6 +792,7 @@ $('appidInput').addEventListener('keydown', e => { if (e.key === 'Enter') doLook
 progressLoop();
 </script>
 <script src="/assets/overview.js"></script>
+<script src="/assets/research.js"></script>
 <script src="/assets/explore.js"></script>
 </body>
 </html>

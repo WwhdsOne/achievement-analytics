@@ -18,6 +18,7 @@ services:
     build: .
     image: achievement-dashboard:local
     network_mode: host
+    # 部署脚本仅传 POSTGRES_* 与 RECOMMENDATION_HOST/PORT，不含 SSH/API 凭据。
     env_file: .env
     volumes:
       # 分析报告（data/processed/analysis-report.json）由部署脚本上传到这里，

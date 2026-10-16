@@ -33,14 +33,20 @@ import (
 	"time"
 )
 
-//go:embed index.html explore.js explore.css overview.js favicon.png
+//go:embed index.html explore.js explore.css overview.js research.js research.css favicon.png figures/zzy/*.png
 var frontend embed.FS
 
 var assets = map[string]struct{ file, ctype string }{
-	"/assets/explore.js":  {"explore.js", "text/javascript; charset=utf-8"},
-	"/assets/explore.css": {"explore.css", "text/css; charset=utf-8"},
-	"/assets/overview.js": {"overview.js", "text/javascript; charset=utf-8"},
-	"/favicon.png":        {"favicon.png", "image/png"},
+	"/assets/explore.js":   {"explore.js", "text/javascript; charset=utf-8"},
+	"/assets/explore.css":  {"explore.css", "text/css; charset=utf-8"},
+	"/assets/overview.js":  {"overview.js", "text/javascript; charset=utf-8"},
+	"/assets/research.js":  {"research.js", "text/javascript; charset=utf-8"},
+	"/assets/research.css": {"research.css", "text/css; charset=utf-8"},
+	"/favicon.png":         {"favicon.png", "image/png"},
+	"/assets/research/zzy/current-knowledge-graph.png":  {"figures/zzy/current-knowledge-graph.png", "image/png"},
+	"/assets/research/zzy/current-path-explanation.png": {"figures/zzy/current-path-explanation.png", "image/png"},
+	"/assets/research/zzy/ai-method-comparison.png":     {"figures/zzy/ai-method-comparison.png", "image/png"},
+	"/assets/research/zzy/ai-unknown-bounds.png":        {"figures/zzy/ai-unknown-bounds.png", "image/png"},
 }
 
 // rateLimiter 每 IP 滑动窗口限速，外加「反复触发即封禁」。
@@ -252,6 +258,7 @@ func main() {
 		"分析报告路径；留空则自动在候选路径里找（容器内与本机两种跑法都能用）")
 	envFile := flag.String("env-file", ".env",
 		"面板自己的 .env（在 dashboard/ 目录里），不再读仓库根的 .env；容器里由 compose 注入")
+	recommendationURL := flag.String("recommendation-url", "", "覆盖 RECOMMENDATION_HOST/PORT 的完整内网 HTTP 地址")
 	health := flag.Bool("health", false, "对自己发一次请求做自检后退出")
 	flag.Parse()
 
@@ -260,6 +267,14 @@ func main() {
 	}
 
 	loadDotEnv(*envFile)
+	recommendationTarget, err := resolveRecommendationURL(*recommendationURL)
+	if err != nil {
+		log.Fatal(err)
+	}
+	recommendation, err := recommendationHandler(recommendationTarget)
+	if err != nil {
+		log.Fatal(err)
+	}
 
 	ctx, stop := signal.NotifyContext(context.Background(), syscall.SIGINT, syscall.SIGTERM)
 	defer stop()
@@ -285,6 +300,7 @@ func main() {
 	mux.HandleFunc("GET /api/genres", srv.handleGenres)
 	mux.HandleFunc("GET /api/tags", srv.handleTags)
 	mux.HandleFunc("GET /api/analysis", srv.handleAnalysis)
+	mux.HandleFunc("GET /api/research/recommendation/", recommendation)
 	// 兜底：未匹配的路径与方法。**必须是合法 JSON**——前端多处先 res.json() 再判
 	// res.ok，回空 body 会直接抛异常。这里也是「补抓接口已删除」的落点：POST
 	// /api/game/crawl 会落到这里返回 404。
@@ -317,6 +333,7 @@ func main() {
 	log.Printf("面板已启动：http://%s:%d%s", *host, *port, suffix)
 	log.Printf("数据库：%s", dbTarget())
 	log.Printf("分析报告：%s", report)
+	log.Printf("推荐服务：%s", recommendationTarget)
 
 	<-ctx.Done()
 	shutdownCtx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
