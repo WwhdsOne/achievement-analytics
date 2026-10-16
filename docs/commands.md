@@ -197,16 +197,8 @@ cd dashboard && POSTGRES_HOST=82.157.208.173 go run . --port 8601
 每次部署都会重新上传那份容器 `.env`，它只含 `POSTGRES_*` 与 `RECOMMENDATION_HOST/PORT`，
 **SSH 账号密码不会离开本机**。
 
-推荐服务有独立部署包、Compose项目和runtime挂载，默认部署到同一服务器的 `/opt/achievement-recommendation/`：
-
-```bash
-bash result/ZZY/deploy.sh --prepare-only  # 本机生成部署包，不连接服务器或数据库
-bash result/ZZY/deploy.sh                 # 仅部署推荐服务并等待数据/图谱准备就绪
-bash result/ZZY/deploy.sh --refresh-data  # 仅需要更新数据时，显式从共享库刷新
-bash dashboard/deploy.sh                  # 仅更新面板与推荐连接配置
-```
-
-推荐脚本复用 `dashboard/.env` 的部署账号与数据库设置，数据库/API源不重新采集；服务器需Docker和Compose≥2.30，不需仓库或宿主Python。`/opt/achievement-recommendation/runtime` 绑定到容器 `/runtime`，首次生成后普通部署和重启均直接复用，只有 `--refresh-data` 显式读库更新。DeepSeek配置从本机 `result/WWH/5/.env` 读取，仅进入推荐容器运行环境。独立最小依赖锁在 `result/ZZY/deploy/pyproject.toml` / `uv.lock`，不会引入Go镜像。改地址后重新部署面板生效，服务端口改变时也要部署推荐服务。跨机监听及独立凭据覆盖见 [推荐部署说明](../result/ZZY/deploy/README.md)。
+推荐服务（可解释推荐）是**独立部署包**，有自己的脚本、Compose 项目与数据卷，
+默认部署到同一台服务器的 `/opt/achievement-recommendation/` —— 完整用法见 **§10**。
 
 服务器上的排障命令（都在 `/opt/achievement-dashboard` 下）：
 
@@ -237,3 +229,63 @@ ls -lh /opt/achievement-dashboard                   # 看二进制/报告是什�
 - 面板是课程内部工具，`net/http` 直接对公网服务，没做请求体大小/超时那类加固。
   已知限度：限速是进程级的，重启容器即清零、多出口 IP 也能绕过——挡手滑和爬虫，不挡 DDoS
 
+
+## 10. 推荐服务部署（腾讯云，Python 独立包）
+
+可解释推荐（ZZY 方向）是**独立部署包**：有自己的脚本、Compose 项目与数据卷，和面板互不干扰。
+默认部署到同一台服务器的 `/opt/achievement-recommendation/`，容器只监听 `127.0.0.1:8605`，
+由同机的面板经 host 网络访问，**不需要对公网开放 8605**。
+
+```bash
+bash result/ZZY/deploy.sh                        # 部署并等待数据/图谱就绪（默认最多 900 秒）
+bash result/ZZY/deploy.sh --prepare-only         # 只在本机生成部署包，不连服务器、不连数据库
+bash result/ZZY/deploy.sh --refresh-data         # 仅需要更新数据时，显式从共享库重抽快照与图谱
+bash result/ZZY/deploy.sh --health-timeout 1800  # 首次数据准备慢时延长等待（1–3600 秒）
+bash result/ZZY/deploy.sh --env-file <路径>      # 用另一份配置（两机所需配置不同时）
+```
+
+配置复用 **`dashboard/.env`**（同一个文件，两份脚本都只读不改写）：
+
+| 键 | 用途 |
+|---|---|
+| `DEPLOY_HOST` / `DEPLOY_USER` / `DEPLOY_PASSWORD` | SSH 登录，只在本机 `expect` 用、**不上传**；可用 `RECOMMENDATION_DEPLOY_HOST/USER/PASSWORD` 单独覆盖 |
+| `POSTGRES_HOST` / `PORT` / `DB` / `USER` / `PASSWORD` | 原样传入推荐容器的 `runtime.env`（白名单：只传库、推荐参数、DeepSeek；STEAM/RAWG 密钥不传） |
+| `RECOMMENDATION_HOST` / `RECOMMENDATION_PORT` | **面板侧**要访问的推荐服务地址与端口（默认 127.0.0.1:8605），改后重启面板生效 |
+| `RECOMMENDATION_BIND_HOST` | **推荐容器自己**的监听地址（默认 127.0.0.1）；跨机时填推荐机器的私网 IPv4 |
+| `RECOMMENDATION_DEPLOY_PATH` | 服务器上的推荐目录（默认 `/opt/achievement-recommendation`），禁止与面板目录相同 |
+| `RECOMMENDATION_DEEPSEEK_ENV_FILE` | DeepSeek 的 key / model / base_url 从哪个文件读，默认 `result/WWH/5/.env`；也可直接把这三个键写进 `dashboard/.env` |
+
+⚠️ `RECOMMENDATION_HOST` 与 `RECOMMENDATION_BIND_HOST` 名字相近但**方向相反**：前者是面板**去找**谁，
+后者是推荐服务**监听**在哪。
+
+脚本会生成两个文件（权限 600、都不进镜像）：`.env` 只含监听地址与端口，供 compose 插值；
+`runtime.env` 用 raw 格式承载数据库密码与 DeepSeek 配置，避免 `$`、引号、反斜杠被二次解析。
+产物在 `result/ZZY/build/deploy/`（已 gitignore）——**内含数据库凭据与 DeepSeek key，不要分享或提交**。
+
+**前提**：本机需要 `uv`、`ssh`/`scp`、`expect`；服务器需要 Docker 与 **Compose ≥ 2.30**（支持 raw 环境文件），
+能拉基础镜像与 Python 依赖。服务器上不需要仓库、Git、Python，也不需要 uv。
+推荐服务的依赖是独立最小锁文件（`result/ZZY/deploy/pyproject.toml` / `uv.lock`：httpx、numpy、psycopg、
+python-dotenv、SQLAlchemy），不会引入面板那套 Go 镜像，也不改仓库根依赖。
+
+**数据卷**：`/opt/achievement-recommendation/runtime` 绑定到容器 `/runtime`。首次部署若该目录为空，
+会只读抽取共享库并生成快照与图谱；之后部署、重建容器、重启都**复用它**，只做完整性核验与内存索引，
+不重新读库。缓存损坏时明确失败，不会静默换数据版本；查询期间不连库。
+
+**服务器侧运维**（都在 `/opt/achievement-recommendation` 下）：
+
+```bash
+docker compose ps                             # 容器与健康状态
+docker compose logs --tail 50 recommendation  # 日志
+docker compose restart recommendation         # 只重启（复用现有数据卷）
+docker compose down                           # 停掉
+```
+
+**排障要点**：
+
+- 部署输出的“成功”以容器内 `/api/meta` 健康检查为准——它只在输入与图谱准备完成后才通过。
+  等待失败先看上面的日志，**不需要重新采集数据**；数据准备慢就用 `--health-timeout` 延长
+- 改了推荐服务的**端口**：要同时重部署推荐服务（监听端口在容器命令里）**和**重启面板（客户端目标变了）
+- **跨机部署**：把 `RECOMMENDATION_HOST`（面板去找的目标）、`RECOMMENDATION_BIND_HOST`（监听地址）、
+  `RECOMMENDATION_DEPLOY_HOST`（SSH 地址）都指向推荐机器；此时 `POSTGRES_HOST` 必须是**该机器可访问**的
+  库地址。两机所需配置不同就用 `--env-file` 指一份独立配置。推荐服务没有用户登录认证，跨机只走私网转发
+- 脚本**不执行** `db init`、`worker` 或训练，也**不会重启面板**；面板与推荐服务各自部署、各自回滚

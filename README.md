@@ -8,28 +8,43 @@
 > Steam 成就数据分析：分析用户和玩家更愿意玩什么样的游戏
 
 数据都在共享的 PostgreSQL 里（`crawler/` + `cleaning/` 是采集管道，采集已完成）。
-每人从 `docs/plan.md` 的方向里认领一个，产物放自己的 `result/<缩写>/`。
+当前目标：**分析游戏数据，包含五个方向**，产物放各自的 `result/<缩写>/`。
 
-## 分工
+## 五个方向
 
-| 谁 | 方向（见 `docs/plan.md`） | 产物 |
-|---|---|---|
-| LYX | 主线进度漏斗与成就参与分析 | `result/LYX/`（规划中） |
-| YJH | 按发售年份的游戏类型演变 | `result/YJH/`（已交付） |
-| WWH | 分类完成曲线与 RAWG 对比<br>游戏口碑预测与关联因素分析 | `result/WWH/5/`（已交付） |
-| YMT | 游戏画像聚类与自动分型 | — |
-| ZZY | 游戏知识图谱与可解释推荐 | — |
+| 方向 | 优先级 | 执行人 | 预期产出 | 进度 |
+|---|---|---|---|---|
+| 发售年份与潮流类型演变 | 主线 | 杨金辉 | 年度趋势与热力图 | 进行中 |
+| 游戏画像聚类 | 扩展 | 耶美田 | 游戏类别与代表作品 | 进行中 |
+| 可解释推荐 | 主线 | 朱政宇 | 相似游戏与推荐理由 | 进行中 |
+| 实际完成曲线与游戏用户粘性分析 | 主线 | 王文海、刘宇翔 | 关键主线节点完成率、内容分类与跨平台对照 | 进行中 |
+| 游戏口碑预测与关联因素 | 扩展 | 王文海 | 预测评估与相关因素 | 进行中 |
+
+产物与实验记录放各自的 `result/<缩写>/`（YJH / YMT / ZZY / WWH / LYX）。
+
+## 部署
+
+服务都跑在腾讯云那台机器上，**在本机执行**，服务器不需要仓库：
+
+```bash
+bash dashboard/deploy.sh      # 状态面板（Go 只读，含推荐服务连接配置）
+bash result/ZZY/deploy.sh     # 可解释推荐服务（Python，独立包与数据卷）
+
+bash result/ZZY/deploy.sh --prepare-only   # 只在本机打包检查，不连服务器/数据库
+bash result/ZZY/deploy.sh --refresh-data   # 仅需要更新推荐服务数据时显式刷新
+```
+
+两份脚本默认读同一份 `dashboard/.env`（不入 git），凭据不出本机。
+完整用法与环境变量见 [`docs/commands.md`](docs/commands.md) §9、§10。
 
 ## 状态面板
 
-dashboard已部署，需要网址请发issue提醒我。
+面板已部署，需要网址请发 issue 提醒我。
 
 Go 后端 + 前端打进同一个二进制，镜像 16MB、容器内存约 6MB。`dashboard/` 是自包含的：
 `go.mod`、`.env`、`Dockerfile`、`docker-compose.yml`、`deploy.sh` 都在这个目录里。
 
 ```bash
-bash dashboard/deploy.sh                                            # 部署到服务器
-
 # 本机预览：dashboard/.env 里的 POSTGRES_HOST 是给容器用的 127.0.0.1，
 # 本机要临时覆盖成公网地址（环境变量优先于 .env）
 cd dashboard && POSTGRES_HOST=82.157.208.173 go run . --port 8601
