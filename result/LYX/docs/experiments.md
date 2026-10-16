@@ -2,6 +2,21 @@
 
 按日汇总已经实现和验证的工作；时间均为北京时间，运行目录保留原UTC命名。历史规则仅解释当时结果，当前命令以[PROCESS.md](PROCESS.md)为准，字段与最新覆盖见[DATABASE.md](DATABASE.md)。原始响应、快照、备份和验收文件留在本地忽略目录。
 
+## 2026-10-16
+
+### 校验兼容、旧缓存恢复与传输错误定位
+
+- 数据依据：20261016T000855506096Z运行报告的22款失败及其原始完整响应，冻结游戏清单与当前生产SQLite/CSV保持原样。
+- 改动范围：仅DataAgent.py与game_intro.py及本文档；引用先逐字匹配，再仅兼容U+00A0普通空格。分类v7补充大小写/空引用/知识声明检查，简介v2以55～65字符为目标，仍严格40～80字符。原八类、字段、引用长度、>=0.6门槛、整款调用、预算、超时、重试、入库保护及CSV逻辑不变。
+- 缓存：原样保留分类v6/v5/v4及简介v1提示词，SHA256与修改前一致；新版查找旧请求时保留源版本，并按当前规则重新校验。不删除简介、原始响应或历史报告，不新增自动纠错调用。
+- 离线响应重验：22款中11款特殊空格问题可复用；其余11款（6款简介过短、3款引用改写、1款空引用、1款知识声明缺疑点）仍被拒绝。另抽取3份合格旧简介与3份旧分类，均可被新版复用；新HTTP请求0，22份原始失败receipt文件哈希不变。
+- 隔离数据库副本恢复：11款、1207项完整响应通过校验，简介与分类共22次本地缓存命中，真实请求0；1197项满足既有写入条件，1320条标签落入副本，10项全部标签未过门槛，最终state=success_with_rejections。这不是生产入库数量或语义准确率。
+- 传输错误：新增RequestTransportError安全上下文，仅保存异常类名和游戏/阶段/请求关联，最终失败纳入failed_game_count/failed_appids。仍停止整轮，不转为可跳过错误，不计入timeout_game_count。
+- 离线故障回放：模拟RemoteProtocolError作用于Company of Heroes 3简介；报告state=error、failed_appids=[1677280]，类名/阶段/receipt/指纹齐全，后续游戏仍ready，超时计数0。模拟器拦截请求，没有真实网络或付费调用；这不证明原先真实传输异常就是该类型。
+- 数据保护：生产achievements.sqlite、datacache.csv、failure_data.csv在回放前后SHA256一致；只在runtime/validation副本中验证入库。未新增测试用例文件，未提交或推送。
+- 证据：[响应重验](../process/runtime/validation/20261016T005653117227Z-minimal-response-fix/response-replay.json)、[副本流程与故障回放](../process/runtime/validation/20261016T005653117227Z-minimal-response-fix/pipeline-replay.json)。
+- 局限：新提示词尚未真实请求模型，不承诺其余11款一次即可成功；分类语义仍需人工核验。
+
 ## 2026-10-15
 
 ### 23:13 成就分类进度

@@ -1,6 +1,6 @@
 # LYX整款分类流程与运行说明
 
-更新：2026-10-15。链路为：**游戏名定位 → 读取完整成就 → 缓存/生成背景摘要 → 整款一次分类 → 校验 → 累计CSV留档 → 本地SQLite → 更新写入结果。** 默认不按固定成就数拆批。共享PostgreSQL永远只读，日常分类不连接远端。
+更新：2026-10-16。链路为：**游戏名定位 → 读取完整成就 → 缓存/生成背景摘要 → 整款一次分类 → 校验 → 累计CSV留档 → 本地SQLite → 更新写入结果。** 默认不按固定成就数拆批。共享PostgreSQL永远只读，日常分类不连接远端。
 
 DeepSeek在此承担LLM as Judge的语义标签判定：依据固定八类规则判断每项成就，程序负责身份、完整性、原文引用、门槛与写入保护。当前已验证的是请求、缓存、校验、恢复及持久化链路；模型自报confidence和工程验收通过都不能代替人工抽样形成的分类准确率。
 
@@ -19,7 +19,7 @@ DeepSeek在此承担LLM as Judge的语义标签判定：依据固定八类规则
 | [migrate_display_names.py](../process/migrate_display_names.py) | 已完成的本地版本2→3迁移，给标签表添加并回填展示名 |
 | [old/](../process/old/README.md) | 已弃用的Gamer Guides五个源码文件，仅作历史归档 |
 
-分类常量CLASSIFICATION_PROMPT在DataAgent.py的导入区之后，版本lyx-deepseek-whole-game-v6；简介常量GAME_INTRO_PROMPT在game_intro.py的导入区之后，版本lyx-game-intro-v1。修改相应提示词时同步升级其版本。简介与分类使用不同任务命名空间，分类版本更新不会连带使简介缓存失效。
+分类常量CLASSIFICATION_PROMPT在DataAgent.py的导入区之后，版本lyx-deepseek-whole-game-v7；简介常量GAME_INTRO_PROMPT在game_intro.py的导入区之后，版本lyx-game-intro-v2。修改相应提示词时同步升级其版本。简介与分类使用不同任务命名空间；当前分类v7可重校验复用精确保留的v6/v5/v4完整响应，简介v2可复用合格的v1。原提示词原样保留，当前缓存优先，旧文件不改写。
 
 旧probe/规则脚本和旧代码备份保留在runtime/archive，历史命令不再是当前入口。当前命令没有--batch-size和--sample-size，不会默认每20项调用。
 
@@ -215,15 +215,15 @@ uv run --frozen --no-sync python -X utf8 -B process/DataAgent.py classify --max-
 
 ## 简介、结构化输入与结果
 
-简介只根据游戏中英文名及valve_genres生成40～80字符中文摘要；recognized=false时摘要为空且说明原因。它是模型背景摘要，不是Steam官方介绍；source=model_generated。简介不生成章节、成就条件、等级上限等细节，不修改SQLite六表，不抓网站。
+简介只根据游戏中英文名及valve_genres生成40～80字符中文摘要；v2将写作目标定为55～65字符，追加合规格式示例与输出前长度检查，硬性范围不变；recognized=false时摘要为空且说明原因。它是模型背景摘要，不是Steam官方介绍；source=model_generated。简介不生成章节、成就条件、等级上限等细节，不修改SQLite六表，不抓网站。
 
 分类输入顺序固定为：CLASSIFICATION_PROMPT → <game_context>名称、官方类型、模型摘要及来源/疑点 → <achievement_batch>全部成就名称和描述。原始成就条件优先，使用模型摘要或模型知识判断须声明knowledge_used及疑点。
 
-输出仍是八类多标签、各类confidence、原文evidence、reason、uncertainty和knowledge_used。evidence是DeepSeek逐字引用的本项名称或描述，reason才是模型的分类解释；引用不允许来自背景摘要或其他成就，也不能证明分类语义一定正确。普通升级/成长不因数值目标自动归challenge。reason/uncertainty最多40字符，evidence为1～2段非空原文、每段严格小于500字符，即最多499字符（Python len计数，含空格与标点），对应DataAgent.EVIDENCE_MAX_CHARS的排他上界。500字符本身不通过。超长、空引用、非原文引用分别报告成就ID/名称及原因。完整ID覆盖、闭集、互斥、长度与有限数检查全部通过后才进入逐标签门槛筛选及落库。
+输出仍是八类多标签、各类confidence、原文evidence、reason、uncertainty和knowledge_used。evidence是DeepSeek逐字引用的本项名称或描述，reason才是模型的分类解释；引用不允许来自背景摘要或其他成就，也不能证明分类语义一定正确。原文匹配优先逐字比较，仅兼容U+00A0与普通空格；大小写改写、额外说明和空引用仍拒绝，报告标明evidence_match_policy=exact_or_nbsp_space。v7提示词明确要求保留大小写、描述为空时引用展示名、knowledge_used=true时填写待核验事项；不增加自动纠错请求。普通升级/成长不因数值目标自动归challenge。reason/uncertainty最多40字符，evidence为1～2段非空原文、每段严格小于500字符，即最多499字符（Python len计数，含空格与标点），对应DataAgent.EVIDENCE_MAX_CHARS的排他上界。500字符本身不通过。超长、空引用、非原文引用分别报告成就ID/名称及原因。完整ID覆盖、闭集、互斥、长度与有限数检查全部通过后才进入逐标签门槛筛选及落库。
 
 SQLite标签表保存appid/api_name/display_name/type/method/confidence，成就表保存状态。display_name来自对应原始成就，分类入库自动填写，来源改名时触发器同步；当前user_version=4。--min-confidence默认0.6，是逐标签写入门槛：confidence >= 0.6通过，等于0.6也通过。例如mainline=0.6、challenge=0.55只存mainline；低分标签不拖累高分标签。confidence是模型自报的判断信心，不是经过校准的正确概率，0.6不能直接解释为60%准确率。通过的明确类别为suggested；独占的unknown也按相同门槛筛选，通过后仍为uncertain。不生成approved或排序号。
 
-所有原始模型标签保留在runtime JSON的types中，同时单列accepted_types和rejected_types；有效分类的全部标签也累计到process/datacache.csv，包含未过门槛和已有结果。全部未通过时sqlite_outcome=below_threshold，不删除旧标签、不改原有status，仍计入待处理；原先pending继续pending。已有DeepSeek/人工结果的保护规则仍生效，不主动清理历史低分结果。普通分类需要重筛已有机器结果时显式加--reclassify；历史导入工具只补新标签，不覆盖已有机器/人工结果。阈值是本地后处理参数，不进入API提示词或请求指纹；比较符为>=，分类prompt为v6，同一完整输入可用--max-requests 0复用缓存筛选，无额外请求。report记录confidence_comparison=">="，CSV的confidence_passed和各类入库计数使用同一比较规则。格式错误仍拒绝整款，原始错误响应留在receipt JSON；该游戏记录response_error及失败阶段，继续处理后续游戏，不把错误转换为unknown。
+所有原始模型标签保留在runtime JSON的types中，同时单列accepted_types和rejected_types；有效分类的全部标签也累计到process/datacache.csv，包含未过门槛和已有结果。全部未通过时sqlite_outcome=below_threshold，不删除旧标签、不改原有status，仍计入待处理；原先pending继续pending。已有DeepSeek/人工结果的保护规则仍生效，不主动清理历史低分结果。普通分类需要重筛已有机器结果时显式加--reclassify；历史导入工具只补新标签，不覆盖已有机器/人工结果。阈值是本地后处理参数，不进入API提示词或请求指纹；比较符为>=，分类prompt为v7，同一完整输入可用--max-requests 0复用缓存筛选，无额外请求。report记录confidence_comparison=">="，CSV的confidence_passed和各类入库计数使用同一比较规则。格式错误仍拒绝整款，原始错误响应留在receipt JSON；该游戏记录response_error及失败阶段，继续处理后续游戏，不把错误转换为unknown。
 
 ## 预算、恢复与缓存统计
 
@@ -232,7 +232,7 @@ SQLite标签表保存appid/api_name/display_name/type/method/confidence，成就
 - 写入前检查名称/类型和整款成就集合/文本；新增、删除或变化都会回滚整款，避免把旧响应配给变化的输入。人工成果和已有机器结果在写入时再次保护。
 - 输出预算估计为1024+160×完整成就数，默认上限65536；输入字符阈值默认300000。超过任一配置限制为oversized_game，单列跳过，不自动拆分。可在plan评估后显式调整预算，估计不是输出保证。
 - HTTP读超时默认300秒，简介/分类总时限分别90/300秒；连接超时15秒。读超时或总时限到达按单游戏记request_timeout，不自动重发；同类连续3次超时service_paused。HTTP 200响应的JSON/截断/契约错误仍按单游戏记response_error。两类失败都不转unknown，已提交其他游戏不回滚。
-- 报告failed_game_count和failed_appids列出本轮响应失败及超时游戏，errors保留局部及整体错误；timeout_game_count/timeout_appids、consecutive_timeouts和paused_reason单列超时与暂停信息。游戏项的error、failure_stage、failure_task、failure_receipt和failed_request_hash及calls可定位原始/部分响应。遍历结束仍有失败时state=completed_with_errors、退出码1；失败款原有数据保留且仍待处理，后续可重跑恢复。预算提前耗尽时仍为budget_reached，同时保留此前失败计数，不能将它理解为无错误。
+- 报告failed_game_count和failed_appids列出本轮响应失败、超时及终止本轮的传输失败游戏，errors保留局部及整体错误；timeout_game_count/timeout_appids、consecutive_timeouts和paused_reason单列超时与暂停信息。游戏项的error、failure_stage、failure_task、failure_receipt和failed_request_hash及calls可定位原始/部分响应。传输异常另记录error_type类名，receipt直接保存AppID/游戏名；仍按原策略停止整轮，不计作超时，不记录可能携带凭据的原始异常正文。遍历结束仍有失败时state=completed_with_errors、退出码1；失败款原有数据保留且仍待处理，后续可重跑恢复。预算提前耗尽时仍为budget_reached，同时保留此前失败计数，不能将它理解为无错误。
 - state=budget_reached意味着尚有工作；service_paused表示连续超时触发暂停；success_with_skips表示大型游戏未处理；success_with_rejections表示有待处理成就全部标签未过门槛。remaining_pending_count和unprocessed_achievement_count包含这些未写项，不能只看退出码或classified_count（完整模型覆盖数）。accepted/rejected_label_count统计本轮模型标签筛选，包含保护项；written_label_count才是实际写入的标签数，sqlite_counts.written为写入成就数。纯正常结束退出码0；completed_with_errors、service_paused及整体error应按失败处理。
 
 report.type_counts/unknown_count统计本轮完整模型候选，并非SQLite累计类型分布；旧项被保护或already_classified时，候选类型可能与被保留的数据库类型不同。核查实际分布应查询achievement_types。

@@ -1,6 +1,6 @@
 # DeepSeek作为LLM as Judge的成就分类：实现与契约
 
-更新：2026-10-15。按游戏名定位本地数据，背景摘要缓存后复用，每款默认一次完整分类。所有写入限LYX，远端永远只读。
+更新：2026-10-16。按游戏名定位本地数据，背景摘要缓存后复用，每款默认一次完整分类。所有写入限LYX，远端永远只读。
 
 当前阶段是**工程链路已跑通，正在积累分类结果**：已实现结构化提示词、整款分类、逐标签筛选、缓存恢复、SQLite写入、请求超时隔离和累计CSV。冻结1000款游戏的数据准备已完成，1000款的成就分类尚未全部完成。
 
@@ -17,7 +17,7 @@
 
 ## 1. 提示词与调用链
 
-分类常量[CLASSIFICATION_PROMPT](../process/DataAgent.py)位于DataAgent.py导入区之后，版本lyx-deepseek-whole-game-v6；简介常量[GAME_INTRO_PROMPT](../process/game_intro.py)位于game_intro.py导入区之后，版本lyx-game-intro-v1。用户可直接读改常量，并同步升级版本。
+分类常量[CLASSIFICATION_PROMPT](../process/DataAgent.py)位于DataAgent.py导入区之后，版本lyx-deepseek-whole-game-v7；简介常量[GAME_INTRO_PROMPT](../process/game_intro.py)位于game_intro.py导入区之后，版本lyx-game-intro-v2。用户可直接读改常量，并同步升级版本。
 
 调用链：selected_appids/resolve_game_name → load_games完整读取 → game_plan只读预检 → game_intro.get_intro → classification_messages → DeepSeekClient.call → validate_classification → classification_rows → update_datacache（全量表及低分派生表）→ store_classifications → update_datacache刷新结果。原始完整/部分响应先由客户端留在receipt，最后再导出本轮report与CSV。
 
@@ -50,7 +50,7 @@ flowchart TD
 {"recognized":true,"summary":"40～80字符的中文游戏背景摘要","uncertainty":""}
 ~~~
 
-严格校验3个字段、布尔值、文本及长度；summary在recognized=true时40～80字符，uncertainty最多80字符。不能识别时recognized=false、summary为空且说明原因，仍可继续基于原始成就分类。HTTP 200但简介内容不合规时记该款response_error及简介失败阶段；简介总时限或读超时记request_timeout，两者均跳过本款且不请求分类。其他网络等整体错误仍停止本轮，成功缓存保留供恢复；同类连续超时另按下述暂停规则处理。
+新请求以55～65字符为写作目标，并提供56字符格式示例；输出前检查长度，不编造事实补字。硬性契约不变，严格校验3个字段、布尔值、文本及长度；summary在recognized=true时40～80字符，uncertainty最多80字符。不能识别时recognized=false、summary为空且说明原因，仍可继续基于原始成就分类。HTTP 200但简介内容不合规时记该款response_error及简介失败阶段；简介总时限或读超时记request_timeout，两者均跳过本款且不请求分类。其他网络等整体错误仍停止本轮，成功缓存保留供恢复；同类连续超时另按下述暂停规则处理。
 
 简介响应存既有runtime/cache，分类报告增加source=model_generated和摘要内容。不给SQLite增加简介列、JSON列或版本表。分类规则升级不使简介缓存自动失效。
 
@@ -86,7 +86,7 @@ game_context含名称、官方类型、model_intro、intro_recognized、intro_so
 
 允许多标签。普通等级目标不单凭数值归challenge，特殊难度/技巧/成绩/限制条件才适用；游戏支持多人不等于每项成就都是multiplayer。mainline不意味着顺序或必经性，unknown是有效的“不足以判定”结果，不能拿网络失败或坏响应代替它。
 
-evidence是从本项display_name/description逐字抽取的原文，reason是模型解释为何选择类型；两者均由DeepSeek返回，职责不同。evidence不是思考过程、外部攻略或语义正确性的证明。完整ID不增不漏不重复；字段严格匹配；置信度有限0～1；reason非空且≤40字符，uncertainty≤40字符；knowledge_used=true时疑点非空；evidence为1～2段非空的对应成就原文，每段严格len<500，即最多499字符（Python len计数，含空格标点；500不通过）。DataAgent.EVIDENCE_MAX_CHARS是排他上界，报告明确写evidence_max_chars=500及evidence_length_comparison="<"。原文匹配检查保留，长度/空引用/非原文分别报错并指出成就ID和名称。重复JSON键、NaN、截断或契约错误仍拒绝整款，该游戏不进入门槛筛选或写库；记录response_error后继续后续游戏。格式校验不证明语义正确。
+evidence是从本项display_name/description逐字抽取的原文，reason是模型解释为何选择类型；两者均由DeepSeek返回，职责不同。evidence不是思考过程、外部攻略或语义正确性的证明。完整ID不增不漏不重复；字段严格匹配；置信度有限0～1；reason非空且≤40字符，uncertainty≤40字符；knowledge_used=true时疑点非空；evidence为1～2段非空的对应成就原文，每段严格len<500，即最多499字符（Python len计数，含空格标点；500不通过）。DataAgent.EVIDENCE_MAX_CHARS是排他上界，报告明确写evidence_max_chars=500及evidence_length_comparison="<"。原文比对先逐字匹配，失败后仅将U+00A0与普通空格等同比较；不做大小写、标点、其他空白或模糊匹配，不改写输入和响应。report标明evidence_match_policy=exact_or_nbsp_space。长度/空引用/非原文仍分别报错并指出成就ID和名称。重复JSON键、NaN、截断或契约错误仍拒绝整款，该游戏不进入门槛筛选或写库；记录response_error后继续后续游戏。格式校验不证明语义正确。
 
 ## 4. 整款与已有结果保护
 
@@ -122,9 +122,11 @@ HTTP读超时仍由--timeout-seconds控制，默认300秒，连接上限15秒。
 
 每15秒打印等待进度，并更新本轮progress.json，包括游戏/AppID、task、attempt、request_count/max_requests、phase、elapsed/remaining、received_bytes、has_non_whitespace_body和last_data_at；无数据也更新。阶段区分等待响应头、接收正文和退避。完整正文记response_text；未收完正文记partial_response_text及response_complete=false，不进入可复用缓存或SQLite。历史receipt缺少response_complete字段时仍按旧完整响应规则判断，显式false禁止复用。
 
-简介、分类各自统计连续超时。同类真实请求收到完整HTTP 200响应后清零，缓存命中不清零；同类连续3次超时停止本轮，state=service_paused、退出码1，记录paused_reason及consecutive_timeouts。HTTP 200中的无效JSON、截断及简介/分类契约错误仍按游戏记response_error，本款不写库并继续。failed_game_count/failed_appids包含响应失败与超时；timeout_game_count/timeout_appids单列超时，errors及游戏项的failure_stage/failure_task/failure_receipt/failed_request_hash、calls用于定位留档。遍历结束有零星失败则completed_with_errors、退出码1，预算先耗尽仍budget_reached，之前失败计数不清空。429、TLS/认证/余额、非读超时网络故障、SQLite和文件错误仍停止整轮；连接错误/5xx只有限退避，共享总时限且重试消耗预算。失败都不生成unknown，原有数据及此前已提交其他游戏不回滚。Ctrl+C仍按interrupted收尾，本次不增加独立停止命令。
+简介、分类各自统计连续超时。同类真实请求收到完整HTTP 200响应后清零，缓存命中不清零；同类连续3次超时停止本轮，state=service_paused、退出码1，记录paused_reason及consecutive_timeouts。HTTP 200中的无效JSON、截断及简介/分类契约错误仍按游戏记response_error，本款不写库并继续。failed_game_count/failed_appids包含响应失败、超时及终止本轮的传输失败；timeout_game_count/timeout_appids单列超时，errors及游戏项的failure_stage/failure_task/failure_receipt/failed_request_hash、calls用于定位留档。遍历结束有零星失败则completed_with_errors、退出码1，预算先耗尽仍budget_reached，之前失败计数不清空。429、TLS/认证/余额、非读超时网络故障、SQLite和文件错误仍停止整轮；连接错误/5xx只有限退避，共享总时限且重试消耗预算。失败都不生成unknown，原有数据及此前已提交其他游戏不回滚。Ctrl+C仍按interrupted收尾，本次不增加独立停止命令。
 
-local_response_cache_hits区别于API输入前缀缓存；api_cache_hit_tokens、api_cache_miss_tokens和ratio只汇总本轮真实响应。usage_by_task分开简介与分类，缺失字段为null，本地复用不重复记历史用量。旧v1/v2/v3文件保留但不套用新契约。
+传输异常仅新增安全诊断与失败计数：receipt与游戏项记录error_type异常类名、appid/名称、任务、阶段、请求指纹和receipt路径，calls同步记录；不保存原始网络异常正文或认证头。RequestTransportError仍由外层处理并停止整轮，不计入timeout_game_count，也不扩大可继续执行的异常范围。
+
+local_response_cache_hits区别于API输入前缀缓存；api_cache_hit_tokens、api_cache_miss_tokens和ratio只汇总本轮真实响应。usage_by_task分开简介与分类，缺失字段为null，本地复用不重复记历史用量。分类旧v1/v2/v3文件保留但不套用新契约；简介v1按下述精确兼容规则复用。
 
 | 数据位置 | 用途与恢复边界 |
 |---|---|
@@ -136,7 +138,9 @@ local_response_cache_hits区别于API输入前缀缓存；api_cache_hit_tokens�
 
 原始evidence、reason、uncertainty、knowledge_used等解释保留在JSON/CSV；SQLite的achievement_types保存appid/api_name/display_name/type/method/confidence，status和mainline_index在achievements。不新增JSON字段或把解释复制成数据库业务列。累计CSV字段与结果状态字典见[PROCESS.md](PROCESS.md#累计分类csv与历史结果导入)。
 
-当前v6将evidence改为每段严格小于500字符；历史v5上限150、v4上限60。仅长度规则及版本不同的v5/v4完整请求可以兼容回放，其余游戏上下文、原始成就、摘要、模型、接口及生成参数必须完全相同，变化的输入或其他版本不回退。v6缓存优先，旧receipt不改写；响应按当前完整契约重新校验，调用元数据保留源prompt_version（v5或v4）、requested_prompt_version=v6及compatible_cache=true。原先因超长引用记error的完整HTTP 200响应可用--max-requests 0尝试恢复，无需为了放宽长度重新请求；部分响应不能恢复，仍有其他契约错误时不写库，保留失败与待处理状态。
+分类v7只追加格式检查：引用保持大小写、不补说明、描述为空时引用展示名、知识声明与疑点一致。类别、字段、长度和置信度契约不变。当前缓存优先，再按精确保留的v6/v5/v4旧提示词定位历史完整响应；简介v2同样可回退查找v1。除已列明的提示词与版本差异外，游戏上下文、成就、摘要、模型、接口及生成参数必须相同。响应一律按当前规则重校验，调用元数据保留源prompt_version、requested_prompt_version与compatible_cache=true；旧receipt不改写，不把新模板当作旧提示词。
+
+原先因U+00A0空格或历史引用上限记error的完整HTTP 200响应可在重校验通过后用--max-requests 0恢复；不合格简介、空引用、大小写改写、补造说明、截断或部分响应仍不能复用。分类失败不清除已合格简介。本次没有新增纠错调用、自动重试或缓存清理流程。
 
 ## 6. 当前验收状态
 
