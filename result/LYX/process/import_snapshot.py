@@ -21,8 +21,16 @@ from psycopg.rows import dict_row
 
 from inspect_remote import connect_readonly, error_summary
 from local_database import (
-    DEFAULT_DATABASE, SCHEMA_VERSION, WORKSPACE, connect_local, database_path,
-    encode_genres, ensure_schema, sqlite_percent, table_counts, workspace_path,
+    DEFAULT_DATABASE,
+    SCHEMA_VERSION,
+    WORKSPACE,
+    connect_local,
+    database_path,
+    encode_genres,
+    ensure_schema,
+    sqlite_percent,
+    table_counts,
+    workspace_path,
 )
 
 DEFAULT_APPIDS = WORKSPACE / "database" / "data" / "top1000_appids.json"
@@ -60,10 +68,17 @@ def save_json(path: Path, value: Any) -> str:
     """在LYX内原子保存文件，返回实际字节SHA256；断电前刷新文件缓冲。"""
     target = workspace_path(path)
     target.parent.mkdir(parents=True, exist_ok=True)
-    encoded = (json.dumps(value, ensure_ascii=False, indent=2, default=json_scalar, allow_nan=False) + "\n").encode("utf-8")
+    encoded = (
+        json.dumps(
+            value, ensure_ascii=False, indent=2, default=json_scalar, allow_nan=False
+        )
+        + "\n"
+    ).encode("utf-8")
     temporary: Path | None = None
     try:
-        with tempfile.NamedTemporaryFile(dir=target.parent, prefix=target.name + ".", suffix=".tmp", delete=False) as file:
+        with tempfile.NamedTemporaryFile(
+            dir=target.parent, prefix=target.name + ".", suffix=".tmp", delete=False
+        ) as file:
             temporary = Path(file.name)
             file.write(encoded)
             file.flush()
@@ -84,7 +99,9 @@ def read_remote(queries: dict[str, tuple[str, tuple[Any, ...]]]) -> dict[str, An
     try:
         with con:
             con.execute("SET TRANSACTION ISOLATION LEVEL REPEATABLE READ READ ONLY")
-            readonly = con.execute("SELECT current_setting('transaction_read_only')").fetchone()[0]
+            readonly = con.execute(
+                "SELECT current_setting('transaction_read_only')"
+            ).fetchone()[0]
             if readonly != "on":
                 raise RuntimeError("远端事务未强制只读，停止")
             result["transaction_read_only"] = readonly
@@ -100,14 +117,25 @@ def read_remote(queries: dict[str, tuple[str, tuple[Any, ...]]]) -> dict[str, An
     return result
 
 
-def load_selection(appids_path: Path = DEFAULT_APPIDS) -> tuple[list[int], dict[str, Any]]:
+def load_selection(
+    appids_path: Path = DEFAULT_APPIDS,
+) -> tuple[list[int], dict[str, Any]]:
     """读取冻结的排名清单和指纹，续跑时不重新选择人群。"""
     path = workspace_path(appids_path, must_exist=True)
-    manifest_path = path.with_name(path.stem.removesuffix("_appids") + "_selection.json")
-    manifest = json.loads(workspace_path(manifest_path, must_exist=True).read_text(encoding="utf-8"))
+    manifest_path = path.with_name(
+        path.stem.removesuffix("_appids") + "_selection.json"
+    )
+    manifest = json.loads(
+        workspace_path(manifest_path, must_exist=True).read_text(encoding="utf-8")
+    )
     raw = path.read_bytes()
     appids = json.loads(raw)
-    if not isinstance(appids, list) or len(appids) != 1000 or any(type(a) is not int or a <= 0 for a in appids) or len(set(appids)) != 1000:
+    if (
+        not isinstance(appids, list)
+        or len(appids) != 1000
+        or any(type(a) is not int or a <= 0 for a in appids)
+        or len(set(appids)) != 1000
+    ):
         raise ValueError("AppID清单必须是1000个不重复的正整数")
     if manifest.get("appids_sha256") != hashlib.sha256(raw).hexdigest():
         raise ValueError("排名清单指纹不一致，停止")
@@ -119,7 +147,9 @@ def load_selection(appids_path: Path = DEFAULT_APPIDS) -> tuple[list[int], dict[
     return appids, manifest
 
 
-def select_top1000(appids_path: Path = DEFAULT_APPIDS) -> tuple[list[int], dict[str, Any]]:
+def select_top1000(
+    appids_path: Path = DEFAULT_APPIDS,
+) -> tuple[list[int], dict[str, Any]]:
     """先将前1000名AppID保存为独立JSON数组，再保存排名与来源说明。"""
     path = workspace_path(appids_path)
     if path.exists():
@@ -131,21 +161,30 @@ def select_top1000(appids_path: Path = DEFAULT_APPIDS) -> tuple[list[int], dict[
     appids = [row["appid"] for row in ranking]
     digest = save_json(path, appids)
     manifest = {
-        "selected_at": selected["read_at"], "selection_sql": RANKING_SQL,
-        "selection_parameters": [1000], "selection_count": 1000,
-        "appids_file": str(path), "appids_sha256": digest, "ranking": ranking,
+        "selected_at": selected["read_at"],
+        "selection_sql": RANKING_SQL,
+        "selection_parameters": [1000],
+        "selection_count": 1000,
+        "appids_file": str(path),
+        "appids_sha256": digest,
+        "ranking": ranking,
         "transaction_read_only": selected["transaction_read_only"],
         "connection_attempts": selected["connection_attempts"],
         "filters": "仅review_count非NULL；无年份、类型、成就数或主线筛选；同评价数按appid升序",
     }
-    manifest_path = path.with_name(path.stem.removesuffix("_appids") + "_selection.json")
+    manifest_path = path.with_name(
+        path.stem.removesuffix("_appids") + "_selection.json"
+    )
     save_json(manifest_path, manifest)
     return load_selection(path)
 
 
 def snapshot_indexes(snapshot: dict[str, Any], appids: list[int]) -> dict[str, Any]:
     """验证批次身份与成就类型，按AppID建立索引；异常不当作无数据。"""
-    if snapshot.get("transaction_read_only") != "on" or snapshot.get("appids") != appids:
+    if (
+        snapshot.get("transaction_read_only") != "on"
+        or snapshot.get("appids") != appids
+    ):
         raise ValueError("快照的只读声明或批次AppID不一致")
     allowed = set(appids)
     indexes: dict[str, Any] = {}
@@ -153,21 +192,33 @@ def snapshot_indexes(snapshot: dict[str, Any], appids: list[int]) -> dict[str, A
         rows = snapshot.get(source)
         if not isinstance(rows, list):
             raise ValueError(f"{source} 快照不是列表")
-        if any(not isinstance(row, dict) or type(row.get("appid")) is not int or row["appid"] not in allowed for row in rows):
+        if any(
+            not isinstance(row, dict)
+            or type(row.get("appid")) is not int
+            or row["appid"] not in allowed
+            for row in rows
+        ):
             raise ValueError(f"{source} 存在批次之外或无效的AppID")
         if source == "achievements":
             grouped: dict[int, list[dict[str, Any]]] = defaultdict(list)
             for row in rows:
                 if type(row.get("position")) is not int or row["position"] < 1:
                     raise ValueError("成就position无效")
-                if any(not isinstance(row.get(key), str) or not row[key].strip() for key in ("api_name", "display_name")):
+                if any(
+                    not isinstance(row.get(key), str) or not row[key].strip()
+                    for key in ("api_name", "display_name")
+                ):
                     raise ValueError("成就身份或展示名无效")
-                if row.get("description") is not None and not isinstance(row["description"], str):
+                if row.get("description") is not None and not isinstance(
+                    row["description"], str
+                ):
                     raise ValueError("成就描述类型无效")
                 row["percent"] = sqlite_percent(row.get("percent"))
                 grouped[row["appid"]].append(row)
             for records in grouped.values():
-                if len({r["api_name"] for r in records}) != len(records) or len({r["position"] for r in records}) != len(records):
+                if len({r["api_name"] for r in records}) != len(records) or len(
+                    {r["position"] for r in records}
+                ) != len(records):
                     raise ValueError("成就身份或position重复")
                 records.sort(key=lambda r: r["position"])
             indexes[source] = grouped
@@ -184,7 +235,9 @@ def fetch_snapshot(appids: list[int]) -> dict[str, Any]:
     """每批独立只读一致性事务，抓取成功后完整保存；短暂失败退避重试。"""
     for attempt in range(3):
         try:
-            snapshot = read_remote({name: (sql, (appids,)) for name, sql in QUERIES.items()})
+            snapshot = read_remote(
+                {name: (sql, (appids,)) for name, sql in QUERIES.items()}
+            )
             snapshot["appids"] = appids
             snapshot_indexes(snapshot, appids)
             return snapshot
@@ -206,26 +259,48 @@ def expected_background(indexes: dict[str, Any], appid: int) -> dict[str, Any]:
     return {
         "games": (appid, identity["name_en"], identity.get("name_zh")),
         "games_details": (
-            appid, int(details["is_free"]) if details.get("is_free") is not None else None,
-            details.get("price_cents"), str(details["release_date"]) if details.get("release_date") else None,
+            appid,
+            int(details["is_free"]) if details.get("is_free") is not None else None,
+            details.get("price_cents"),
+            str(details["release_date"]) if details.get("release_date") else None,
             encode_genres(details.get("valve_genres")),
         ),
         "games_rate": (
-            appid, reviews.get("review_label"), reviews.get("review_percent"), reviews.get("review_count"),
+            appid,
+            reviews.get("review_label"),
+            reviews.get("review_percent"),
+            reviews.get("review_count"),
             usable_rawg.get("metacritic"),
-            float(usable_rawg["rating"]) if usable_rawg.get("rating") is not None else None,
+            float(usable_rawg["rating"])
+            if usable_rawg.get("rating") is not None
+            else None,
         ),
-        "playtime": usable_rawg.get("playtime"), "rawg_excluded": excluded,
-        "rawg_present": bool(rawg), "details_present": bool(details), "reviews_present": bool(reviews),
+        "playtime": usable_rawg.get("playtime"),
+        "rawg_excluded": excluded,
+        "rawg_present": bool(rawg),
+        "details_present": bool(details),
+        "reviews_present": bool(reviews),
     }
 
 
 def raw_achievement(row: dict[str, Any]) -> tuple[Any, ...]:
     """取得与远端保持一致的六个原始成就字段。"""
-    return tuple(row[key] for key in ("appid", "position", "api_name", "display_name", "description", "percent"))
+    return tuple(
+        row[key]
+        for key in (
+            "appid",
+            "position",
+            "api_name",
+            "display_name",
+            "description",
+            "percent",
+        )
+    )
 
 
-def import_game(con: sqlite3.Connection, indexes: dict[str, Any], appid: int) -> dict[str, Any]:
+def import_game(
+    con: sqlite3.Connection, indexes: dict[str, Any], appid: int
+) -> dict[str, Any]:
     """单游戏事务迁移；保留分类/审核/排序，分类输入冲突时保留原成就并报告。"""
     background = expected_background(indexes, appid)
     source_records = indexes["achievements"].get(appid, [])
@@ -233,19 +308,35 @@ def import_game(con: sqlite3.Connection, indexes: dict[str, Any], appid: int) ->
     try:
         con.execute("BEGIN IMMEDIATE")
         con.row_factory = sqlite3.Row
-        old_records = {r["api_name"]: dict(r) for r in con.execute(
-            "SELECT * FROM achievements WHERE appid=? ORDER BY position", (appid,),
-        )}
-        old_types = [dict(r) for r in con.execute(
-            "SELECT * FROM achievement_types WHERE appid=? ORDER BY api_name,type", (appid,),
-        )]
+        old_records = {
+            r["api_name"]: dict(r)
+            for r in con.execute(
+                "SELECT * FROM achievements WHERE appid=? ORDER BY position",
+                (appid,),
+            )
+        }
+        old_types = [
+            dict(r)
+            for r in con.execute(
+                "SELECT * FROM achievement_types WHERE appid=? ORDER BY api_name,type",
+                (appid,),
+            )
+        ]
         con.row_factory = None
         classified = {r["api_name"] for r in old_types}
         changed_protected = []
         for name, old in old_records.items():
             source = source_by_name.get(name)
-            changed = source is None or source["display_name"] != old["display_name"] or source["description"] != old["description"]
-            protected = name in classified or old["status"] != "pending" or old["mainline_index"] is not None
+            changed = (
+                source is None
+                or source["display_name"] != old["display_name"]
+                or source["description"] != old["description"]
+            )
+            protected = (
+                name in classified
+                or old["status"] != "pending"
+                or old["mainline_index"] is not None
+            )
             if changed and protected:
                 changed_protected.append(name)
         con.execute(
@@ -260,7 +351,8 @@ def import_game(con: sqlite3.Connection, indexes: dict[str, Any], appid: int) ->
         con.execute(
             "INSERT INTO games_rate VALUES (?,?,?,?,?,?) ON CONFLICT(appid) DO UPDATE SET "
             "review_label=excluded.review_label,review_percent=excluded.review_percent,review_count=excluded.review_count,"
-            "metacritic=excluded.metacritic,rating=excluded.rating", background["games_rate"],
+            "metacritic=excluded.metacritic,rating=excluded.rating",
+            background["games_rate"],
         )
         # 攻略字段没有远端对应来源，也不覆盖已经人工填入的攻略估计。
         con.execute(
@@ -275,19 +367,40 @@ def import_game(con: sqlite3.Connection, indexes: dict[str, Any], appid: int) ->
                 con.execute("DELETE FROM achievements WHERE appid=?", (appid,))
                 con.executemany(
                     "INSERT INTO achievements(appid,position,api_name,display_name,description,percent,status) VALUES (?,?,?,?,?,?,?)",
-                    [raw_achievement(row) + (old_records.get(row["api_name"], {}).get("status", "pending"),) for row in source_records],
+                    [
+                        raw_achievement(row)
+                        + (
+                            old_records.get(row["api_name"], {}).get(
+                                "status", "pending"
+                            ),
+                        )
+                        for row in source_records
+                    ],
                 )
                 retained = [r for r in old_types if r["api_name"] in source_by_name]
                 con.executemany(
                     "INSERT INTO achievement_types(appid,api_name,display_name,type,method,confidence) VALUES (?,?,?,?,?,?)",
-                    [(r["appid"], r["api_name"], source_by_name[r["api_name"]]["display_name"],
-                      r["type"], r["method"], r["confidence"]) for r in retained],
+                    [
+                        (
+                            r["appid"],
+                            r["api_name"],
+                            source_by_name[r["api_name"]]["display_name"],
+                            r["type"],
+                            r["method"],
+                            r["confidence"],
+                        )
+                        for r in retained
+                    ],
                 )
                 for name, old in old_records.items():
                     if name in source_by_name and old["mainline_index"] is not None:
-                        con.execute("UPDATE achievements SET mainline_index=? WHERE appid=? AND api_name=?",
-                                    (old["mainline_index"], appid, name))
-        actual_count = con.execute("SELECT count(*) FROM achievements WHERE appid=?", (appid,)).fetchone()[0]
+                        con.execute(
+                            "UPDATE achievements SET mainline_index=? WHERE appid=? AND api_name=?",
+                            (old["mainline_index"], appid, name),
+                        )
+        actual_count = con.execute(
+            "SELECT count(*) FROM achievements WHERE appid=?", (appid,)
+        ).fetchone()[0]
         if not changed_protected and actual_count != len(source_records):
             raise ValueError("成就迁移行数不一致")
         con.commit()
@@ -296,9 +409,13 @@ def import_game(con: sqlite3.Connection, indexes: dict[str, Any], appid: int) ->
         con.rollback()
         raise
     return {
-        "appid": appid, "source_achievements": len(source_records), "local_achievements": actual_count,
-        "classified_input_conflicts": changed_protected, "rawg_present": background["rawg_present"],
-        "rawg_excluded": background["rawg_excluded"], "details_present": background["details_present"],
+        "appid": appid,
+        "source_achievements": len(source_records),
+        "local_achievements": actual_count,
+        "classified_input_conflicts": changed_protected,
+        "rawg_present": background["rawg_present"],
+        "rawg_excluded": background["rawg_excluded"],
+        "details_present": background["details_present"],
         "reviews_present": background["reviews_present"],
     }
 
@@ -314,6 +431,7 @@ def run_lock(folder: Path) -> Iterator[None]:
         file.seek(0)
         if os.name == "nt":
             import msvcrt
+
             try:
                 msvcrt.locking(file.fileno(), msvcrt.LK_NBLCK, 1)
             except OSError:
@@ -325,6 +443,7 @@ def run_lock(folder: Path) -> Iterator[None]:
                 msvcrt.locking(file.fileno(), msvcrt.LK_UNLCK, 1)
         else:
             import fcntl
+
             fcntl.flock(file.fileno(), fcntl.LOCK_EX | fcntl.LOCK_NB)
             try:
                 yield
@@ -332,8 +451,14 @@ def run_lock(folder: Path) -> Iterator[None]:
                 fcntl.flock(file.fileno(), fcntl.LOCK_UN)
 
 
-def start_run(database: Path, appids_path: Path, appids: list[int], manifest: dict[str, Any],
-              folder: Path, batch_size: int) -> dict[str, Any]:
+def start_run(
+    database: Path,
+    appids_path: Path,
+    appids: list[int],
+    manifest: dict[str, Any],
+    folder: Path,
+    batch_size: int,
+) -> dict[str, Any]:
     """先完整备份当前库，固定清单指纹和分批参数，记录续跑状态。"""
     db = database_path(database)
     backup = workspace_path(folder / "before_import.sqlite")
@@ -347,11 +472,20 @@ def start_run(database: Path, appids_path: Path, appids: list[int], manifest: di
             if destination.execute("PRAGMA integrity_check").fetchone()[0] != "ok":
                 raise ValueError("导入前备份完整性检查失败")
     state = {
-        "started_at": utc_now(), "status": "running", "database": str(db),
-        "appids_file": str(appids_path.resolve()), "appids_sha256": manifest["appids_sha256"],
-        "selected_appids": appids, "batch_size": batch_size, "schema_version": SCHEMA_VERSION,
-        "backup": str(backup), "before_rows": before_rows, "processed_appids": [],
-        "snapshots": {}, "results": {}, "failures": {},
+        "started_at": utc_now(),
+        "status": "running",
+        "database": str(db),
+        "appids_file": str(appids_path.resolve()),
+        "appids_sha256": manifest["appids_sha256"],
+        "selected_appids": appids,
+        "batch_size": batch_size,
+        "schema_version": SCHEMA_VERSION,
+        "backup": str(backup),
+        "before_rows": before_rows,
+        "processed_appids": [],
+        "snapshots": {},
+        "results": {},
+        "failures": {},
     }
     save_json(folder / "checkpoint.json", state)
     return state
@@ -363,8 +497,12 @@ def verify_run(folder: Path, state: dict[str, Any]) -> dict[str, Any]:
     if state["failures"] or set(state["processed_appids"]) != set(appids):
         raise ValueError("还有未完成或失败的AppID，不能通过最终验收")
     quality: dict[str, Any] = {
-        "no_achievements": [], "missing_rawg": [], "rawg_excluded": [],
-        "unresolved_mapping_issues": [], "missing_release_date": [], "released_2026_or_later": [],
+        "no_achievements": [],
+        "missing_rawg": [],
+        "rawg_excluded": [],
+        "unresolved_mapping_issues": [],
+        "missing_release_date": [],
+        "released_2026_or_later": [],
         "classified_input_conflicts": {},
     }
     expected_total = 0
@@ -383,14 +521,21 @@ def verify_run(folder: Path, state: dict[str, Any]) -> dict[str, Any]:
             for appid in snapshot["appids"]:
                 expected = expected_background(indexes, appid)
                 for table in ("games", "games_details", "games_rate"):
-                    actual = con.execute(f"SELECT * FROM {table} WHERE appid=?", (appid,)).fetchone()
+                    actual = con.execute(
+                        f"SELECT * FROM {table} WHERE appid=?", (appid,)
+                    ).fetchone()
                     if actual != expected[table]:
                         raise ValueError(f"{appid}: {table}字段与来源快照不同")
-                if con.execute("SELECT playtime FROM games_time WHERE appid=?", (appid,)).fetchone() != (expected["playtime"],):
+                if con.execute(
+                    "SELECT playtime FROM games_time WHERE appid=?", (appid,)
+                ).fetchone() != (expected["playtime"],):
                     raise ValueError(f"{appid}: playtime与来源快照不同")
                 records = indexes["achievements"].get(appid, [])
                 expected_total += len(records)
-                source_description_missing += sum(row.get("description") is None or not row["description"].strip() for row in records)
+                source_description_missing += sum(
+                    row.get("description") is None or not row["description"].strip()
+                    for row in records
+                )
                 conflicts = state["results"][str(appid)]["classified_input_conflicts"]
                 if conflicts:
                     quality["classified_input_conflicts"][str(appid)] = conflicts
@@ -424,59 +569,123 @@ def verify_run(folder: Path, state: dict[str, Any]) -> dict[str, Any]:
         if integrity != "ok" or foreign_keys:
             raise ValueError("最终数据库完整性或外键检查失败")
         counts = table_counts(con)
-        status_counts = dict(con.execute("SELECT status,count(*) FROM achievements GROUP BY status"))
-        annotated_order = con.execute("SELECT count(*) FROM achievements WHERE mainline_index IS NOT NULL").fetchone()[0]
-        description_missing = con.execute("SELECT count(*) FROM achievements WHERE description IS NULL OR trim(description)=''").fetchone()[0]
-        playtime_positive = con.execute("SELECT count(*) FROM games_time WHERE playtime>0").fetchone()[0]
-        playtime_zero = con.execute("SELECT count(*) FROM games_time WHERE playtime=0").fetchone()[0]
-        playtime_null = con.execute("SELECT count(*) FROM games_time WHERE playtime IS NULL").fetchone()[0]
+        status_counts = dict(
+            con.execute("SELECT status,count(*) FROM achievements GROUP BY status")
+        )
+        annotated_order = con.execute(
+            "SELECT count(*) FROM achievements WHERE mainline_index IS NOT NULL"
+        ).fetchone()[0]
+        description_missing = con.execute(
+            "SELECT count(*) FROM achievements WHERE description IS NULL OR trim(description)=''"
+        ).fetchone()[0]
+        playtime_positive = con.execute(
+            "SELECT count(*) FROM games_time WHERE playtime>0"
+        ).fetchone()[0]
+        playtime_zero = con.execute(
+            "SELECT count(*) FROM games_time WHERE playtime=0"
+        ).fetchone()[0]
+        playtime_null = con.execute(
+            "SELECT count(*) FROM games_time WHERE playtime IS NULL"
+        ).fetchone()[0]
         imported_rows = con.execute(
-            "SELECT count(*) FROM achievements WHERE appid IN (" + ",".join("?" for _ in appids) + ")", appids,
+            "SELECT count(*) FROM achievements WHERE appid IN ("
+            + ",".join("?" for _ in appids)
+            + ")",
+            appids,
         ).fetchone()[0]
         baseline = Path(state["backup"])
         with closing(connect_local(baseline)) as old:
             for appid in quality["classified_input_conflicts"]:
                 fields = "appid,position,api_name,display_name,description,percent"
-                current = con.execute(f"SELECT {fields} FROM achievements WHERE appid=? ORDER BY position", (int(appid),)).fetchall()
-                previous = old.execute(f"SELECT {fields} FROM achievements WHERE appid=? ORDER BY position", (int(appid),)).fetchall()
+                current = con.execute(
+                    f"SELECT {fields} FROM achievements WHERE appid=? ORDER BY position",
+                    (int(appid),),
+                ).fetchall()
+                previous = old.execute(
+                    f"SELECT {fields} FROM achievements WHERE appid=? ORDER BY position",
+                    (int(appid),),
+                ).fetchall()
                 if current != previous:
                     raise ValueError("发生分类输入冲突的原成就没有完整保留")
-            old_types = old.execute("SELECT appid,api_name,type,method,confidence FROM achievement_types ORDER BY appid,api_name,type").fetchall()
+            old_types = old.execute(
+                "SELECT appid,api_name,type,method,confidence FROM achievement_types ORDER BY appid,api_name,type"
+            ).fetchall()
             for row in old_types:
-                if con.execute("SELECT appid,api_name,type,method,confidence FROM achievement_types WHERE appid=? AND api_name=? AND type=?", row[:3]).fetchone() != row:
+                if (
+                    con.execute(
+                        "SELECT appid,api_name,type,method,confidence FROM achievement_types WHERE appid=? AND api_name=? AND type=?",
+                        row[:3],
+                    ).fetchone()
+                    != row
+                ):
                     raise ValueError("导入前已有分类未完整保留")
             protected_rows = old.execute(
                 "SELECT appid,api_name,status,mainline_index FROM achievements WHERE status<>'pending' OR mainline_index IS NOT NULL"
             ).fetchall()
             for row in protected_rows:
-                if con.execute("SELECT appid,api_name,status,mainline_index FROM achievements WHERE appid=? AND api_name=?", row[:2]).fetchone() != row:
+                if (
+                    con.execute(
+                        "SELECT appid,api_name,status,mainline_index FROM achievements WHERE appid=? AND api_name=?",
+                        row[:2],
+                    ).fetchone()
+                    != row
+                ):
                     raise ValueError("导入前审核状态或主线排序未完整保留")
     return {
-        "verified_at": utc_now(), "verified_games": verified, "source_achievements": expected_total,
-        "selected_local_achievements": imported_rows, "rows": counts, "status_counts": status_counts,
-        "source_description_missing": source_description_missing, "local_description_missing": description_missing,
-        "playtime_coverage": {"positive": playtime_positive, "zero": playtime_zero, "null": playtime_null},
-        "non_null_mainline_index": annotated_order, "quality": quality,
-        "integrity_check": integrity, "foreign_key_check": foreign_keys,
-        "preserved_existing_types": len(old_types), "preserved_existing_reviewed_or_suggested": len(protected_rows),
-        "selection_file": state["appids_file"], "selection_sha256": state["appids_sha256"],
-        "backup": state["backup"], "database": state["database"],
+        "verified_at": utc_now(),
+        "verified_games": verified,
+        "source_achievements": expected_total,
+        "selected_local_achievements": imported_rows,
+        "rows": counts,
+        "status_counts": status_counts,
+        "source_description_missing": source_description_missing,
+        "local_description_missing": description_missing,
+        "playtime_coverage": {
+            "positive": playtime_positive,
+            "zero": playtime_zero,
+            "null": playtime_null,
+        },
+        "non_null_mainline_index": annotated_order,
+        "quality": quality,
+        "integrity_check": integrity,
+        "foreign_key_check": foreign_keys,
+        "preserved_existing_types": len(old_types),
+        "preserved_existing_reviewed_or_suggested": len(protected_rows),
+        "selection_file": state["appids_file"],
+        "selection_sha256": state["appids_sha256"],
+        "backup": state["backup"],
+        "database": state["database"],
         "remote_readonly": "on for selection and every independently captured batch",
         "sqlite_version": sqlite3.sqlite_version,
         "importer_sha256": hashlib.sha256(Path(__file__).read_bytes()).hexdigest(),
-        "schema_sha256": hashlib.sha256((WORKSPACE / "database/schema.sql").read_bytes()).hexdigest(),
+        "schema_sha256": hashlib.sha256(
+            (WORKSPACE / "database/schema.sql").read_bytes()
+        ).hexdigest(),
         "database_bytes": Path(state["database"]).stat().st_size,
     }
 
 
-def migrate(database: Path, appids_path: Path, folder: Path | None = None,
-            *, batch_size: int = 50, resume: bool = False, max_batches: int | None = None) -> dict[str, Any]:
+def migrate(
+    database: Path,
+    appids_path: Path,
+    folder: Path | None = None,
+    *,
+    batch_size: int = 50,
+    resume: bool = False,
+    max_batches: int | None = None,
+) -> dict[str, Any]:
     """保存冻结输入，分批/单游戏事务迁移，支持中断重跑而不重新排序。"""
     if not 1 <= batch_size <= 100 or (max_batches is not None and max_batches < 1):
         raise ValueError("batch_size须在1～100之间，max_batches须为正整数")
     appids, manifest = select_top1000(appids_path)
     if folder is None:
-        folder = WORKSPACE / "process" / "runtime" / "remote_import" / datetime.now(timezone.utc).strftime("%Y%m%dT%H%M%S%fZ")
+        folder = (
+            WORKSPACE
+            / "process"
+            / "runtime"
+            / "remote_import"
+            / datetime.now(timezone.utc).strftime("%Y%m%dT%H%M%S%fZ")
+        )
     folder = workspace_path(folder)
     if resume:
         if not folder.is_dir():
@@ -485,18 +694,32 @@ def migrate(database: Path, appids_path: Path, folder: Path | None = None,
         folder.mkdir(parents=True, exist_ok=False)
     with run_lock(folder):
         if resume:
-            state = json.loads(workspace_path(folder / "checkpoint.json", must_exist=True).read_text(encoding="utf-8"))
-            if state["database"] != str(database_path(database)) or state["appids_sha256"] != manifest["appids_sha256"] or state["selected_appids"] != appids:
+            state = json.loads(
+                workspace_path(folder / "checkpoint.json", must_exist=True).read_text(
+                    encoding="utf-8"
+                )
+            )
+            if (
+                state["database"] != str(database_path(database))
+                or state["appids_sha256"] != manifest["appids_sha256"]
+                or state["selected_appids"] != appids
+            ):
                 raise ValueError("续跑的数据库或冻结AppID清单不一致")
             if state["schema_version"] != SCHEMA_VERSION:
                 raise ValueError("续跑schema版本不一致")
             batch_size = state["batch_size"]
         else:
-            state = start_run(database, appids_path, appids, manifest, folder, batch_size)
+            state = start_run(
+                database, appids_path, appids, manifest, folder, batch_size
+            )
         executed = 0
-        batches = [appids[i:i + batch_size] for i in range(0, len(appids), batch_size)]
+        batches = [
+            appids[i : i + batch_size] for i in range(0, len(appids), batch_size)
+        ]
         for number, batch in enumerate(batches, 1):
-            pending = [appid for appid in batch if appid not in state["processed_appids"]]
+            pending = [
+                appid for appid in batch if appid not in state["processed_appids"]
+            ]
             if not pending:
                 continue
             entry = state["snapshots"].get(str(number))
@@ -504,10 +727,17 @@ def migrate(database: Path, appids_path: Path, folder: Path | None = None,
             if entry is None:
                 snapshot = fetch_snapshot(batch)
                 sha = save_json(snapshot_path, snapshot)
-                state["snapshots"][str(number)] = {"file": snapshot_path.name, "sha256": sha, "read_at": snapshot["read_at"]}
+                state["snapshots"][str(number)] = {
+                    "file": snapshot_path.name,
+                    "sha256": sha,
+                    "read_at": snapshot["read_at"],
+                }
                 save_json(folder / "checkpoint.json", state)
             raw = snapshot_path.read_bytes()
-            if hashlib.sha256(raw).hexdigest() != state["snapshots"][str(number)]["sha256"]:
+            if (
+                hashlib.sha256(raw).hexdigest()
+                != state["snapshots"][str(number)]["sha256"]
+            ):
                 raise ValueError("批次快照指纹不一致，停止")
             snapshot = json.loads(raw)
             indexes = snapshot_indexes(snapshot, batch)
@@ -519,28 +749,59 @@ def migrate(database: Path, appids_path: Path, folder: Path | None = None,
                         state["processed_appids"].append(appid)
                         state["failures"].pop(str(appid), None)
                     except (ValueError, sqlite3.Error) as exc:
-                        state["failures"][str(appid)] = {"error_class": type(exc).__name__, "error": str(exc)}
+                        state["failures"][str(appid)] = {
+                            "error_class": type(exc).__name__,
+                            "error": str(exc),
+                        }
             state["updated_at"] = utc_now()
             state["status"] = "running"
             save_json(folder / "checkpoint.json", state)
             executed += 1
-            print(json.dumps({"batch": number, "batches": len(batches), "processed": len(state["processed_appids"]),
-                              "selected": 1000, "failures": len(state["failures"]), "run_dir": str(folder)}, ensure_ascii=False), flush=True)
+            print(
+                json.dumps(
+                    {
+                        "batch": number,
+                        "batches": len(batches),
+                        "processed": len(state["processed_appids"]),
+                        "selected": 1000,
+                        "failures": len(state["failures"]),
+                        "run_dir": str(folder),
+                    },
+                    ensure_ascii=False,
+                ),
+                flush=True,
+            )
             if max_batches is not None and executed >= max_batches:
                 break
         if state["failures"] or len(state["processed_appids"]) < 1000:
             state["status"] = "partial"
             save_json(folder / "checkpoint.json", state)
-            return {"status": "partial", "processed": len(state["processed_appids"]), "failures": state["failures"], "run_dir": str(folder)}
+            return {
+                "status": "partial",
+                "processed": len(state["processed_appids"]),
+                "failures": state["failures"],
+                "run_dir": str(folder),
+            }
         report = verify_run(folder, state)
         save_json(folder / "report.json", report)
-        state["status"] = "complete" if not report["quality"]["classified_input_conflicts"] else "complete_with_conflicts"
+        state["status"] = (
+            "complete"
+            if not report["quality"]["classified_input_conflicts"]
+            else "complete_with_conflicts"
+        )
         state["completed_at"] = utc_now()
         save_json(folder / "checkpoint.json", state)
-        return {"status": state["status"], "run_dir": str(folder), "report": str(folder / "report.json"),
-                "rows": report["rows"], "verified_games": report["verified_games"],
-                "source_achievements": report["source_achievements"],
-                "quality_counts": {key: len(value) for key, value in report["quality"].items()}}
+        return {
+            "status": state["status"],
+            "run_dir": str(folder),
+            "report": str(folder / "report.json"),
+            "rows": report["rows"],
+            "verified_games": report["verified_games"],
+            "source_achievements": report["source_achievements"],
+            "quality_counts": {
+                key: len(value) for key, value in report["quality"].items()
+            },
+        }
 
 
 def main() -> None:
@@ -552,21 +813,32 @@ def main() -> None:
     parser.add_argument("--batch-size", type=int, default=50)
     parser.add_argument("--run-dir", type=Path)
     parser.add_argument("--resume", action="store_true")
-    parser.add_argument("--max-batches", type=int, help="控制小批验收后暂停，续跑沿用冻结快照")
+    parser.add_argument(
+        "--max-batches", type=int, help="控制小批验收后暂停，续跑沿用冻结快照"
+    )
     args = parser.parse_args()
     try:
         if args.select_only:
             appids, manifest = select_top1000(args.appids)
-            result = {"appids_file": str(args.appids.resolve()), "selected": len(appids),
-                      "highest_review_count": manifest["ranking"][0]["review_count"],
-                      "lowest_review_count": manifest["ranking"][-1]["review_count"],
-                      "transaction_read_only": manifest["transaction_read_only"],
-                      "connection_route": manifest["connection_attempts"][-1]["route"]}
+            result = {
+                "appids_file": str(args.appids.resolve()),
+                "selected": len(appids),
+                "highest_review_count": manifest["ranking"][0]["review_count"],
+                "lowest_review_count": manifest["ranking"][-1]["review_count"],
+                "transaction_read_only": manifest["transaction_read_only"],
+                "connection_route": manifest["connection_attempts"][-1]["route"],
+            }
         else:
             if args.resume and args.run_dir is None:
                 parser.error("--resume必须指定--run-dir")
-            result = migrate(args.database, args.appids, args.run_dir, batch_size=args.batch_size,
-                             resume=args.resume, max_batches=args.max_batches)
+            result = migrate(
+                args.database,
+                args.appids,
+                args.run_dir,
+                batch_size=args.batch_size,
+                resume=args.resume,
+                max_batches=args.max_batches,
+            )
     except (ValueError, RuntimeError, OSError, sqlite3.Error) as exc:
         parser.exit(1, f"迁移停止：{exc}\n")
     print(json.dumps(result, ensure_ascii=False, indent=2))

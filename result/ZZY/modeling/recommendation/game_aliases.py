@@ -1,4 +1,5 @@
 """本地人工维护的搜索别名；只按 AppID 绑定，不参与推荐或覆盖原始名称。"""
+
 from __future__ import annotations
 
 import json
@@ -7,9 +8,13 @@ import unicodedata
 
 ALIAS_PATH = Path(__file__).with_suffix(".json")
 _data = json.loads(ALIAS_PATH.read_text(encoding="utf-8"))
-ALIASES = {int(appid): tuple(entry["aliases"]) for appid, entry in _data["games"].items()}
+ALIASES = {
+    int(appid): tuple(entry["aliases"]) for appid, entry in _data["games"].items()
+}
 # 保留原标签基线的八款示例，扩充搜索词不扩充首页按钮数量。
-FAMILIAR_APPIDS = frozenset((1245620, 413150, 646570, 367520, 632470, 255710, 620, 227300))
+FAMILIAR_APPIDS = frozenset(
+    (1245620, 413150, 646570, 367520, 632470, 255710, 620, 227300)
+)
 
 
 def normalize_search(value: str) -> str:
@@ -26,4 +31,8 @@ def search_fields(row: dict) -> tuple[str, ...]:
 
 def matched_aliases(appid: int, normalized: str) -> list[str]:
     """返回命中的原始别名副本；空查询不声称命中某个别名。"""
-    return [alias for alias in ALIASES.get(appid, ()) if normalized and normalized in normalize_search(alias)]
+    return [
+        alias
+        for alias in ALIASES.get(appid, ())
+        if normalized and normalized in normalize_search(alias)
+    ]

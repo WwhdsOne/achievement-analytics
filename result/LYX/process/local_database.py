@@ -18,17 +18,75 @@ DEFAULT_MIN_CONFIDENCE = 0.6
 SCHEMA = WORKSPACE / "database" / "schema.sql"
 SCHEMA_VERSION = 4
 METHODS = ("deepseek", "jev", "rule", "manual")
-TYPES = {"mainline", "side", "collection", "challenge", "multiplayer", "dlc", "other", "unknown"}
-TABLES = ("games", "games_details", "games_rate", "games_time", "achievements", "achievement_types")
+TYPES = {
+    "mainline",
+    "side",
+    "collection",
+    "challenge",
+    "multiplayer",
+    "dlc",
+    "other",
+    "unknown",
+}
+TABLES = (
+    "games",
+    "games_details",
+    "games_rate",
+    "games_time",
+    "achievements",
+    "achievement_types",
+)
 COLUMNS = {
     "games": ("appid", "name_en", "name_zh"),
-    "games_details": ("appid", "is_free", "price_cents", "release_date", "valve_genres"),
-    "games_rate": ("appid", "review_label", "review_percent", "review_count", "metacritic", "rating"),
-    "games_time": ("appid", "playtime", "main_hours", "extra_hours", "completionist_hours", "guide_difficulty"),
-    "achievements": ("appid", "position", "api_name", "display_name", "description", "percent", "status", "mainline_index"),
-    "achievement_types": ("appid", "api_name", "display_name", "type", "method", "confidence"),
+    "games_details": (
+        "appid",
+        "is_free",
+        "price_cents",
+        "release_date",
+        "valve_genres",
+    ),
+    "games_rate": (
+        "appid",
+        "review_label",
+        "review_percent",
+        "review_count",
+        "metacritic",
+        "rating",
+    ),
+    "games_time": (
+        "appid",
+        "playtime",
+        "main_hours",
+        "extra_hours",
+        "completionist_hours",
+        "guide_difficulty",
+    ),
+    "achievements": (
+        "appid",
+        "position",
+        "api_name",
+        "display_name",
+        "description",
+        "percent",
+        "status",
+        "mainline_index",
+    ),
+    "achievement_types": (
+        "appid",
+        "api_name",
+        "display_name",
+        "type",
+        "method",
+        "confidence",
+    ),
 }
-LEGACY_TIME_COLUMNS = ("appid", "playtime", "guide_time_hours_min", "guide_time_hours_max", "guide_difficulty")
+LEGACY_TIME_COLUMNS = (
+    "appid",
+    "playtime",
+    "guide_time_hours_min",
+    "guide_time_hours_max",
+    "guide_difficulty",
+)
 
 
 def workspace_path(path: Path, *, must_exist: bool = False) -> Path:
@@ -56,13 +114,28 @@ def connect_local(path: Path, *, writable: bool = False) -> sqlite3.Connection:
     return con
 
 
-def ensure_schema(con: sqlite3.Connection, *, check_methods: bool = True, schema_version: int = SCHEMA_VERSION) -> None:
+def ensure_schema(
+    con: sqlite3.Connection,
+    *,
+    check_methods: bool = True,
+    schema_version: int = SCHEMA_VERSION,
+) -> None:
     """检查六表及字段；显式迁移可读旧版2/3，日常入口要求HLTB时长版4。"""
     if schema_version not in (2, 3, SCHEMA_VERSION):
         raise ValueError("不支持此本地schema版本")
-    found = {r[0] for r in con.execute("SELECT name FROM sqlite_master WHERE type='table' AND name NOT LIKE 'sqlite_%'")}
-    if found != set(TABLES) or con.execute("PRAGMA user_version").fetchone()[0] != schema_version:
-        raise ValueError("本地数据库结构版本不一致；旧版2先运行 migrate_display_names.py，旧版3需迁移HLTB时长结构至版本4（原导入脚本已移除）")
+    found = {
+        r[0]
+        for r in con.execute(
+            "SELECT name FROM sqlite_master WHERE type='table' AND name NOT LIKE 'sqlite_%'"
+        )
+    }
+    if (
+        found != set(TABLES)
+        or con.execute("PRAGMA user_version").fetchone()[0] != schema_version
+    ):
+        raise ValueError(
+            "本地数据库结构版本不一致；旧版2先运行 migrate_display_names.py，旧版3需迁移HLTB时长结构至版本4（原导入脚本已移除）"
+        )
     for table, expected in COLUMNS.items():
         if table == "achievement_types" and schema_version == 2:
             expected = tuple(column for column in expected if column != "display_name")
@@ -72,13 +145,19 @@ def ensure_schema(con: sqlite3.Connection, *, check_methods: bool = True, schema
         if actual != expected:
             raise ValueError(f"{table} 字段与六表结构不一致")
     if check_methods and method_values(con) != set(METHODS):
-        raise ValueError("method 约束不是 deepseek/jev/rule/manual，请运行 migrate_methods.py")
+        raise ValueError(
+            "method 约束不是 deepseek/jev/rule/manual，请运行 migrate_methods.py"
+        )
 
 
 def method_values(con: sqlite3.Connection) -> set[str]:
     """读取 method 的 CHECK 枚举，检查当前定义而非已有行的取值。"""
-    row = con.execute("SELECT sql FROM sqlite_master WHERE type='table' AND name='achievement_types'").fetchone()
-    match = re.search(r"CHECK\s*\(\s*method\s+IN\s*\(([^()]*)\)\s*\)", row[0] if row else "", re.I)
+    row = con.execute(
+        "SELECT sql FROM sqlite_master WHERE type='table' AND name='achievement_types'"
+    ).fetchone()
+    match = re.search(
+        r"CHECK\s*\(\s*method\s+IN\s*\(([^()]*)\)\s*\)", row[0] if row else "", re.I
+    )
     return set(re.findall(r"'([^']*)'", match.group(1))) if match else set()
 
 
@@ -104,7 +183,10 @@ def decode_genres(value: str | None) -> list[str] | None:
 
 def table_counts(con: sqlite3.Connection) -> dict[str, int]:
     """返回六张业务表的实际行数。"""
-    return {table: con.execute(f'SELECT count(*) FROM "{table}"').fetchone()[0] for table in TABLES}
+    return {
+        table: con.execute(f'SELECT count(*) FROM "{table}"').fetchone()[0]
+        for table in TABLES
+    }
 
 
 def sqlite_percent(value: Any) -> float:
@@ -121,10 +203,15 @@ def sqlite_percent(value: Any) -> float:
 
 
 def partition_classification_types(
-    tags: Any, min_confidence: float = DEFAULT_MIN_CONFIDENCE,
+    tags: Any,
+    min_confidence: float = DEFAULT_MIN_CONFIDENCE,
 ) -> tuple[list[dict[str, Any]], list[dict[str, Any]]]:
     """校验完整标签后逐类筛选；confidence大于等于门槛的标签可入库。"""
-    if type(min_confidence) not in (int, float) or not math.isfinite(min_confidence) or not 0 <= min_confidence <= 1:
+    if (
+        type(min_confidence) not in (int, float)
+        or not math.isfinite(min_confidence)
+        or not 0 <= min_confidence <= 1
+    ):
         raise ValueError("置信度门槛必须是0～1有限数")
     if not isinstance(tags, list) or not tags:
         raise ValueError("分类类型不能为空")
@@ -135,19 +222,29 @@ def partition_classification_types(
         name, score = tag["type"], tag["confidence"]
         if not isinstance(name, str) or name not in TYPES or name in names:
             raise ValueError("分类类型越界或重复")
-        if type(score) not in (int, float) or not math.isfinite(score) or not 0 <= score <= 1:
+        if (
+            type(score) not in (int, float)
+            or not math.isfinite(score)
+            or not 0 <= score <= 1
+        ):
             raise ValueError("置信度必须是0～1有限数")
         names.add(name)
     if "unknown" in names and len(names) != 1:
         raise ValueError("unknown不能与其他类型共存")
     ordered = sorted(tags, key=lambda tag: tag["type"])
-    return ([tag for tag in ordered if tag["confidence"] >= min_confidence],
-            [tag for tag in ordered if tag["confidence"] < min_confidence])
+    return (
+        [tag for tag in ordered if tag["confidence"] >= min_confidence],
+        [tag for tag in ordered if tag["confidence"] < min_confidence],
+    )
 
 
 def store_classifications(
-    database: Path, game: dict[str, Any], records: list[dict[str, Any]], *,
-    reclassify: bool = False, expected_input: list[dict[str, Any]] | None = None,
+    database: Path,
+    game: dict[str, Any],
+    records: list[dict[str, Any]],
+    *,
+    reclassify: bool = False,
+    expected_input: list[dict[str, Any]] | None = None,
     min_confidence: float = DEFAULT_MIN_CONFIDENCE,
     merge_existing: bool = False,
 ) -> dict[str, int]:
@@ -160,9 +257,14 @@ def store_classifications(
         if record["appid"] != game["appid"] or record["api_name"] in seen:
             raise ValueError("分类游戏或成就身份重复/不一致")
         seen.add(record["api_name"])
-        accepted, rejected = partition_classification_types(record["types"], min_confidence)
+        accepted, rejected = partition_classification_types(
+            record["types"], min_confidence
+        )
         partitions.append((accepted, rejected))
-        for field, expected in (("accepted_types", accepted), ("rejected_types", rejected)):
+        for field, expected in (
+            ("accepted_types", accepted),
+            ("rejected_types", rejected),
+        ):
             if field in record and record[field] != expected:
                 raise ValueError("入库筛选与运行记录不一致")
         if record["status"] not in ("suggested", "uncertain"):
@@ -171,7 +273,13 @@ def store_classifications(
             raise ValueError("unknown必须标记为uncertain")
         if record["method"] != "deepseek":
             raise ValueError("此入口仅写入DeepSeek结果")
-    counts = {"written": 0, "unchanged": 0, "protected": 0, "already_classified": 0, "below_threshold": 0}
+    counts = {
+        "written": 0,
+        "unchanged": 0,
+        "protected": 0,
+        "already_classified": 0,
+        "below_threshold": 0,
+    }
     if merge_existing:
         counts["conflict"] = 0
     outcomes: list[str] = []
@@ -182,34 +290,61 @@ def store_classifications(
             ensure_schema(con)
             context = con.execute(
                 "SELECT g.name_en,g.name_zh,d.valve_genres FROM games g "
-                "LEFT JOIN games_details d USING(appid) WHERE g.appid=?", (game["appid"],)
+                "LEFT JOIN games_details d USING(appid) WHERE g.appid=?",
+                (game["appid"],),
             ).fetchone()
-            if context is None or (context[0], context[1], decode_genres(context[2])) != (
-                    game["name_en"], game["name_zh"], game["valve_genres"]):
+            if context is None or (
+                context[0],
+                context[1],
+                decode_genres(context[2]),
+            ) != (game["name_en"], game["name_zh"], game["valve_genres"]):
                 raise ValueError("模型调用后游戏上下文改变，请重新读取")
             if expected_input is not None:
-                expected = sorted((r["api_name"], r["display_name"], r["description"]) for r in expected_input)
+                expected = sorted(
+                    (r["api_name"], r["display_name"], r["description"])
+                    for r in expected_input
+                )
                 actual = con.execute(
-                    "SELECT api_name,display_name,description FROM achievements WHERE appid=? ORDER BY api_name", (game["appid"],)
+                    "SELECT api_name,display_name,description FROM achievements WHERE appid=? ORDER BY api_name",
+                    (game["appid"],),
                 ).fetchall()
                 if expected != actual:
                     raise ValueError("模型调用后整款成就集合或文本改变，停止写入")
-            for index, (record, (accepted, rejected)) in enumerate(zip(records, partitions, strict=True)):
+            for index, (record, (accepted, rejected)) in enumerate(
+                zip(records, partitions, strict=True)
+            ):
                 key = (record["appid"], record["api_name"])
                 current = con.execute(
-                    "SELECT display_name,description,status,mainline_index FROM achievements WHERE appid=? AND api_name=?", key
+                    "SELECT display_name,description,status,mainline_index FROM achievements WHERE appid=? AND api_name=?",
+                    key,
                 ).fetchone()
-                if current is None or current[:2] != (record["display_name"], record["description"]):
+                if current is None or current[:2] != (
+                    record["display_name"],
+                    record["description"],
+                ):
                     raise ValueError("模型调用后成就输入改变，整批停止写入")
                 existing = con.execute(
-                    "SELECT type,method,confidence,display_name FROM achievement_types WHERE appid=? AND api_name=? ORDER BY type", key
+                    "SELECT type,method,confidence,display_name FROM achievement_types WHERE appid=? AND api_name=? ORDER BY type",
+                    key,
                 ).fetchall()
-                if current[2] == "approved" or current[3] is not None or any(tag[1] == "manual" for tag in existing):
+                if (
+                    current[2] == "approved"
+                    or current[3] is not None
+                    or any(tag[1] == "manual" for tag in existing)
+                ):
                     counts["protected"] += 1
                     outcomes.append("protected")
                     continue
                 if merge_existing and existing:
-                    target = [(tag["type"], "deepseek", tag["confidence"], record["display_name"]) for tag in accepted]
+                    target = [
+                        (
+                            tag["type"],
+                            "deepseek",
+                            tag["confidence"],
+                            record["display_name"],
+                        )
+                        for tag in accepted
+                    ]
                     if not accepted:
                         counts["below_threshold"] += 1
                         outcomes.append("below_threshold")
@@ -217,10 +352,16 @@ def store_classifications(
                     if any(tag not in target for tag in existing):
                         counts["conflict"] += 1
                         outcomes.append("conflict")
-                        label_outcomes[index] = {tag[0]: "already_classified" for tag in existing if tag in target}
+                        label_outcomes[index] = {
+                            tag[0]: "already_classified"
+                            for tag in existing
+                            if tag in target
+                        }
                         continue
                     additions = [tag for tag in target if tag not in existing]
-                    label_outcomes[index] = {tag[0]: "already_classified" for tag in existing}
+                    label_outcomes[index] = {
+                        tag[0]: "already_classified" for tag in existing
+                    }
                     if not additions:
                         counts["already_classified"] += 1
                         outcomes.append("already_classified")
@@ -229,14 +370,25 @@ def store_classifications(
                         "INSERT INTO achievement_types(appid,api_name,type,method,confidence,display_name) VALUES(?,?,?,?,?,?)",
                         [(*key, *tag) for tag in additions],
                     )
-                    con.execute("UPDATE achievements SET status=? WHERE appid=? AND api_name=?", (
-                        "uncertain" if target[0][0] == "unknown" else "suggested", *key,
-                    ))
-                    label_outcomes[index].update({tag[0]: "written" for tag in additions})
+                    con.execute(
+                        "UPDATE achievements SET status=? WHERE appid=? AND api_name=?",
+                        (
+                            "uncertain" if target[0][0] == "unknown" else "suggested",
+                            *key,
+                        ),
+                    )
+                    label_outcomes[index].update(
+                        {tag[0]: "written" for tag in additions}
+                    )
                     counts["written"] += 1
                     outcomes.append("written")
                     continue
-                if not reclassify and current[2] in ("suggested", "uncertain") and existing and all(t[1] == "deepseek" for t in existing):
+                if (
+                    not reclassify
+                    and current[2] in ("suggested", "uncertain")
+                    and existing
+                    and all(t[1] == "deepseek" for t in existing)
+                ):
                     counts["already_classified"] += 1
                     outcomes.append("already_classified")
                     continue
@@ -244,37 +396,59 @@ def store_classifications(
                     counts["below_threshold"] += 1
                     outcomes.append("below_threshold")
                     continue
-                target = [(tag["type"], "deepseek", tag["confidence"], record["display_name"]) for tag in accepted]
-                status = "uncertain" if accepted[0]["type"] == "unknown" else "suggested"
+                target = [
+                    (tag["type"], "deepseek", tag["confidence"], record["display_name"])
+                    for tag in accepted
+                ]
+                status = (
+                    "uncertain" if accepted[0]["type"] == "unknown" else "suggested"
+                )
                 if existing == target and current[2] == status:
                     counts["unchanged"] += 1
                     outcomes.append("unchanged")
                     continue
                 # 整体替换自动标签，避免unknown互斥触发器拒绝新旧标签交叉。
-                con.execute("DELETE FROM achievement_types WHERE appid=? AND api_name=?", key)
+                con.execute(
+                    "DELETE FROM achievement_types WHERE appid=? AND api_name=?", key
+                )
                 con.executemany(
                     "INSERT INTO achievement_types(appid,api_name,type,method,confidence,display_name) VALUES(?,?,?,?,?,?)",
-                    [(*key, *tag) for tag in target]
+                    [(*key, *tag) for tag in target],
                 )
-                con.execute("UPDATE achievements SET status=? WHERE appid=? AND api_name=?", (status, *key))
+                con.execute(
+                    "UPDATE achievements SET status=? WHERE appid=? AND api_name=?",
+                    (status, *key),
+                )
                 counts["written"] += 1
                 outcomes.append("written")
             con.commit()
         except BaseException:
             con.rollback()
             raise
-    for record, outcome, (accepted, rejected), per_label in zip(records, outcomes, partitions, label_outcomes, strict=True):
+    for record, outcome, (accepted, rejected), per_label in zip(
+        records, outcomes, partitions, label_outcomes, strict=True
+    ):
         record["sqlite_outcome"] = outcome
         record["accepted_types"], record["rejected_types"] = accepted, rejected
-        record["status"] = "uncertain" if not accepted or accepted[0]["type"] == "unknown" else "suggested"
+        record["status"] = (
+            "uncertain"
+            if not accepted or accepted[0]["type"] == "unknown"
+            else "suggested"
+        )
         record["label_sqlite_outcomes"] = {
             tag["type"]: per_label.get(tag["type"], outcome) for tag in accepted
         } | {tag["type"]: "below_threshold" for tag in rejected}
-        record["written_types"] = [tag for tag in accepted if record["label_sqlite_outcomes"][tag["type"]] == "written"]
+        record["written_types"] = [
+            tag
+            for tag in accepted
+            if record["label_sqlite_outcomes"][tag["type"]] == "written"
+        ]
     return counts
 
 
-def execute_schema(con: sqlite3.Connection, *, schema_version: int = SCHEMA_VERSION) -> None:
+def execute_schema(
+    con: sqlite3.Connection, *, schema_version: int = SCHEMA_VERSION
+) -> None:
     """逐条恢复schema对象；旧标签迁移显式保留版本3，不隐式迁移时长结构。"""
     if schema_version not in (3, SCHEMA_VERSION):
         raise ValueError("schema执行目标只能为3或当前版本")
@@ -282,7 +456,9 @@ def execute_schema(con: sqlite3.Connection, *, schema_version: int = SCHEMA_VERS
     for line in SCHEMA.read_text(encoding="utf-8").splitlines(keepends=True):
         pending += line
         if sqlite3.complete_statement(pending):
-            if re.fullmatch(r"\s*PRAGMA\s+user_version\s*=\s*\d+\s*;\s*", pending, re.I):
+            if re.fullmatch(
+                r"\s*PRAGMA\s+user_version\s*=\s*\d+\s*;\s*", pending, re.I
+            ):
                 con.execute(f"PRAGMA user_version={schema_version}")
             else:
                 con.execute(pending)

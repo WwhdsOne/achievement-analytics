@@ -1,4 +1,5 @@
 """中文别名搜索的行为测试，可同时运行于开发与私有交付模块。"""
+
 import json
 from urllib.parse import urlencode
 
@@ -14,25 +15,56 @@ from modeling.recommendation.web import RecommendationService
 
 
 def game(appid, name, tags=("RPG",)):
-    return dict(appid=appid, name_en=name, name_zh=None, release_date="2020-01-01",
-                ach_count=3, min_percent=1, mean_percent=20, max_percent=80,
-                mapping_unresolved=False, tags=[dict(source="steamspy", kind="theme", tag=t, votes=5) for t in tags],
-                genres=[], developers=[], publishers=[])
+    return dict(
+        appid=appid,
+        name_en=name,
+        name_zh=None,
+        release_date="2020-01-01",
+        ach_count=3,
+        min_percent=1,
+        mean_percent=20,
+        max_percent=80,
+        mapping_unresolved=False,
+        tags=[dict(source="steamspy", kind="theme", tag=t, votes=5) for t in tags],
+        genres=[],
+        developers=[],
+        publishers=[],
+    )
 
 
 @pytest.fixture
 def services(tmp_path):
-    rows = [game(1245620, "ELDEN RING"), game(367520, "Hollow Knight"),
-            game(413150, "Stardew Valley"), game(374320, "DARK SOULS III"),
-            game(236430, "DARK SOULS II", ()), game(999, "老头环测试记录")]
+    rows = [
+        game(1245620, "ELDEN RING"),
+        game(367520, "Hollow Knight"),
+        game(413150, "Stardew Valley"),
+        game(374320, "DARK SOULS III"),
+        game(236430, "DARK SOULS II", ()),
+        game(999, "老头环测试记录"),
+    ]
     metadata = save_snapshot(rows, {}, tmp_path / "snapshots")
-    graph = build_graph(metadata["version"], snapshots=tmp_path / "snapshots", folder=tmp_path / "kg")
-    base = GraphRecommender(GraphInspector(tmp_path / "kg" / graph["version"], snapshots=tmp_path / "snapshots"))
+    graph = build_graph(
+        metadata["version"], snapshots=tmp_path / "snapshots", folder=tmp_path / "kg"
+    )
+    base = GraphRecommender(
+        GraphInspector(
+            tmp_path / "kg" / graph["version"], snapshots=tmp_path / "snapshots"
+        )
+    )
     return RecommendationQueryService(base), RecommendationService(rows, metadata)
 
 
-@pytest.mark.parametrize("text,appid", [("艾尔登法环", 1245620), ("老头环", 1245620),
-    ("空洞骑士", 367520), ("星露谷物语", 413150), ("星露谷", 413150), ("黑魂3", 374320)])
+@pytest.mark.parametrize(
+    "text,appid",
+    [
+        ("艾尔登法环", 1245620),
+        ("老头环", 1245620),
+        ("空洞骑士", 367520),
+        ("星露谷物语", 413150),
+        ("星露谷", 413150),
+        ("黑魂3", 374320),
+    ],
+)
 def test_aliases_resolve_existing_game_in_both_searches(services, text, appid):
     query, baseline = services
     assert appid in [r["appid"] for r in query.search(text)["results"]]
@@ -63,7 +95,9 @@ def test_alias_does_not_create_absent_game_or_bypass_eligibility(services):
     assert baseline.search("黑魂2") == []
 
 
-@pytest.mark.parametrize("text", ["  ｅｌｄｅｎ　ＲＩＮＧ  ", "ELDEN    ring", "　老头环　", "1245620"])
+@pytest.mark.parametrize(
+    "text", ["  ｅｌｄｅｎ　ＲＩＮＧ  ", "ELDEN    ring", "　老头环　", "1245620"]
+)
 def test_name_alias_and_appid_normalization(services, text):
     query, baseline = services
     assert 1245620 in [r["appid"] for r in query.search(text)["results"]]
@@ -85,7 +119,10 @@ def test_search_does_not_change_recommendation_scores_or_source_names(services):
     assert found["name"] == "ELDEN RING" and found["name_zh"] is None
     assert query.recommend([found["appid"]]) == query_before
     assert query.base.recommend(1245620) == graph_before
-    assert baseline.recommend({"appid": baseline.search("老头环")[-1]["appid"]}) == baseline_before
+    assert (
+        baseline.recommend({"appid": baseline.search("老头环")[-1]["appid"]})
+        == baseline_before
+    )
     found["matched_aliases"].clear()
     assert query.search("老头环")["results"][-1]["matched_aliases"] == ["老头环"]
 

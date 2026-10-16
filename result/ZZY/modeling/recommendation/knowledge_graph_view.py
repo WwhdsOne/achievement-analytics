@@ -13,14 +13,23 @@ from urllib.parse import parse_qs, urlsplit
 from .knowledge_graph import GRAPHS
 from .knowledge_graph_inspector import GraphInspector
 
-ASSETS = {"/": ("index.html", "text/html"), "/app.js": ("app.js", "text/javascript"), "/style.css": ("style.css", "text/css")}
+ASSETS = {
+    "/": ("index.html", "text/html"),
+    "/app.js": ("app.js", "text/javascript"),
+    "/style.css": ("style.css", "text/css"),
+}
 ASSET_ROOT = Path(__file__).parent / "kg_view_assets"
 
 
 def route(inspector: GraphInspector, target: str) -> tuple[int, str, bytes]:
     """固定GET路由，无写入/任意文件访问或推荐接口。"""
+
     def encoded(value: dict, status: int = 200) -> tuple[int, str, bytes]:
-        return status, "application/json; charset=utf-8", json.dumps(value, ensure_ascii=False, allow_nan=False).encode("utf-8")
+        return (
+            status,
+            "application/json; charset=utf-8",
+            json.dumps(value, ensure_ascii=False, allow_nan=False).encode("utf-8"),
+        )
 
     try:
         if len(target) > 500:
@@ -33,9 +42,14 @@ def route(inspector: GraphInspector, target: str) -> tuple[int, str, bytes]:
             return encoded(inspector.summary())
         if url.path == "/api/pair":
             query = parse_qs(url.query, keep_blank_values=True, max_num_fields=4)
-            if set(query) != {"left", "right"} or any(len(values) != 1 or not re.fullmatch(r"[0-9]{1,10}", values[0]) for values in query.values()):
+            if set(query) != {"left", "right"} or any(
+                len(values) != 1 or not re.fullmatch(r"[0-9]{1,10}", values[0])
+                for values in query.values()
+            ):
                 raise ValueError("请输入两个有效appid，每个参数只出现一次")
-            return encoded(inspector.inspect_pair(int(query["left"][0]), int(query["right"][0])))
+            return encoded(
+                inspector.inspect_pair(int(query["left"][0]), int(query["right"][0]))
+            )
         return encoded({"error": "没有这个页面或接口"}, 404)
     except ValueError as exc:
         return encoded({"error": str(exc)}, 400)
@@ -43,15 +57,25 @@ def route(inspector: GraphInspector, target: str) -> tuple[int, str, bytes]:
 
 def make_handler(inspector: GraphInspector) -> type[BaseHTTPRequestHandler]:
     """创建本机只读处理器，数据使用安全JSON和严格CSP输出。"""
+
     class Handler(BaseHTTPRequestHandler):
         def do_GET(self) -> None:
             try:
                 status, mime, body = route(inspector, self.path)
             except Exception:
-                status, mime, body = 500, "application/json; charset=utf-8", b'{"error":"Service error"}'
+                status, mime, body = (
+                    500,
+                    "application/json; charset=utf-8",
+                    b'{"error":"Service error"}',
+                )
             self.send_response(status)
-            for name, value in {"Content-Type": mime, "Content-Length": str(len(body)), "Cache-Control": "no-store",
-                                "X-Content-Type-Options": "nosniff", "Content-Security-Policy": "default-src 'self'; style-src 'self'; object-src 'none'; base-uri 'none'; frame-ancestors 'none'"}.items():
+            for name, value in {
+                "Content-Type": mime,
+                "Content-Length": str(len(body)),
+                "Cache-Control": "no-store",
+                "X-Content-Type-Options": "nosniff",
+                "Content-Security-Policy": "default-src 'self'; style-src 'self'; object-src 'none'; base-uri 'none'; frame-ancestors 'none'",
+            }.items():
                 self.send_header(name, value)
             self.end_headers()
             try:

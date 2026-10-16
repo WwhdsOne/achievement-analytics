@@ -17,12 +17,30 @@ from local_database import TYPES, WORKSPACE, workspace_path
 DEFAULT_DATACACHE = WORKSPACE / "process" / "datacache.csv"
 DEFAULT_FAILURE_DATA = DEFAULT_DATACACHE.with_name("failure_data.csv")
 CLASSIFICATION_CSV_FIELDS = (
-    "appid", "name_en", "api_name", "display_name", "description", "type", "method", "confidence",
-    "status", "sqlite_outcome", "confidence_passed", "label_sqlite_outcome",
-    "knowledge_used", "evidence", "reason", "uncertainty", "request_hash",
+    "appid",
+    "name_en",
+    "api_name",
+    "display_name",
+    "description",
+    "type",
+    "method",
+    "confidence",
+    "status",
+    "sqlite_outcome",
+    "confidence_passed",
+    "label_sqlite_outcome",
+    "knowledge_used",
+    "evidence",
+    "reason",
+    "uncertainty",
+    "request_hash",
 )
 DATACACHE_FIELDS = CLASSIFICATION_CSV_FIELDS + (
-    "min_confidence", "confidence_comparison", "source_csv", "first_seen_at", "last_seen_at",
+    "min_confidence",
+    "confidence_comparison",
+    "source_csv",
+    "first_seen_at",
+    "last_seen_at",
 )
 _KEY_FIELDS = ("appid", "api_name", "type", "request_hash")
 _LOCK_TIMEOUT_SECONDS = 30.0
@@ -37,29 +55,50 @@ def classification_csv_rows(records: list[dict[str, Any]]) -> list[dict[str, Any
         for tag in item["types"]:
             passed = tag["type"] in accepted_names
             outcome = label_outcomes.get(
-                tag["type"], item["sqlite_outcome"] if passed else "below_threshold",
+                tag["type"],
+                item["sqlite_outcome"] if passed else "below_threshold",
             )
-            row = {key: "" if item.get(key) is None else item[key] for key in CLASSIFICATION_CSV_FIELDS}
-            row.update(type=tag["type"], confidence=tag["confidence"],
-                       evidence=" | ".join(item["evidence"]), confidence_passed=passed,
-                       label_sqlite_outcome=outcome)
+            row = {
+                key: "" if item.get(key) is None else item[key]
+                for key in CLASSIFICATION_CSV_FIELDS
+            }
+            row.update(
+                type=tag["type"],
+                confidence=tag["confidence"],
+                evidence=" | ".join(item["evidence"]),
+                confidence_passed=passed,
+                label_sqlite_outcome=outcome,
+            )
             rows.append(row)
     return rows
 
 
 def _spreadsheet_safe(row: dict[str, Any]) -> dict[str, Any]:
     # Existing CSV rows are already escaped: apply this only to fresh raw records.
-    return {key: "'" + value if isinstance(value, str) and value.startswith(("=", "+", "-", "@")) else value
-            for key, value in row.items()}
+    return {
+        key: "'" + value
+        if isinstance(value, str) and value.startswith(("=", "+", "-", "@"))
+        else value
+        for key, value in row.items()
+    }
 
 
-def _atomic_write(path: Path, rows: list[dict[str, Any]], fields: tuple[str, ...]) -> None:
+def _atomic_write(
+    path: Path, rows: list[dict[str, Any]], fields: tuple[str, ...]
+) -> None:
     target = workspace_path(path)
     workspace_path(target.parent).mkdir(parents=True, exist_ok=True)
     temporary: Path | None = None
     try:
-        with tempfile.NamedTemporaryFile(mode="w", encoding="utf-8-sig", newline="", delete=False,
-                                         dir=target.parent, prefix=target.name + ".", suffix=".tmp") as handle:
+        with tempfile.NamedTemporaryFile(
+            mode="w",
+            encoding="utf-8-sig",
+            newline="",
+            delete=False,
+            dir=target.parent,
+            prefix=target.name + ".",
+            suffix=".tmp",
+        ) as handle:
             temporary = workspace_path(Path(handle.name), must_exist=True)
             writer = csv.DictWriter(handle, fieldnames=fields)
             writer.writeheader()
@@ -105,6 +144,7 @@ def _file_lock(path: Path) -> Iterator[None]:
 
             def release() -> None:
                 fcntl.flock(handle.fileno(), fcntl.LOCK_UN)
+
         deadline = time.monotonic() + _LOCK_TIMEOUT_SECONDS
         while True:
             try:
@@ -112,7 +152,9 @@ def _file_lock(path: Path) -> Iterator[None]:
                 break
             except OSError as exc:
                 if time.monotonic() >= deadline:
-                    raise TimeoutError(f"等待 datacache 文件锁超过 {_LOCK_TIMEOUT_SECONDS:g} 秒：{lock_path}") from exc
+                    raise TimeoutError(
+                        f"等待 datacache 文件锁超过 {_LOCK_TIMEOUT_SECONDS:g} 秒：{lock_path}"
+                    ) from exc
                 time.sleep(0.05)
         try:
             yield
@@ -121,7 +163,11 @@ def _file_lock(path: Path) -> Iterator[None]:
 
 
 def _validate_threshold(value: Any) -> float:
-    if type(value) not in (int, float) or not math.isfinite(value) or not 0 <= value <= 1:
+    if (
+        type(value) not in (int, float)
+        or not math.isfinite(value)
+        or not 0 <= value <= 1
+    ):
         raise ValueError("min_confidence 必须是 0～1 有限数")
     return float(value)
 
@@ -138,7 +184,9 @@ def _validate_timestamp(value: str, *, field: str) -> None:
 
 
 def _validate_cache_row(row: dict[str, Any], *, line: int) -> None:
-    if set(row) != set(DATACACHE_FIELDS) or any(value is None for value in row.values()):
+    if set(row) != set(DATACACHE_FIELDS) or any(
+        value is None for value in row.values()
+    ):
         raise ValueError(f"datacache 第 {line} 行缺少字段或含多余字段")
     try:
         appid = int(row["appid"])
@@ -199,7 +247,9 @@ def failure_data_path(datacache: Path) -> Path:
 
 def _write_failure_data(datacache: Path, rows: list[dict[str, Any]]) -> int:
     # 调用方持有全量缓存锁；行已经过完整校验及公式转义，直接保留全部22列。
-    rejected = [row for row in rows if float(row["confidence"]) < float(row["min_confidence"])]
+    rejected = [
+        row for row in rows if float(row["confidence"]) < float(row["min_confidence"])
+    ]
     _atomic_write(failure_data_path(datacache), rejected, DATACACHE_FIELDS)
     return len(rejected)
 
@@ -214,8 +264,14 @@ def rebuild_failure_data(datacache: Path = DEFAULT_DATACACHE) -> dict[str, int]:
     return {"row_count": len(rows), "failure_row_count": rejected_count}
 
 
-def update_datacache(path: Path, records: list[dict[str, Any]], *, source_csv: str,
-                     min_confidence: float, seen_at: str) -> dict[str, int]:
+def update_datacache(
+    path: Path,
+    records: list[dict[str, Any]],
+    *,
+    source_csv: str,
+    min_confidence: float,
+    seen_at: str,
+) -> dict[str, int]:
     """带锁合并全部标签并刷新低分子表；去重身份与首次出现时间保持不变。"""
     target = workspace_path(path)
     failure_data_path(target)
@@ -226,8 +282,14 @@ def update_datacache(path: Path, records: list[dict[str, Any]], *, source_csv: s
     fresh_keys: set[tuple[str, ...]] = set()
     for row in classification_csv_rows(records):
         passed = row["confidence"] >= threshold
-        row.update(confidence_passed=passed, min_confidence=threshold, confidence_comparison=">=",
-                   source_csv=source, first_seen_at=seen_at, last_seen_at=seen_at)
+        row.update(
+            confidence_passed=passed,
+            min_confidence=threshold,
+            confidence_comparison=">=",
+            source_csv=source,
+            first_seen_at=seen_at,
+            last_seen_at=seen_at,
+        )
         if not passed:
             row["label_sqlite_outcome"] = "below_threshold"
         row = _spreadsheet_safe(row)
@@ -253,6 +315,11 @@ def update_datacache(path: Path, records: list[dict[str, Any]], *, source_csv: s
         _atomic_write(target, rows, DATACACHE_FIELDS)
         rejected_count = _write_failure_data(target, rows)
     accepted = sum(str(row["confidence_passed"]) == "True" for row in rows)
-    return {"row_count": len(rows), "accepted_label_count": accepted,
-            "rejected_label_count": len(rows) - accepted, "inserted_count": inserted,
-            "updated_count": updated, "failure_row_count": rejected_count}
+    return {
+        "row_count": len(rows),
+        "accepted_label_count": accepted,
+        "rejected_label_count": len(rows) - accepted,
+        "inserted_count": inserted,
+        "updated_count": updated,
+        "failure_row_count": rejected_count,
+    }

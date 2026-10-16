@@ -89,9 +89,20 @@ MIN_BASE_GAMES = 30
 
 COLORS = ["#167a72", "#3761b7", "#b65267", "#749543", "#62656b"]
 LINE_COLORS = [
-    "#167a72", "#3761b7", "#b65267", "#749543", "#b07d2f", "#4a8aa8",
-    "#7a4fb0", "#c4633c", "#4f9e7a", "#8a5a44", "#5c6b8a", "#a0453f",
-    "#3f7d7a", "#9a6aa8",
+    "#167a72",
+    "#3761b7",
+    "#b65267",
+    "#749543",
+    "#b07d2f",
+    "#4a8aa8",
+    "#7a4fb0",
+    "#c4633c",
+    "#4f9e7a",
+    "#8a5a44",
+    "#5c6b8a",
+    "#a0453f",
+    "#3f7d7a",
+    "#9a6aa8",
 ]
 # 类目演变图中不画的类目：「玩法类型」在 2014–2024 全部年份都接近 100%
 # （几乎每款游戏都至少带一个玩法标签），画出来是一条压顶的水平线，
@@ -244,12 +255,16 @@ def load_detail(refresh: bool = False) -> tuple[pd.DataFrame, dict[str, object]]
         with conn.begin():
             conn.execute(text("SET TRANSACTION READ ONLY"))
             frame = pd.read_sql(query, conn)
-            fetched = conn.execute(
-                text(
-                    "SELECT min(fetched_at)::text AS first, max(fetched_at)::text AS last"
-                    " FROM ingest_log WHERE source = 'steamspy' AND status = 'ok'"
+            fetched = (
+                conn.execute(
+                    text(
+                        "SELECT min(fetched_at)::text AS first, max(fetched_at)::text AS last"
+                        " FROM ingest_log WHERE source = 'steamspy' AND status = 'ok'"
+                    )
                 )
-            ).mappings().first()
+                .mappings()
+                .first()
+            )
     engine.dispose()
     digest = hashlib.sha256(
         pd.util.hash_pandas_object(frame, index=False).values.tobytes()
@@ -285,19 +300,23 @@ def build_tables(frame: pd.DataFrame) -> dict[str, pd.DataFrame]:
     # 免费游戏占比：既看全部游戏，也看「有标签」子集——两者的落差就是
     # 缺失是否同时改变样本构成的直接证据。
     per_year["free_share_all"] = (
-        frame[frame.is_free].groupby("year").appid.nunique()
-        .reindex(per_year.index).fillna(0) / per_year.games
+        frame[frame.is_free]
+        .groupby("year")
+        .appid.nunique()
+        .reindex(per_year.index)
+        .fillna(0)
+        / per_year.games
     )
-    per_year["free_share_tagged"] = (
-        tagged[tagged.is_free].groupby("year").appid.nunique()
-        .reindex(per_year.index).fillna(0) / per_year.with_tags.replace(0, np.nan)
+    per_year["free_share_tagged"] = tagged[tagged.is_free].groupby(
+        "year"
+    ).appid.nunique().reindex(per_year.index).fillna(0) / per_year.with_tags.replace(
+        0, np.nan
     )
     # 每款游戏的平均标签数。这是解读占比变化的关键背景量：标签密度整体上行时，
     # 多数标签的占比都会被动上升，并非各自都在「变强」。
-    per_year["avg_tags"] = (
-        tagged.groupby("year").size().reindex(per_year.index).fillna(0)
-        / per_year.with_tags.replace(0, np.nan)
-    )
+    per_year["avg_tags"] = tagged.groupby("year").size().reindex(per_year.index).fillna(
+        0
+    ) / per_year.with_tags.replace(0, np.nan)
 
     counts = tagged.groupby(["year", "tag"]).appid.nunique().unstack(fill_value=0)
     counts = counts.reindex(columns=sorted(counts.columns))
@@ -309,7 +328,9 @@ def build_tables(frame: pd.DataFrame) -> dict[str, pd.DataFrame]:
     tagged["category"] = normalized.map(categories).fillna("其他")
     tagged.loc[normalized.isin(EXCLUDED), "category"] = "非游戏条目"
     dedup = tagged.drop_duplicates(["appid", "category"])
-    cat_counts = dedup.groupby(["year", "category"]).appid.nunique().unstack(fill_value=0)
+    cat_counts = (
+        dedup.groupby(["year", "category"]).appid.nunique().unstack(fill_value=0)
+    )
     cat_share = cat_counts.div(per_year.with_tags, axis=0)
     cat_counts = cat_counts.reindex(columns=sorted(cat_counts.columns))
     cat_share = cat_share.reindex(columns=sorted(cat_share.columns))
@@ -360,8 +381,12 @@ def pick_font() -> str:
     """选一个能显示中文的字体，避免中文标题渲染成方块。"""
     names = {f.name for f in font_manager.fontManager.ttflist}
     for candidate in (
-        "Microsoft YaHei", "SimHei", "PingFang SC",
-        "Noto Sans CJK SC", "Arial Unicode MS", "DejaVu Sans",
+        "Microsoft YaHei",
+        "SimHei",
+        "PingFang SC",
+        "Noto Sans CJK SC",
+        "Arial Unicode MS",
+        "DejaVu Sans",
     ):
         if candidate in names:
             return candidate
@@ -377,8 +402,9 @@ def style_axis(ax: plt.Axes) -> None:
     ax.set_axisbelow(True)
 
 
-def plot_lines(share: pd.DataFrame, counts: pd.DataFrame, path: Path,
-               line_count: int = 12) -> list[str]:
+def plot_lines(
+    share: pd.DataFrame, counts: pd.DataFrame, path: Path, line_count: int = 12
+) -> list[str]:
     """多标签占比随年份的折线图（取样本窗口内游戏数最多的若干标签）。
 
     终点数值并入图例而非贴在曲线尾部——多条线在 40–50% 区间汇聚时，
@@ -394,23 +420,36 @@ def plot_lines(share: pd.DataFrame, counts: pd.DataFrame, path: Path,
     style_axis(ax)
     for tag, color in zip(picked, LINE_COLORS):
         values = share.loc[years, tag] * 100
-        ax.plot(years, values, marker="o", markersize=4, linewidth=2, color=color,
-                label=f"{tag}（{PLOT_END} 年 {values.iloc[-1]:.0f}%）")
+        ax.plot(
+            years,
+            values,
+            marker="o",
+            markersize=4,
+            linewidth=2,
+            color=color,
+            label=f"{tag}（{PLOT_END} 年 {values.iloc[-1]:.0f}%）",
+        )
     ax.set_xticks(years)
     ax.set_ylabel("该年含此标签的游戏占比（%）", fontsize=12, color="#5c6470")
     ax.set_xlabel("发售年份", fontsize=12, color="#5c6470")
-    ax.grid(axis="y", color="#e1e5ea", linewidth=.7)
+    ax.grid(axis="y", color="#e1e5ea", linewidth=0.7)
     ax.set_xlim(PLOT_START - 0.4, PLOT_END + 0.4)
-    ax.legend(ncol=4, fontsize=10, frameon=False, loc="upper center",
-              bbox_to_anchor=(0.5, -0.11))
+    ax.legend(
+        ncol=4,
+        fontsize=10,
+        frameon=False,
+        loc="upper center",
+        bbox_to_anchor=(0.5, -0.11),
+    )
     fig.tight_layout(pad=1.3)
     fig.savefig(path, dpi=200)
     plt.close(fig)
     return picked
 
 
-def plot_heatmap(share: pd.DataFrame, counts: pd.DataFrame, path: Path,
-                 top: int = 26) -> list[str]:
+def plot_heatmap(
+    share: pd.DataFrame, counts: pd.DataFrame, path: Path, top: int = 26
+) -> list[str]:
     """标签 × 年份的占比热力图，每行归一化到自身最大值以突出走势。"""
     window = counts.loc[PLOT_START:PLOT_END].sum().sort_values(ascending=False)
     picked = list(window.head(top).index)
@@ -431,11 +470,19 @@ def plot_heatmap(share: pd.DataFrame, counts: pd.DataFrame, path: Path,
     for i, tag in enumerate(picked):
         for j, year in enumerate(years):
             value = block.loc[tag, year]
-            ax.text(j, i, f"{value:.0f}", ha="center", va="center", fontsize=8,
-                    color="#ffffff" if scaled.loc[tag, year] > 0.62 else "#3b424b")
+            ax.text(
+                j,
+                i,
+                f"{value:.0f}",
+                ha="center",
+                va="center",
+                fontsize=8,
+                color="#ffffff" if scaled.loc[tag, year] > 0.62 else "#3b424b",
+            )
     bar = fig.colorbar(image, ax=ax, fraction=0.022, pad=0.015)
-    bar.set_label("行内相对水平\n（自身最高年 = 1）", fontsize=9, color="#5c6470",
-                  labelpad=10)
+    bar.set_label(
+        "行内相对水平\n（自身最高年 = 1）", fontsize=9, color="#5c6470", labelpad=10
+    )
     bar.ax.tick_params(length=0, labelsize=9)
     bar.outline.set_visible(False)
     ax.set_xlabel("发售年份", fontsize=12, color="#5c6470")
@@ -453,28 +500,45 @@ def plot_coverage(per_year: pd.DataFrame, path: Path) -> None:
 
     fig, ax = plt.subplots(figsize=(11.5, 4.6), facecolor="#f7f8fa")
     style_axis(ax)
-    ax.bar(years, games, color="#c9d5e2", width=.68,
-           label="该年有发售日的游戏数")
-    ax.bar(years, per_year.loc[years, "with_tags"], color=COLORS[0], width=.68,
-           label="其中带主题标签者（计入占比分母）")
+    ax.bar(years, games, color="#c9d5e2", width=0.68, label="该年有发售日的游戏数")
+    ax.bar(
+        years,
+        per_year.loc[years, "with_tags"],
+        color=COLORS[0],
+        width=0.68,
+        label="其中带主题标签者（计入占比分母）",
+    )
     ax.set_xticks(years, [str(y) for y in years], rotation=45, fontsize=10)
-    ax.grid(axis="y", color="#e1e5ea", linewidth=.7)
+    ax.grid(axis="y", color="#e1e5ea", linewidth=0.7)
     ax.set_ylabel("游戏数量", fontsize=12, color="#5c6470")
     ax.set_ylim(0, games.max() * 1.32)
     ax.legend(fontsize=10, frameon=False, loc="upper left", ncol=1)
 
     twin = ax.twinx()
-    twin.plot(years, coverage, color=COLORS[2], marker="o", markersize=4,
-              linewidth=1.8, label="标签覆盖率")
+    twin.plot(
+        years,
+        coverage,
+        color=COLORS[2],
+        marker="o",
+        markersize=4,
+        linewidth=1.8,
+        label="标签覆盖率",
+    )
     twin.set_ylim(0, 108)
     twin.set_yticks([0, 25, 50, 75, 100], ["0%", "25%", "50%", "75%", "100%"])
     twin.tick_params(length=0, labelsize=11, colors="#5c6470")
     for side in twin.spines.values():
         side.set_visible(False)
     for year in (2021, 2025):
-        twin.annotate(f"{coverage.loc[year]:.1f}%", (year, coverage.loc[year]),
-                      xytext=(0, 9), textcoords="offset points", ha="center",
-                      fontsize=10, color=COLORS[2])
+        twin.annotate(
+            f"{coverage.loc[year]:.1f}%",
+            (year, coverage.loc[year]),
+            xytext=(0, 9),
+            textcoords="offset points",
+            ha="center",
+            fontsize=10,
+            color=COLORS[2],
+        )
     fig.tight_layout(pad=1.3)
     fig.savefig(path, dpi=200)
     plt.close(fig)
@@ -487,30 +551,48 @@ def plot_categories(cat_share: pd.DataFrame, path: Path) -> None:
     """
     years = [y for y in range(PLOT_START, PLOT_END + 1) if y in cat_share.index]
     order = ["玩法类型", "题材设定", "美术与呈现", "模式与功能", "氛围与叙事", "其他"]
-    present = [c for c in order
-               if c in cat_share.columns and c not in CATEGORY_PLOT_SKIP]
+    present = [
+        c for c in order if c in cat_share.columns and c not in CATEGORY_PLOT_SKIP
+    ]
 
     fig, ax = plt.subplots(figsize=(11.5, 5.4), facecolor="#f7f8fa")
     style_axis(ax)
     for cat, color in zip(present, LINE_COLORS):
         values = cat_share.loc[years, cat] * 100
         # 终点数值并入图例：多条线在 80–90% 区间收拢时，曲线尾端标注会互相叠压。
-        ax.plot(years, values, marker="o", markersize=4, linewidth=2.2, color=color,
-                label=f"{cat}（{PLOT_END} 年 {values.iloc[-1]:.0f}%）")
+        ax.plot(
+            years,
+            values,
+            marker="o",
+            markersize=4,
+            linewidth=2.2,
+            color=color,
+            label=f"{cat}（{PLOT_END} 年 {values.iloc[-1]:.0f}%）",
+        )
     ax.set_xticks(years)
     ax.set_ylabel("该年至少含一个此类标签的游戏占比（%）", fontsize=12, color="#5c6470")
     ax.set_xlabel("发售年份", fontsize=12, color="#5c6470")
-    ax.grid(axis="y", color="#e1e5ea", linewidth=.7)
+    ax.grid(axis="y", color="#e1e5ea", linewidth=0.7)
     ax.set_xlim(PLOT_START - 0.4, PLOT_END + 0.4)
-    ax.legend(fontsize=10, frameon=False, ncol=3, loc="upper center",
-              bbox_to_anchor=(0.5, -0.11))
+    ax.legend(
+        fontsize=10,
+        frameon=False,
+        ncol=3,
+        loc="upper center",
+        bbox_to_anchor=(0.5, -0.11),
+    )
     fig.tight_layout(pad=1.3)
     fig.savefig(path, dpi=200)
     plt.close(fig)
 
 
-def plot_robustness(share: pd.DataFrame, paid_share: pd.DataFrame,
-                    counts: pd.DataFrame, path: Path, top: int = 6) -> list[str]:
+def plot_robustness(
+    share: pd.DataFrame,
+    paid_share: pd.DataFrame,
+    counts: pd.DataFrame,
+    path: Path,
+    top: int = 6,
+) -> list[str]:
     """稳健性对照：全样本口径 vs 仅付费游戏口径。
 
     标签缺失高度偏向免费游戏，因此把「是否剔除免费游戏」作为敏感性检验。
@@ -528,14 +610,30 @@ def plot_robustness(share: pd.DataFrame, paid_share: pd.DataFrame,
         style_axis(ax)
         full = share.loc[years, tag] * 100
         paid = paid_share.reindex(index=years)[tag] * 100
-        ax.plot(years, full, color=COLORS[0], linewidth=2, marker="o",
-                markersize=3, label="全部游戏")
-        ax.plot(years, paid, color=COLORS[2], linewidth=2, marker="s",
-                markersize=3, linestyle="--", label="仅付费游戏")
+        ax.plot(
+            years,
+            full,
+            color=COLORS[0],
+            linewidth=2,
+            marker="o",
+            markersize=3,
+            label="全部游戏",
+        )
+        ax.plot(
+            years,
+            paid,
+            color=COLORS[2],
+            linewidth=2,
+            marker="s",
+            markersize=3,
+            linestyle="--",
+            label="仅付费游戏",
+        )
         ax.set_title(tag, fontsize=12, color="#262d35", pad=6)
-        ax.grid(axis="y", color="#e1e5ea", linewidth=.7)
-        ax.set_xticks([PLOT_START, 2019, PLOT_END],
-                      [str(PLOT_START), "2019", str(PLOT_END)])
+        ax.grid(axis="y", color="#e1e5ea", linewidth=0.7)
+        ax.set_xticks(
+            [PLOT_START, 2019, PLOT_END], [str(PLOT_START), "2019", str(PLOT_END)]
+        )
         ax.tick_params(labelsize=10)
         ax.set_ylim(0, float(max(full.max(), paid.max())) * 1.3)
     axes[0][0].legend(fontsize=9, frameon=False, loc="upper left")
@@ -548,8 +646,9 @@ def plot_robustness(share: pd.DataFrame, paid_share: pd.DataFrame,
 def main() -> None:
     """跑完整条链路：只读取数 → 年度统计 → 出图 → 写本地报告。"""
     parser = argparse.ArgumentParser(description="按发售年份的标签占比演变")
-    parser.add_argument("--refresh", action="store_true",
-                        help="忽略本地明细缓存，重新只读查库")
+    parser.add_argument(
+        "--refresh", action="store_true", help="忽略本地明细缓存，重新只读查库"
+    )
     args = parser.parse_args()
     plt.rcParams.update({"font.family": pick_font(), "axes.unicode_minus": False})
     ASSETS.mkdir(parents=True, exist_ok=True)
@@ -570,9 +669,12 @@ def main() -> None:
     growth_wide = fastest_growing(share, counts, PLOT_START, PLOT_END, top=15)
 
     summary = {
-        "meta": {**meta, "plot_window": [PLOT_START, PLOT_END],
-                 "growth_window": [GROWTH_BASE, GROWTH_END],
-                 "min_base_games": MIN_BASE_GAMES},
+        "meta": {
+            **meta,
+            "plot_window": [PLOT_START, PLOT_END],
+            "growth_window": [GROWTH_BASE, GROWTH_END],
+            "min_base_games": MIN_BASE_GAMES,
+        },
         "coverage": {
             str(year): {
                 "games": int(row.games),
@@ -585,17 +687,25 @@ def main() -> None:
         "line_tags": line_tags,
         "heat_tags": heat_tags,
         "growth_main": [
-            {"tag": tag, "base_pct": round(row.base_share * 100, 2),
-             "end_pct": round(row.end_share * 100, 2),
-             "delta_pp": round(row.delta_pp, 2),
-             "base_games": int(row.base_games), "end_games": int(row.end_games)}
+            {
+                "tag": tag,
+                "base_pct": round(row.base_share * 100, 2),
+                "end_pct": round(row.end_share * 100, 2),
+                "delta_pp": round(row.delta_pp, 2),
+                "base_games": int(row.base_games),
+                "end_games": int(row.end_games),
+            }
             for tag, row in growth.iterrows()
         ],
         "growth_wide_window": [
-            {"tag": tag, "base_pct": round(row.base_share * 100, 2),
-             "end_pct": round(row.end_share * 100, 2),
-             "delta_pp": round(row.delta_pp, 2),
-             "base_games": int(row.base_games), "end_games": int(row.end_games)}
+            {
+                "tag": tag,
+                "base_pct": round(row.base_share * 100, 2),
+                "end_pct": round(row.end_share * 100, 2),
+                "delta_pp": round(row.delta_pp, 2),
+                "base_games": int(row.base_games),
+                "end_games": int(row.end_games),
+            }
             for tag, row in growth_wide.iterrows()
         ],
         "robustness": {
@@ -608,7 +718,7 @@ def main() -> None:
                 for year, row in per_year.iterrows()
             },
             "note": "缺失标签的游戏以免费游戏为主；上表是免费游戏在「全部游戏」与"
-                    "「有标签游戏」中的占比落差，落差越大说明缺失越非随机。",
+            "「有标签游戏」中的占比落差，落差越大说明缺失越非随机。",
         },
         "category_coverage": {
             str(year): {
@@ -631,23 +741,29 @@ def main() -> None:
     REPORT.parent.mkdir(parents=True, exist_ok=True)
     REPORT.write_text(json.dumps(summary, ensure_ascii=False, indent=2))
 
-    print(json.dumps({
-        "游戏数": meta["games"],
-        "明细行数": meta["rows"],
-        "指纹": meta["sha256"][:12],
-        "折线标签": line_tags,
-        "覆盖率_2014_2020_2024_2025": [
-            round(per_year.coverage.get(y, float("nan")) * 100, 1)
-            for y in (2014, 2020, 2024, 2025)
-        ],
-        "增长最快_2014_2020": [
-            f"{tag} {row.base_share*100:.1f}%→{row.end_share*100:.1f}%"
-            f"({row.delta_pp:+.1f}pp)"
-            for tag, row in growth.head(8).iterrows()
-        ],
-        "报告": str(REPORT.relative_to(ROOT)),
-        "图": sorted(p.name for p in ASSETS.glob("*.png")),
-    }, ensure_ascii=False, indent=2))
+    print(
+        json.dumps(
+            {
+                "游戏数": meta["games"],
+                "明细行数": meta["rows"],
+                "指纹": meta["sha256"][:12],
+                "折线标签": line_tags,
+                "覆盖率_2014_2020_2024_2025": [
+                    round(per_year.coverage.get(y, float("nan")) * 100, 1)
+                    for y in (2014, 2020, 2024, 2025)
+                ],
+                "增长最快_2014_2020": [
+                    f"{tag} {row.base_share * 100:.1f}%→{row.end_share * 100:.1f}%"
+                    f"({row.delta_pp:+.1f}pp)"
+                    for tag, row in growth.head(8).iterrows()
+                ],
+                "报告": str(REPORT.relative_to(ROOT)),
+                "图": sorted(p.name for p in ASSETS.glob("*.png")),
+            },
+            ensure_ascii=False,
+            indent=2,
+        )
+    )
 
 
 if __name__ == "__main__":

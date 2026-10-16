@@ -28,7 +28,9 @@ class HTTPResult:
 class TransportTimeout(Exception):
     """保留总时限或读取超时现场；部分正文不能作为完整响应复用。"""
 
-    def __init__(self, kind: str, progress: Progress, partial_response_text: str) -> None:
+    def __init__(
+        self, kind: str, progress: Progress, partial_response_text: str
+    ) -> None:
         """保存超时种类、进度副本和已接收正文。"""
         self.kind = kind
         self.progress = dict(progress)
@@ -49,7 +51,11 @@ class AsyncHTTPTransport:
         transport: httpx.AsyncBaseTransport | None = None,
     ) -> None:
         """配置网络时限和心跳间隔；构造时不创建连接或事件循环。"""
-        if read_timeout_seconds <= 0 or connect_timeout_seconds <= 0 or progress_interval_seconds <= 0:
+        if (
+            read_timeout_seconds <= 0
+            or connect_timeout_seconds <= 0
+            or progress_interval_seconds <= 0
+        ):
             raise ValueError("传输超时与进度间隔必须大于 0")
         self.read_timeout_seconds = read_timeout_seconds
         self.connect_timeout_seconds = connect_timeout_seconds
@@ -73,14 +79,16 @@ class AsyncHTTPTransport:
         """接收完整响应；绝对总时限由调用者给定，可覆盖多次尝试与退避。"""
         if self._runner is None:
             self._runner = asyncio.Runner()
-        return self._runner.run(self._request(
-            url,
-            headers=headers,
-            payload=payload,
-            deadline=deadline,
-            started_monotonic=started_monotonic,
-            on_progress=on_progress,
-        ))
+        return self._runner.run(
+            self._request(
+                url,
+                headers=headers,
+                payload=payload,
+                deadline=deadline,
+                started_monotonic=started_monotonic,
+                on_progress=on_progress,
+            )
+        )
 
     def close(self) -> None:
         """关闭客户端再关闭其所属事件循环；没有初始化时无操作。"""
@@ -100,11 +108,13 @@ class AsyncHTTPTransport:
 
     def _snapshot(self, *, deadline: float, started_monotonic: float) -> Progress:
         now = time.monotonic()
-        self.last_progress.update({
-            "elapsed_seconds": round(max(0.0, now - started_monotonic), 3),
-            "remaining_seconds": round(max(0.0, deadline - now), 3),
-            "updated_at": datetime.now(timezone.utc).isoformat(),
-        })
+        self.last_progress.update(
+            {
+                "elapsed_seconds": round(max(0.0, now - started_monotonic), 3),
+                "remaining_seconds": round(max(0.0, deadline - now), 3),
+                "updated_at": datetime.now(timezone.utc).isoformat(),
+            }
+        )
         return dict(self.last_progress)
 
     def _publish(
@@ -114,7 +124,9 @@ class AsyncHTTPTransport:
         deadline: float,
         started_monotonic: float,
     ) -> None:
-        on_progress(self._snapshot(deadline=deadline, started_monotonic=started_monotonic))
+        on_progress(
+            self._snapshot(deadline=deadline, started_monotonic=started_monotonic)
+        )
 
     async def _request(
         self,
@@ -138,11 +150,16 @@ class AsyncHTTPTransport:
         }
         timeout = asyncio.timeout(max(0.0, deadline - time.monotonic()))
         try:
-            self._publish(on_progress, deadline=deadline, started_monotonic=started_monotonic)
+            self._publish(
+                on_progress, deadline=deadline, started_monotonic=started_monotonic
+            )
             async with timeout:
                 if self._client is None:
                     self._client = httpx.AsyncClient(
-                        timeout=httpx.Timeout(self.read_timeout_seconds, connect=self.connect_timeout_seconds),
+                        timeout=httpx.Timeout(
+                            self.read_timeout_seconds,
+                            connect=self.connect_timeout_seconds,
+                        ),
                         transport=self._transport,
                     )
                 return await self._with_heartbeat(
@@ -154,13 +171,21 @@ class AsyncHTTPTransport:
                     on_progress=on_progress,
                 )
         except httpx.ReadTimeout as exc:
-            progress = self._snapshot(deadline=deadline, started_monotonic=started_monotonic)
-            raise TransportTimeout("read", progress, self.partial_response_text) from exc
+            progress = self._snapshot(
+                deadline=deadline, started_monotonic=started_monotonic
+            )
+            raise TransportTimeout(
+                "read", progress, self.partial_response_text
+            ) from exc
         except TimeoutError as exc:
             if not timeout.expired():
                 raise
-            progress = self._snapshot(deadline=deadline, started_monotonic=started_monotonic)
-            raise TransportTimeout("total", progress, self.partial_response_text) from exc
+            progress = self._snapshot(
+                deadline=deadline, started_monotonic=started_monotonic
+            )
+            raise TransportTimeout(
+                "total", progress, self.partial_response_text
+            ) from exc
         finally:
             # KeyboardInterrupt/CancelledError 也留下可供调用方收尾的最终进度。
             self._snapshot(deadline=deadline, started_monotonic=started_monotonic)
@@ -175,21 +200,27 @@ class AsyncHTTPTransport:
         started_monotonic: float,
         on_progress: Callable[[Progress], None],
     ) -> HTTPResult:
-        reader = asyncio.create_task(self._read_response(
-            url,
-            headers=headers,
-            payload=payload,
-            deadline=deadline,
-            started_monotonic=started_monotonic,
-            on_progress=on_progress,
-        ))
-        heartbeat = asyncio.create_task(self._heartbeat(
-            on_progress,
-            deadline=deadline,
-            started_monotonic=started_monotonic,
-        ))
+        reader = asyncio.create_task(
+            self._read_response(
+                url,
+                headers=headers,
+                payload=payload,
+                deadline=deadline,
+                started_monotonic=started_monotonic,
+                on_progress=on_progress,
+            )
+        )
+        heartbeat = asyncio.create_task(
+            self._heartbeat(
+                on_progress,
+                deadline=deadline,
+                started_monotonic=started_monotonic,
+            )
+        )
         try:
-            done, _ = await asyncio.wait({reader, heartbeat}, return_when=asyncio.FIRST_COMPLETED)
+            done, _ = await asyncio.wait(
+                {reader, heartbeat}, return_when=asyncio.FIRST_COMPLETED
+            )
             if heartbeat in done:
                 # 写进度/输出失败同样取消在途请求，不能只让心跳任务悄悄失败。
                 heartbeat.result()
@@ -210,7 +241,9 @@ class AsyncHTTPTransport:
     ) -> None:
         while True:
             await asyncio.sleep(self.progress_interval_seconds)
-            self._publish(on_progress, deadline=deadline, started_monotonic=started_monotonic)
+            self._publish(
+                on_progress, deadline=deadline, started_monotonic=started_monotonic
+            )
 
     async def _read_response(
         self,
@@ -223,15 +256,23 @@ class AsyncHTTPTransport:
         on_progress: Callable[[Progress], None],
     ) -> HTTPResult:
         assert self._client is not None
-        async with self._client.stream("POST", url, headers=headers, json=payload) as response:
-            self.last_progress.update({
-                "phase": "reading_response",
-                "http_status": response.status_code,
-                "retry_after": response.headers.get("Retry-After", ""),
-            })
-            self._publish(on_progress, deadline=deadline, started_monotonic=started_monotonic)
+        async with self._client.stream(
+            "POST", url, headers=headers, json=payload
+        ) as response:
+            self.last_progress.update(
+                {
+                    "phase": "reading_response",
+                    "http_status": response.status_code,
+                    "retry_after": response.headers.get("Retry-After", ""),
+                }
+            )
+            self._publish(
+                on_progress, deadline=deadline, started_monotonic=started_monotonic
+            )
             try:
-                decoder_type = codecs.getincrementaldecoder(response.encoding or "utf-8")
+                decoder_type = codecs.getincrementaldecoder(
+                    response.encoding or "utf-8"
+                )
             except LookupError:
                 decoder_type = codecs.getincrementaldecoder("utf-8")
             decoder = decoder_type(errors="replace")
@@ -240,12 +281,19 @@ class AsyncHTTPTransport:
                 self.partial_response_text += text
                 self.last_progress["received_bytes"] += len(chunk)
                 self.last_progress["has_non_whitespace_body"] |= bool(text.strip())
-                self.last_progress["last_data_at"] = datetime.now(timezone.utc).isoformat()
+                self.last_progress["last_data_at"] = datetime.now(
+                    timezone.utc
+                ).isoformat()
             final_text = decoder.decode(b"", final=True)
             self.partial_response_text += final_text
             self.last_progress["has_non_whitespace_body"] |= bool(final_text.strip())
-            result = HTTPResult(response.status_code, self.partial_response_text,
-                                response.headers.get("Retry-After", ""))
+            result = HTTPResult(
+                response.status_code,
+                self.partial_response_text,
+                response.headers.get("Retry-After", ""),
+            )
         self.last_progress.update({"phase": "received", "response_complete": True})
-        self._publish(on_progress, deadline=deadline, started_monotonic=started_monotonic)
+        self._publish(
+            on_progress, deadline=deadline, started_monotonic=started_monotonic
+        )
         return result

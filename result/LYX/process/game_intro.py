@@ -31,7 +31,9 @@ recognized=false，summary为空字符串，uncertainty简要说明无法识别�
 uncertainty最多80个字符，无具体疑点时可为空。
 格式示例：{"recognized":false,"summary":"","uncertainty":"无法可靠识别这一具体版本"}
 """
-GAME_INTRO_PROMPT = GAME_INTRO_PROMPT_V1 + """
+GAME_INTRO_PROMPT = (
+    GAME_INTRO_PROMPT_V1
+    + """
 [输出前检查]
 recognized=true时，summary以55～65个字符为写作目标，为40～80字符的硬性范围留出余量。
 输出前检查summary的字符数（包括中文、标点、空格和数字），不足40或超过80时先改写再输出。
@@ -39,6 +41,7 @@ recognized=true时，summary以55～65个字符为写作目标，为40～80字�
 仅作格式与长度参考的已识别示例（56字符，不是本次游戏的事实）：
 {"recognized":true,"summary":"这是一款以中世纪城镇为背景的经营模拟游戏，玩家通过规划生产、建设设施和分配居民工作，逐步发展聚落并应对资源短缺。","uncertainty":""}
 """
+)
 GAME_INTRO_PROMPT_VERSION = "lyx-game-intro-v2"
 COMPATIBLE_GAME_INTRO_PROMPTS = (("lyx-game-intro-v1", GAME_INTRO_PROMPT_V1),)
 INTRO_MAX_TOKENS = 512
@@ -53,30 +56,66 @@ class IntroClient(Protocol):
         """构造实际请求。"""
         ...
 
-    def cached(self, payload: Json, validator: Callable[[Any], Json], *, task: str, prompt_version: str) -> Json | None:
+    def cached(
+        self,
+        payload: Json,
+        validator: Callable[[Any], Json],
+        *,
+        task: str,
+        prompt_version: str,
+    ) -> Json | None:
         """只读检查缓存，不发请求。"""
         ...
 
-    def call(self, messages: list[Json], validator: Callable[[Any], Json], *, max_tokens: int, task: str, prompt_version: str) -> Json:
+    def call(
+        self,
+        messages: list[Json],
+        validator: Callable[[Any], Json],
+        *,
+        max_tokens: int,
+        task: str,
+        prompt_version: str,
+    ) -> Json:
         """复用调用方预算、缓存与HTTP实现。"""
         ...
 
 
 def intro_messages(game: Json) -> list[Json]:
     """只允许游戏名称与官方类型进入摘要请求，不发送成就或结果变量。"""
-    data = {"title": game["name_en"], "localized_title": game["name_zh"], "valve_genres": game["valve_genres"]}
-    content = json.dumps(data, ensure_ascii=False, sort_keys=True, separators=(",", ":"), allow_nan=False)
-    return [{"role": "system", "content": GAME_INTRO_PROMPT}, {"role": "user", "content": content}]
+    data = {
+        "title": game["name_en"],
+        "localized_title": game["name_zh"],
+        "valve_genres": game["valve_genres"],
+    }
+    content = json.dumps(
+        data, ensure_ascii=False, sort_keys=True, separators=(",", ":"), allow_nan=False
+    )
+    return [
+        {"role": "system", "content": GAME_INTRO_PROMPT},
+        {"role": "user", "content": content},
+    ]
 
 
 def validate_intro(data: Any) -> Json:
     """校验字段、识别状态和长度；不把模型自报识别当成外部事实验证。"""
-    if not isinstance(data, dict) or set(data) != {"recognized", "summary", "uncertainty"}:
+    if not isinstance(data, dict) or set(data) != {
+        "recognized",
+        "summary",
+        "uncertainty",
+    }:
         raise ValueError("简介必须只包含recognized/summary/uncertainty")
-    if type(data["recognized"]) is not bool or not isinstance(data["summary"], str) or not isinstance(data["uncertainty"], str):
+    if (
+        type(data["recognized"]) is not bool
+        or not isinstance(data["summary"], str)
+        or not isinstance(data["uncertainty"], str)
+    ):
         raise ValueError("简介字段类型不符合约定")
     summary, uncertainty = data["summary"], data["uncertainty"]
-    if summary != summary.strip() or uncertainty != uncertainty.strip() or len(uncertainty) > 80:
+    if (
+        summary != summary.strip()
+        or uncertainty != uncertainty.strip()
+        or len(uncertainty) > 80
+    ):
         raise ValueError("简介文本有首尾空白或uncertainty超过80字符")
     if data["recognized"]:
         if not 40 <= len(summary) <= 80:
@@ -88,11 +127,20 @@ def validate_intro(data: Any) -> Json:
 
 def cached_intro(client: IntroClient, game: Json) -> Json | None:
     """仅检查此游戏、模型及简介版本的合格缓存，供离线plan使用。"""
-    return client.cached(client.payload(intro_messages(game), INTRO_MAX_TOKENS), validate_intro,
-                         task=INTRO_TASK, prompt_version=GAME_INTRO_PROMPT_VERSION)
+    return client.cached(
+        client.payload(intro_messages(game), INTRO_MAX_TOKENS),
+        validate_intro,
+        task=INTRO_TASK,
+        prompt_version=GAME_INTRO_PROMPT_VERSION,
+    )
 
 
 def get_intro(client: IntroClient, game: Json) -> Json:
     """先复用合格缓存，缺失才调用；请求计入传入客户端的同一预算。"""
-    return client.call(intro_messages(game), validate_intro, max_tokens=INTRO_MAX_TOKENS,
-                       task=INTRO_TASK, prompt_version=GAME_INTRO_PROMPT_VERSION)
+    return client.call(
+        intro_messages(game),
+        validate_intro,
+        max_tokens=INTRO_MAX_TOKENS,
+        task=INTRO_TASK,
+        prompt_version=GAME_INTRO_PROMPT_VERSION,
+    )

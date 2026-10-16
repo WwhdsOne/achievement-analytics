@@ -12,8 +12,14 @@ import sqlite3
 from typing import Any
 
 from local_database import (
-    DEFAULT_DATABASE, TABLES, WORKSPACE, connect_local,
-    ensure_schema, execute_schema, table_counts, workspace_path,
+    DEFAULT_DATABASE,
+    TABLES,
+    WORKSPACE,
+    connect_local,
+    ensure_schema,
+    execute_schema,
+    table_counts,
+    workspace_path,
 )
 
 MIGRATION = WORKSPACE / "database" / "migrate_display_names.sql"
@@ -24,14 +30,24 @@ def data_digest(con: sqlite3.Connection, *, original_only: bool = False) -> str:
     sha = hashlib.sha256()
     for table in TABLES:
         actual = sorted(row[1] for row in con.execute(f'PRAGMA table_info("{table}")'))
-        columns = [name for name in actual if not (
-            original_only and table == "achievement_types" and name == "display_name"
-        )]
+        columns = [
+            name
+            for name in actual
+            if not (
+                original_only
+                and table == "achievement_types"
+                and name == "display_name"
+            )
+        ]
         fields = ",".join('"' + name.replace('"', '""') + '"' for name in columns)
         sha.update(table.encode("utf-8"))
         sha.update(json.dumps(columns, ensure_ascii=False).encode("utf-8"))
         for row in con.execute(f'SELECT {fields} FROM "{table}" ORDER BY {fields}'):
-            sha.update((json.dumps(row, ensure_ascii=False, allow_nan=False) + "\n").encode("utf-8"))
+            sha.update(
+                (json.dumps(row, ensure_ascii=False, allow_nan=False) + "\n").encode(
+                    "utf-8"
+                )
+            )
     return sha.hexdigest()
 
 
@@ -61,10 +77,16 @@ def migrate(database: Path) -> dict[str, Any]:
         if missing:
             raise ValueError("标签缺少对应的非空成就展示名，停止迁移")
         if version >= 3 and changed == 0:
-            return {"already_migrated": True, "schema_version": version,
-                    "backfilled_rows": 0, "counts": table_counts(source)}
+            return {
+                "already_migrated": True,
+                "schema_version": version,
+                "backfilled_rows": 0,
+                "counts": table_counts(source),
+            }
         stamp = datetime.now(timezone.utc).strftime("%Y%m%dT%H%M%S%fZ")
-        directory = workspace_path(WORKSPACE / "database" / "backups" / (stamp + "-display-names"))
+        directory = workspace_path(
+            WORKSPACE / "database" / "backups" / (stamp + "-display-names")
+        )
         directory.mkdir(parents=True, exist_ok=False)
         backup = directory / "achievements.sqlite"
         with closing(sqlite3.connect(backup)) as destination:
@@ -81,11 +103,23 @@ def migrate(database: Path) -> dict[str, Any]:
             missing, changed = name_issues(con, has_display_name=version >= 3)
             if missing:
                 raise ValueError("来源展示名缺失，停止迁移")
-            triggers = {row[0] for row in con.execute("SELECT name FROM sqlite_master WHERE type='trigger'")}
-            indexes = {row[0] for row in con.execute("SELECT name FROM sqlite_master WHERE type='index' AND sql IS NOT NULL")}
+            triggers = {
+                row[0]
+                for row in con.execute(
+                    "SELECT name FROM sqlite_master WHERE type='trigger'"
+                )
+            }
+            indexes = {
+                row[0]
+                for row in con.execute(
+                    "SELECT name FROM sqlite_master WHERE type='index' AND sql IS NOT NULL"
+                )
+            }
             if version == 2:
                 pending = ""
-                for line in MIGRATION.read_text(encoding="utf-8").splitlines(keepends=True):
+                for line in MIGRATION.read_text(encoding="utf-8").splitlines(
+                    keepends=True
+                ):
                     pending += line
                     if sqlite3.complete_statement(pending):
                         con.execute(pending)
@@ -102,11 +136,25 @@ def migrate(database: Path) -> dict[str, Any]:
             execute_schema(con, schema_version=target_version)
             ensure_schema(con, schema_version=target_version)
             after = data_digest(con, original_only=True)
-            if before != after or counts != table_counts(con) or name_issues(con, has_display_name=True) != (0, 0):
+            if (
+                before != after
+                or counts != table_counts(con)
+                or name_issues(con, has_display_name=True) != (0, 0)
+            ):
                 raise ValueError("展示名回填或原始记录保留检查失败，回滚")
-            if not triggers <= {r[0] for r in con.execute("SELECT name FROM sqlite_master WHERE type='trigger'")}:
+            if not triggers <= {
+                r[0]
+                for r in con.execute(
+                    "SELECT name FROM sqlite_master WHERE type='trigger'"
+                )
+            }:
                 raise ValueError("原有触发器没有完整保留，回滚")
-            if not indexes <= {r[0] for r in con.execute("SELECT name FROM sqlite_master WHERE type='index' AND sql IS NOT NULL")}:
+            if not indexes <= {
+                r[0]
+                for r in con.execute(
+                    "SELECT name FROM sqlite_master WHERE type='index' AND sql IS NOT NULL"
+                )
+            }:
                 raise ValueError("原有索引没有完整保留，回滚")
             integrity = con.execute("PRAGMA integrity_check").fetchone()[0]
             foreign_keys = con.execute("PRAGMA foreign_key_check").fetchall()
@@ -116,11 +164,23 @@ def migrate(database: Path) -> dict[str, Any]:
         except BaseException:
             con.rollback()
             raise
-    report = {"already_migrated": False, "schema_version_before": version, "schema_version": target_version,
-              "database": str(database.resolve()), "backup": str(backup), "backfilled_rows": changed,
-              "counts": counts, "original_data_sha256_before": before, "original_data_sha256_after": after,
-              "original_data_unchanged": before == after, "integrity": integrity, "foreign_key_issues": len(foreign_keys)}
-    (directory / "migration.json").write_text(json.dumps(report, ensure_ascii=False, indent=2) + "\n", encoding="utf-8")
+    report = {
+        "already_migrated": False,
+        "schema_version_before": version,
+        "schema_version": target_version,
+        "database": str(database.resolve()),
+        "backup": str(backup),
+        "backfilled_rows": changed,
+        "counts": counts,
+        "original_data_sha256_before": before,
+        "original_data_sha256_after": after,
+        "original_data_unchanged": before == after,
+        "integrity": integrity,
+        "foreign_key_issues": len(foreign_keys),
+    }
+    (directory / "migration.json").write_text(
+        json.dumps(report, ensure_ascii=False, indent=2) + "\n", encoding="utf-8"
+    )
     return report
 
 
