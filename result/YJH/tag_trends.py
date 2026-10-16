@@ -238,8 +238,7 @@ def load_detail(refresh: bool = False) -> tuple[pd.DataFrame, dict[str, object]]
             return frame, meta
 
     engine = get_engine()
-    query = text(
-        """
+    query = text("""
         SELECT a.appid,
                extract(year FROM a.release_date)::int AS year,
                coalesce(a.is_free, false) AS is_free,
@@ -249,8 +248,7 @@ def load_detail(refresh: bool = False) -> tuple[pd.DataFrame, dict[str, object]]
                ON t.appid = a.appid
               AND t.source = 'steamspy' AND t.kind = 'theme'
         WHERE a.release_date < make_date(2026, 1, 1)
-        """
-    )
+        """)
     with engine.connect().execution_options(isolation_level="REPEATABLE READ") as conn:
         with conn.begin():
             conn.execute(text("SET TRANSACTION READ ONLY"))
