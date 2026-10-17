@@ -4,6 +4,8 @@
 
 | 文档 | 用途 |
 |---|---|
+| [INSTRUCT.md](INSTRUCT.md) | T1Core/T2Sum六任务的完整命令、逐图读法、样本、产物与解释边界 |
+| [DEPLOY.md](DEPLOY.md) | 六页签布局、游戏选择、高亮、任务5评分与任务6参照条件切换、接口能力与部署交接 |
 | [data_plan.md](data_plan.md) | 六项任务、指标、样本与解释边界的权威分析规划 |
 | [分析交接与上传选择](../analysis/delivery/README.md) | 哪些CSV/JSON/图片交网页，什么时候需要两份原SQLite；打包/核验命令 |
 | [本轮审查报告](../analysis/delivery/AUDIT.md) | 五专题来源、计算核查、结果索引、样本与限制 |
@@ -13,8 +15,6 @@
 | [plan.md](plan.md) | 当前交付重心与文档入口，不重复分类工程细节 |
 | [experiments.md](experiments.md) | 分析实施与审查记录；分类历史保留必要摘要与带时间进度 |
 | [T0Pre](../analysis/T0Pre/README.md) | 原有三图只读复现与highest基线 |
-| [T1 INSTRUCT](../analysis/T1Core/INSTRUCT.md) | 任务1～4的命令、图表含义和读图实例 |
-| [T1 DEPLOY](../analysis/T1Core/DEPLOY.md) | 网页交互与任务4固定背景高亮，区分已有能力/待实施页面 |
 | [T1技术说明](../analysis/T1Core/README.md) | 数据表、程序参数、分组与保护规则 |
 | [T2任务5](../analysis/T2Sum/README.md) | 口碑与推进、183/140款、16～18图与高亮查询 |
 | [T2任务6](../analysis/T2Sum/BENCHMARK.md) | 同类参照、183目标/181有效、19～21图与1～5款查询 |

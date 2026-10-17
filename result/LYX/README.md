@@ -1,6 +1,6 @@
 # 刘宇翔（LYX）工作空间
 
-四项已完成分析的调用与读图指南见[INSTRUCT](analysis/T1Core/INSTRUCT.md)；给组长的网页布局、交互和数据交接方案见[DEPLOY](analysis/T1Core/DEPLOY.md)，重点包括任务4在固定65款背景中高亮所选游戏的完整逻辑。后者是待实施的网页方案，不表示已经部署。
+六项已完成分析的调用与读图指南见[INSTRUCT](docs/INSTRUCT.md)；给组长的网页布局、交互和数据交接方案见[DEPLOY](docs/DEPLOY.md)，重点包括任务4在固定65款背景中高亮所选游戏的完整逻辑。后者是待实施的网页方案，不表示已经部署。
 
 2026-10-16分析数据源已改为全面采用WWH借用快照：游戏样本、成就分类、剧情阶段、checkpoints数组顺序和游戏类型直接从[NewDB/wwh5.sqlite3](NewDB/wwh5.sqlite3)只读获取。[analysis](analysis/T0Pre/README.md)提供独立三图复现入口，输出位于LYX内；当前DeepSeek链路与数据库保留，历史运行目录已于2026-10-17清理。下文2026-10-15进度是旧LYX分类工程的历史记录。
 
@@ -72,8 +72,8 @@ T1Core新增`compare`命令，可输入最多五个AppID或游戏名，生成覆
 | [PROCESS](docs/PROCESS.md) | 合并的数据获取沿革和仍可运行的DeepSeek链路 |
 | [实验记录](docs/experiments.md) | 分析实施与本轮清理核验；带时间分类历史 |
 | [当前交付规划](docs/plan.md) | 分析交接与网页展示后续 |
-| [T1读图指南](analysis/T1Core/INSTRUCT.md) | 四任务命令、图表解释与案例 |
-| [网页交接](analysis/T1Core/DEPLOY.md) | 给组长的页面、查询、高亮和缺失处理方案 |
+| [统一使用与读图指南](docs/INSTRUCT.md) | T1Core与T2Sum六任务命令、图表解释与案例 |
+| [统一网页交接](docs/DEPLOY.md) | 六页签布局、查询、高亮、参照切换和缺失处理 |
 | [T2任务5和6](analysis/T2Sum/README.md) | 口碑与同类参照结果、图表和查询接口 |
 
 ## 2026-10-17 交接审查与清理记录

@@ -135,4 +135,4 @@ uv run --frozen --no-sync python -X utf8 -B process/DataAgent.py classify --max-
 
 Ctrl+C由可取消传输与顶层处理，记录interrupted并释放锁；若强杀进程，最后未提交事务由SQLite回滚，先前提交保留，但最后report/CSV可能落后于库。恢复前先离线plan并核查数据库，而不是删除锁/清缓存或重复付费。全量任务不要把任务进度、token使用、成功游戏数和入库标签数混用。
 
-分析数据的上传选择、汇总/来源表和保护核验见[delivery](../analysis/delivery/README.md)，日常读图见[T1 INSTRUCT](../analysis/T1Core/INSTRUCT.md)与[T2说明](../analysis/T2Sum/README.md)。
+分析数据的上传选择、汇总/来源表和保护核验见[delivery](../analysis/delivery/README.md)，日常读图见[统一INSTRUCT](INSTRUCT.md)与[T2说明](../analysis/T2Sum/README.md)。

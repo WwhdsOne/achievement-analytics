@@ -1,0 +1,882 @@
+﻿scheme,appid,title,group,group_zh,primary_gameplay,three_point_available,start_label_count,first_stage,ending_type
+primary,1245620,ELDEN RING,action,动作,action,true,1,start,multi
+primary,367520,Hollow Knight,platformer,平台跳跃,platformer,true,1,start,multi
+primary,648800,Raft,survival,生存,survival,true,1,start,multi
+primary,489830,The Elder Scrolls V: Skyrim Special Edition,rpg,角色扮演,rpg,true,1,start,multi
+primary,238960,Path of Exile,action,动作,action,true,1,start,unified
+primary,379720,DOOM,action,动作,action,false,1,start,unified
+primary,1599340,Lost Ark,action,动作,action,true,1,start,multi
+primary,1238840,Battlefield™ 1,action,动作,action,true,1,start,unified
+primary,268910,Cuphead,platformer,平台跳跃,platformer,true,1,start,unified
+primary,646570,Slay the Spire,strategy,策略,strategy,false,1,start,multi
+primary,812140,Assassin's Creed® Odyssey,action,动作,action,true,1,start,multi
+primary,319630,Life is Strange - Episode 1,adventure,冒险,adventure,true,1,start,unified
+primary,588650,Dead Cells,action,动作,action,true,1,start,unified
+primary,1716740,Starfield,rpg,角色扮演,rpg,true,1,start,unified
+primary,1593500,God of War,action,动作,action,true,1,start,unified
+primary,2379780,Balatro,strategy,策略,strategy,true,0,early,unified
+primary,3590,Plants vs. Zombies GOTY Edition,strategy,策略,strategy,true,1,start,unified
+primary,1151640,Horizon Zero Dawn™ Complete Edition,action,动作,action,true,1,start,unified
+primary,335300,DARK SOULS™ II: Scholar of the First Sin,action,动作,action,true,1,start,multi
+primary,223470,POSTAL 2,action,动作,action,true,1,start,unified
+primary,220240,Far Cry 3,action,动作,action,true,1,start,unified
+primary,1361210,"Warhammer 40,000: Darktide",action,动作,action,true,1,start,unified
+primary,1446780,MONSTER HUNTER RISE,action,动作,action,true,1,start,multi
+primary,1903340,Clair Obscur: Expedition 33,rpg,角色扮演,rpg,true,1,start,unified
+primary,424840,Little Nightmares,platformer,平台跳跃,platformer,true,1,start,unified
+primary,231430,Company of Heroes 2,strategy,策略,strategy,true,1,start,multi
+primary,2054970,Dragon's Dogma 2,action,动作,action,true,1,start,unified
+primary,779340,Total War: THREE KINGDOMS,strategy,策略,strategy,true,1,start,unified
+primary,1313140,Cult of the Lamb,action,动作,action,true,1,start,multi
+primary,1687950,Persona 5 Royal,rpg,角色扮演,rpg,true,1,start,multi
+primary,1943950,Escape the Backrooms,adventure,冒险,adventure,true,1,start,unified
+primary,287700,METAL GEAR SOLID V: THE PHANTOM PAIN,action,动作,action,true,1,start,unified
+primary,365590,Tom Clancy’s The Division™,action,动作,action,true,1,start,unified
+primary,389730,TEKKEN 7,action,动作,action,true,1,start,unified
+primary,1030840,Mafia: Definitive Edition,action,动作,action,true,1,start,unified
+primary,241930,Middle-earth™: Shadow of Mordor™,action,动作,action,true,1,start,multi
+primary,383870,Firewatch,adventure,冒险,adventure,true,1,start,unified
+primary,703080,Planet Zoo,simulation,模拟,simulation,true,1,start,multi
+primary,20920,The Witcher 2: Assassins of Kings Enhanced Edition,rpg,角色扮演,rpg,true,1,start,unified
+primary,311690,Enter the Gungeon,action,动作,action,true,1,start,multi
+primary,235460,METAL GEAR RISING: REVENGEANCE,action,动作,action,true,1,start,unified
+primary,205100,Dishonored,action,动作,action,true,1,start,unified
+primary,881100,Noita,action,动作,action,true,1,start,unified
+primary,1113000,Persona 4 Golden,rpg,角色扮演,rpg,true,1,start,multi
+primary,212680,FTL: Faster Than Light,strategy,策略,strategy,true,0,early,multi
+primary,289650,Assassin's Creed® Unity,action,动作,action,true,1,start,multi
+primary,207610,The Walking Dead,adventure,冒险,adventure,true,1,start,unified
+primary,493340,Planet Coaster,simulation,模拟,simulation,true,1,start,unified
+primary,287390,Metro: Last Light Redux,action,动作,action,true,1,start,unified
+primary,307690,Sleeping Dogs: Definitive Edition,action,动作,action,true,1,start,unified
+primary,200260,Batman: Arkham City - Game of the Year Edition,action,动作,action,true,1,start,unified
+primary,466560,Northgard: Definitive Edition,strategy,策略,strategy,true,1,start,multi
+primary,1145350,Hades II,action,动作,action,true,1,start,multi
+primary,752590,A Plague Tale: Innocence,action,动作,action,true,1,start,multi
+primary,214490,Alien: Isolation,action,动作,action,true,1,start,multi
+primary,312660,Sniper Elite 4,action,动作,action,true,1,start,unified
+primary,409710,BioShock™ Remastered,action,动作,action,true,1,start,multi
+primary,629730,Blade and Sorcery,action,动作,action,true,1,start,unified
+primary,204100,Max Payne 3,action,动作,action,true,1,start,multi
+primary,307780,Mortal Kombat X,action,动作,action,false,0,middle,unified
+primary,50130,Mafia II (Classic),action,动作,action,true,1,start,multi
+primary,2623190,The Elder Scrolls IV: Oblivion Remastered,rpg,角色扮演,rpg,true,1,start,unified
+primary,1627720,Lies of P,action,动作,action,true,1,start,multi
+primary,1290000,PowerWash Simulator,simulation,模拟,simulation,true,1,start,unified
+primary,253230,A Hat in Time,platformer,平台跳跃,platformer,true,1,start,unified
+primary,1693980,Dead Space,action,动作,action,true,1,start,multi
+primary,8190,Just Cause 2,action,动作,action,true,1,start,unified
+primary,108710,Alan Wake,action,动作,action,true,1,start,unified
+primary,202970,Call of Duty®: Black Ops II,action,动作,action,true,1,start,multi
+primary,367500,Dragon's Dogma: Dark Arisen,action,动作,action,true,1,start,multi
+primary,243470,Watch_Dogs™,action,动作,action,true,1,start,unified
+primary,1325200,Nioh 2 – The Complete Edition,action,动作,action,true,2,start,multi
+primary,282140,SOMA,adventure,冒险,adventure,true,1,start,multi
+primary,599140,Graveyard Keeper,simulation,模拟,simulation,true,1,start,multi
+primary,476600,Call of Duty®: WWII,action,动作,action,true,1,start,multi
+primary,1288310,Firework,puzzle,解谜,puzzle,true,1,start,unified
+primary,302510,Ryse: Son of Rome,action,动作,action,true,1,start,multi
+primary,204450,Call of Juarez: Gunslinger,action,动作,action,false,1,start,unified
+primary,1845910,Dragon Age™: The Veilguard,rpg,角色扮演,rpg,true,1,start,multi
+primary,692850,Bloodstained: Ritual of the Night,action,动作,action,true,1,start,multi
+primary,228380,Wreckfest,racing,竞速,racing,true,1,start,unified
+primary,1184370,Pathfinder: Wrath of the Righteous - Enhanced Edition,rpg,角色扮演,rpg,true,1,start,unified
+primary,668580,Atomic Heart,action,动作,action,true,1,start,unified
+primary,1210320,Potion Craft: Alchemist Simulator,simulation,模拟,simulation,true,1,start,multi
+primary,107100,Bastion,action,动作,action,false,1,start,unified
+primary,554620,Life is Strange: Before the Storm,adventure,冒险,adventure,true,1,start,unified
+primary,207140,SpeedRunners,platformer,平台跳跃,platformer,true,1,start,unified
+primary,447530,VA-11 Hall-A: Cyberpunk Bartender Action,simulation,模拟,simulation,true,1,start,multi
+primary,383980,Rivals of Aether,action,动作,action,false,1,start,unified
+primary,250320,The Wolf Among Us,adventure,冒险,adventure,true,6,start,multi
+primary,740130,Tales of ARISE,rpg,角色扮演,rpg,true,1,start,unified
+primary,1282730,Loop Hero,rpg,角色扮演,rpg,true,1,start,unified
+primary,1256670,Library Of Ruina,rpg,角色扮演,rpg,true,1,start,unified
+primary,640820,Pathfinder: Kingmaker — Enhanced Plus Edition,rpg,角色扮演,rpg,true,1,start,multi
+primary,535930,Two Point Hospital,simulation,模拟,simulation,true,1,start,multi
+primary,1235140,Yakuza: Like a Dragon,rpg,角色扮演,rpg,true,1,start,multi
+primary,417860,Emily is Away,adventure,冒险,adventure,true,1,start,unified
+primary,261030,The Walking Dead: Season Two,adventure,冒险,adventure,true,1,start,multi
+primary,1144400,Senren＊Banka,adventure,冒险,adventure,false,1,start,multi
+primary,209160,Call of Duty®: Ghosts,action,动作,action,true,2,start,multi
+primary,2186680,"Warhammer 40,000: Rogue Trader",rpg,角色扮演,rpg,true,1,start,unified
+primary,1874880,Arma Reforger,action,动作,action,true,1,start,unified
+primary,1030830,Mafia II: Definitive Edition,action,动作,action,true,1,start,unified
+primary,220440,DmC: Devil May Cry,action,动作,action,true,1,start,multi
+primary,368500,Assassin's Creed® Syndicate,action,动作,action,true,1,start,unified
+primary,288160,The Room,puzzle,解谜,puzzle,true,1,start,unified
+primary,794260,Outward Definitive Edition,rpg,角色扮演,rpg,true,1,start,unified
+primary,1189490,觅长生,rpg,角色扮演,rpg,true,0,early,multi
+primary,238010,Deus Ex: Human Revolution - Director's Cut,action,动作,action,true,1,start,multi
+primary,41070,Serious Sam 3: BFE,action,动作,action,true,1,start,unified
+primary,1066780,Transport Fever 2,simulation,模拟,simulation,true,1,start,unified
+primary,557340,My Friend Pedro,platformer,平台跳跃,platformer,true,1,start,unified
+primary,238090,Sniper Elite 3,action,动作,action,true,1,start,unified
+primary,333600,NEKOPARA Vol. 1,adventure,冒险,adventure,true,1,start,multi
+primary,304240,Resident Evil,survival,生存,survival,true,1,start,multi
+primary,413420,Danganronpa 2: Goodbye Despair,adventure,冒险,adventure,true,1,start,unified
+primary,249130,LEGO® Marvel™ Super Heroes,action,动作,action,true,1,start,multi
+primary,260230,Valiant Hearts: The Great War™ / Soldats Inconnus : Mémoires de la Grande Guerre™,adventure,冒险,adventure,true,1,start,unified
+primary,383150,Dead Island Definitive Edition,action,动作,action,true,0,early,unified
+primary,71340,Sonic Generations Collection,platformer,平台跳跃,platformer,true,1,start,unified
+primary,247080,Crypt of the NecroDancer,rhythm,节奏,rhythm,true,1,start,multi
+primary,365450,Hacknet,simulation,模拟,simulation,true,1,start,unified
+primary,1149620,Gas Station Simulator,simulation,模拟,simulation,true,2,start,unified
+primary,42680,Call of Duty®: Modern Warfare® 3 (2011),action,动作,action,true,1,start,unified
+primary,99900,Spiral Knights,action,动作,action,true,1,start,unified
+primary,519860,DUSK,action,动作,action,true,1,start,multi
+primary,1240210,There Is No Game: Wrong Dimension,puzzle,解谜,puzzle,true,1,start,unified
+primary,1097840,Gears 5,action,动作,action,true,1,start,multi
+primary,239160,Thief,action,动作,action,true,1,start,unified
+primary,882100,XCOM®: Chimera Squad,strategy,策略,strategy,false,1,start,unified
+primary,1094520,Sands of Salzaar,rpg,角色扮演,rpg,false,1,start,unified
+primary,285190,"Warhammer 40,000: Dawn of War III",strategy,策略,strategy,true,1,start,unified
+primary,1948980,Hero's Adventure: Road to Passion,rpg,角色扮演,rpg,true,1,start,multi
+primary,784150,Workers & Resources: Soviet Republic,simulation,模拟,simulation,true,1,start,unified
+primary,35720,Trine 2: Complete Story,platformer,平台跳跃,platformer,true,1,start,multi
+primary,235540,Warhammer: End Times - Vermintide,action,动作,action,true,1,start,unified
+primary,412830,STEINS;GATE,adventure,冒险,adventure,true,1,start,unified
+primary,323470,DRAGON BALL XENOVERSE,action,动作,action,true,1,start,multi
+primary,350080,Wolfenstein: The Old Blood,action,动作,action,true,1,start,unified
+primary,1182900,A Plague Tale: Requiem,action,动作,action,true,1,start,multi
+primary,445980,Wizard of Legend,action,动作,action,true,1,start,unified
+primary,1161580,Hardspace: Shipbreaker,simulation,模拟,simulation,true,1,start,unified
+primary,590380,Into the Breach,strategy,策略,strategy,false,0,early,unified
+primary,359870,FINAL FANTASY X/X-2 HD Remaster,rpg,角色扮演,rpg,true,1,start,unified
+primary,425580,The Room Two,puzzle,解谜,puzzle,true,1,start,unified
+primary,760060,Mutant Year Zero: Road to Eden,strategy,策略,strategy,false,1,start,unified
+primary,235600,Tom Clancy’s Splinter Cell Blacklist,action,动作,action,true,1,start,unified
+primary,1583230,High On Life,action,动作,action,true,1,start,multi
+primary,866800,The Walking Dead: The Final Season,adventure,冒险,adventure,true,1,start,multi
+primary,1577120,The Quarry,adventure,冒险,adventure,true,1,start,multi
+primary,265550,Dead Rising 3 Apocalypse Edition,action,动作,action,true,1,start,multi
+primary,362680,Fran Bow,adventure,冒险,adventure,false,1,start,unified
+primary,1490890,Demon Slayer -Kimetsu no Yaiba- The Hinokami Chronicles,action,动作,action,true,1,start,unified
+primary,225260,Brutal Legend,action,动作,action,true,1,start,unified
+primary,560130,Pillars of Eternity II: Deadfire,rpg,角色扮演,rpg,true,1,start,unified
+primary,236090,Dust: An Elysian Tail,action,动作,action,true,1,start,unified
+primary,330830,Tales from the Borderlands,adventure,冒险,adventure,true,1,start,unified
+primary,368070,Sniper Ghost Warrior 3,action,动作,action,true,1,start,unified
+primary,241600,Rogue Legacy,platformer,平台跳跃,platformer,true,1,start,unified
+primary,1746030,Murders on the Yangtze River,adventure,冒险,adventure,true,1,start,unified
+primary,388410,Darksiders II Deathinitive Edition,action,动作,action,false,0,middle,unified
+primary,311560,Assassin’s Creed® Rogue,action,动作,action,true,1,start,unified
+primary,242680,Nuclear Throne,action,动作,action,true,1,start,unified
+primary,557600,Gorogoa,puzzle,解谜,puzzle,true,1,start,unified
+primary,233270,Far Cry 3 - Blood Dragon,action,动作,action,true,1,start,unified
+primary,1533420,Neon White,platformer,平台跳跃,platformer,true,1,start,unified
+primary,241540,State of Decay,action,动作,action,true,1,start,unified
+primary,385800,NEKOPARA Vol. 0,adventure,冒险,adventure,false,1,start,unified
+primary,629820,Maneater,action,动作,action,true,2,start,multi
+primary,40700,Machinarium,adventure,冒险,adventure,true,1,start,unified
+primary,405640,Pony Island,puzzle,解谜,puzzle,true,0,early,unified
+primary,397950,Clustertruck,platformer,平台跳跃,platformer,true,1,start,multi
+primary,1258080,Shop Titans,simulation,模拟,simulation,true,1,start,unified
+primary,368340,CrossCode,action,动作,action,true,1,start,unified
+primary,536220,The Walking Dead: A New Frontier,adventure,冒险,adventure,true,6,start,multi
+primary,2768430,ATLYSS,rpg,角色扮演,rpg,true,1,start,unified
+primary,969990,SpongeBob SquarePants: Battle for Bikini Bottom - Rehydrated,platformer,平台跳跃,platformer,true,1,start,multi
+primary,1880330,Sanfu,adventure,冒险,adventure,true,1,start,unified
+primary,1046030,ISLANDERS,strategy,策略,strategy,true,1,start,unified
+primary,1382330,Persona® 5 Strikers,action,动作,action,true,1,start,multi
+primary,1361320,The Room 4: Old Sins,puzzle,解谜,puzzle,true,1,start,unified
+primary,250760,Shovel Knight: Treasure Trove,platformer,平台跳跃,platformer,true,1,start,multi
+primary,228300,Remember Me,action,动作,action,true,1,start,unified
+primary,498240,Batman - The Telltale Series,adventure,冒险,adventure,true,6,start,multi
+primary,1061910,Metal: Hellsinger,action,动作,action,true,0,early,unified
+primary,1113120,IXION,strategy,策略,strategy,true,1,start,multi
+primary,35700,Trine Enchanted Edition,platformer,平台跳跃,platformer,false,1,start,unified
+primary,1954200,Kena: Bridge of Spirits,action,动作,action,true,1,start,multi
+primary,222480,Resident Evil Revelations,action,动作,action,true,1,start,unified
+primary,394310,Punch Club,simulation,模拟,simulation,true,1,start,multi
+primary,537800,Bomber Crew,simulation,模拟,simulation,true,1,start,multi
+primary,1216710,Cyber Manhunt,simulation,模拟,simulation,true,1,start,multi
+primary,288470,Fable Anniversary,action,动作,action,true,1,start,multi
+primary,335670,LISA: The Painful,rpg,角色扮演,rpg,true,1,start,multi
+primary,8850,BioShock® 2,action,动作,action,true,1,start,multi
+primary,861650,Session: Skate Sim,sports,体育,sports,true,1,start,unified
+primary,210770,Sanctum 2,action,动作,action,true,1,start,unified
+primary,214510,LEGO® The Lord of the Rings™,action,动作,action,true,1,start,multi
+multilabel,1245620,ELDEN RING,action,动作,action,true,1,start,multi
+multilabel,1245620,ELDEN RING,rpg,角色扮演,action,true,1,start,multi
+multilabel,1245620,ELDEN RING,adventure,冒险,action,true,1,start,multi
+multilabel,367520,Hollow Knight,platformer,平台跳跃,platformer,true,1,start,multi
+multilabel,367520,Hollow Knight,action,动作,platformer,true,1,start,multi
+multilabel,367520,Hollow Knight,adventure,冒险,platformer,true,1,start,multi
+multilabel,648800,Raft,survival,生存,survival,true,1,start,multi
+multilabel,648800,Raft,simulation,模拟,survival,true,1,start,multi
+multilabel,648800,Raft,adventure,冒险,survival,true,1,start,multi
+multilabel,648800,Raft,action,动作,survival,true,1,start,multi
+multilabel,648800,Raft,strategy,策略,survival,true,1,start,multi
+multilabel,489830,The Elder Scrolls V: Skyrim Special Edition,rpg,角色扮演,rpg,true,1,start,multi
+multilabel,489830,The Elder Scrolls V: Skyrim Special Edition,action,动作,rpg,true,1,start,multi
+multilabel,489830,The Elder Scrolls V: Skyrim Special Edition,adventure,冒险,rpg,true,1,start,multi
+multilabel,238960,Path of Exile,action,动作,action,true,1,start,unified
+multilabel,238960,Path of Exile,rpg,角色扮演,action,true,1,start,unified
+multilabel,238960,Path of Exile,adventure,冒险,action,true,1,start,unified
+multilabel,238960,Path of Exile,other,其他,action,true,1,start,unified
+multilabel,379720,DOOM,action,动作,action,false,1,start,unified
+multilabel,379720,DOOM,adventure,冒险,action,false,1,start,unified
+multilabel,379720,DOOM,survival,生存,action,false,1,start,unified
+multilabel,1599340,Lost Ark,action,动作,action,true,1,start,multi
+multilabel,1599340,Lost Ark,rpg,角色扮演,action,true,1,start,multi
+multilabel,1599340,Lost Ark,adventure,冒险,action,true,1,start,multi
+multilabel,1238840,Battlefield™ 1,action,动作,action,true,1,start,unified
+multilabel,1238840,Battlefield™ 1,other,其他,action,true,1,start,unified
+multilabel,268910,Cuphead,platformer,平台跳跃,platformer,true,1,start,unified
+multilabel,268910,Cuphead,action,动作,platformer,true,1,start,unified
+multilabel,268910,Cuphead,other,其他,platformer,true,1,start,unified
+multilabel,646570,Slay the Spire,strategy,策略,strategy,false,1,start,multi
+multilabel,646570,Slay the Spire,rpg,角色扮演,strategy,false,1,start,multi
+multilabel,646570,Slay the Spire,casual,休闲,strategy,false,1,start,multi
+multilabel,812140,Assassin's Creed® Odyssey,action,动作,action,true,1,start,multi
+multilabel,812140,Assassin's Creed® Odyssey,rpg,角色扮演,action,true,1,start,multi
+multilabel,812140,Assassin's Creed® Odyssey,adventure,冒险,action,true,1,start,multi
+multilabel,319630,Life is Strange - Episode 1,adventure,冒险,adventure,true,1,start,unified
+multilabel,319630,Life is Strange - Episode 1,casual,休闲,adventure,true,1,start,unified
+multilabel,319630,Life is Strange - Episode 1,puzzle,解谜,adventure,true,1,start,unified
+multilabel,588650,Dead Cells,action,动作,action,true,1,start,unified
+multilabel,588650,Dead Cells,platformer,平台跳跃,action,true,1,start,unified
+multilabel,588650,Dead Cells,adventure,冒险,action,true,1,start,unified
+multilabel,588650,Dead Cells,rpg,角色扮演,action,true,1,start,unified
+multilabel,1716740,Starfield,rpg,角色扮演,rpg,true,1,start,unified
+multilabel,1716740,Starfield,action,动作,rpg,true,1,start,unified
+multilabel,1716740,Starfield,adventure,冒险,rpg,true,1,start,unified
+multilabel,1716740,Starfield,simulation,模拟,rpg,true,1,start,unified
+multilabel,1593500,God of War,action,动作,action,true,1,start,unified
+multilabel,1593500,God of War,adventure,冒险,action,true,1,start,unified
+multilabel,1593500,God of War,rpg,角色扮演,action,true,1,start,unified
+multilabel,2379780,Balatro,strategy,策略,strategy,true,0,early,unified
+multilabel,2379780,Balatro,casual,休闲,strategy,true,0,early,unified
+multilabel,2379780,Balatro,other,其他,strategy,true,0,early,unified
+multilabel,3590,Plants vs. Zombies GOTY Edition,strategy,策略,strategy,true,1,start,unified
+multilabel,3590,Plants vs. Zombies GOTY Edition,puzzle,解谜,strategy,true,1,start,unified
+multilabel,3590,Plants vs. Zombies GOTY Edition,casual,休闲,strategy,true,1,start,unified
+multilabel,3590,Plants vs. Zombies GOTY Edition,adventure,冒险,strategy,true,1,start,unified
+multilabel,1151640,Horizon Zero Dawn™ Complete Edition,action,动作,action,true,1,start,unified
+multilabel,1151640,Horizon Zero Dawn™ Complete Edition,rpg,角色扮演,action,true,1,start,unified
+multilabel,1151640,Horizon Zero Dawn™ Complete Edition,adventure,冒险,action,true,1,start,unified
+multilabel,1151640,Horizon Zero Dawn™ Complete Edition,survival,生存,action,true,1,start,unified
+multilabel,1151640,Horizon Zero Dawn™ Complete Edition,other,其他,action,true,1,start,unified
+multilabel,335300,DARK SOULS™ II: Scholar of the First Sin,action,动作,action,true,1,start,multi
+multilabel,335300,DARK SOULS™ II: Scholar of the First Sin,rpg,角色扮演,action,true,1,start,multi
+multilabel,335300,DARK SOULS™ II: Scholar of the First Sin,adventure,冒险,action,true,1,start,multi
+multilabel,223470,POSTAL 2,action,动作,action,true,1,start,unified
+multilabel,223470,POSTAL 2,adventure,冒险,action,true,1,start,unified
+multilabel,223470,POSTAL 2,simulation,模拟,action,true,1,start,unified
+multilabel,223470,POSTAL 2,other,其他,action,true,1,start,unified
+multilabel,220240,Far Cry 3,action,动作,action,true,1,start,unified
+multilabel,220240,Far Cry 3,adventure,冒险,action,true,1,start,unified
+multilabel,220240,Far Cry 3,rpg,角色扮演,action,true,1,start,unified
+multilabel,220240,Far Cry 3,survival,生存,action,true,1,start,unified
+multilabel,220240,Far Cry 3,simulation,模拟,action,true,1,start,unified
+multilabel,1361210,"Warhammer 40,000: Darktide",action,动作,action,true,1,start,unified
+multilabel,1361210,"Warhammer 40,000: Darktide",rpg,角色扮演,action,true,1,start,unified
+multilabel,1361210,"Warhammer 40,000: Darktide",other,其他,action,true,1,start,unified
+multilabel,1446780,MONSTER HUNTER RISE,action,动作,action,true,1,start,multi
+multilabel,1446780,MONSTER HUNTER RISE,rpg,角色扮演,action,true,1,start,multi
+multilabel,1446780,MONSTER HUNTER RISE,adventure,冒险,action,true,1,start,multi
+multilabel,1903340,Clair Obscur: Expedition 33,rpg,角色扮演,rpg,true,1,start,unified
+multilabel,1903340,Clair Obscur: Expedition 33,action,动作,rpg,true,1,start,unified
+multilabel,1903340,Clair Obscur: Expedition 33,adventure,冒险,rpg,true,1,start,unified
+multilabel,1903340,Clair Obscur: Expedition 33,strategy,策略,rpg,true,1,start,unified
+multilabel,424840,Little Nightmares,platformer,平台跳跃,platformer,true,1,start,unified
+multilabel,424840,Little Nightmares,puzzle,解谜,platformer,true,1,start,unified
+multilabel,424840,Little Nightmares,adventure,冒险,platformer,true,1,start,unified
+multilabel,424840,Little Nightmares,survival,生存,platformer,true,1,start,unified
+multilabel,231430,Company of Heroes 2,strategy,策略,strategy,true,1,start,multi
+multilabel,231430,Company of Heroes 2,simulation,模拟,strategy,true,1,start,multi
+multilabel,231430,Company of Heroes 2,action,动作,strategy,true,1,start,multi
+multilabel,2054970,Dragon's Dogma 2,action,动作,action,true,1,start,unified
+multilabel,2054970,Dragon's Dogma 2,rpg,角色扮演,action,true,1,start,unified
+multilabel,2054970,Dragon's Dogma 2,adventure,冒险,action,true,1,start,unified
+multilabel,779340,Total War: THREE KINGDOMS,strategy,策略,strategy,true,1,start,unified
+multilabel,779340,Total War: THREE KINGDOMS,simulation,模拟,strategy,true,1,start,unified
+multilabel,779340,Total War: THREE KINGDOMS,action,动作,strategy,true,1,start,unified
+multilabel,1313140,Cult of the Lamb,action,动作,action,true,1,start,multi
+multilabel,1313140,Cult of the Lamb,adventure,冒险,action,true,1,start,multi
+multilabel,1313140,Cult of the Lamb,strategy,策略,action,true,1,start,multi
+multilabel,1313140,Cult of the Lamb,simulation,模拟,action,true,1,start,multi
+multilabel,1313140,Cult of the Lamb,rpg,角色扮演,action,true,1,start,multi
+multilabel,1687950,Persona 5 Royal,rpg,角色扮演,rpg,true,1,start,multi
+multilabel,1687950,Persona 5 Royal,adventure,冒险,rpg,true,1,start,multi
+multilabel,1687950,Persona 5 Royal,simulation,模拟,rpg,true,1,start,multi
+multilabel,1687950,Persona 5 Royal,strategy,策略,rpg,true,1,start,multi
+multilabel,1943950,Escape the Backrooms,adventure,冒险,adventure,true,1,start,unified
+multilabel,1943950,Escape the Backrooms,survival,生存,adventure,true,1,start,unified
+multilabel,1943950,Escape the Backrooms,action,动作,adventure,true,1,start,unified
+multilabel,1943950,Escape the Backrooms,puzzle,解谜,adventure,true,1,start,unified
+multilabel,1943950,Escape the Backrooms,other,其他,adventure,true,1,start,unified
+multilabel,287700,METAL GEAR SOLID V: THE PHANTOM PAIN,action,动作,action,true,1,start,unified
+multilabel,287700,METAL GEAR SOLID V: THE PHANTOM PAIN,adventure,冒险,action,true,1,start,unified
+multilabel,287700,METAL GEAR SOLID V: THE PHANTOM PAIN,simulation,模拟,action,true,1,start,unified
+multilabel,287700,METAL GEAR SOLID V: THE PHANTOM PAIN,strategy,策略,action,true,1,start,unified
+multilabel,365590,Tom Clancy’s The Division™,action,动作,action,true,1,start,unified
+multilabel,365590,Tom Clancy’s The Division™,rpg,角色扮演,action,true,1,start,unified
+multilabel,365590,Tom Clancy’s The Division™,adventure,冒险,action,true,1,start,unified
+multilabel,365590,Tom Clancy’s The Division™,survival,生存,action,true,1,start,unified
+multilabel,389730,TEKKEN 7,action,动作,action,true,1,start,unified
+multilabel,389730,TEKKEN 7,other,其他,action,true,1,start,unified
+multilabel,1030840,Mafia: Definitive Edition,action,动作,action,true,1,start,unified
+multilabel,1030840,Mafia: Definitive Edition,adventure,冒险,action,true,1,start,unified
+multilabel,1030840,Mafia: Definitive Edition,racing,竞速,action,true,1,start,unified
+multilabel,1030840,Mafia: Definitive Edition,other,其他,action,true,1,start,unified
+multilabel,241930,Middle-earth™: Shadow of Mordor™,action,动作,action,true,1,start,multi
+multilabel,241930,Middle-earth™: Shadow of Mordor™,rpg,角色扮演,action,true,1,start,multi
+multilabel,241930,Middle-earth™: Shadow of Mordor™,adventure,冒险,action,true,1,start,multi
+multilabel,241930,Middle-earth™: Shadow of Mordor™,other,其他,action,true,1,start,multi
+multilabel,383870,Firewatch,adventure,冒险,adventure,true,1,start,unified
+multilabel,383870,Firewatch,simulation,模拟,adventure,true,1,start,unified
+multilabel,383870,Firewatch,casual,休闲,adventure,true,1,start,unified
+multilabel,703080,Planet Zoo,simulation,模拟,simulation,true,1,start,multi
+multilabel,703080,Planet Zoo,strategy,策略,simulation,true,1,start,multi
+multilabel,703080,Planet Zoo,casual,休闲,simulation,true,1,start,multi
+multilabel,20920,The Witcher 2: Assassins of Kings Enhanced Edition,rpg,角色扮演,rpg,true,1,start,unified
+multilabel,20920,The Witcher 2: Assassins of Kings Enhanced Edition,action,动作,rpg,true,1,start,unified
+multilabel,20920,The Witcher 2: Assassins of Kings Enhanced Edition,adventure,冒险,rpg,true,1,start,unified
+multilabel,311690,Enter the Gungeon,action,动作,action,true,1,start,multi
+multilabel,311690,Enter the Gungeon,adventure,冒险,action,true,1,start,multi
+multilabel,311690,Enter the Gungeon,rpg,角色扮演,action,true,1,start,multi
+multilabel,311690,Enter the Gungeon,other,其他,action,true,1,start,multi
+multilabel,235460,METAL GEAR RISING: REVENGEANCE,action,动作,action,true,1,start,unified
+multilabel,235460,METAL GEAR RISING: REVENGEANCE,adventure,冒险,action,true,1,start,unified
+multilabel,205100,Dishonored,action,动作,action,true,1,start,unified
+multilabel,205100,Dishonored,adventure,冒险,action,true,1,start,unified
+multilabel,205100,Dishonored,rpg,角色扮演,action,true,1,start,unified
+multilabel,881100,Noita,action,动作,action,true,1,start,unified
+multilabel,881100,Noita,rpg,角色扮演,action,true,1,start,unified
+multilabel,881100,Noita,adventure,冒险,action,true,1,start,unified
+multilabel,881100,Noita,platformer,平台跳跃,action,true,1,start,unified
+multilabel,881100,Noita,survival,生存,action,true,1,start,unified
+multilabel,881100,Noita,simulation,模拟,action,true,1,start,unified
+multilabel,1113000,Persona 4 Golden,rpg,角色扮演,rpg,true,1,start,multi
+multilabel,1113000,Persona 4 Golden,adventure,冒险,rpg,true,1,start,multi
+multilabel,1113000,Persona 4 Golden,simulation,模拟,rpg,true,1,start,multi
+multilabel,1113000,Persona 4 Golden,strategy,策略,rpg,true,1,start,multi
+multilabel,212680,FTL: Faster Than Light,strategy,策略,strategy,true,0,early,multi
+multilabel,212680,FTL: Faster Than Light,simulation,模拟,strategy,true,0,early,multi
+multilabel,212680,FTL: Faster Than Light,rpg,角色扮演,strategy,true,0,early,multi
+multilabel,212680,FTL: Faster Than Light,survival,生存,strategy,true,0,early,multi
+multilabel,289650,Assassin's Creed® Unity,action,动作,action,true,1,start,multi
+multilabel,289650,Assassin's Creed® Unity,adventure,冒险,action,true,1,start,multi
+multilabel,289650,Assassin's Creed® Unity,rpg,角色扮演,action,true,1,start,multi
+multilabel,289650,Assassin's Creed® Unity,simulation,模拟,action,true,1,start,multi
+multilabel,207610,The Walking Dead,adventure,冒险,adventure,true,1,start,unified
+multilabel,207610,The Walking Dead,puzzle,解谜,adventure,true,1,start,unified
+multilabel,207610,The Walking Dead,action,动作,adventure,true,1,start,unified
+multilabel,493340,Planet Coaster,simulation,模拟,simulation,true,1,start,unified
+multilabel,493340,Planet Coaster,strategy,策略,simulation,true,1,start,unified
+multilabel,493340,Planet Coaster,casual,休闲,simulation,true,1,start,unified
+multilabel,287390,Metro: Last Light Redux,action,动作,action,true,1,start,unified
+multilabel,287390,Metro: Last Light Redux,adventure,冒险,action,true,1,start,unified
+multilabel,287390,Metro: Last Light Redux,survival,生存,action,true,1,start,unified
+multilabel,307690,Sleeping Dogs: Definitive Edition,action,动作,action,true,1,start,unified
+multilabel,307690,Sleeping Dogs: Definitive Edition,adventure,冒险,action,true,1,start,unified
+multilabel,307690,Sleeping Dogs: Definitive Edition,racing,竞速,action,true,1,start,unified
+multilabel,307690,Sleeping Dogs: Definitive Edition,other,其他,action,true,1,start,unified
+multilabel,200260,Batman: Arkham City - Game of the Year Edition,action,动作,action,true,1,start,unified
+multilabel,200260,Batman: Arkham City - Game of the Year Edition,adventure,冒险,action,true,1,start,unified
+multilabel,200260,Batman: Arkham City - Game of the Year Edition,other,其他,action,true,1,start,unified
+multilabel,466560,Northgard: Definitive Edition,strategy,策略,strategy,true,1,start,multi
+multilabel,466560,Northgard: Definitive Edition,simulation,模拟,strategy,true,1,start,multi
+multilabel,466560,Northgard: Definitive Edition,survival,生存,strategy,true,1,start,multi
+multilabel,1145350,Hades II,action,动作,action,true,1,start,multi
+multilabel,1145350,Hades II,rpg,角色扮演,action,true,1,start,multi
+multilabel,1145350,Hades II,adventure,冒险,action,true,1,start,multi
+multilabel,1145350,Hades II,other,其他,action,true,1,start,multi
+multilabel,752590,A Plague Tale: Innocence,action,动作,action,true,1,start,multi
+multilabel,752590,A Plague Tale: Innocence,adventure,冒险,action,true,1,start,multi
+multilabel,752590,A Plague Tale: Innocence,puzzle,解谜,action,true,1,start,multi
+multilabel,752590,A Plague Tale: Innocence,survival,生存,action,true,1,start,multi
+multilabel,752590,A Plague Tale: Innocence,other,其他,action,true,1,start,multi
+multilabel,214490,Alien: Isolation,action,动作,action,true,1,start,multi
+multilabel,214490,Alien: Isolation,adventure,冒险,action,true,1,start,multi
+multilabel,214490,Alien: Isolation,survival,生存,action,true,1,start,multi
+multilabel,214490,Alien: Isolation,other,其他,action,true,1,start,multi
+multilabel,312660,Sniper Elite 4,action,动作,action,true,1,start,unified
+multilabel,312660,Sniper Elite 4,adventure,冒险,action,true,1,start,unified
+multilabel,312660,Sniper Elite 4,simulation,模拟,action,true,1,start,unified
+multilabel,312660,Sniper Elite 4,strategy,策略,action,true,1,start,unified
+multilabel,409710,BioShock™ Remastered,action,动作,action,true,1,start,multi
+multilabel,409710,BioShock™ Remastered,adventure,冒险,action,true,1,start,multi
+multilabel,409710,BioShock™ Remastered,rpg,角色扮演,action,true,1,start,multi
+multilabel,409710,BioShock™ Remastered,simulation,模拟,action,true,1,start,multi
+multilabel,629730,Blade and Sorcery,action,动作,action,true,1,start,unified
+multilabel,629730,Blade and Sorcery,adventure,冒险,action,true,1,start,unified
+multilabel,629730,Blade and Sorcery,simulation,模拟,action,true,1,start,unified
+multilabel,629730,Blade and Sorcery,rpg,角色扮演,action,true,1,start,unified
+multilabel,204100,Max Payne 3,action,动作,action,true,1,start,multi
+multilabel,204100,Max Payne 3,adventure,冒险,action,true,1,start,multi
+multilabel,307780,Mortal Kombat X,action,动作,action,false,0,middle,unified
+multilabel,307780,Mortal Kombat X,adventure,冒险,action,false,0,middle,unified
+multilabel,307780,Mortal Kombat X,other,其他,action,false,0,middle,unified
+multilabel,50130,Mafia II (Classic),action,动作,action,true,1,start,multi
+multilabel,50130,Mafia II (Classic),adventure,冒险,action,true,1,start,multi
+multilabel,50130,Mafia II (Classic),rpg,角色扮演,action,true,1,start,multi
+multilabel,50130,Mafia II (Classic),simulation,模拟,action,true,1,start,multi
+multilabel,50130,Mafia II (Classic),other,其他,action,true,1,start,multi
+multilabel,2623190,The Elder Scrolls IV: Oblivion Remastered,rpg,角色扮演,rpg,true,1,start,unified
+multilabel,2623190,The Elder Scrolls IV: Oblivion Remastered,action,动作,rpg,true,1,start,unified
+multilabel,2623190,The Elder Scrolls IV: Oblivion Remastered,adventure,冒险,rpg,true,1,start,unified
+multilabel,1627720,Lies of P,action,动作,action,true,1,start,multi
+multilabel,1627720,Lies of P,rpg,角色扮演,action,true,1,start,multi
+multilabel,1627720,Lies of P,adventure,冒险,action,true,1,start,multi
+multilabel,1290000,PowerWash Simulator,simulation,模拟,simulation,true,1,start,unified
+multilabel,1290000,PowerWash Simulator,casual,休闲,simulation,true,1,start,unified
+multilabel,253230,A Hat in Time,platformer,平台跳跃,platformer,true,1,start,unified
+multilabel,253230,A Hat in Time,action,动作,platformer,true,1,start,unified
+multilabel,253230,A Hat in Time,adventure,冒险,platformer,true,1,start,unified
+multilabel,1693980,Dead Space,action,动作,action,true,1,start,multi
+multilabel,1693980,Dead Space,adventure,冒险,action,true,1,start,multi
+multilabel,1693980,Dead Space,survival,生存,action,true,1,start,multi
+multilabel,8190,Just Cause 2,action,动作,action,true,1,start,unified
+multilabel,8190,Just Cause 2,adventure,冒险,action,true,1,start,unified
+multilabel,8190,Just Cause 2,other,其他,action,true,1,start,unified
+multilabel,108710,Alan Wake,action,动作,action,true,1,start,unified
+multilabel,108710,Alan Wake,adventure,冒险,action,true,1,start,unified
+multilabel,108710,Alan Wake,survival,生存,action,true,1,start,unified
+multilabel,202970,Call of Duty®: Black Ops II,action,动作,action,true,1,start,multi
+multilabel,202970,Call of Duty®: Black Ops II,adventure,冒险,action,true,1,start,multi
+multilabel,202970,Call of Duty®: Black Ops II,survival,生存,action,true,1,start,multi
+multilabel,367500,Dragon's Dogma: Dark Arisen,action,动作,action,true,1,start,multi
+multilabel,367500,Dragon's Dogma: Dark Arisen,rpg,角色扮演,action,true,1,start,multi
+multilabel,367500,Dragon's Dogma: Dark Arisen,adventure,冒险,action,true,1,start,multi
+multilabel,243470,Watch_Dogs™,action,动作,action,true,1,start,unified
+multilabel,243470,Watch_Dogs™,adventure,冒险,action,true,1,start,unified
+multilabel,243470,Watch_Dogs™,rpg,角色扮演,action,true,1,start,unified
+multilabel,243470,Watch_Dogs™,simulation,模拟,action,true,1,start,unified
+multilabel,243470,Watch_Dogs™,strategy,策略,action,true,1,start,unified
+multilabel,243470,Watch_Dogs™,other,其他,action,true,1,start,unified
+multilabel,1325200,Nioh 2 – The Complete Edition,action,动作,action,true,2,start,multi
+multilabel,1325200,Nioh 2 – The Complete Edition,rpg,角色扮演,action,true,2,start,multi
+multilabel,282140,SOMA,adventure,冒险,adventure,true,1,start,multi
+multilabel,282140,SOMA,survival,生存,adventure,true,1,start,multi
+multilabel,282140,SOMA,puzzle,解谜,adventure,true,1,start,multi
+multilabel,282140,SOMA,action,动作,adventure,true,1,start,multi
+multilabel,599140,Graveyard Keeper,simulation,模拟,simulation,true,1,start,multi
+multilabel,599140,Graveyard Keeper,rpg,角色扮演,simulation,true,1,start,multi
+multilabel,599140,Graveyard Keeper,adventure,冒险,simulation,true,1,start,multi
+multilabel,476600,Call of Duty®: WWII,action,动作,action,true,1,start,multi
+multilabel,476600,Call of Duty®: WWII,other,其他,action,true,1,start,multi
+multilabel,1288310,Firework,puzzle,解谜,puzzle,true,1,start,unified
+multilabel,1288310,Firework,adventure,冒险,puzzle,true,1,start,unified
+multilabel,1288310,Firework,rpg,角色扮演,puzzle,true,1,start,unified
+multilabel,1288310,Firework,other,其他,puzzle,true,1,start,unified
+multilabel,302510,Ryse: Son of Rome,action,动作,action,true,1,start,multi
+multilabel,302510,Ryse: Son of Rome,adventure,冒险,action,true,1,start,multi
+multilabel,302510,Ryse: Son of Rome,rpg,角色扮演,action,true,1,start,multi
+multilabel,204450,Call of Juarez: Gunslinger,action,动作,action,false,1,start,unified
+multilabel,204450,Call of Juarez: Gunslinger,adventure,冒险,action,false,1,start,unified
+multilabel,1845910,Dragon Age™: The Veilguard,rpg,角色扮演,rpg,true,1,start,multi
+multilabel,1845910,Dragon Age™: The Veilguard,action,动作,rpg,true,1,start,multi
+multilabel,1845910,Dragon Age™: The Veilguard,adventure,冒险,rpg,true,1,start,multi
+multilabel,1845910,Dragon Age™: The Veilguard,strategy,策略,rpg,true,1,start,multi
+multilabel,692850,Bloodstained: Ritual of the Night,action,动作,action,true,1,start,multi
+multilabel,692850,Bloodstained: Ritual of the Night,adventure,冒险,action,true,1,start,multi
+multilabel,692850,Bloodstained: Ritual of the Night,rpg,角色扮演,action,true,1,start,multi
+multilabel,692850,Bloodstained: Ritual of the Night,platformer,平台跳跃,action,true,1,start,multi
+multilabel,228380,Wreckfest,racing,竞速,racing,true,1,start,unified
+multilabel,228380,Wreckfest,action,动作,racing,true,1,start,unified
+multilabel,228380,Wreckfest,simulation,模拟,racing,true,1,start,unified
+multilabel,1184370,Pathfinder: Wrath of the Righteous - Enhanced Edition,rpg,角色扮演,rpg,true,1,start,unified
+multilabel,1184370,Pathfinder: Wrath of the Righteous - Enhanced Edition,strategy,策略,rpg,true,1,start,unified
+multilabel,1184370,Pathfinder: Wrath of the Righteous - Enhanced Edition,adventure,冒险,rpg,true,1,start,unified
+multilabel,668580,Atomic Heart,action,动作,action,true,1,start,unified
+multilabel,668580,Atomic Heart,adventure,冒险,action,true,1,start,unified
+multilabel,668580,Atomic Heart,rpg,角色扮演,action,true,1,start,unified
+multilabel,668580,Atomic Heart,puzzle,解谜,action,true,1,start,unified
+multilabel,668580,Atomic Heart,survival,生存,action,true,1,start,unified
+multilabel,1210320,Potion Craft: Alchemist Simulator,simulation,模拟,simulation,true,1,start,multi
+multilabel,1210320,Potion Craft: Alchemist Simulator,rpg,角色扮演,simulation,true,1,start,multi
+multilabel,1210320,Potion Craft: Alchemist Simulator,casual,休闲,simulation,true,1,start,multi
+multilabel,1210320,Potion Craft: Alchemist Simulator,other,其他,simulation,true,1,start,multi
+multilabel,107100,Bastion,action,动作,action,false,1,start,unified
+multilabel,107100,Bastion,rpg,角色扮演,action,false,1,start,unified
+multilabel,554620,Life is Strange: Before the Storm,adventure,冒险,adventure,true,1,start,unified
+multilabel,554620,Life is Strange: Before the Storm,puzzle,解谜,adventure,true,1,start,unified
+multilabel,554620,Life is Strange: Before the Storm,other,其他,adventure,true,1,start,unified
+multilabel,207140,SpeedRunners,platformer,平台跳跃,platformer,true,1,start,unified
+multilabel,207140,SpeedRunners,racing,竞速,platformer,true,1,start,unified
+multilabel,207140,SpeedRunners,action,动作,platformer,true,1,start,unified
+multilabel,447530,VA-11 Hall-A: Cyberpunk Bartender Action,simulation,模拟,simulation,true,1,start,multi
+multilabel,447530,VA-11 Hall-A: Cyberpunk Bartender Action,adventure,冒险,simulation,true,1,start,multi
+multilabel,447530,VA-11 Hall-A: Cyberpunk Bartender Action,casual,休闲,simulation,true,1,start,multi
+multilabel,383980,Rivals of Aether,action,动作,action,false,1,start,unified
+multilabel,383980,Rivals of Aether,platformer,平台跳跃,action,false,1,start,unified
+multilabel,250320,The Wolf Among Us,adventure,冒险,adventure,true,6,start,multi
+multilabel,250320,The Wolf Among Us,casual,休闲,adventure,true,6,start,multi
+multilabel,250320,The Wolf Among Us,puzzle,解谜,adventure,true,6,start,multi
+multilabel,740130,Tales of ARISE,rpg,角色扮演,rpg,true,1,start,unified
+multilabel,740130,Tales of ARISE,action,动作,rpg,true,1,start,unified
+multilabel,740130,Tales of ARISE,adventure,冒险,rpg,true,1,start,unified
+multilabel,1282730,Loop Hero,rpg,角色扮演,rpg,true,1,start,unified
+multilabel,1282730,Loop Hero,strategy,策略,rpg,true,1,start,unified
+multilabel,1282730,Loop Hero,adventure,冒险,rpg,true,1,start,unified
+multilabel,1282730,Loop Hero,simulation,模拟,rpg,true,1,start,unified
+multilabel,1256670,Library Of Ruina,rpg,角色扮演,rpg,true,1,start,unified
+multilabel,1256670,Library Of Ruina,strategy,策略,rpg,true,1,start,unified
+multilabel,1256670,Library Of Ruina,casual,休闲,rpg,true,1,start,unified
+multilabel,640820,Pathfinder: Kingmaker — Enhanced Plus Edition,rpg,角色扮演,rpg,true,1,start,multi
+multilabel,640820,Pathfinder: Kingmaker — Enhanced Plus Edition,strategy,策略,rpg,true,1,start,multi
+multilabel,640820,Pathfinder: Kingmaker — Enhanced Plus Edition,adventure,冒险,rpg,true,1,start,multi
+multilabel,535930,Two Point Hospital,simulation,模拟,simulation,true,1,start,multi
+multilabel,535930,Two Point Hospital,strategy,策略,simulation,true,1,start,multi
+multilabel,535930,Two Point Hospital,casual,休闲,simulation,true,1,start,multi
+multilabel,1235140,Yakuza: Like a Dragon,rpg,角色扮演,rpg,true,1,start,multi
+multilabel,1235140,Yakuza: Like a Dragon,adventure,冒险,rpg,true,1,start,multi
+multilabel,1235140,Yakuza: Like a Dragon,action,动作,rpg,true,1,start,multi
+multilabel,417860,Emily is Away,adventure,冒险,adventure,true,1,start,unified
+multilabel,417860,Emily is Away,simulation,模拟,adventure,true,1,start,unified
+multilabel,417860,Emily is Away,casual,休闲,adventure,true,1,start,unified
+multilabel,261030,The Walking Dead: Season Two,adventure,冒险,adventure,true,1,start,multi
+multilabel,261030,The Walking Dead: Season Two,action,动作,adventure,true,1,start,multi
+multilabel,261030,The Walking Dead: Season Two,puzzle,解谜,adventure,true,1,start,multi
+multilabel,1144400,Senren＊Banka,adventure,冒险,adventure,false,1,start,multi
+multilabel,1144400,Senren＊Banka,casual,休闲,adventure,false,1,start,multi
+multilabel,209160,Call of Duty®: Ghosts,action,动作,action,true,2,start,multi
+multilabel,2186680,"Warhammer 40,000: Rogue Trader",rpg,角色扮演,rpg,true,1,start,unified
+multilabel,2186680,"Warhammer 40,000: Rogue Trader",strategy,策略,rpg,true,1,start,unified
+multilabel,2186680,"Warhammer 40,000: Rogue Trader",adventure,冒险,rpg,true,1,start,unified
+multilabel,1874880,Arma Reforger,action,动作,action,true,1,start,unified
+multilabel,1874880,Arma Reforger,simulation,模拟,action,true,1,start,unified
+multilabel,1874880,Arma Reforger,strategy,策略,action,true,1,start,unified
+multilabel,1874880,Arma Reforger,other,其他,action,true,1,start,unified
+multilabel,1030830,Mafia II: Definitive Edition,action,动作,action,true,1,start,unified
+multilabel,1030830,Mafia II: Definitive Edition,adventure,冒险,action,true,1,start,unified
+multilabel,1030830,Mafia II: Definitive Edition,racing,竞速,action,true,1,start,unified
+multilabel,220440,DmC: Devil May Cry,action,动作,action,true,1,start,multi
+multilabel,220440,DmC: Devil May Cry,adventure,冒险,action,true,1,start,multi
+multilabel,220440,DmC: Devil May Cry,platformer,平台跳跃,action,true,1,start,multi
+multilabel,368500,Assassin's Creed® Syndicate,action,动作,action,true,1,start,unified
+multilabel,368500,Assassin's Creed® Syndicate,adventure,冒险,action,true,1,start,unified
+multilabel,368500,Assassin's Creed® Syndicate,rpg,角色扮演,action,true,1,start,unified
+multilabel,368500,Assassin's Creed® Syndicate,strategy,策略,action,true,1,start,unified
+multilabel,288160,The Room,puzzle,解谜,puzzle,true,1,start,unified
+multilabel,288160,The Room,adventure,冒险,puzzle,true,1,start,unified
+multilabel,288160,The Room,casual,休闲,puzzle,true,1,start,unified
+multilabel,288160,The Room,other,其他,puzzle,true,1,start,unified
+multilabel,794260,Outward Definitive Edition,rpg,角色扮演,rpg,true,1,start,unified
+multilabel,794260,Outward Definitive Edition,adventure,冒险,rpg,true,1,start,unified
+multilabel,794260,Outward Definitive Edition,survival,生存,rpg,true,1,start,unified
+multilabel,1189490,觅长生,rpg,角色扮演,rpg,true,0,early,multi
+multilabel,1189490,觅长生,strategy,策略,rpg,true,0,early,multi
+multilabel,1189490,觅长生,simulation,模拟,rpg,true,0,early,multi
+multilabel,1189490,觅长生,adventure,冒险,rpg,true,0,early,multi
+multilabel,238010,Deus Ex: Human Revolution - Director's Cut,action,动作,action,true,1,start,multi
+multilabel,238010,Deus Ex: Human Revolution - Director's Cut,rpg,角色扮演,action,true,1,start,multi
+multilabel,238010,Deus Ex: Human Revolution - Director's Cut,adventure,冒险,action,true,1,start,multi
+multilabel,238010,Deus Ex: Human Revolution - Director's Cut,simulation,模拟,action,true,1,start,multi
+multilabel,41070,Serious Sam 3: BFE,action,动作,action,true,1,start,unified
+multilabel,41070,Serious Sam 3: BFE,adventure,冒险,action,true,1,start,unified
+multilabel,1066780,Transport Fever 2,simulation,模拟,simulation,true,1,start,unified
+multilabel,1066780,Transport Fever 2,strategy,策略,simulation,true,1,start,unified
+multilabel,1066780,Transport Fever 2,casual,休闲,simulation,true,1,start,unified
+multilabel,557340,My Friend Pedro,platformer,平台跳跃,platformer,true,1,start,unified
+multilabel,557340,My Friend Pedro,action,动作,platformer,true,1,start,unified
+multilabel,238090,Sniper Elite 3,action,动作,action,true,1,start,unified
+multilabel,238090,Sniper Elite 3,adventure,冒险,action,true,1,start,unified
+multilabel,238090,Sniper Elite 3,simulation,模拟,action,true,1,start,unified
+multilabel,238090,Sniper Elite 3,strategy,策略,action,true,1,start,unified
+multilabel,333600,NEKOPARA Vol. 1,adventure,冒险,adventure,true,1,start,multi
+multilabel,333600,NEKOPARA Vol. 1,casual,休闲,adventure,true,1,start,multi
+multilabel,333600,NEKOPARA Vol. 1,simulation,模拟,adventure,true,1,start,multi
+multilabel,304240,Resident Evil,survival,生存,survival,true,1,start,multi
+multilabel,304240,Resident Evil,action,动作,survival,true,1,start,multi
+multilabel,304240,Resident Evil,adventure,冒险,survival,true,1,start,multi
+multilabel,304240,Resident Evil,puzzle,解谜,survival,true,1,start,multi
+multilabel,413420,Danganronpa 2: Goodbye Despair,adventure,冒险,adventure,true,1,start,unified
+multilabel,413420,Danganronpa 2: Goodbye Despair,puzzle,解谜,adventure,true,1,start,unified
+multilabel,413420,Danganronpa 2: Goodbye Despair,simulation,模拟,adventure,true,1,start,unified
+multilabel,249130,LEGO® Marvel™ Super Heroes,action,动作,action,true,1,start,multi
+multilabel,249130,LEGO® Marvel™ Super Heroes,adventure,冒险,action,true,1,start,multi
+multilabel,249130,LEGO® Marvel™ Super Heroes,platformer,平台跳跃,action,true,1,start,multi
+multilabel,249130,LEGO® Marvel™ Super Heroes,puzzle,解谜,action,true,1,start,multi
+multilabel,249130,LEGO® Marvel™ Super Heroes,casual,休闲,action,true,1,start,multi
+multilabel,260230,Valiant Hearts: The Great War™ / Soldats Inconnus : Mémoires de la Grande Guerre™,adventure,冒险,adventure,true,1,start,unified
+multilabel,260230,Valiant Hearts: The Great War™ / Soldats Inconnus : Mémoires de la Grande Guerre™,puzzle,解谜,adventure,true,1,start,unified
+multilabel,260230,Valiant Hearts: The Great War™ / Soldats Inconnus : Mémoires de la Grande Guerre™,platformer,平台跳跃,adventure,true,1,start,unified
+multilabel,260230,Valiant Hearts: The Great War™ / Soldats Inconnus : Mémoires de la Grande Guerre™,action,动作,adventure,true,1,start,unified
+multilabel,260230,Valiant Hearts: The Great War™ / Soldats Inconnus : Mémoires de la Grande Guerre™,rpg,角色扮演,adventure,true,1,start,unified
+multilabel,260230,Valiant Hearts: The Great War™ / Soldats Inconnus : Mémoires de la Grande Guerre™,other,其他,adventure,true,1,start,unified
+multilabel,383150,Dead Island Definitive Edition,action,动作,action,true,0,early,unified
+multilabel,383150,Dead Island Definitive Edition,rpg,角色扮演,action,true,0,early,unified
+multilabel,383150,Dead Island Definitive Edition,survival,生存,action,true,0,early,unified
+multilabel,383150,Dead Island Definitive Edition,adventure,冒险,action,true,0,early,unified
+multilabel,71340,Sonic Generations Collection,platformer,平台跳跃,platformer,true,1,start,unified
+multilabel,71340,Sonic Generations Collection,action,动作,platformer,true,1,start,unified
+multilabel,71340,Sonic Generations Collection,adventure,冒险,platformer,true,1,start,unified
+multilabel,247080,Crypt of the NecroDancer,rhythm,节奏,rhythm,true,1,start,multi
+multilabel,247080,Crypt of the NecroDancer,rpg,角色扮演,rhythm,true,1,start,multi
+multilabel,247080,Crypt of the NecroDancer,adventure,冒险,rhythm,true,1,start,multi
+multilabel,247080,Crypt of the NecroDancer,action,动作,rhythm,true,1,start,multi
+multilabel,365450,Hacknet,simulation,模拟,simulation,true,1,start,unified
+multilabel,365450,Hacknet,adventure,冒险,simulation,true,1,start,unified
+multilabel,365450,Hacknet,puzzle,解谜,simulation,true,1,start,unified
+multilabel,1149620,Gas Station Simulator,simulation,模拟,simulation,true,2,start,unified
+multilabel,1149620,Gas Station Simulator,casual,休闲,simulation,true,2,start,unified
+multilabel,42680,Call of Duty®: Modern Warfare® 3 (2011),action,动作,action,true,1,start,unified
+multilabel,42680,Call of Duty®: Modern Warfare® 3 (2011),adventure,冒险,action,true,1,start,unified
+multilabel,42680,Call of Duty®: Modern Warfare® 3 (2011),casual,休闲,action,true,1,start,unified
+multilabel,42680,Call of Duty®: Modern Warfare® 3 (2011),survival,生存,action,true,1,start,unified
+multilabel,99900,Spiral Knights,action,动作,action,true,1,start,unified
+multilabel,99900,Spiral Knights,rpg,角色扮演,action,true,1,start,unified
+multilabel,99900,Spiral Knights,adventure,冒险,action,true,1,start,unified
+multilabel,519860,DUSK,action,动作,action,true,1,start,multi
+multilabel,519860,DUSK,other,其他,action,true,1,start,multi
+multilabel,1240210,There Is No Game: Wrong Dimension,puzzle,解谜,puzzle,true,1,start,unified
+multilabel,1240210,There Is No Game: Wrong Dimension,adventure,冒险,puzzle,true,1,start,unified
+multilabel,1240210,There Is No Game: Wrong Dimension,casual,休闲,puzzle,true,1,start,unified
+multilabel,1240210,There Is No Game: Wrong Dimension,simulation,模拟,puzzle,true,1,start,unified
+multilabel,1240210,There Is No Game: Wrong Dimension,rpg,角色扮演,puzzle,true,1,start,unified
+multilabel,1097840,Gears 5,action,动作,action,true,1,start,multi
+multilabel,1097840,Gears 5,adventure,冒险,action,true,1,start,multi
+multilabel,1097840,Gears 5,other,其他,action,true,1,start,multi
+multilabel,239160,Thief,action,动作,action,true,1,start,unified
+multilabel,239160,Thief,adventure,冒险,action,true,1,start,unified
+multilabel,239160,Thief,rpg,角色扮演,action,true,1,start,unified
+multilabel,882100,XCOM®: Chimera Squad,strategy,策略,strategy,false,1,start,unified
+multilabel,882100,XCOM®: Chimera Squad,rpg,角色扮演,strategy,false,1,start,unified
+multilabel,882100,XCOM®: Chimera Squad,action,动作,strategy,false,1,start,unified
+multilabel,1094520,Sands of Salzaar,rpg,角色扮演,rpg,false,1,start,unified
+multilabel,1094520,Sands of Salzaar,action,动作,rpg,false,1,start,unified
+multilabel,1094520,Sands of Salzaar,adventure,冒险,rpg,false,1,start,unified
+multilabel,1094520,Sands of Salzaar,strategy,策略,rpg,false,1,start,unified
+multilabel,1094520,Sands of Salzaar,simulation,模拟,rpg,false,1,start,unified
+multilabel,285190,"Warhammer 40,000: Dawn of War III",strategy,策略,strategy,true,1,start,unified
+multilabel,285190,"Warhammer 40,000: Dawn of War III",action,动作,strategy,true,1,start,unified
+multilabel,285190,"Warhammer 40,000: Dawn of War III",other,其他,strategy,true,1,start,unified
+multilabel,1948980,Hero's Adventure: Road to Passion,rpg,角色扮演,rpg,true,1,start,multi
+multilabel,1948980,Hero's Adventure: Road to Passion,strategy,策略,rpg,true,1,start,multi
+multilabel,1948980,Hero's Adventure: Road to Passion,adventure,冒险,rpg,true,1,start,multi
+multilabel,1948980,Hero's Adventure: Road to Passion,simulation,模拟,rpg,true,1,start,multi
+multilabel,784150,Workers & Resources: Soviet Republic,simulation,模拟,simulation,true,1,start,unified
+multilabel,784150,Workers & Resources: Soviet Republic,strategy,策略,simulation,true,1,start,unified
+multilabel,784150,Workers & Resources: Soviet Republic,other,其他,simulation,true,1,start,unified
+multilabel,35720,Trine 2: Complete Story,platformer,平台跳跃,platformer,true,1,start,multi
+multilabel,35720,Trine 2: Complete Story,puzzle,解谜,platformer,true,1,start,multi
+multilabel,35720,Trine 2: Complete Story,action,动作,platformer,true,1,start,multi
+multilabel,35720,Trine 2: Complete Story,adventure,冒险,platformer,true,1,start,multi
+multilabel,35720,Trine 2: Complete Story,rpg,角色扮演,platformer,true,1,start,multi
+multilabel,235540,Warhammer: End Times - Vermintide,action,动作,action,true,1,start,unified
+multilabel,235540,Warhammer: End Times - Vermintide,rpg,角色扮演,action,true,1,start,unified
+multilabel,235540,Warhammer: End Times - Vermintide,survival,生存,action,true,1,start,unified
+multilabel,412830,STEINS;GATE,adventure,冒险,adventure,true,1,start,unified
+multilabel,412830,STEINS;GATE,simulation,模拟,adventure,true,1,start,unified
+multilabel,412830,STEINS;GATE,casual,休闲,adventure,true,1,start,unified
+multilabel,323470,DRAGON BALL XENOVERSE,action,动作,action,true,1,start,multi
+multilabel,323470,DRAGON BALL XENOVERSE,rpg,角色扮演,action,true,1,start,multi
+multilabel,323470,DRAGON BALL XENOVERSE,adventure,冒险,action,true,1,start,multi
+multilabel,350080,Wolfenstein: The Old Blood,action,动作,action,true,1,start,unified
+multilabel,350080,Wolfenstein: The Old Blood,adventure,冒险,action,true,1,start,unified
+multilabel,350080,Wolfenstein: The Old Blood,other,其他,action,true,1,start,unified
+multilabel,1182900,A Plague Tale: Requiem,action,动作,action,true,1,start,multi
+multilabel,1182900,A Plague Tale: Requiem,adventure,冒险,action,true,1,start,multi
+multilabel,1182900,A Plague Tale: Requiem,puzzle,解谜,action,true,1,start,multi
+multilabel,1182900,A Plague Tale: Requiem,other,其他,action,true,1,start,multi
+multilabel,445980,Wizard of Legend,action,动作,action,true,1,start,unified
+multilabel,445980,Wizard of Legend,adventure,冒险,action,true,1,start,unified
+multilabel,445980,Wizard of Legend,rpg,角色扮演,action,true,1,start,unified
+multilabel,1161580,Hardspace: Shipbreaker,simulation,模拟,simulation,true,1,start,unified
+multilabel,1161580,Hardspace: Shipbreaker,action,动作,simulation,true,1,start,unified
+multilabel,1161580,Hardspace: Shipbreaker,strategy,策略,simulation,true,1,start,unified
+multilabel,1161580,Hardspace: Shipbreaker,puzzle,解谜,simulation,true,1,start,unified
+multilabel,590380,Into the Breach,strategy,策略,strategy,false,0,early,unified
+multilabel,590380,Into the Breach,rpg,角色扮演,strategy,false,0,early,unified
+multilabel,590380,Into the Breach,puzzle,解谜,strategy,false,0,early,unified
+multilabel,590380,Into the Breach,simulation,模拟,strategy,false,0,early,unified
+multilabel,359870,FINAL FANTASY X/X-2 HD Remaster,rpg,角色扮演,rpg,true,1,start,unified
+multilabel,359870,FINAL FANTASY X/X-2 HD Remaster,adventure,冒险,rpg,true,1,start,unified
+multilabel,359870,FINAL FANTASY X/X-2 HD Remaster,puzzle,解谜,rpg,true,1,start,unified
+multilabel,425580,The Room Two,puzzle,解谜,puzzle,true,1,start,unified
+multilabel,425580,The Room Two,adventure,冒险,puzzle,true,1,start,unified
+multilabel,425580,The Room Two,casual,休闲,puzzle,true,1,start,unified
+multilabel,760060,Mutant Year Zero: Road to Eden,strategy,策略,strategy,false,1,start,unified
+multilabel,760060,Mutant Year Zero: Road to Eden,rpg,角色扮演,strategy,false,1,start,unified
+multilabel,760060,Mutant Year Zero: Road to Eden,adventure,冒险,strategy,false,1,start,unified
+multilabel,235600,Tom Clancy’s Splinter Cell Blacklist,action,动作,action,true,1,start,unified
+multilabel,235600,Tom Clancy’s Splinter Cell Blacklist,adventure,冒险,action,true,1,start,unified
+multilabel,235600,Tom Clancy’s Splinter Cell Blacklist,strategy,策略,action,true,1,start,unified
+multilabel,235600,Tom Clancy’s Splinter Cell Blacklist,rpg,角色扮演,action,true,1,start,unified
+multilabel,1583230,High On Life,action,动作,action,true,1,start,multi
+multilabel,1583230,High On Life,adventure,冒险,action,true,1,start,multi
+multilabel,1583230,High On Life,other,其他,action,true,1,start,multi
+multilabel,866800,The Walking Dead: The Final Season,adventure,冒险,adventure,true,1,start,multi
+multilabel,866800,The Walking Dead: The Final Season,action,动作,adventure,true,1,start,multi
+multilabel,866800,The Walking Dead: The Final Season,puzzle,解谜,adventure,true,1,start,multi
+multilabel,1577120,The Quarry,adventure,冒险,adventure,true,1,start,multi
+multilabel,1577120,The Quarry,survival,生存,adventure,true,1,start,multi
+multilabel,1577120,The Quarry,other,其他,adventure,true,1,start,multi
+multilabel,265550,Dead Rising 3 Apocalypse Edition,action,动作,action,true,1,start,multi
+multilabel,265550,Dead Rising 3 Apocalypse Edition,adventure,冒险,action,true,1,start,multi
+multilabel,265550,Dead Rising 3 Apocalypse Edition,rpg,角色扮演,action,true,1,start,multi
+multilabel,265550,Dead Rising 3 Apocalypse Edition,survival,生存,action,true,1,start,multi
+multilabel,362680,Fran Bow,adventure,冒险,adventure,false,1,start,unified
+multilabel,362680,Fran Bow,puzzle,解谜,adventure,false,1,start,unified
+multilabel,1490890,Demon Slayer -Kimetsu no Yaiba- The Hinokami Chronicles,action,动作,action,true,1,start,unified
+multilabel,1490890,Demon Slayer -Kimetsu no Yaiba- The Hinokami Chronicles,adventure,冒险,action,true,1,start,unified
+multilabel,1490890,Demon Slayer -Kimetsu no Yaiba- The Hinokami Chronicles,other,其他,action,true,1,start,unified
+multilabel,225260,Brutal Legend,action,动作,action,true,1,start,unified
+multilabel,225260,Brutal Legend,adventure,冒险,action,true,1,start,unified
+multilabel,225260,Brutal Legend,rpg,角色扮演,action,true,1,start,unified
+multilabel,225260,Brutal Legend,strategy,策略,action,true,1,start,unified
+multilabel,560130,Pillars of Eternity II: Deadfire,rpg,角色扮演,rpg,true,1,start,unified
+multilabel,560130,Pillars of Eternity II: Deadfire,adventure,冒险,rpg,true,1,start,unified
+multilabel,560130,Pillars of Eternity II: Deadfire,strategy,策略,rpg,true,1,start,unified
+multilabel,236090,Dust: An Elysian Tail,action,动作,action,true,1,start,unified
+multilabel,236090,Dust: An Elysian Tail,adventure,冒险,action,true,1,start,unified
+multilabel,236090,Dust: An Elysian Tail,rpg,角色扮演,action,true,1,start,unified
+multilabel,236090,Dust: An Elysian Tail,platformer,平台跳跃,action,true,1,start,unified
+multilabel,330830,Tales from the Borderlands,adventure,冒险,adventure,true,1,start,unified
+multilabel,330830,Tales from the Borderlands,puzzle,解谜,adventure,true,1,start,unified
+multilabel,330830,Tales from the Borderlands,action,动作,adventure,true,1,start,unified
+multilabel,330830,Tales from the Borderlands,rpg,角色扮演,adventure,true,1,start,unified
+multilabel,368070,Sniper Ghost Warrior 3,action,动作,action,true,1,start,unified
+multilabel,368070,Sniper Ghost Warrior 3,adventure,冒险,action,true,1,start,unified
+multilabel,368070,Sniper Ghost Warrior 3,strategy,策略,action,true,1,start,unified
+multilabel,368070,Sniper Ghost Warrior 3,simulation,模拟,action,true,1,start,unified
+multilabel,241600,Rogue Legacy,platformer,平台跳跃,platformer,true,1,start,unified
+multilabel,241600,Rogue Legacy,action,动作,platformer,true,1,start,unified
+multilabel,241600,Rogue Legacy,rpg,角色扮演,platformer,true,1,start,unified
+multilabel,241600,Rogue Legacy,adventure,冒险,platformer,true,1,start,unified
+multilabel,1746030,Murders on the Yangtze River,adventure,冒险,adventure,true,1,start,unified
+multilabel,1746030,Murders on the Yangtze River,puzzle,解谜,adventure,true,1,start,unified
+multilabel,1746030,Murders on the Yangtze River,rpg,角色扮演,adventure,true,1,start,unified
+multilabel,388410,Darksiders II Deathinitive Edition,action,动作,action,false,0,middle,unified
+multilabel,388410,Darksiders II Deathinitive Edition,adventure,冒险,action,false,0,middle,unified
+multilabel,388410,Darksiders II Deathinitive Edition,rpg,角色扮演,action,false,0,middle,unified
+multilabel,388410,Darksiders II Deathinitive Edition,platformer,平台跳跃,action,false,0,middle,unified
+multilabel,388410,Darksiders II Deathinitive Edition,puzzle,解谜,action,false,0,middle,unified
+multilabel,311560,Assassin’s Creed® Rogue,action,动作,action,true,1,start,unified
+multilabel,311560,Assassin’s Creed® Rogue,adventure,冒险,action,true,1,start,unified
+multilabel,311560,Assassin’s Creed® Rogue,simulation,模拟,action,true,1,start,unified
+multilabel,311560,Assassin’s Creed® Rogue,puzzle,解谜,action,true,1,start,unified
+multilabel,242680,Nuclear Throne,action,动作,action,true,1,start,unified
+multilabel,242680,Nuclear Throne,rpg,角色扮演,action,true,1,start,unified
+multilabel,242680,Nuclear Throne,other,其他,action,true,1,start,unified
+multilabel,557600,Gorogoa,puzzle,解谜,puzzle,true,1,start,unified
+multilabel,557600,Gorogoa,adventure,冒险,puzzle,true,1,start,unified
+multilabel,557600,Gorogoa,casual,休闲,puzzle,true,1,start,unified
+multilabel,233270,Far Cry 3 - Blood Dragon,action,动作,action,true,1,start,unified
+multilabel,233270,Far Cry 3 - Blood Dragon,adventure,冒险,action,true,1,start,unified
+multilabel,233270,Far Cry 3 - Blood Dragon,other,其他,action,true,1,start,unified
+multilabel,1533420,Neon White,platformer,平台跳跃,platformer,true,1,start,unified
+multilabel,1533420,Neon White,action,动作,platformer,true,1,start,unified
+multilabel,1533420,Neon White,adventure,冒险,platformer,true,1,start,unified
+multilabel,1533420,Neon White,other,其他,platformer,true,1,start,unified
+multilabel,241540,State of Decay,action,动作,action,true,1,start,unified
+multilabel,241540,State of Decay,adventure,冒险,action,true,1,start,unified
+multilabel,241540,State of Decay,rpg,角色扮演,action,true,1,start,unified
+multilabel,241540,State of Decay,simulation,模拟,action,true,1,start,unified
+multilabel,241540,State of Decay,survival,生存,action,true,1,start,unified
+multilabel,385800,NEKOPARA Vol. 0,adventure,冒险,adventure,false,1,start,unified
+multilabel,385800,NEKOPARA Vol. 0,casual,休闲,adventure,false,1,start,unified
+multilabel,385800,NEKOPARA Vol. 0,simulation,模拟,adventure,false,1,start,unified
+multilabel,629820,Maneater,action,动作,action,true,2,start,multi
+multilabel,629820,Maneater,adventure,冒险,action,true,2,start,multi
+multilabel,629820,Maneater,rpg,角色扮演,action,true,2,start,multi
+multilabel,629820,Maneater,simulation,模拟,action,true,2,start,multi
+multilabel,40700,Machinarium,adventure,冒险,adventure,true,1,start,unified
+multilabel,40700,Machinarium,puzzle,解谜,adventure,true,1,start,unified
+multilabel,405640,Pony Island,puzzle,解谜,puzzle,true,0,early,unified
+multilabel,405640,Pony Island,adventure,冒险,puzzle,true,0,early,unified
+multilabel,405640,Pony Island,other,其他,puzzle,true,0,early,unified
+multilabel,397950,Clustertruck,platformer,平台跳跃,platformer,true,1,start,multi
+multilabel,397950,Clustertruck,action,动作,platformer,true,1,start,multi
+multilabel,397950,Clustertruck,adventure,冒险,platformer,true,1,start,multi
+multilabel,397950,Clustertruck,simulation,模拟,platformer,true,1,start,multi
+multilabel,397950,Clustertruck,racing,竞速,platformer,true,1,start,multi
+multilabel,397950,Clustertruck,casual,休闲,platformer,true,1,start,multi
+multilabel,397950,Clustertruck,strategy,策略,platformer,true,1,start,multi
+multilabel,1258080,Shop Titans,simulation,模拟,simulation,true,1,start,unified
+multilabel,1258080,Shop Titans,rpg,角色扮演,simulation,true,1,start,unified
+multilabel,1258080,Shop Titans,casual,休闲,simulation,true,1,start,unified
+multilabel,1258080,Shop Titans,other,其他,simulation,true,1,start,unified
+multilabel,368340,CrossCode,action,动作,action,true,1,start,unified
+multilabel,368340,CrossCode,rpg,角色扮演,action,true,1,start,unified
+multilabel,368340,CrossCode,adventure,冒险,action,true,1,start,unified
+multilabel,368340,CrossCode,puzzle,解谜,action,true,1,start,unified
+multilabel,536220,The Walking Dead: A New Frontier,adventure,冒险,adventure,true,6,start,multi
+multilabel,536220,The Walking Dead: A New Frontier,casual,休闲,adventure,true,6,start,multi
+multilabel,536220,The Walking Dead: A New Frontier,action,动作,adventure,true,6,start,multi
+multilabel,2768430,ATLYSS,rpg,角色扮演,rpg,true,1,start,unified
+multilabel,2768430,ATLYSS,action,动作,rpg,true,1,start,unified
+multilabel,2768430,ATLYSS,adventure,冒险,rpg,true,1,start,unified
+multilabel,2768430,ATLYSS,platformer,平台跳跃,rpg,true,1,start,unified
+multilabel,969990,SpongeBob SquarePants: Battle for Bikini Bottom - Rehydrated,platformer,平台跳跃,platformer,true,1,start,multi
+multilabel,969990,SpongeBob SquarePants: Battle for Bikini Bottom - Rehydrated,action,动作,platformer,true,1,start,multi
+multilabel,969990,SpongeBob SquarePants: Battle for Bikini Bottom - Rehydrated,adventure,冒险,platformer,true,1,start,multi
+multilabel,1880330,Sanfu,adventure,冒险,adventure,true,1,start,unified
+multilabel,1880330,Sanfu,puzzle,解谜,adventure,true,1,start,unified
+multilabel,1880330,Sanfu,rpg,角色扮演,adventure,true,1,start,unified
+multilabel,1880330,Sanfu,platformer,平台跳跃,adventure,true,1,start,unified
+multilabel,1046030,ISLANDERS,strategy,策略,strategy,true,1,start,unified
+multilabel,1046030,ISLANDERS,puzzle,解谜,strategy,true,1,start,unified
+multilabel,1046030,ISLANDERS,simulation,模拟,strategy,true,1,start,unified
+multilabel,1046030,ISLANDERS,casual,休闲,strategy,true,1,start,unified
+multilabel,1382330,Persona® 5 Strikers,action,动作,action,true,1,start,multi
+multilabel,1382330,Persona® 5 Strikers,rpg,角色扮演,action,true,1,start,multi
+multilabel,1361320,The Room 4: Old Sins,puzzle,解谜,puzzle,true,1,start,unified
+multilabel,1361320,The Room 4: Old Sins,adventure,冒险,puzzle,true,1,start,unified
+multilabel,1361320,The Room 4: Old Sins,casual,休闲,puzzle,true,1,start,unified
+multilabel,1361320,The Room 4: Old Sins,other,其他,puzzle,true,1,start,unified
+multilabel,250760,Shovel Knight: Treasure Trove,platformer,平台跳跃,platformer,true,1,start,multi
+multilabel,250760,Shovel Knight: Treasure Trove,action,动作,platformer,true,1,start,multi
+multilabel,250760,Shovel Knight: Treasure Trove,adventure,冒险,platformer,true,1,start,multi
+multilabel,250760,Shovel Knight: Treasure Trove,rpg,角色扮演,platformer,true,1,start,multi
+multilabel,228300,Remember Me,action,动作,action,true,1,start,unified
+multilabel,228300,Remember Me,adventure,冒险,action,true,1,start,unified
+multilabel,228300,Remember Me,platformer,平台跳跃,action,true,1,start,unified
+multilabel,498240,Batman - The Telltale Series,adventure,冒险,adventure,true,6,start,multi
+multilabel,498240,Batman - The Telltale Series,action,动作,adventure,true,6,start,multi
+multilabel,498240,Batman - The Telltale Series,puzzle,解谜,adventure,true,6,start,multi
+multilabel,498240,Batman - The Telltale Series,casual,休闲,adventure,true,6,start,multi
+multilabel,1061910,Metal: Hellsinger,action,动作,action,true,0,early,unified
+multilabel,1061910,Metal: Hellsinger,rhythm,节奏,action,true,0,early,unified
+multilabel,1061910,Metal: Hellsinger,adventure,冒险,action,true,0,early,unified
+multilabel,1113120,IXION,strategy,策略,strategy,true,1,start,multi
+multilabel,1113120,IXION,simulation,模拟,strategy,true,1,start,multi
+multilabel,1113120,IXION,survival,生存,strategy,true,1,start,multi
+multilabel,1113120,IXION,adventure,冒险,strategy,true,1,start,multi
+multilabel,35700,Trine Enchanted Edition,platformer,平台跳跃,platformer,false,1,start,unified
+multilabel,35700,Trine Enchanted Edition,puzzle,解谜,platformer,false,1,start,unified
+multilabel,35700,Trine Enchanted Edition,action,动作,platformer,false,1,start,unified
+multilabel,35700,Trine Enchanted Edition,adventure,冒险,platformer,false,1,start,unified
+multilabel,1954200,Kena: Bridge of Spirits,action,动作,action,true,1,start,multi
+multilabel,1954200,Kena: Bridge of Spirits,adventure,冒险,action,true,1,start,multi
+multilabel,1954200,Kena: Bridge of Spirits,platformer,平台跳跃,action,true,1,start,multi
+multilabel,222480,Resident Evil Revelations,action,动作,action,true,1,start,unified
+multilabel,222480,Resident Evil Revelations,adventure,冒险,action,true,1,start,unified
+multilabel,222480,Resident Evil Revelations,survival,生存,action,true,1,start,unified
+multilabel,394310,Punch Club,simulation,模拟,simulation,true,1,start,multi
+multilabel,394310,Punch Club,rpg,角色扮演,simulation,true,1,start,multi
+multilabel,394310,Punch Club,action,动作,simulation,true,1,start,multi
+multilabel,394310,Punch Club,sports,体育,simulation,true,1,start,multi
+multilabel,394310,Punch Club,strategy,策略,simulation,true,1,start,multi
+multilabel,537800,Bomber Crew,simulation,模拟,simulation,true,1,start,multi
+multilabel,537800,Bomber Crew,strategy,策略,simulation,true,1,start,multi
+multilabel,537800,Bomber Crew,action,动作,simulation,true,1,start,multi
+multilabel,537800,Bomber Crew,survival,生存,simulation,true,1,start,multi
+multilabel,537800,Bomber Crew,casual,休闲,simulation,true,1,start,multi
+multilabel,1216710,Cyber Manhunt,simulation,模拟,simulation,true,1,start,multi
+multilabel,1216710,Cyber Manhunt,puzzle,解谜,simulation,true,1,start,multi
+multilabel,1216710,Cyber Manhunt,adventure,冒险,simulation,true,1,start,multi
+multilabel,1216710,Cyber Manhunt,rpg,角色扮演,simulation,true,1,start,multi
+multilabel,288470,Fable Anniversary,action,动作,action,true,1,start,multi
+multilabel,288470,Fable Anniversary,rpg,角色扮演,action,true,1,start,multi
+multilabel,288470,Fable Anniversary,adventure,冒险,action,true,1,start,multi
+multilabel,335670,LISA: The Painful,rpg,角色扮演,rpg,true,1,start,multi
+multilabel,335670,LISA: The Painful,adventure,冒险,rpg,true,1,start,multi
+multilabel,8850,BioShock® 2,action,动作,action,true,1,start,multi
+multilabel,8850,BioShock® 2,rpg,角色扮演,action,true,1,start,multi
+multilabel,8850,BioShock® 2,adventure,冒险,action,true,1,start,multi
+multilabel,8850,BioShock® 2,other,其他,action,true,1,start,multi
+multilabel,861650,Session: Skate Sim,sports,体育,sports,true,1,start,unified
+multilabel,861650,Session: Skate Sim,simulation,模拟,sports,true,1,start,unified
+multilabel,210770,Sanctum 2,action,动作,action,true,1,start,unified
+multilabel,210770,Sanctum 2,strategy,策略,action,true,1,start,unified
+multilabel,210770,Sanctum 2,rpg,角色扮演,action,true,1,start,unified
+multilabel,210770,Sanctum 2,survival,生存,action,true,1,start,unified
+multilabel,214510,LEGO® The Lord of the Rings™,action,动作,action,true,1,start,multi
+multilabel,214510,LEGO® The Lord of the Rings™,adventure,冒险,action,true,1,start,multi
+multilabel,214510,LEGO® The Lord of the Rings™,platformer,平台跳跃,action,true,1,start,multi
+multilabel,214510,LEGO® The Lord of the Rings™,puzzle,解谜,action,true,1,start,multi

@@ -1,0 +1,12 @@
+__pycache__/
+runtime/
+*.csv
+manifest.json
+compare_*.json
+data.json
+
+# 正式分析结果随代码提交；仅对 output 内既有数据规则放行。
+!/output/**/*.csv
+!/output/**/manifest.json
+!/output/**/compare_*.json
+!/output/**/data.json
