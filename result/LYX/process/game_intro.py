@@ -6,8 +6,8 @@ import json
 from typing import Any, Callable, Protocol
 
 
-# v1原文保留用于精确定位历史缓存；新要求在当前提示词中追加并独立升版。
-GAME_INTRO_PROMPT_V1 = """
+# 当前简介提示词；修改内容时同步升级版本。
+GAME_INTRO_PROMPT = """
 [任务]
 为Steam成就分类提供简短游戏背景摘要。只根据已有模型知识，不进行网页检索。
 
@@ -30,10 +30,7 @@ recognized=false，summary为空字符串，uncertainty简要说明无法识别�
 只输出一个有效json对象，recognized为布尔值，summary与uncertainty为字符串；
 uncertainty最多80个字符，无具体疑点时可为空。
 格式示例：{"recognized":false,"summary":"","uncertainty":"无法可靠识别这一具体版本"}
-"""
-GAME_INTRO_PROMPT = (
-    GAME_INTRO_PROMPT_V1
-    + """
+
 [输出前检查]
 recognized=true时，summary以55～65个字符为写作目标，为40～80字符的硬性范围留出余量。
 输出前检查summary的字符数（包括中文、标点、空格和数字），不足40或超过80时先改写再输出。
@@ -41,9 +38,7 @@ recognized=true时，summary以55～65个字符为写作目标，为40～80字�
 仅作格式与长度参考的已识别示例（56字符，不是本次游戏的事实）：
 {"recognized":true,"summary":"这是一款以中世纪城镇为背景的经营模拟游戏，玩家通过规划生产、建设设施和分配居民工作，逐步发展聚落并应对资源短缺。","uncertainty":""}
 """
-)
 GAME_INTRO_PROMPT_VERSION = "lyx-game-intro-v2"
-COMPATIBLE_GAME_INTRO_PROMPTS = (("lyx-game-intro-v1", GAME_INTRO_PROMPT_V1),)
 INTRO_MAX_TOKENS = 512
 INTRO_TASK = "game_intro"
 Json = dict[str, Any]

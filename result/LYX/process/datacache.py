@@ -15,7 +15,6 @@ from typing import Any, Iterator
 from local_database import TYPES, WORKSPACE, workspace_path
 
 DEFAULT_DATACACHE = WORKSPACE / "process" / "datacache.csv"
-DEFAULT_FAILURE_DATA = DEFAULT_DATACACHE.with_name("failure_data.csv")
 CLASSIFICATION_CSV_FIELDS = (
     "appid",
     "name_en",
@@ -252,16 +251,6 @@ def _write_failure_data(datacache: Path, rows: list[dict[str, Any]]) -> int:
     ]
     _atomic_write(failure_data_path(datacache), rejected, DATACACHE_FIELDS)
     return len(rejected)
-
-
-def rebuild_failure_data(datacache: Path = DEFAULT_DATACACHE) -> dict[str, int]:
-    """从现有全量缓存初始化或重建低分表，不改源CSV，不访问SQLite或模型。"""
-    source = workspace_path(datacache, must_exist=True)
-    failure_data_path(source)
-    with _file_lock(source):
-        rows = _read_cache(source)
-        rejected_count = _write_failure_data(source, rows)
-    return {"row_count": len(rows), "failure_row_count": rejected_count}
 
 
 def update_datacache(

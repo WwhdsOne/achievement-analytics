@@ -1,6 +1,40 @@
 # 刘宇翔（LYX）工作空间
 
+四项已完成分析的调用与读图指南见[INSTRUCT](analysis/T1Core/INSTRUCT.md)；给组长的网页布局、交互和数据交接方案见[DEPLOY](analysis/T1Core/DEPLOY.md)，重点包括任务4在固定65款背景中高亮所选游戏的完整逻辑。后者是待实施的网页方案，不表示已经部署。
+
+2026-10-16分析数据源已改为全面采用WWH借用快照：游戏样本、成就分类、剧情阶段、checkpoints数组顺序和游戏类型直接从[NewDB/wwh5.sqlite3](NewDB/wwh5.sqlite3)只读获取。[analysis](analysis/T0Pre/README.md)提供独立三图复现入口，输出位于LYX内；当前DeepSeek链路与数据库保留，历史运行目录已于2026-10-17清理。下文2026-10-15进度是旧LYX分类工程的历史记录。
+
+同日已完成[T1Core首中末指标准备](analysis/T1Core/README.md)：固定T0Pre有效的198款，以有效主线序列的数组位置取中位节点；183款三节点齐全、15款中间指标留空。指标与来源明细保存在T1Core，数据库及T0Pre保持只读；口碑专题后于2026-10-17完成，见下方任务5记录。
+
+T1Core新增`compare`命令，可输入最多五个AppID或游戏名，生成覆盖率及阶段推进比的分组柱状图，支持PNG/SVG及缺失标记。示例和全部参数见[T1Core运行说明](analysis/T1Core/README.md#选择最多五款游戏画对比图)。
+
+同日完成专题2“玩法类型与主线阶段推进”，新增`types`命令：主类型互斥分组与完整玩法多标签对照，主分析183款、全198款保留补充；输出覆盖/推进热力图、游戏分布与Bootstrap中位数区间、起点及结局对照和阶段案例，共6张PNG/SVG。有效n>=5进入主图、n>=10给区间；两份数据库、T0Pre与指标底表均保持不变。主类型和完整标签下的结果存在变化，报告保留对照，不将类型差异当作因果或实际日留存。[专题报告与样例图](analysis/T1Core/output/type_analysis/report.md)。
+
+已完成专题3过程分析：198款、1741节点、1543相邻区间；63对候选中选出3组，新增08完整主线曲线与09相邻推进图。[专题3报告](analysis/T1Core/output/trajectory_analysis/report.md)。原数据库、底表与01～07图片保持不变。
+
+专题3已补充自选分组：`trajectory --games/--appids/--game-names`支持AppID及已有中英文名，每组1～5款、默认2款；仅指定组数时尽量均分，指定每组款数时尾组保留余数。每组输出完整节点曲线及逐游戏相邻区间图，JSON/CSV同时留档，预留只读Python数据查询函数供网页接入。手动选择不受自动案例的类型、至少6节点等条件限制；原自动入口、固定01～15和两份数据库保持不变。[参数及示例](analysis/T1Core/README.md)。
+
+已完成专题4时长分析：固定65款共同样本，RAWG按负责人授权作为平均游玩时长，HLTB作为主线参考耗时；取消类型对照，新增10～13图、Spearman与游戏级区间、时长分组和探索性案例。[专题4报告](analysis/T1Core/output/duration_analysis/report.md)。两份数据库与01～09图片保持不变。
+
+同日补齐14、15号时长比图：固定同65款，将RAWG平均游玩时长分别除以HLTB主线＋支线、全收集参考耗时，与原全程推进比对照；相关系数分别+0.647、+0.617。两类参考耗时均65款正值，复用13号图的区间与案例规则，未开展类型对照。[补充报告及图](analysis/T1Core/output/duration_references/report.md)。全收集为Completionist参考口径，不等于Steam全成就；01～13图和两份数据库保持不变。
+
+当前data_plan专题1～6的已确认实施范围均已完成，分别为推进指标、类型阶段、过程差异、时长与推进、口碑与推进、同类参照基线；任务6没有训练回归模型。T1现有十五组图统一放在[figures图集](analysis/T1Core/figures/README.md)，以01～15编号、简短英文命名；图面使用中性描述，CSV与来源记录保持原目录，数据库内容不变。
+
 当前已跑通DeepSeek成就分类工程链路：定位游戏 → 复用或生成背景摘要 → 一次性判断整款成就的八类多标签 → 校验、累计留档并按门槛写入本地SQLite。这里的 **LLM as Judge** 指模型按固定类别规则作语义判别，不是另设模型复核另一模型的答案。所有个人编辑限于本目录，共享远端数据库永远只读。详细说明与导航集中在[docs](docs/README.md)。
+
+## 今日分析进度：2026-10-17
+
+完成[任务6同类参照基线](analysis/T2Sum/BENCHMARK.md)：183款完整三节点保留，Jaccard≥0.5、同结局口径、排除自身的等权参照覆盖181款，160款至少10参照；相似度0.4/0.6分别182/157款有效，相近口碑165款，HLTB相近时长对照在68款中46款有效。保存915行条件结果、完整参照名单、三阶段中位数/四分位/差值/百分位、条件方向对照与节点语义提示，新增19～21图。[任务6报告](analysis/T2Sum/output/benchmark/report.md)。
+
+新增`run.py benchmark`和无写入`query_benchmark`，支持1～5款AppID/已有中英文名；19总体背景固定，20/21展示所选游戏及参照分布，参照不足/两节点均保留说明。案例附原始三节点描述，Pony Island全部秘密、STEINS;GATE缺描述等限制继续保留，不把相对差当成真实留存或游戏质量。当前范围为同类参照基线，没有训练回归、部署网页或写库；两份SQLite、T0/T1、任务5数据与01～18图保持不变。
+
+任务5另补充[图表探索解读](analysis/T2Sum/output/reputation/report.md)：16号四象限使用完整多标签对照总体构成，17号后段右上区域按好评≥90%、后段≥80%定义28款，解谜19款（67.9%）对比背景20.8%；新增9组区域边界对照、口碑/全程等权百分位秩前五/后五与3组权重对照、183款排序及节点原文。前五The Room系列占3款；部分末节点要求全部任务线/100%战役或特定模式，另有缺描述/教程中位节点疑点，均保留标记而不改库，不将榜单当成游戏质量排名。补充随原reputation命令复跑，完整CSV/JSON与报告同步生成。
+
+完成[任务5口碑与主线推进](analysis/T2Sum/README.md)：统一以183款完整三节点及全部阶段比有效游戏为前提，Steam四象限和三阶段关联同183款，跨Steam/Metacritic/RAWG评分对照固定共同140款。新增16～18号PNG/SVG、评分覆盖与原值/缺失台账、游戏级Spearman和成对Bootstrap区间、单一起点/结局对照；匹配68款有HLTB的游戏，99对候选留档、取3对探索案例。
+
+183款Steam好评率与前段、后段、全程ρ依次+0.255、+0.108、+0.164；共同140款三评分与全程ρ依次+0.125、+0.224、+0.282。结果是相关描述，不能说明口碑导致推进或玩家忠诚度。评分均取借用冻结快照，不混入旧库review_percent；RAWG零分原值保留而不充当有效低分。
+
+新增本地入口`analysis/T2Sum/run.py reputation`，支持1～5款AppID/已有中英文名高亮，固定背景和总体统计不变，自选结果独立保存；无写入Python查询和JSON可供网页接入，未部署网页。结果见[完整报告](analysis/T2Sum/output/reputation/report.md)、[三图](analysis/T2Sum/figures/README.md)。两份SQLite、T0Pre、T1Core及01～15图均经前后指纹核验保持不变；当时专题6尚未实施，随后同日完成同类参照，见上方记录。未提交或推送。
 
 ## 今日进度记录：2026-10-15 23:13
 
@@ -30,25 +64,24 @@
 
 | 文档 | 内容 |
 |---|---|
-| [总体规划](docs/plan.md) | 已实现链路、验证边界与后续任务 |
-| [运行说明](docs/PROCESS.md) | 命令、写库与预算续跑 |
-| [DeepSeek契约](docs/DEEPSEEK_PLAN.md) | LLM as Judge定义、输入、响应、校验与恢复 |
-| [数据库说明](docs/DATABASE.md) | 六表字段、数据来源、HLTB与hard_ratio口径、迁移数量及连接 |
-| [数据准备](docs/IMPORT_SNAPSHOT.md) | 前1000款只读获取与迁移 |
-| [实验记录](docs/experiments.md) | 历史与本轮验证 |
-| [后续分析规划](docs/data_plan.md) | 分类完成后待选择的分析专题、指标口径与实施前提 |
-| [旧攻略采集记录](docs/experiments.md#旧攻略获取方式已弃用) | 已弃用的网页发现、DOM获取及历史评分说明 |
+| [分析规划](docs/data_plan.md) | 六项任务、样本、计算口径与边界 |
+| [数据交接与上传选择](analysis/delivery/README.md) | 交接包、源表/结果表/总结表、完整复算所需SQLite |
+| [五专题审查](analysis/delivery/AUDIT.md) | 来源关联、重算结果、缺失与语义风险 |
+| [WWH数据库](docs/DATABASE_WWH.md) | 当前分析主源的八表及剧情/玩法路径 |
+| [LYX数据库](docs/DATABASE_LYX.md) | 原六表、HLTB/hard_ratio、导入摘要和连接 |
+| [PROCESS](docs/PROCESS.md) | 合并的数据获取沿革和仍可运行的DeepSeek链路 |
+| [实验记录](docs/experiments.md) | 分析实施与本轮清理核验；带时间分类历史 |
+| [当前交付规划](docs/plan.md) | 分析交接与网页展示后续 |
+| [T1读图指南](analysis/T1Core/INSTRUCT.md) | 四任务命令、图表解释与案例 |
+| [网页交接](analysis/T1Core/DEPLOY.md) | 给组长的页面、查询、高亮和缺失处理方案 |
+| [T2任务5和6](analysis/T2Sum/README.md) | 口碑与同类参照结果、图表和查询接口 |
 
-程序入口见[DataAgent.py](process/DataAgent.py)，SQL与本地库入口见[schema.sql](database/schema.sql)。数据、缓存和备份保持原位且Git忽略；不自动提交或推送。
+## 2026-10-17 交接审查与清理记录
 
-分类当前按`confidence >= 0.6`逐标签筛选；这是模型自报信心的本地门槛，不是准确概率，不改变v6提示词或API缓存指纹。每次分类把有效的全部标签累计到[process/datacache.csv](process/datacache.csv)，包括低分、已有和本轮写入结果，历史runtime文件保留。历史CSV通过[import_classification_cache.py](process/import_classification_cache.py)离线预检和补写，默认不落盘，`--apply`才写本地SQLite和累计CSV；已有机器/人工结果及主线排序保护。命令和去重规则见[运行说明](docs/PROCESS.md#累计分类csv与历史结果导入)。
+从头审查五个分析专题（任务2～6）及任务1公共指标。两份SQLite完整性/外键通过，219项manifest产物哈希一致；从WWH冻结输入重建198款指标和1824行候选节点，核对类型分组、1543相邻段、65款时长、183/140款口碑和915组同类参照、21294条参照关系，均与已保存结果一致。未重新分类、改库或覆盖原图。
 
-[process/failure_data.csv](process/failure_data.csv)另行展示累计缓存中低于各行置信度门槛的标签，保留原22列；普通分类和历史导入更新全量表时同步刷新，不增加API请求，不改变SQLite写入逻辑。默认0.6通过，混合标签只提取其中低分的标签。该表保留不同请求的历史低分，不是所有未入库成就或网络失败清单。
+已准备analysis/delivery/package本地交接包，123文件、约40.8 MB，含49张结果CSV、42张PNG/SVG、9份源表摘录，以及来源表、结果表和任务总结三份索引。网页展示优先交这个结果包；按当前代码从头复算另交NewDB/wwh5.sqlite3和database/achievements.sqlite的原文件，不能用局部摘录替代。当前只是本地准备，没有上传、部署、提交或推送。
 
-2026-10-15已完成真实单款、有限预算批量、旧响应恢复及0.6边界标签补录，另验证了请求总时限、失败隔离和重复导入。工程链路已实现，冻结1000款的分类仍未全部完成；当前没有人工金标集或语义准确率结论，机器`mainline`还需后续人工核验和剧情排序。每轮报告、跨轮CSV和SQLite的职责及带时间数据快照见[总体规划](docs/plan.md)与[实验记录](docs/experiments.md)。
+数据获取/DeepSeek说明合并到PROCESS；数据库文档拆为DATABASE_LYX、DATABASE_WWH，IMPORT_SNAPSHOT简要并入LYX说明。删除process/runtime旧历史约1.28 GB、旧Gamer Guides逻辑、一次性导入/迁移脚本、旧字节码和临时文件；仅保留DeepSeek五个程序。当前prompt文本/版本、>=0.6门槛、预算、超时、事务和已有成果保护保持不变，旧版缓存兼容已去除。
 
-HLTB三类时长已按冻结1000款AppID从远端hltb_games导入，并完成schema4迁移；旧guide_time_hours_min/max物理删列，playtime与guide_difficulty保留。一次性导入脚本已移除，现有数据、快照与备份保留。字段口径与导入数量见[DATABASE.md](docs/DATABASE.md#hltb三类时长)。
-
-2026-10-15 21:49，当前guide_difficulty已换为[game_difficulty.hard_ratio](docs/DATABASE.md#hard_ratio难度指标)的0～1成就难度代理：以games_time全部1000个AppID查询，996款有值、4款NULL，Decimal四舍五入保留两位。导入时完整备份并核对仅目标列变化；一次性导入脚本已移除。
-
-旧Gamer Guides时间与评分采集已弃用，五个源码文件归档至[process/old](process/old/README.md)，获取方式合并到[实验记录](docs/experiments.md#旧攻略获取方式已弃用)；runtime中的队列和证据保留原位。此前347款HLTB子集的攻略采集限制不适用于已完成的全1000款hard_ratio导入。
+保留当前链路维护的datacache.csv（54869行）和failure_data.csv（2996行），它们不等于API缓存或数据库全部待办。旧source_csv路径只作历史出处，删除的receipt和旧运行备份不再可回放；新运行仍会创建新runtime及备份。两份SQLite、database/backups、全部分析数值表和01～21图保持原样。代码/说明可Git交接，原始数据和数据附件仍忽略。

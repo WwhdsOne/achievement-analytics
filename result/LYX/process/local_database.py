@@ -1,10 +1,9 @@
-"""LYX 六表 SQLite 连接、来源字段转换及模型标签原子写入；不连接远端。"""
+"""DeepSeek专用SQLite连接、当前结构校验与模型标签原子写入；不连接远端或迁移结构。"""
 
 from __future__ import annotations
 
 import csv
 from contextlib import closing
-from decimal import Decimal, InvalidOperation, ROUND_HALF_UP
 import io
 import math
 import re
@@ -15,7 +14,6 @@ from typing import Any
 WORKSPACE = Path(__file__).resolve().parents[1]
 DEFAULT_DATABASE = WORKSPACE / "database" / "achievements.sqlite"
 DEFAULT_MIN_CONFIDENCE = 0.6
-SCHEMA = WORKSPACE / "database" / "schema.sql"
 SCHEMA_VERSION = 4
 METHODS = ("deepseek", "jev", "rule", "manual")
 TYPES = {
@@ -80,13 +78,6 @@ COLUMNS = {
         "confidence",
     ),
 }
-LEGACY_TIME_COLUMNS = (
-    "appid",
-    "playtime",
-    "guide_time_hours_min",
-    "guide_time_hours_max",
-    "guide_difficulty",
-)
 
 
 def workspace_path(path: Path, *, must_exist: bool = False) -> Path:
@@ -114,40 +105,19 @@ def connect_local(path: Path, *, writable: bool = False) -> sqlite3.Connection:
     return con
 
 
-def ensure_schema(
-    con: sqlite3.Connection,
-    *,
-    check_methods: bool = True,
-    schema_version: int = SCHEMA_VERSION,
-) -> None:
-    """检查六表及字段；显式迁移可读旧版2/3，日常入口要求HLTB时长版4。"""
-    if schema_version not in (2, 3, SCHEMA_VERSION):
-        raise ValueError("不支持此本地schema版本")
-    found = {
-        r[0]
-        for r in con.execute(
-            "SELECT name FROM sqlite_master WHERE type='table' AND name NOT LIKE 'sqlite_%'"
-        )
-    }
-    if (
-        found != set(TABLES)
-        or con.execute("PRAGMA user_version").fetchone()[0] != schema_version
-    ):
-        raise ValueError(
-            "本地数据库结构版本不一致；旧版2先运行 migrate_display_names.py，旧版3需迁移HLTB时长结构至版本4（原导入脚本已移除）"
-        )
+def ensure_schema(con: sqlite3.Connection) -> None:
+    """只校验当前六表schema4，不执行建表或历史迁移。"""
+    found = {r[0] for r in con.execute(
+        "SELECT name FROM sqlite_master WHERE type='table' AND name NOT LIKE 'sqlite_%'"
+    )}
+    if found != set(TABLES) or con.execute("PRAGMA user_version").fetchone()[0] != SCHEMA_VERSION:
+        raise ValueError("本地库必须为六表schema4；请恢复匹配快照，本入口不自动迁移")
     for table, expected in COLUMNS.items():
-        if table == "achievement_types" and schema_version == 2:
-            expected = tuple(column for column in expected if column != "display_name")
-        if table == "games_time" and schema_version < 4:
-            expected = LEGACY_TIME_COLUMNS
         actual = tuple(row[1] for row in con.execute(f'PRAGMA table_info("{table}")'))
         if actual != expected:
-            raise ValueError(f"{table} 字段与六表结构不一致")
-    if check_methods and method_values(con) != set(METHODS):
-        raise ValueError(
-            "method 约束不是 deepseek/jev/rule/manual，请运行 migrate_methods.py"
-        )
+            raise ValueError(f"{table}字段与当前六表结构不一致")
+    if method_values(con) != set(METHODS):
+        raise ValueError("method约束必须为deepseek/jev/rule/manual；本入口不修改结构")
 
 
 def method_values(con: sqlite3.Connection) -> set[str]:
@@ -161,17 +131,6 @@ def method_values(con: sqlite3.Connection) -> set[str]:
     return set(re.findall(r"'([^']*)'", match.group(1))) if match else set()
 
 
-def encode_genres(values: list[str] | None) -> str | None:
-    """TEXT[] 转为 | 分隔文本；用 CSV 引号转义保留分隔符和换行。"""
-    if values is None:
-        return None
-    if not isinstance(values, list) or any(not isinstance(v, str) for v in values):
-        raise ValueError("valve_genres 必须是字符串列表或 NULL")
-    buffer = io.StringIO(newline="")
-    csv.writer(buffer, delimiter="|", lineterminator="\r\n").writerow(values)
-    return buffer.getvalue()[:-2]
-
-
 def decode_genres(value: str | None) -> list[str] | None:
     """读取同一文本契约；NULL 表示缺失，空文本表示空数组。"""
     if value is None:
@@ -179,27 +138,6 @@ def decode_genres(value: str | None) -> list[str] | None:
     if value == "":
         return []
     return next(csv.reader(io.StringIO(value, newline=""), delimiter="|", strict=True))
-
-
-def table_counts(con: sqlite3.Connection) -> dict[str, int]:
-    """返回六张业务表的实际行数。"""
-    return {
-        table: con.execute(f'SELECT count(*) FROM "{table}"').fetchone()[0]
-        for table in TABLES
-    }
-
-
-def sqlite_percent(value: Any) -> float:
-    """保留有效零值，将来源完成率按 Decimal 四舍五入到两位。"""
-    if isinstance(value, bool) or value is None:
-        raise ValueError("成就完成率缺失或类型无效")
-    try:
-        number = Decimal(str(value))
-    except InvalidOperation as exc:
-        raise ValueError("成就完成率无效") from exc
-    if not number.is_finite() or not 0 <= number <= 100:
-        raise ValueError("成就完成率必须位于0～100")
-    return float(number.quantize(Decimal("0.01"), rounding=ROUND_HALF_UP))
 
 
 def partition_classification_types(
@@ -246,11 +184,8 @@ def store_classifications(
     reclassify: bool = False,
     expected_input: list[dict[str, Any]] | None = None,
     min_confidence: float = DEFAULT_MIN_CONFIDENCE,
-    merge_existing: bool = False,
 ) -> dict[str, int]:
-    """原子写入合格标签；离线补录可补齐相容标签，冲突及人工成果保留。"""
-    if merge_existing and reclassify:
-        raise ValueError("补录与覆盖重判不能同时启用")
+    """原子写入当前DeepSeek合格标签，保护已有分类、人工成果与排序。"""
     seen: set[str] = set()
     partitions: list[tuple[list[dict[str, Any]], list[dict[str, Any]]]] = []
     for record in records:
@@ -280,10 +215,7 @@ def store_classifications(
         "already_classified": 0,
         "below_threshold": 0,
     }
-    if merge_existing:
-        counts["conflict"] = 0
     outcomes: list[str] = []
-    label_outcomes: list[dict[str, str]] = [{} for _ in records]
     with closing(connect_local(database, writable=True)) as con:
         con.execute("BEGIN IMMEDIATE")
         try:
@@ -310,9 +242,7 @@ def store_classifications(
                 ).fetchall()
                 if expected != actual:
                     raise ValueError("模型调用后整款成就集合或文本改变，停止写入")
-            for index, (record, (accepted, rejected)) in enumerate(
-                zip(records, partitions, strict=True)
-            ):
+            for record, (accepted, rejected) in zip(records, partitions, strict=True):
                 key = (record["appid"], record["api_name"])
                 current = con.execute(
                     "SELECT display_name,description,status,mainline_index FROM achievements WHERE appid=? AND api_name=?",
@@ -334,54 +264,6 @@ def store_classifications(
                 ):
                     counts["protected"] += 1
                     outcomes.append("protected")
-                    continue
-                if merge_existing and existing:
-                    target = [
-                        (
-                            tag["type"],
-                            "deepseek",
-                            tag["confidence"],
-                            record["display_name"],
-                        )
-                        for tag in accepted
-                    ]
-                    if not accepted:
-                        counts["below_threshold"] += 1
-                        outcomes.append("below_threshold")
-                        continue
-                    if any(tag not in target for tag in existing):
-                        counts["conflict"] += 1
-                        outcomes.append("conflict")
-                        label_outcomes[index] = {
-                            tag[0]: "already_classified"
-                            for tag in existing
-                            if tag in target
-                        }
-                        continue
-                    additions = [tag for tag in target if tag not in existing]
-                    label_outcomes[index] = {
-                        tag[0]: "already_classified" for tag in existing
-                    }
-                    if not additions:
-                        counts["already_classified"] += 1
-                        outcomes.append("already_classified")
-                        continue
-                    con.executemany(
-                        "INSERT INTO achievement_types(appid,api_name,type,method,confidence,display_name) VALUES(?,?,?,?,?,?)",
-                        [(*key, *tag) for tag in additions],
-                    )
-                    con.execute(
-                        "UPDATE achievements SET status=? WHERE appid=? AND api_name=?",
-                        (
-                            "uncertain" if target[0][0] == "unknown" else "suggested",
-                            *key,
-                        ),
-                    )
-                    label_outcomes[index].update(
-                        {tag[0]: "written" for tag in additions}
-                    )
-                    counts["written"] += 1
-                    outcomes.append("written")
                     continue
                 if (
                     not reclassify
@@ -425,8 +307,8 @@ def store_classifications(
         except BaseException:
             con.rollback()
             raise
-    for record, outcome, (accepted, rejected), per_label in zip(
-        records, outcomes, partitions, label_outcomes, strict=True
+    for record, outcome, (accepted, rejected) in zip(
+        records, outcomes, partitions, strict=True
     ):
         record["sqlite_outcome"] = outcome
         record["accepted_types"], record["rejected_types"] = accepted, rejected
@@ -436,7 +318,7 @@ def store_classifications(
             else "suggested"
         )
         record["label_sqlite_outcomes"] = {
-            tag["type"]: per_label.get(tag["type"], outcome) for tag in accepted
+            tag["type"]: outcome for tag in accepted
         } | {tag["type"]: "below_threshold" for tag in rejected}
         record["written_types"] = [
             tag
@@ -444,24 +326,3 @@ def store_classifications(
             if record["label_sqlite_outcomes"][tag["type"]] == "written"
         ]
     return counts
-
-
-def execute_schema(
-    con: sqlite3.Connection, *, schema_version: int = SCHEMA_VERSION
-) -> None:
-    """逐条恢复schema对象；旧标签迁移显式保留版本3，不隐式迁移时长结构。"""
-    if schema_version not in (3, SCHEMA_VERSION):
-        raise ValueError("schema执行目标只能为3或当前版本")
-    pending = ""
-    for line in SCHEMA.read_text(encoding="utf-8").splitlines(keepends=True):
-        pending += line
-        if sqlite3.complete_statement(pending):
-            if re.fullmatch(
-                r"\s*PRAGMA\s+user_version\s*=\s*\d+\s*;\s*", pending, re.I
-            ):
-                con.execute(f"PRAGMA user_version={schema_version}")
-            else:
-                con.execute(pending)
-            pending = ""
-    if pending.strip():
-        raise ValueError("schema.sql 包含不完整 SQL")
