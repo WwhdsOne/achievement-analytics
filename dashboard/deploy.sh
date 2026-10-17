@@ -5,14 +5,14 @@
 #
 # 做四件事：
 #   1. 交叉编译 linux/amd64 静态二进制（面板不需要 CGO）
-#   2. 从 .env 抽出 POSTGRES_* 与推荐服务 HOST/PORT，值原样照搬
+#   2. 抽出数据库、推荐连接与 OSS 下载凭据，值原样照搬
 #   3. 把二进制 / Dockerfile / compose / 抽出的 env / 分析报告打包传到服务器固定目录
 #   4. 远端 `docker compose up -d --build` → 远端探活 → 本机探公网 → 确认写接口不存在
 #
 # 凭据都在 dashboard/.env（不入 git）。.env 里两段各自独立填写：
 #   DEPLOY_HOST   服务器地址（只给本脚本登录用）
 #   POSTGRES_HOST 数据库地址（面板连库用，原样传给容器；面板与库同机所以是 127.0.0.1）
-# SSH 部署凭据留在本机；传上去的 env 只有 POSTGRES_* 与推荐连接 HOST/PORT。
+# SSH 部署凭据留在本机；OSS 下载凭据仅放服务器运行时 env，不进镜像。
 #
 # 登录用账号密码（sshpass 在 macOS 上默认没有，所以用 expect 应答）。
 set -euo pipefail
@@ -35,6 +35,7 @@ while IFS= read -r line || [ -n "$line" ]; do
   [ -z "$key" ] && continue
   if [ -z "${!key+x}" ]; then val="${val%\"}"; val="${val#\"}"; export "$key=$val"; fi
 done < .env
+CA_CERT_FILE="${CA_CERT_FILE:-/etc/ssl/cert.pem}"
 
 : "${DEPLOY_HOST:?dashboard/.env 里缺少 DEPLOY_HOST}"
 : "${DEPLOY_USER:?dashboard/.env 里缺少 DEPLOY_USER}"
@@ -89,6 +90,9 @@ remote_put() {  # $1 = 本地文件，$2 = 远端目录（只传单个文件：E
 echo "==> 0/4 前置检查"
 command -v go >/dev/null     || { echo "    ✗ 本机没有 go"; exit 1; }
 command -v expect >/dev/null || { echo "    ✗ 本机没有 expect（macOS 自带；Linux 需 apt install expect）"; exit 1; }
+[ -f "$CA_CERT_FILE" ] || { echo "    ✗ 缺少 HTTPS CA 证书包，可用 CA_CERT_FILE 指定"; exit 1; }
+: "${OSS_ACCESS_KEY_ID:?dashboard/.env 里缺少 OSS_ACCESS_KEY_ID}"
+: "${OSS_ACCESS_KEY_SECRET:?dashboard/.env 里缺少 OSS_ACCESS_KEY_SECRET}"
 [ -f "$REPORT" ] || {
   echo "    ✗ 缺少 $REPORT——分析页的数据源，生成方式见 docs/commands.md §8"; exit 1; }
 echo "    目标 ${TARGET}:${DEPLOY_PATH}  端口 ${DEPLOY_PORT}"
@@ -102,11 +106,12 @@ printf '    %s\n' "$(ls -lh "$BINARY" | awk '{print $5}')"
 
 # ── 2. 抽出容器连库需要的配置 ───────────────────────────────────────────
 echo "==> 2/4 抽出容器连库配置（原样，不改写）"
+umask 077
 {
   echo "# 由 dashboard/deploy.sh 从本机 dashboard/.env 抽出，**不要手改**。"
-  echo "# 只含 POSTGRES_* 与 RECOMMENDATION_HOST/PORT，值原样照搬。"
-  echo "# 只读面板不需要任何 API key，所以 STEAM/RAWG 之类不会传上来。"
+  echo "# 只含数据库、推荐连接与 OSS 下载凭据。"
   awk -F= '/^POSTGRES_[A-Z_]*=|^RECOMMENDATION_(HOST|PORT)=/{print}' .env
+  printf 'OSS_ACCESS_KEY_ID=%s\nOSS_ACCESS_KEY_SECRET=%s\n' "$OSS_ACCESS_KEY_ID" "$OSS_ACCESS_KEY_SECRET"
 } > "$CONTAINER_ENV"
 chmod 600 "$CONTAINER_ENV"
 awk -F= '/^[A-Z_]+=/{print "    "$1}' "$CONTAINER_ENV"
@@ -119,6 +124,7 @@ rm -rf "$STAGE"
 mkdir -p "$STAGE/data/processed"
 cp "$BINARY" "$STAGE/achievement-dashboard"
 cp Dockerfile docker-compose.yml .dockerignore "$STAGE/"
+cp "$CA_CERT_FILE" "$STAGE/ca-certificates.crt"
 cp "$CONTAINER_ENV" "$STAGE/.env"          # 落地即 .env，省掉一次远端改名
 cp "$REPORT" "$STAGE/data/processed/analysis-report.json"
 # COPYFILE_DISABLE=1：macOS 的 tar 默认会给带扩展属性的文件附带 ._* 的 AppleDouble

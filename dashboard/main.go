@@ -267,6 +267,7 @@ func main() {
 	}
 
 	loadDotEnv(*envFile)
+	download := newDataDownload()
 	recommendationTarget, err := resolveRecommendationURL(*recommendationURL)
 	if err != nil {
 		log.Fatal(err)
@@ -288,6 +289,7 @@ func main() {
 	report := resolveReport(*reportPath)
 	srv := &api{pool: pool, reportPath: report}
 	mux := http.NewServeMux()
+	mux.Handle("GET /download/data", download)
 	// "GET /{$}" 才是「只匹配根路径」；写成 "GET /" 会变成匹配所有路径的兜底项
 	mux.HandleFunc("GET /{$}", static("index.html", "text/html; charset=utf-8"))
 	for path, a := range assets {

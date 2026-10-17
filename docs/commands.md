@@ -3,6 +3,8 @@
 > 数据获取侧的日常操作速查。口径细节见 `AGENTS.md`，限额见 `docs/sources.md`，
 > 流程讲解见 `docs/data-pipeline.html`。所有命令在项目根目录执行。
 
+面板完整数据下载的配置、次数限制与部署说明见 [数据下载](data-download.md)。
+
 ## 0. 环境准备（每人一次）
 
 ```bash

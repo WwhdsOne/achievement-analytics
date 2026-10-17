@@ -229,10 +229,40 @@
     <button class="tab" id="tabQueue" onclick="switchView('queue')">队列总览</button>
     <button class="tab" id="tabCloud" onclick="switchView('overview')">数据全景</button>
     <button class="tab" id="tabResearch" onclick="switchView('research')">研究成果</button>
+    <button class="tab" id="tabDownload" onclick="switchView('download')">数据下载</button>
   </div>
 </nav>
 
 <div class="wrap">
+
+  <div id="viewDownload" class="hidden">
+    <header class="explore-heading">
+      <div class="explore-eyebrow">THE COMPLETE DATASET</div>
+      <h1>把数据，<br>带回去研究。</h1>
+      <p>代码公开，数据共享。下载完整 PostgreSQL 数据归档，继续你的学习与研究。</p>
+    </header>
+    <section class="card" aria-labelledby="downloadTitle">
+      <h2 id="downloadTitle">完整数据下载</h2>
+      <p class="sub">achievement-analytics-data.tar.gz · PostgreSQL 数据归档</p>
+      <p>每个 IP 每天最多下载 <strong>5 次</strong>，按北京时间每日零点重置。同一公网 IP 的访问者共用次数。</p>
+      <p class="sub">每次开始下载计 1 次，中途取消也计数；文件读取失败不扣次数。次数仅在内存中记录，服务重启后清零。</p>
+      <a href="/download/data" target="_blank" rel="noopener" class="data-download-link">下载完整数据 ↗</a>
+    </section>
+    <section class="card" aria-labelledby="downloadLicenseTitle">
+      <h2 id="downloadLicenseTitle">代码与文档许可</h2>
+      <p>项目代码与文档公开在 <a href="https://github.com/WwhdsOne/achievement-analytics" target="_blank" rel="noopener noreferrer">GitHub 仓库 ↗</a>，采用 <a href="https://github.com/WwhdsOne/achievement-analytics/blob/main/LICENSE" target="_blank" rel="noopener noreferrer">PolyForm Noncommercial License 1.0.0 ↗</a>。</p>
+      <p>欢迎依照许可开展非商业用途的学习、研究、修改与分享。分发代码时，请保留许可证或其链接，以及原有版权声明与 Required Notice。商业用途需事先取得全体作者的书面授权，可通过 <a href="https://github.com/WwhdsOne/achievement-analytics/issues" target="_blank" rel="noopener noreferrer">仓库 Issue</a> 联系。</p>
+      <p class="sub">本许可属于源码可得（source-available）许可，含非商业用途限制，不属于 OSI 定义的开源许可。</p>
+      <p class="sub">Copyright © 2026 王文海、刘宇翔、杨金辉、耶美田、朱政宇</p>
+    </section>
+    <section class="card" aria-labelledby="downloadDataTermsTitle">
+      <h2 id="downloadDataTermsTitle">数据来源与使用说明</h2>
+      <p>数据归档来自 Steam、SteamSpy、RAWG 等第三方公开数据源，供学习与研究参考。第三方数据仍受各来源的条款约束，本仓库的代码与文档许可不覆盖这些数据。使用或再分发前，请核对对应来源的使用条件并保留来源标注。</p>
+      <p><a href="https://rawg.io/apidocs" target="_blank" rel="noopener noreferrer">RAWG 免费档</a>仅限非商业用途，使用其数据的页面须添加 <a href="https://rawg.io/" target="_blank" rel="noopener noreferrer">RAWG 回链</a>。项目代码的商业授权不替代数据来源方的授权。</p>
+      <p class="sub">归档反映打包时的数据状态；数据覆盖范围与缺失情况以归档内容为准。</p>
+    </section>
+    <footer class="explore-footer">数据来源：Steam / SteamSpy / <a href="https://rawg.io/" target="_blank" rel="noopener noreferrer">RAWG</a> · 归档内容以打包时的数据为准。</footer>
+  </div>
 
   <div id="viewResearch" class="hidden">
     <header class="explore-heading research-heading">
@@ -422,6 +452,8 @@ function switchView(v) {
   document.querySelector('.wrap').classList.toggle('research-wide', v === 'analysis' || v === 'overview' || v === 'research');
   $('viewResearch').classList.toggle('hidden', v !== 'research');
   $('tabResearch').classList.toggle('active', v === 'research');
+  $('viewDownload').classList.toggle('hidden', v !== 'download');
+  $('tabDownload').classList.toggle('active', v === 'download');
   $('viewQueue').classList.toggle('hidden', v !== 'queue');
   $('viewCloud').classList.toggle('hidden', v !== 'overview');
   $('tabQueue').classList.toggle('active', v === 'queue');

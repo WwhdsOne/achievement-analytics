@@ -228,7 +228,7 @@
     const hash = location.hash;
     if (/^#research(?:\/|$)/.test(hash)) { ++gameToken; switchView('research'); return; }
     if (hash === '#cloud') { location.hash = '#overview'; return; }
-    if (hash === '#queue' || hash === '#overview') { ++gameToken; switchView(hash.slice(1)); return; }
+    if (hash === '#queue' || hash === '#overview' || hash === '#download') { ++gameToken; switchView(hash.slice(1)); return; }
     if (!/^#explore(?:\/game\/[1-9]\d*)?$/.test(hash)) { location.hash = '#explore'; return; }
     switchView('analysis');
     const match = hash.match(/^#explore\/game\/([1-9]\d*)$/);
