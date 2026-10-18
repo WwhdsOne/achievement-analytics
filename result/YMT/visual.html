@@ -1,0 +1,471 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width,initial-scale=1" />
+<title>游戏画像聚类 · 四万款游戏只有五种成就结构</title>
+<style>
+  :root{
+    --ink:#1b2230; --ink2:#4a5568; --ink3:#8a94a6;
+    --bg:#f4f6fa; --card:#ffffff; --line:#e4e9f2;
+    --shadow:0 1px 2px rgba(24,34,58,.05),0 8px 24px -12px rgba(24,34,58,.18);
+  }
+  *{box-sizing:border-box}
+  html,body{margin:0;padding:0}
+  body{
+    background:var(--bg); color:var(--ink);
+    font-family:-apple-system,BlinkMacSystemFont,"Segoe UI","Microsoft YaHei","PingFang SC",sans-serif;
+    font-size:15px; line-height:1.65; -webkit-font-smoothing:antialiased;
+  }
+  .wrap{max-width:1180px;margin:0 auto;padding:0 28px}
+
+  /* ---------- hero ---------- */
+  .hero{padding:64px 0 40px}
+  .kicker{
+    display:inline-block;font-size:12px;letter-spacing:.14em;text-transform:uppercase;
+    color:#185fa5;background:#e6f1fb;border-radius:999px;padding:5px 14px;margin-bottom:18px;
+  }
+  h1{font-size:40px;line-height:1.24;margin:0 0 16px;letter-spacing:-.02em;font-weight:600}
+  h1 em{font-style:normal;color:#185fa5}
+  .lede{font-size:17px;color:var(--ink2);max-width:680px;margin:0 0 32px}
+  .figures{display:flex;gap:48px;flex-wrap:wrap}
+  .fig .n{font-size:32px;font-weight:600;letter-spacing:-.02em;font-variant-numeric:tabular-nums}
+  .fig .l{font-size:12.5px;color:var(--ink3);margin-top:2px}
+
+  /* ---------- section ---------- */
+  section{padding:8px 0 52px}
+  h2{font-size:23px;margin:0 0 8px;font-weight:600;letter-spacing:-.01em}
+  .sub{color:var(--ink2);margin:0 0 26px;max-width:760px}
+
+  /* ---------- insight duo ---------- */
+  .duo{display:grid;grid-template-columns:1fr 1fr;gap:22px}
+  .cell{background:var(--card);border:1px solid var(--line);border-radius:16px;padding:22px 22px 16px;box-shadow:var(--shadow)}
+  .cell h3{margin:0 0 2px;font-size:15.5px;font-weight:600}
+  .cell .cap{color:var(--ink3);font-size:13px;margin-bottom:8px}
+  .cell .mean{font-size:12px;color:var(--ink3);margin-top:6px}
+  .cell .mean b{color:var(--ink);font-weight:600}
+
+  /* ---------- segmented ---------- */
+  .seg{display:inline-flex;background:#e8edf6;border-radius:11px;padding:4px;margin-bottom:26px}
+  .seg button{
+    border:0;background:transparent;padding:9px 20px;border-radius:8px;cursor:pointer;
+    font-size:14px;font-family:inherit;color:var(--ink2);font-weight:500;transition:.18s;
+  }
+  .seg button.on{background:var(--card);color:var(--ink);box-shadow:0 1px 3px rgba(24,34,58,.12)}
+  .seg button:hover:not(.on){color:var(--ink)}
+
+  /* ---------- cards ---------- */
+  .grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(340px,1fr));gap:20px}
+  .card{
+    background:var(--card);border:1px solid var(--line);border-radius:16px;overflow:hidden;
+    box-shadow:var(--shadow);transition:transform .2s ease,box-shadow .2s ease;
+    display:flex;flex-direction:column;
+  }
+  .card:hover{transform:translateY(-3px);box-shadow:0 2px 4px rgba(24,34,58,.06),0 18px 40px -16px rgba(24,34,58,.3)}
+  .card .bar{height:4px}
+  .card .body{padding:20px 22px 18px;display:flex;flex-direction:column;flex:1}
+  .head{display:flex;align-items:baseline;justify-content:space-between;gap:12px;margin-bottom:2px}
+  .head .nm{font-size:17px;font-weight:600}
+  .head .pc{font-size:26px;font-weight:600;font-variant-numeric:tabular-nums;letter-spacing:-.02em}
+  .head .pc span{font-size:13px;font-weight:500;color:var(--ink3);margin-left:2px}
+  .cnt{font-size:12.5px;color:var(--ink3);margin-bottom:12px}
+  .gist{font-size:14.5px;font-weight:600;letter-spacing:-.005em;margin-bottom:10px;line-height:1.45}
+
+  .spark{width:100%;height:92px;display:block;margin:4px 0 2px}
+  .axis{display:flex;justify-content:space-between;font-size:11px;color:var(--ink3);margin-bottom:12px}
+
+  .zbar{display:flex;height:9px;border-radius:5px;overflow:hidden;margin-bottom:7px;background:#eef1f7}
+  .zbar span{display:block;height:100%}
+  .zlabels{display:flex;gap:14px;flex-wrap:wrap;font-size:11px;color:var(--ink3);margin-bottom:14px}
+  .zlabels i{display:inline-block;width:7px;height:7px;border-radius:2px;margin-right:4px;vertical-align:middle}
+  .zlabels b{font-weight:600;color:var(--ink);font-variant-numeric:tabular-nums}
+
+  .stats{display:grid;grid-template-columns:repeat(3,1fr);gap:10px 8px;margin-bottom:14px}
+  .stat .lab{font-size:11px;color:var(--ink3);line-height:1.35}
+  .stat .val{font-size:15px;font-weight:600;font-variant-numeric:tabular-nums;letter-spacing:-.01em}
+
+  .tags{display:flex;flex-wrap:wrap;gap:6px;margin-bottom:12px}
+  .tag{
+    font-size:11.5px;padding:3px 9px;border-radius:999px;background:#f1f4f9;
+    color:var(--ink2);border:1px solid var(--line);white-space:nowrap;
+  }
+  .tag b{font-weight:600;color:#185fa5;margin-left:4px}
+
+  .reps{border-top:1px dashed var(--line);padding-top:11px;margin-top:auto}
+  .reps .lab{font-size:11px;color:var(--ink3);margin-bottom:5px}
+  .reps div.names{font-size:12.5px;color:var(--ink2);line-height:1.75}
+
+  /* ---------- heatmap ---------- */
+  .heat{display:grid;gap:3px;align-items:center}
+  .heat-feat{grid-template-columns:158px repeat(8,minmax(0,1fr))}
+  .heat-tag{grid-template-columns:158px repeat(5,minmax(0,1fr))}
+  .hcell{
+    height:44px;border-radius:6px;display:flex;align-items:center;justify-content:center;
+    font-size:12px;font-variant-numeric:tabular-nums;transition:transform .14s ease,box-shadow .14s ease;
+  }
+  .hcell.tap{cursor:default}
+  .hcell.tap:hover{transform:scale(1.07);box-shadow:0 6px 18px -6px rgba(24,34,58,.4);z-index:3}
+  .hcol{height:38px;font-size:11.5px;color:var(--ink3);font-weight:500;line-height:1.25;text-align:center}
+  .hrow{
+    justify-content:flex-start;gap:7px;font-size:12.5px;color:var(--ink);font-weight:500;
+    height:44px;padding-left:2px;
+  }
+  .hrow i{width:8px;height:8px;border-radius:2px;flex:none}
+  .hrow.tag{padding-left:10px;font-weight:400;color:var(--ink2);font-size:12px}
+  .hcorner{}
+  .heatcard{background:var(--card);border:1px solid var(--line);border-radius:16px;padding:22px;box-shadow:var(--shadow)}
+  .legend{display:flex;align-items:center;gap:10px;margin-top:14px;font-size:11.5px;color:var(--ink3)}
+  .legend .grad{height:8px;width:180px;border-radius:4px}
+
+  /* ---------- tooltip ---------- */
+  #tip{
+    position:fixed;left:0;top:0;pointer-events:none;opacity:0;transition:opacity .12s;
+    background:#1b2230;color:#fff;font-size:12px;line-height:1.5;padding:7px 10px;border-radius:7px;
+    max-width:260px;z-index:99;box-shadow:0 8px 24px -8px rgba(0,0,0,.5);
+  }
+  #tip.on{opacity:1}
+
+  /* ---------- reveal ---------- */
+  .js .reveal{opacity:0;transform:translateY(16px);transition:opacity .55s ease,transform .55s ease}
+  .js .reveal.in{opacity:1;transform:none}
+  .topline{height:3px;background:linear-gradient(90deg,#185fa5,#5f9e6e,#d0a03c,#c96a4a,#a174b5)}
+
+  /* 打印 / 转 PDF 时没有滚动，滚动进场动画会让下方区块保持空白 */
+  @media print{
+    .js .reveal{opacity:1!important;transform:none!important}
+    .card:hover{transform:none}
+  }
+
+  /* ---------- note ---------- */
+  .note{
+    background:#fdf6e8;border:1px solid #f0dfb8;border-radius:12px;padding:16px 20px;
+    font-size:13.5px;color:#6b5320;margin-top:26px;
+  }
+  .note b{color:#4a3a12}
+  .limits{background:var(--card);border:1px solid var(--line);border-radius:16px;padding:26px 28px;box-shadow:var(--shadow)}
+  .limits ul{margin:10px 0 0;padding-left:20px;color:var(--ink2);font-size:14px}
+  .limits li{margin-bottom:8px}
+  .limits li b{color:var(--ink)}
+
+  footer{border-top:1px solid var(--line);padding:22px 0 48px;color:var(--ink3);font-size:12.5px}
+  footer a{color:#185fa5;text-decoration:none}
+  footer a:hover{text-decoration:underline}
+
+  @media (max-width:820px){
+    h1{font-size:29px} .duo{grid-template-columns:1fr} .hero{padding:40px 0 28px}
+    .figures{gap:28px} .fig .n{font-size:25px}
+  }
+</style>
+</head>
+<body>
+<div class="topline"></div>
+<div id="tip"></div>
+
+<div class="wrap">
+  <div class="hero">
+    <div class="kicker">YMT · 游戏画像聚类与自动分型</div>
+    <h1>四万款游戏，成就的「铺法」<br/>其实只有<em>五种</em></h1>
+    <p class="lede">
+      每款游戏的成就都带一个「全球多少玩家拿到了」的百分比。把这些百分比画成一条曲线，
+      游戏之间就有了形状上的区别——有的平铺、有的两头翘、有的全挤在一根尖峰上。
+      下面这些图全部由真实数据算出，不是示意。
+    </p>
+    <div class="figures">
+      <div class="fig"><div class="n">40,357</div><div class="l">款游戏进入分析</div></div>
+      <div class="fig"><div class="n">1,909,971</div><div class="l">条成就记录</div></div>
+      <div class="fig"><div class="n">5</div><div class="l">种成就结构型</div></div>
+    </div>
+  </div>
+
+  <section>
+    <h2>先看这一组对比：平均一样，形状完全相反</h2>
+    <p class="sub">
+      这两类的成就平均解锁率几乎相同（都在 23%–25%）。只看平均值，它们是一回事；
+      看形状，它们正好相反。这就是为什么直接按平均值聚类，只会得到一张难度排行榜。
+    </p>
+    <div class="duo" id="duo"></div>
+    <div class="note">
+      <b>怎么读这张图：</b>横轴是成就的解锁率（0% 到 100%），曲线的高度表示「有多少成就落在这一档」。
+      左边这类游戏每个成就都不好不坏，一路平顺衰减；右边这类在极低端堆了 58% 的成就，
+      又在 50%–80% 之间鼓出第二个包，10%–50% 这段明显下凹。
+      <br/><b>纵轴做了平方根压缩</b>——主峰常比次峰高一个数量级，不压缩的话次峰完全看不见。
+      各簇的均值、占比等统计量仍按原始数值计算，没有受压缩影响。
+    </div>
+  </section>
+
+  <section>
+    <h2>两种看法：先分难度，再看结构</h2>
+    <p class="sub">
+      同一个聚类算法，喂不同的特征就答不同的问题。切换看看：「只按难度」只能分出三档，
+      「剥掉难度」才分出五种有实际含义的结构。
+    </p>
+    <div class="seg">
+      <button id="btn-shape" class="on" data-view="shape">剥掉难度后 · 五种结构</button>
+      <button id="btn-tier" data-view="tier">只按难度 · 三档</button>
+    </div>
+    <div class="grid" id="cards"></div>
+  </section>
+
+  <section class="reveal">
+    <h2>五类的特征指纹</h2>
+    <p class="sub">
+      每一列单独伸缩到同一个色阶——所以看的是「同一列里谁偏高谁偏低」，不是跨列比大小。
+      格子里是真实数值，颜色只是让它一眼可读。
+    </p>
+    <div class="heatcard">
+      <div id="heat-feat" class="heat heat-feat"></div>
+      <div class="legend">
+        <span>偏低</span>
+        <span class="grad" id="grad-feat"></span>
+        <span>偏高</span>
+        <span style="margin-left:12px">（列内 min–max 伸缩，两端为各列最小 / 最大值）</span>
+      </div>
+    </div>
+  </section>
+
+  <section class="reveal">
+    <h2>什么类型的游戏，落进哪一类结构</h2>
+    <p class="sub">
+      行为 Steam 玩家标签，列为五种结构型。数字是<b>富集倍数</b>：这一簇里含该标签的游戏占比
+      ÷ 全库含该标签的占比。3 表示「这种类型在这一簇里的浓度是全库的 3 倍」。
+      标签按富集最强的簇成组排列，所以同一列的深色块会连成一片。
+    </p>
+    <div class="heatcard">
+      <div id="heat-tag" class="heat heat-tag"></div>
+      <div class="legend">
+        <span>1×</span>
+        <span class="grad" id="grad-tag"></span>
+        <span>10× 以上</span>
+        <span style="margin-left:12px">（对数色阶；全库覆盖不足 3% 的标签未纳入）</span>
+      </div>
+    </div>
+    <div class="note">
+      <b>这张图能读出什么：</b>视觉小说几乎全落在「好玩但入坑难型」，「找猫」这类收集小游戏和
+      Hand-drawn、Point &amp; Click 一堆相关标签都堆在「玩家友好型」，肉鸽与经营集中在
+      「正常型」，联机与 VR 则集中在「入门劝退型」。
+      也就是说，成就的铺法不是随机的，它和游戏类型高度绑定——但这是<b>相关</b>，不是因果。
+      <br/><b>还有一件事：</b>「两极分化型」几乎没有专属标签（只有一行 Local Co-Op，1.3×）。
+      它更像一种<b>跨品类的成就设计</b>——任何类型都可能出现「开一局就送 + 全收集极难」的组合，
+      而不是某个品类自带的属性。这一条是看图看出来的，不是事先设想的。
+    </div>
+  </section>
+
+  <section class="reveal">
+    <h2>这些结论不能怎么用</h2>
+    <div class="limits">
+      <ul>
+        <li><b>聚的是游戏，不是玩家。</b>一款游戏属于「极稀有型」，说的是它的成就大多数人拿不到，<b>不能</b>说成「它的玩家更硬核」——库里没有个人解锁记录。</li>
+        <li><b>百分比是当前快照。</b>这是今天回看的解锁率，不是历史上任一时刻的值。</li>
+        <li><b>类名是归纳出来的，不是事先的假设。</b>换数据、换聚类数都可能不成立。这份结论中途就修正过一次：最初把「极稀有」和「近乎全普及」误并成了一类。</li>
+        <li><b>结构不算锐利。</b>「宽幅铺开型」与「中段收敛型」在特征空间里重叠明显，这两类的边界只能当弱结论。</li>
+        <li><b>游玩时长没有参与聚类。</b>SteamSpy 的时长字段已失效，RAWG 只覆盖约三分之一游戏，样本不足以支撑主模型。</li>
+      </ul>
+    </div>
+  </section>
+
+  <footer>
+    数据来源：Steam 商店与 Steam Web API（成就、标签）、SteamSpy（用户标签）、
+    <a href="https://rawg.io/" target="_blank" rel="noopener">RAWG</a>（时长与评分，仅作事后描述）。
+    RAWG 数据按免费档非商业用途使用。输入指纹 923685f71ea2。
+    <div style="margin-top:10px;color:#a6aebb">名词对照：正常型 = 原「宽幅铺开型」 ｜ 好玩但入坑难型 = 原「中段收敛型」 ｜ 入门劝退型 = 原「极稀有型」 ｜ 两极分化型 = 原「双峰分化型」 ｜ 玩家友好型 = 原「近乎全普及型」</div>
+  </footer>
+</div>
+
+<script>
+const DATA = {"meta": {"games": 40357, "achievements": 1909971, "fingerprint": "923685f71ea2", "k_tier": 3, "k_shape": 5, "bins": 40}, "tier": [{"id": 0, "name": "大多好拿", "gist": "成就不难，随便玩玩就能收集一批", "color": "#3b6ea5", "games": 4294, "share": 10.6, "density": [0.00237, 0.00106, 0.00201, 0.00442, 0.00397, 0.00603, 0.00444, 0.00462, 0.00476, 0.00564, 0.00499, 0.00861, 0.01068, 0.01015, 0.01142, 0.01365, 0.01583, 0.01586, 0.02404, 0.0244, 0.03353, 0.03353, 0.04931, 0.04704, 0.04217, 0.04541, 0.04683, 0.04281, 0.04328, 0.04646, 0.04125, 0.04092, 0.03672, 0.03608, 0.03271, 0.02782, 0.03065, 0.03333, 0.048, 0.06317], "stats": [{"label": "成就数中位", "value": "20"}, {"label": "均值解锁率", "value": "67.7%"}, {"label": "中位解锁率", "value": "68.0%"}, {"label": "稀有 <1%", "value": "0.1%"}, {"label": "普及 >50%", "value": "81.4%"}, {"label": "四分位距", "value": "18.7pp"}], "tags": ["Hidden Object", "Cats", "Clicker", "Point & Click"], "lifts": ["3.3×", "3.1×", "2.9×", "2.7×"], "zones": [{"label": "稀有 <5%", "pct": 0.4}, {"label": "中间 5–50%", "pct": 18.2}, {"label": "普及 >50%", "pct": 81.4}], "reps": ["HELLDIVERS™ 绝地潜兵2", "艾尔登法环 黑夜君临", "烟火", "The Wolf Among Us", "Unpacking"], "year": 2023, "paid": 81.8}, {"id": 1, "name": "中等", "gist": "难度居中，占全库一半以上", "color": "#c96a4a", "games": 21922, "share": 54.3, "density": [0.0295, 0.04689, 0.05866, 0.05908, 0.05851, 0.06244, 0.05288, 0.05211, 0.05088, 0.03997, 0.04787, 0.04037, 0.03764, 0.03534, 0.03489, 0.03043, 0.02889, 0.02786, 0.02341, 0.01945, 0.01799, 0.01506, 0.01309, 0.01291, 0.01195, 0.01056, 0.00955, 0.00864, 0.00844, 0.00705, 0.00566, 0.00617, 0.00611, 0.00515, 0.00514, 0.00491, 0.00441, 0.00371, 0.00315, 0.00325], "stats": [{"label": "成就数中位", "value": "22"}, {"label": "均值解锁率", "value": "29.2%"}, {"label": "中位解锁率", "value": "24.1%"}, {"label": "稀有 <1%", "value": "0.9%"}, {"label": "普及 >50%", "value": "16.2%"}, {"label": "四分位距", "value": "22.1pp"}], "tags": ["Visual Novel", "Multiple Endings", "Mystery", "Story Rich"], "lifts": ["1.2×", "1.2×", "1.2×", "1.2×"], "zones": [{"label": "稀有 <5%", "pct": 7.7}, {"label": "中间 5–50%", "pct": 76.1}, {"label": "普及 >50%", "pct": 16.2}], "reps": ["Terraria", "黑神话：悟空", "艾尔登法环", "Apex Legends™", "Stardew Valley"], "year": 2022, "paid": 91.5}, {"id": 2, "name": "大多难拿", "gist": "半数成就解锁率不足 5%", "color": "#5f9e6e", "games": 14141, "share": 35.0, "density": [0.27255, 0.20887, 0.13724, 0.09128, 0.06663, 0.04549, 0.03456, 0.02333, 0.01726, 0.01407, 0.01194, 0.00997, 0.00831, 0.00719, 0.00628, 0.0055, 0.00488, 0.00373, 0.00397, 0.00294, 0.0032, 0.00205, 0.00249, 0.00226, 0.00162, 0.00145, 0.00147, 0.00136, 0.00119, 0.00119, 0.00069, 0.00085, 0.00094, 0.0008, 0.00055, 0.00051, 0.00046, 0.0003, 0.00028, 0.00034], "stats": [{"label": "成就数中位", "value": "28"}, {"label": "均值解锁率", "value": "9.4%"}, {"label": "中位解锁率", "value": "5.4%"}, {"label": "稀有 <1%", "value": "12.8%"}, {"label": "普及 >50%", "value": "2.5%"}, {"label": "四分位距", "value": "8.1pp"}], "tags": ["VR", "PvP", "Multiplayer", "Early Access"], "lifts": ["1.7×", "1.7×", "1.6×", "1.6×"], "zones": [{"label": "稀有 <5%", "pct": 50.9}, {"label": "中间 5–50%", "pct": 46.6}, {"label": "普及 >50%", "pct": 2.5}], "reps": ["Rust", "Left 4 Dead 2", "Euro Truck Simulator 2", "巫师 3：狂猎 - 完全版", "黎明杀机"], "year": 2021, "paid": 93.0}], "shape": [{"id": 0, "name": "正常型", "gist": "难度随流程平缓上升，最常见的一种", "color": "#3b6ea5", "games": 13946, "share": 34.6, "density": [0.08714, 0.09541, 0.07488, 0.06312, 0.05224, 0.04662, 0.04019, 0.03714, 0.03417, 0.02938, 0.02997, 0.02607, 0.02624, 0.02402, 0.0224, 0.02161, 0.01872, 0.01947, 0.01746, 0.01583, 0.01734, 0.01631, 0.01467, 0.01561, 0.014, 0.01373, 0.01232, 0.01097, 0.01167, 0.00956, 0.00865, 0.01021, 0.0101, 0.00892, 0.0088, 0.00749, 0.00771, 0.00659, 0.00626, 0.00701], "stats": [{"label": "成就数中位", "value": "26"}, {"label": "均值解锁率", "value": "29.4%"}, {"label": "中位解锁率", "value": "22.6%"}, {"label": "稀有 <1%", "value": "3.1%"}, {"label": "普及 >50%", "value": "22.2%"}, {"label": "四分位距", "value": "30.2pp"}], "tags": ["Management", "Rogue-like", "Rogue-lite", "Action Roguelike"], "lifts": ["1.4×", "1.4×", "1.4×", "1.4×"], "zones": [{"label": "稀有 <5%", "pct": 18.3}, {"label": "中间 5–50%", "pct": 59.4}, {"label": "普及 >50%", "pct": 22.2}], "reps": ["Terraria", "Rust", "HELLDIVERS™ 绝地潜兵2", "Stardew Valley", "赛博朋克 2077"], "year": 2023, "paid": 95.9}, {"id": 1, "name": "好玩但入坑难型", "gist": "解锁率普遍卡在 20% 上下，多数人只拿到一部分", "color": "#c96a4a", "games": 15239, "share": 37.8, "density": [0.01583, 0.03743, 0.09184, 0.08172, 0.08, 0.0763, 0.06119, 0.05442, 0.05203, 0.03943, 0.04836, 0.04054, 0.03671, 0.03422, 0.0345, 0.029, 0.02944, 0.0261, 0.02366, 0.01847, 0.0136, 0.00936, 0.00937, 0.00813, 0.00686, 0.00601, 0.00532, 0.00476, 0.0044, 0.00398, 0.00234, 0.00284, 0.00243, 0.00188, 0.00192, 0.00172, 0.00127, 0.00102, 0.00072, 0.00091], "stats": [{"label": "成就数中位", "value": "21"}, {"label": "均值解锁率", "value": "24.9%"}, {"label": "中位解锁率", "value": "21.9%"}, {"label": "稀有 <1%", "value": "0.4%"}, {"label": "普及 >50%", "value": "8.8%"}, {"label": "四分位距", "value": "11.9pp"}], "tags": ["Visual Novel", "Interactive Fiction", "Multiple Endings", "Mystery"], "lifts": ["1.5×", "1.4×", "1.3×", "1.3×"], "zones": [{"label": "稀有 <5%", "pct": 5.3}, {"label": "中间 5–50%", "pct": 85.9}, {"label": "普及 >50%", "pct": 8.8}], "reps": ["黑神话：悟空", "艾尔登法环", "Apex Legends™", "巫师 3：狂猎 - 完全版", "Phasmophobia 恐鬼症"], "year": 2021, "paid": 88.1}, {"id": 2, "name": "入门劝退型", "gist": "过半数成就，连 1% 的玩家都没拿到", "color": "#5f9e6e", "games": 2196, "share": 5.4, "density": [0.67596, 0.088, 0.04578, 0.03468, 0.01851, 0.01928, 0.017, 0.01096, 0.01007, 0.00752, 0.00752, 0.00652, 0.00452, 0.0048, 0.00577, 0.00332, 0.00559, 0.00382, 0.00277, 0.00183, 0.00249, 0.00174, 0.00263, 0.00213, 0.00187, 0.0011, 0.00125, 0.00118, 0.00159, 0.00222, 0.00085, 0.0014, 0.0017, 0.00152, 0.00016, 0.00032, 0.00042, 0.0001, 0.00049, 0.00063], "stats": [{"label": "成就数中位", "value": "28"}, {"label": "均值解锁率", "value": "5.9%"}, {"label": "中位解锁率", "value": "1.5%"}, {"label": "稀有 <1%", "value": "55.9%"}, {"label": "普及 >50%", "value": "2.5%"}, {"label": "四分位距", "value": "6.1pp"}], "tags": ["VR", "Early Access", "PvP", "Online Co-Op"], "lifts": ["2.8×", "2.7×", "2.4×", "2.2×"], "zones": [{"label": "稀有 <5%", "pct": 77.0}, {"label": "中间 5–50%", "pct": 20.5}, {"label": "普及 >50%", "pct": 2.5}], "reps": ["使命召唤®", "Unturned", "Geometry Dash", "Sid Meier’s Civilization® VI", "Hearts of Iron IV"], "year": 2023, "paid": 93.7}, {"id": 3, "name": "两极分化型", "gist": "一头人人都有，一头几乎没人有，中间很少", "color": "#a174b5", "games": 8208, "share": 20.3, "density": [0.20382, 0.23695, 0.08721, 0.04988, 0.03027, 0.01996, 0.01472, 0.01215, 0.00799, 0.0067, 0.00542, 0.00585, 0.00426, 0.00444, 0.00413, 0.0048, 0.00416, 0.00506, 0.0065, 0.00735, 0.01518, 0.01546, 0.02199, 0.02076, 0.01953, 0.01956, 0.02159, 0.02015, 0.01892, 0.0207, 0.01895, 0.01557, 0.0124, 0.00788, 0.00653, 0.00619, 0.00528, 0.00451, 0.00353, 0.0037], "stats": [{"label": "成就数中位", "value": "25"}, {"label": "均值解锁率", "value": "23.6%"}, {"label": "中位解锁率", "value": "21.3%"}, {"label": "稀有 <1%", "value": "3.6%"}, {"label": "普及 >50%", "value": "26.1%"}, {"label": "四分位距", "value": "7.4pp"}], "tags": ["Local Co-Op", "Local Multiplayer", "PvP", "Co-op"], "lifts": ["1.3×", "1.3×", "1.3×", "1.2×"], "zones": [{"label": "稀有 <5%", "pct": 46.8}, {"label": "中间 5–50%", "pct": 27.1}, {"label": "普及 >50%", "pct": 26.1}], "reps": ["Left 4 Dead 2", "Euro Truck Simulator 2", "黎明杀机", "战争雷霆", "ARK: Survival Evolved"], "year": 2020, "paid": 88.9}, {"id": 4, "name": "玩家友好型", "gist": "99% 的成就，过半玩家都能拿到", "color": "#d0a03c", "games": 768, "share": 1.9, "density": [0.00094, 0.0, 0.0, 0.0, 0.0, 0.00154, 0.0, 0.0, 0.0, 0.00089, 0.0, 0.0, 0.00154, 0.0, 0.00154, 0.0, 0.00152, 0.0, 0.00089, 0.0, 0.00089, 0.0, 0.00126, 0.00163, 0.00236, 0.00374, 0.00046, 0.0011, 0.00194, 0.00687, 0.00042, 0.01343, 0.03277, 0.08192, 0.07722, 0.07207, 0.08834, 0.11632, 0.20759, 0.2808], "stats": [{"label": "成就数中位", "value": "34"}, {"label": "均值解锁率", "value": "91.4%"}, {"label": "中位解锁率", "value": "91.9%"}, {"label": "稀有 <1%", "value": "0.0%"}, {"label": "普及 >50%", "value": "99.3%"}, {"label": "四分位距", "value": "3.2pp"}], "tags": ["Creature Collector", "Wholesome", "Design & Illustration", "Time Attack"], "lifts": ["10.9×", "10.5×", "9.9×", "8.6×"], "zones": [{"label": "稀有 <5%", "pct": 0.1}, {"label": "中间 5–50%", "pct": 0.7}, {"label": "普及 >50%", "pct": 99.3}], "reps": ["Digseum", "Seek Girl", "Achievement Clicker", "Seek Girl Ⅲ", "Seek Girl Ⅱ"], "year": 2024, "paid": 74.1}], "featHeat": {"cols": ["成就数中位", "均值解锁率", "中位解锁率", "标准差", "稀有<1%", "稀有<5%", "普及>50%", "普及>80%"], "unit": ["", "%", "%", "", "%", "%", "%", "%"], "dec": [0, 1, 1, 1, 1, 1, 1, 1], "rows": [{"name": "正常型", "color": "#3b6ea5"}, {"name": "好玩但入坑难型", "color": "#c96a4a"}, {"name": "入门劝退型", "color": "#5f9e6e"}, {"name": "两极分化型", "color": "#a174b5"}, {"name": "玩家友好型", "color": "#d0a03c"}], "raw": [[26.0, 29.4, 22.6, 22.8, 3.1, 18.3, 22.2, 6.6], [21.0, 24.9, 21.9, 12.2, 0.4, 5.3, 8.8, 1.2], [28.0, 5.9, 1.5, 10.1, 55.9, 77.0, 2.5, 0.6], [25.0, 23.6, 21.3, 9.1, 3.6, 46.8, 26.1, 4.8], [34.0, 91.4, 91.9, 3.7, 0.0, 0.1, 99.3, 94.7]], "t": [[0.385, 0.275, 0.233, 1.0, 0.055, 0.238, 0.204, 0.064], [0.0, 0.222, 0.225, 0.442, 0.007, 0.069, 0.064, 0.006], [0.538, 0.0, 0.0, 0.334, 1.0, 1.0, 0.0, 0.0], [0.308, 0.207, 0.219, 0.281, 0.064, 0.608, 0.244, 0.044], [1.0, 1.0, 1.0, 0.0, 0.0, 0.0, 1.0, 1.0]]}, "tagHeat": {"tags": ["Rogue-like", "Rogue-lite", "Action Roguelike", "Visual Novel", "Multiple Endings", "Mystery", "Story Rich", "VR", "Early Access", "PvP", "Online Co-Op", "Co-op", "Management", "Local Multiplayer", "Local Co-Op", "Hidden Object", "Hand-drawn", "Point & Click", "Relaxing"], "clusterOf": [0, 0, 0, 1, 1, 1, 1, 2, 2, 2, 2, 2, 2, 2, 3, 4, 4, 4, 4], "lift": [[1.41, 0.69, 1.22, 0.9, 0.15], [1.4, 0.71, 1.21, 0.89, 0.04], [1.4, 0.71, 1.16, 0.88, 0.25], [0.61, 1.54, 0.1, 0.93, 0.68], [0.92, 1.33, 0.44, 0.75, 0.2], [0.87, 1.31, 0.41, 0.88, 0.24], [0.93, 1.26, 0.38, 0.85, 0.43], [1.04, 0.63, 2.79, 1.23, 0.12], [1.09, 0.66, 2.72, 1.1, 0.07], [1.02, 0.68, 2.4, 1.27, 0.1], [1.35, 0.49, 2.2, 1.13, 0.03], [1.24, 0.6, 1.69, 1.25, 0.0], [1.45, 0.62, 1.47, 0.87, 0.53], [1.08, 0.75, 1.46, 1.3, 0.03], [1.15, 0.73, 1.12, 1.3, 0.09], [0.78, 0.99, 0.32, 1.09, 6.06], [0.88, 1.07, 0.42, 0.94, 4.17], [0.77, 1.14, 0.24, 1.05, 4.16], [1.08, 0.92, 0.72, 0.92, 2.61]], "cov": [[9.8, 4.8, 8.5, 6.2, 1.0], [9.6, 4.9, 8.2, 6.1, 0.3], [6.6, 3.4, 5.5, 4.2, 1.2], [3.6, 9.1, 0.6, 5.5, 4.0], [6.0, 8.6, 2.9, 4.9, 1.3], [5.6, 8.5, 2.6, 5.7, 1.6], [15.3, 20.8, 6.3, 14.1, 7.0], [3.3, 2.0, 9.0, 4.0, 0.4], [7.9, 4.8, 19.7, 8.0, 0.5], [5.1, 3.4, 12.0, 6.4, 0.5], [5.5, 2.0, 9.0, 4.6, 0.1], [9.1, 4.4, 12.4, 9.2, 0.0], [8.1, 3.5, 8.2, 4.9, 3.0], [5.2, 3.6, 7.0, 6.2, 0.1], [4.9, 3.1, 4.8, 5.5, 0.4], [3.0, 3.8, 1.2, 4.2, 23.2], [5.0, 6.1, 2.4, 5.3, 23.7], [4.7, 6.9, 1.5, 6.4, 25.4], [11.9, 10.2, 8.0, 10.2, 28.8]]}, "shapeNames": ["正常型", "好玩但入坑难型", "入门劝退型", "两极分化型", "玩家友好型"], "shapeColors": ["#3b6ea5", "#c96a4a", "#5f9e6e", "#a174b5", "#d0a03c"]};
+
+const W = 300, H = 92;
+
+function pathOf(density, color){
+  const n = density.length;
+  const max = Math.max(...density, 1e-6);
+  // 纵轴取平方根压缩：真实分布里主峰常比次峰高一个数量级（如双峰分化型 0.237 vs 0.022），
+  // 线性刻度下次峰会看不见。压缩只用于显示，所有统计量与报告里的数字仍按原尺度算。
+  const pts = density.map((v,i)=>{
+    const x = (i + 0.5) / n * W;
+    const y = H - 4 - Math.sqrt(v / max) * (H - 14);
+    return [x, y];
+  });
+  // 平滑：Catmull-Rom 转二次贝塞尔
+  let line = `M ${pts[0][0].toFixed(1)} ${pts[0][1].toFixed(1)}`;
+  for(let i=0;i<pts.length-1;i++){
+    const p0 = pts[i], p1 = pts[i+1];
+    const mx = (p0[0]+p1[0])/2, my = (p0[1]+p1[1])/2;
+    line += ` Q ${p0[0].toFixed(1)} ${p0[1].toFixed(1)} ${mx.toFixed(1)} ${my.toFixed(1)}`;
+  }
+  const last = pts[pts.length-1];
+  line += ` L ${last[0].toFixed(1)} ${last[1].toFixed(1)}`;
+  const area = `${line} L ${W} ${H} L 0 ${H} Z`;
+  return {line, area};
+}
+
+function spark(density, color, id){
+  const {line, area} = pathOf(density, color);
+  return `<svg class="spark" viewBox="0 0 ${W} ${H}" preserveAspectRatio="none">
+    <defs><linearGradient id="g${id}" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0%" stop-color="${color}" stop-opacity="0.34"/>
+      <stop offset="100%" stop-color="${color}" stop-opacity="0.02"/>
+    </linearGradient></defs>
+    <path d="${area}" fill="url(#g${id})"/>
+    <path d="${line}" fill="none" stroke="${color}" stroke-width="2" stroke-linejoin="round"/>
+  </svg>
+  <div class="axis"><span>0%</span><span>50%</span><span>100%</span></div>`;
+}
+
+function zoneBar(zones, color){
+  const ops = [0.24, 0.52, 0.92];
+  const segs = zones.map((z,i)=>
+    `<span style="width:${z.pct}%;background:${color};opacity:${ops[i]}"></span>`).join("");
+  const labels = zones.map((z,i)=>
+    `<span><i style="background:${color};opacity:${ops[i]}"></i>${z.label} <b>${z.pct}%</b></span>`).join("");
+  return `<div class="zbar">${segs}</div><div class="zlabels">${labels}</div>`;
+}
+
+function card(c){
+  const stats = c.stats.slice(0,6).map(s=>
+    `<div class="stat"><div class="lab">${s.label}</div><div class="val">${s.value}</div></div>`
+  ).join("");
+  const tags = c.tags.map((t,i)=>
+    `<span class="tag">${t}<b>${c.lifts[i]}</b></span>`
+  ).join("");
+  const reps = c.reps.map(r=>`· ${r}`).join("<br/>");
+  return `<div class="card">
+    <div class="bar" style="background:${c.color}"></div>
+    <div class="body">
+      <div class="head">
+        <div class="nm">${c.name}</div>
+        <div class="pc" style="color:${c.color}">${c.share}<span>%</span></div>
+      </div>
+      <div class="cnt">${c.games.toLocaleString()} 款游戏 · 发售年中位 ${c.year} · 付费占 ${c.paid}%</div>
+      <div class="gist" style="color:${c.color}">${c.gist}</div>
+      ${spark(c.density, c.color, c.id + (c.view||""))}
+      ${zoneBar(c.zones, c.color)}
+      <div class="stats">${stats}</div>
+      <div class="tags">${tags}</div>
+      <div class="reps">
+        <div class="lab">该簇最热门的 5 款（按评价数）</div>
+        <div class="names">${reps}</div>
+      </div>
+    </div>
+  </div>`;
+}
+
+function renderDuo(){
+  const pick = ["好玩但入坑难型","两极分化型"]
+    .map(n=>DATA.shape.find(c=>c.name===n)).filter(Boolean);
+  document.getElementById("duo").innerHTML = pick.map(c=>`
+    <div class="cell">
+      <h3 style="color:${c.color}">${c.name}</h3>
+      <div class="cap">${c.games.toLocaleString()} 款 · 占 ${c.share}%</div>
+      ${spark(c.density, c.color, "d"+c.id)}
+      <div class="mean">平均解锁率 <b>${c.stats[1].value}</b> · 稀有 &lt;1% 仅 <b>${c.stats[3].value}</b> · 普及 &gt;50% 仅 <b>${c.stats[4].value}</b></div>
+    </div>`).join("");
+}
+
+function render(view){
+  const rows = (view === "tier" ? DATA.tier : DATA.shape).map(c=>({...c, view}));
+  document.getElementById("cards").innerHTML = rows.map(card).join("");
+  document.querySelectorAll(".seg button").forEach(b=>{
+    b.classList.toggle("on", b.dataset.view === view);
+  });
+}
+
+document.querySelectorAll(".seg button").forEach(b=>{
+  b.addEventListener("click", ()=>render(b.dataset.view));
+});
+
+// ---------------- heatmaps ----------------
+const DIV_STOPS = [[44,123,182],[213,231,245],[250,250,250],[249,209,190],[198,62,74]];
+const SEQ_STOPS = [[244,248,252],[198,219,239],[107,174,214],[33,113,181],[8,48,107]];
+
+function ramp(stops, t){
+  t = Math.max(0, Math.min(1, t));
+  const n = stops.length - 1;
+  const i = Math.min(Math.floor(t * n), n - 1);
+  const f = t * n - i;
+  const a = stops[i], b = stops[i + 1];
+  return `rgb(${Math.round(a[0]+(b[0]-a[0])*f)},${Math.round(a[1]+(b[1]-a[1])*f)},${Math.round(a[2]+(b[2]-a[2])*f)})`;
+}
+
+function luminance(rgb){
+  const parts = rgb.match(/\d+/g).map(Number);
+  const [r,g,b] = parts.map(v=>{
+    v /= 255;
+    return v <= 0.03928 ? v / 12.92 : Math.pow((v + 0.055) / 1.055, 2.4);
+  });
+  return 0.2126*r + 0.7152*g + 0.0722*b;
+}
+
+function inkOf(bg){ return luminance(bg) > 0.42 ? "#1b2230" : "#ffffff"; }
+
+const tip = document.getElementById("tip");
+document.addEventListener("mousemove", e=>{
+  tip.style.left = (e.clientX + 14) + "px";
+  tip.style.top  = (e.clientY + 14) + "px";
+});
+
+function bindTips(root){
+  root.querySelectorAll("[data-tip]").forEach(el=>{
+    el.addEventListener("mouseenter", ()=>{ tip.textContent = el.dataset.tip; tip.classList.add("on"); });
+    el.addEventListener("mouseleave", ()=>tip.classList.remove("on"));
+  });
+}
+
+function gradientCss(stops){
+  return "linear-gradient(90deg," + stops.map(s=>`rgb(${s})`).join(",") + ")";
+}
+
+function renderFeatHeat(H){
+  const el = document.getElementById("heat-feat");
+  let h = '<div class="hcell hcorner"></div>';
+  H.cols.forEach(c=>{ h += `<div class="hcell hcol">${c}</div>`; });
+  H.rows.forEach((r,i)=>{
+    h += `<div class="hcell hrow"><i style="background:${r.color}"></i>${r.name}</div>`;
+    H.cols.forEach((c,j)=>{
+      const v = H.raw[i][j], u = H.unit[j], v2 = v.toFixed(H.dec[j]);
+      const bg = ramp(DIV_STOPS, H.t[i][j]);
+      h += `<div class="hcell tap" style="background:${bg};color:${inkOf(bg)}"
+             data-tip="${r.name} · ${c}：${v2}${u}">${v2}${u}</div>`;
+    });
+  });
+  el.innerHTML = h;
+  bindTips(el);
+  document.getElementById("grad-feat").style.background = gradientCss(DIV_STOPS);
+}
+
+function renderTagHeat(H){
+  const el = document.getElementById("heat-tag");
+  let h = '<div class="hcell hcorner"></div>';
+  DATA.shapeNames.forEach(n=>{ h += `<div class="hcell hcol">${n}</div>`; });
+  const lo = Math.log10(0.6), hi = Math.log10(12);
+  H.tags.forEach((t,i)=>{
+    h += `<div class="hcell hrow tag">${t}</div>`;
+    H.lift[i].forEach((v,j)=>{
+      const pos = (Math.log10(Math.max(v, 0.6)) - lo) / (hi - lo);
+      const bg = ramp(SEQ_STOPS, pos);
+      const txt = v >= 10 ? v.toFixed(0) : (v >= 1 ? v.toFixed(1) : v.toFixed(2));
+      h += `<div class="hcell tap" style="background:${bg};color:${inkOf(bg)}"
+             data-tip="${t} → ${DATA.shapeNames[j]}：富集 ${v}×，该簇 ${H.cov[i][j]}% 的游戏带此标签">${txt}</div>`;
+    });
+  });
+  el.innerHTML = h;
+  bindTips(el);
+  document.getElementById("grad-tag").style.background = gradientCss(SEQ_STOPS);
+}
+
+// ---------------- reveal ----------------
+document.body.classList.add("js");
+const io = new IntersectionObserver(entries=>{
+  entries.forEach(e=>{
+    if(e.isIntersecting){ e.target.classList.add("in"); io.unobserve(e.target); }
+  });
+}, {threshold: 0.06});
+document.querySelectorAll(".reveal").forEach(el=>io.observe(el));
+
+renderDuo();
+render("shape");
+renderFeatHeat(DATA.featHeat);
+renderTagHeat(DATA.tagHeat);
+</script>
+</body>
+</html>
