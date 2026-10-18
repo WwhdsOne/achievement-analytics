@@ -1,0 +1,23 @@
+{
+  "status": "passed",
+  "date": "2026-10-15",
+  "database_access": false,
+  "games": 96,
+  "main_alias_queries": 237,
+  "baseline_visible_alias_queries": 237,
+  "baseline_first20_limit": [],
+  "browser_checks": [
+    "desktop/search/茶杯头",
+    "desktop/search/星际拓荒",
+    "desktop/search/小丑牌",
+    "desktop/search/黑猴",
+    "desktop/search/Ｐ５Ｒ",
+    "desktop/select/layout/no_errors",
+    "mobile/search/茶杯头",
+    "mobile/search/星际拓荒",
+    "mobile/search/小丑牌",
+    "mobile/search/黑猴",
+    "mobile/search/Ｐ５Ｒ",
+    "mobile/select/layout/no_errors"
+  ]
+}

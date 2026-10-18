@@ -182,10 +182,24 @@ bash dashboard/deploy.sh
 cd dashboard && POSTGRES_HOST=82.157.208.173 go run . --port 8601
 ```
 
-部署脚本只把 `POSTGRES_*` 抽出来传上去，**SSH 账号密码不出本机**。面板启动时会把实际
-连的库打进日志（`数据库：host:port/db`），一眼能确认 `.env` 填对没有。
+部署脚本只把 `POSTGRES_*` 与推荐服务连接配置 `RECOMMENDATION_HOST/PORT` 抽出来传上去，
+**SSH 账号密码不出本机**。面板启动时会把实际连的库打进日志（`数据库：host:port/db`），
+一眼能确认 `.env` 填对没有。
 
 登录用账号密码（sshpass 在 macOS 上没有，脚本用 `expect` 应答）。
+
+**第二个部署：可解释推荐服务**（ZZY 方向，`result/ZZY/`）是独立部署包——自己的脚本、Compose 项目与
+数据卷，默认装在 `/opt/achievement-recommendation/`，容器只监听 `127.0.0.1:8605`，**不需要对公网开放**：
+
+```bash
+bash result/ZZY/deploy.sh                   # 部署推荐服务并等待数据/图谱就绪
+bash result/ZZY/deploy.sh --refresh-data    # 仅需要更新数据时显式从共享库刷新
+bash result/ZZY/deploy.sh --prepare-only    # 只在本机打包检查，不连服务器
+```
+
+两份脚本**共用同一份 `dashboard/.env`**（都只读、不改写）。`RECOMMENDATION_HOST/PORT` 是面板**去找**
+推荐服务的客户端目标，`RECOMMENDATION_BIND_HOST` 是推荐容器**自己监听**的地址——名字相近、方向相反。
+完整用法（参数、环境变量、数据卷语义、跨机部署、排障）见 `docs/commands.md` §10。
 
 为什么从 Python 改成 Go（2026-10-13）：原版为了拿 `REPORT_PATH` 一个常量导入了
 `modeling.regression.dataset`，那个模块顶层 `import numpy/pandas`，于是把 pandas、scipy、

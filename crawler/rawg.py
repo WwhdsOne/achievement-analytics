@@ -73,6 +73,7 @@ def key_available() -> bool:
     """
     return _key_provider is not None or bool(RAWG_API_KEY)
 
+
 # /games/{id}/stores 返回的 url 形如 http(s)://store.steampowered.com/app/374320/
 _STEAM_STORE_ID = 1
 _STEAM_APPID_RE = re.compile(r"store\.steampowered\.com/app/(\d+)")

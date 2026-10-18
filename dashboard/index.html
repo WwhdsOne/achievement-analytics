@@ -4,6 +4,7 @@
 <meta charset="utf-8" />
 <meta name="viewport" content="width=device-width,initial-scale=1" />
 <title>achievement-analytics · 游戏探索</title>
+<link rel="icon" type="image/png" href="/favicon.png" />
 <style>
   /* ── MONO tokens（对齐 lieflat-charts / mono-tokens.js）──────────── */
   :root {
@@ -217,6 +218,7 @@
   footer.icp a:hover { color: var(--INK); text-decoration: underline; }
 </style>
 <link rel="stylesheet" href="/assets/explore.css">
+<link rel="stylesheet" href="/assets/research.css">
 </head>
 <body>
 
@@ -226,27 +228,86 @@
     <button class="tab active" id="tabAnalysis" onclick="switchView('analysis')">游戏探索</button>
     <button class="tab" id="tabQueue" onclick="switchView('queue')">队列总览</button>
     <button class="tab" id="tabCloud" onclick="switchView('overview')">数据全景</button>
+    <button class="tab" id="tabResearch" onclick="switchView('research')">研究成果</button>
+    <button class="tab" id="tabDownload" onclick="switchView('download')">数据下载</button>
   </div>
 </nav>
 
 <div class="wrap">
 
+  <div id="viewDownload" class="hidden">
+    <header class="explore-heading">
+      <div class="explore-eyebrow">THE COMPLETE DATASET</div>
+      <h1>把数据，<br>带回去研究。</h1>
+      <p>代码公开，数据共享。下载完整 PostgreSQL 数据归档，继续你的学习与研究。</p>
+    </header>
+    <section class="card" aria-labelledby="downloadTitle">
+      <h2 id="downloadTitle">完整数据下载</h2>
+      <p class="sub">achievement-analytics-data.tar.gz · PostgreSQL 数据归档</p>
+      <p>每个 IP 每天最多下载 <strong>5 次</strong>，按北京时间每日零点重置。同一公网 IP 的访问者共用次数。</p>
+      <p class="sub">每次开始下载计 1 次，中途取消也计数；文件读取失败不扣次数。次数仅在内存中记录，服务重启后清零。</p>
+      <a href="/download/data" target="_blank" rel="noopener" class="data-download-link">下载完整数据 ↗</a>
+    </section>
+    <section class="card" aria-labelledby="downloadLicenseTitle">
+      <h2 id="downloadLicenseTitle">代码与文档许可</h2>
+      <p>项目代码与文档公开在 <a href="https://github.com/WwhdsOne/achievement-analytics" target="_blank" rel="noopener noreferrer">GitHub 仓库 ↗</a>，采用 <a href="https://github.com/WwhdsOne/achievement-analytics/blob/main/LICENSE" target="_blank" rel="noopener noreferrer">PolyForm Noncommercial License 1.0.0 ↗</a>。</p>
+      <p>欢迎依照许可开展非商业用途的学习、研究、修改与分享。分发代码时，请保留许可证或其链接，以及原有版权声明与 Required Notice。商业用途需事先取得全体作者的书面授权，可通过 <a href="https://github.com/WwhdsOne/achievement-analytics/issues" target="_blank" rel="noopener noreferrer">仓库 Issue</a> 联系。</p>
+      <p class="sub">本许可属于源码可得（source-available）许可，含非商业用途限制，不属于 OSI 定义的开源许可。</p>
+      <p class="sub">Copyright © 2026 王文海、刘宇翔、杨金辉、耶美田、朱政宇</p>
+    </section>
+    <section class="card" aria-labelledby="downloadDataTermsTitle">
+      <h2 id="downloadDataTermsTitle">数据来源与使用说明</h2>
+      <p>数据归档来自 Steam、SteamSpy、RAWG 等第三方公开数据源，供学习与研究参考。第三方数据仍受各来源的条款约束，本仓库的代码与文档许可不覆盖这些数据。使用或再分发前，请核对对应来源的使用条件并保留来源标注。</p>
+      <p><a href="https://rawg.io/apidocs" target="_blank" rel="noopener noreferrer">RAWG 免费档</a>仅限非商业用途，使用其数据的页面须添加 <a href="https://rawg.io/" target="_blank" rel="noopener noreferrer">RAWG 回链</a>。项目代码的商业授权不替代数据来源方的授权。</p>
+      <p class="sub">归档反映打包时的数据状态；数据覆盖范围与缺失情况以归档内容为准。</p>
+    </section>
+    <footer class="explore-footer">数据来源：Steam / SteamSpy / <a href="https://rawg.io/" target="_blank" rel="noopener noreferrer">RAWG</a> · 归档内容以打包时的数据为准。</footer>
+  </div>
+
+  <div id="viewResearch" class="hidden">
+    <header class="explore-heading research-heading">
+      <div class="explore-eyebrow">FIVE PERSPECTIVES ON PLAY</div>
+      <h1>我们为什么，<br>选择这些游戏？</h1>
+      <p>从类型潮流到玩家偏好，看看五个方向的研究成果。</p>
+      <div class="research-dashboard-links" role="group" aria-label="Dashboard 原有内容">
+        <a href="#explore"><strong>游戏探索 ↗</strong><span>查看单款游戏、成就与口碑</span></a>
+        <a href="#overview"><strong>数据全景 ↗</strong><span>游戏规模、评价分布与玩家标签</span></a>
+        <a href="#queue"><strong>队列总览 ↗</strong><span>采集进度与各数据源获取情况</span></a>
+      </div>
+    </header>
+    <div class="research-layout">
+      <aside class="research-sidebar" aria-label="研究方向">
+        <p class="research-label">研究目录 / 05</p>
+        <div id="researchNav"></div>
+        <p class="research-side-note">公开游戏数据中的线索，<br>与可以追溯的分析依据。</p>
+      </aside>
+      <main id="researchContent" class="research-content"></main>
+    </div>
+    <footer class="explore-footer">来源：Steam / SteamSpy / <a href="https://rawg.io/" target="_blank" rel="noopener noreferrer">RAWG</a> · 各方向的数据范围与版本以成果说明为准。</footer>
+  </div>
+
   <div id="viewAnalysis" class="hidden">
     <header class="explore-heading">
       <div class="explore-eyebrow">THE GAMES, IN NUMBERS</div>
       <h1>熟悉的游戏，<br>还有你没见过的数字。</h1>
-      <p>找一款游戏，看看成就、口碑与玩家标签。也可以把两款放在一起。</p>
+      <p>找一款游戏，看看成就、口碑与玩家标签。</p>
+      <div class="explore-view-tabs" role="group" aria-label="探索方式">
+        <button type="button" data-explore-tab="search" aria-pressed="false">搜索游戏</button>
+        <button type="button" data-explore-tab="discover" aria-pressed="true">发现游戏</button>
+      </div>
+    </header>
+    <!-- 两个探索方式的共用提示区：搜索报错与随便逛逛的状态都打在这里 -->
+    <div id="exploreMessage" role="status"></div>
+    <section id="exploreTabSearch" class="explore-tab-panel hidden" aria-label="搜索游戏">
       <form id="exploreSearch" class="explore-search">
         <label class="sr-only" for="exploreInput">游戏名称、AppID 或 Steam 商店链接</label>
         <input id="exploreInput" placeholder="游戏名 / AppID / Steam 商店链接" autocomplete="off" maxlength="200">
         <button type="submit" id="exploreSearchBtn">找游戏 ↗</button>
-        <button type="button" id="randomGame" class="ghost">随便逛逛 ↝</button>
       </form>
-      <div id="exploreMessage" role="status"></div>
-    </header>
-    <section id="searchResults" class="hidden" aria-label="搜索结果"></section>
-    <section class="explore-discovery" aria-label="发现游戏">
-      <div class="section-heading"><h2>从这里开始</h2><span>点击游戏看详情，点 ＋ 加入对比</span></div>
+      <section id="searchResults" class="hidden" aria-label="搜索结果"></section>
+    </section>
+    <section id="exploreTabDiscover" class="explore-tab-panel" aria-label="发现游戏">
+      <div class="section-heading"><h2>从这里开始</h2><button type="button" id="randomGame" class="ghost">随便逛逛 ↝</button></div>
       <div class="discovery-tabs" role="group" aria-label="发现方式">
         <button data-discovery="popular" aria-pressed="true">大家聊得最多</button>
         <button data-discovery="achievements" aria-pressed="false">成就清单特别长</button>
@@ -257,13 +318,7 @@
     </section>
     <div id="gameStory" class="hidden" aria-live="polite"></div>
     <div id="gameDetailMount"></div>
-    <section class="explore-comparison" id="compareSection">
-      <div class="section-heading"><h2>两款游戏，面对面</h2><button id="clearComparison" class="text-button">清空</button></div>
-      <p class="explore-note">从游戏卡片或详情中添加两款游戏。</p>
-      <div id="compareSlots" class="compare-slots"></div>
-      <div id="compareResult" aria-live="polite"></div>
-    </section>
-    <footer class="explore-footer">来源：Steam 商店 / Steam 全局成就 / SteamSpy / <a href="https://rawg.io/" target="_blank" rel="noopener noreferrer">RAWG</a> · 游戏级公开数据，采集时间可在每款游戏的数据详情中查看。</footer>
+    <footer class="explore-footer">来源：Steam 商店 / Steam 全局成就 / SteamSpy / <a href="https://rawg.io/" target="_blank" rel="noopener noreferrer">RAWG</a> · 封面来自 Steam 图片 CDN，联网加载。游戏级公开数据的采集时间可在每款游戏的数据详情中查看。</footer>
   </div>
 
   <!-- ════ 视图一：队列总览 ════ -->
@@ -313,7 +368,7 @@
       <div class="src">fetch_tasks · steam_appdetails · achievements · steamspy_games · rawg_games</div>
     </details>
 
-    <details class="card fade hidden" id="infoCard">
+    <details class="card fade hidden" id="infoCard" open>
       <summary>更多游戏信息</summary>
       <div class="sub">各源记录 · <span style="color:var(--FAINT)">–</span> 表示暂无有效数据</div>
       <div class="igrid">
@@ -389,11 +444,16 @@ function ensureWordCloud() {
 /* ── 视图切换 ── */
 function switchView(v) {
   const wasOverview = !$('viewCloud').classList.contains('hidden');
+  const wasResearch = !$('viewResearch').classList.contains('hidden');
   if (v === 'game') v = 'analysis';
   if (v === 'cloud') v = 'overview';
   $('viewAnalysis').classList.toggle('hidden', v !== 'analysis');
   $('tabAnalysis').classList.toggle('active', v === 'analysis');
-  document.querySelector('.wrap').classList.toggle('research-wide', v === 'analysis' || v === 'overview');
+  document.querySelector('.wrap').classList.toggle('research-wide', v === 'analysis' || v === 'overview' || v === 'research');
+  $('viewResearch').classList.toggle('hidden', v !== 'research');
+  $('tabResearch').classList.toggle('active', v === 'research');
+  $('viewDownload').classList.toggle('hidden', v !== 'download');
+  $('tabDownload').classList.toggle('active', v === 'download');
   $('viewQueue').classList.toggle('hidden', v !== 'queue');
   $('viewCloud').classList.toggle('hidden', v !== 'overview');
   $('tabQueue').classList.toggle('active', v === 'queue');
@@ -407,6 +467,12 @@ function switchView(v) {
   }
   if (v === 'queue') loadProgress().catch(() => { $('ovSub').textContent = '查询失败，稍后自动重试'; });
   if (v === 'analysis' && window.Explore) window.Explore.open();
+  if (v === 'research') {
+    if (!wasResearch) window.scrollTo(0, 0);
+    if (!location.hash.startsWith('#research/')) location.hash = '#research/recommendation';
+    if (window.Research) window.Research.open();
+    return;
+  }
   if (v !== 'analysis' && location.hash !== '#' + v) location.hash = v;
 }
 
@@ -652,7 +718,9 @@ async function lookup(appid, data) {
     `最近抓取：${d.last_fetched_at ? new Date(d.last_fetched_at).toLocaleString('zh-CN') : '从未'}`;
 
   renderInfo(d);
-  $('infoCard').classList.toggle('hidden', !(d.appdetails || d.steamspy || d.rawg));
+  const hasInfo = !!(d.appdetails || d.steamspy || d.rawg);
+  $('infoCard').classList.toggle('hidden', !hasInfo);
+  if (hasInfo) $('infoCard').open = true; // 返回探索页的复位会把它关掉，详情每次都默认展开
 
   // 成就表
   $('achCard').classList.toggle('hidden', !currentAch.length);
@@ -756,6 +824,7 @@ $('appidInput').addEventListener('keydown', e => { if (e.key === 'Enter') doLook
 progressLoop();
 </script>
 <script src="/assets/overview.js"></script>
+<script src="/assets/research.js"></script>
 <script src="/assets/explore.js"></script>
 </body>
 </html>

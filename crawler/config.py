@@ -3,7 +3,8 @@
 数据源分两类（详见 AGENTS.md）：
 - **免 key**：Steam 商店 appdetails、全局成就完成率、Steam 社区成就页、
   SteamSpy —— 无需任何配置
-- **需 key**：RAWG —— 密钥放项目根目录 `.env`（不入 git），读取统一走本模块
+- **需 key**：RAWG、Steam 全量 appid 枚举 —— 密钥放项目根目录
+  `.env`（不入 git），读取统一走本模块
 
 （IGDB 于 2026-09-15 放弃：它需要 Twitch OAuth2，而 Twitch 两步验证在国内
 手机号上走不通；其时长/评分/题材价值已被 RAWG 覆盖，详见 learning-logs。）
@@ -24,7 +25,7 @@ load_dotenv(_PROJECT_ROOT / ".env")
 # ── 限速配置 ──────────────────────────────────────────────
 
 REQUEST_INTERVAL_SEC: float = 1.0  # 请求间隔 ≥ 1s（AGENTS.md 硬性要求）
-MAX_RETRIES: int = 3               # 失败重试上限
+MAX_RETRIES: int = 3  # 失败重试上限
 # 重试之间的指数退避基准（秒）：第 1 次失败等 2s，第 2 次等 4s。
 # 不加真退避时，3 次尝试会挤在 ~1s 的节流窗口里全部撞墙——实测把一次 819 页的
 # 枚举在第 32 页整轮打断（2026-09-17）。退避要能跨过站点的限流窗口。
@@ -42,9 +43,7 @@ DATA_PROCESSED: Path = _PROJECT_ROOT / "data" / "processed"
 
 RAWG_API_KEY: str = os.getenv("RAWG_API_KEY", "")
 
-# Steam Web API key：**只用于 IStoreService/GetAppList**（读公开商店条目，拿无漂移的
-# 全量 appid 全集）。与「逐玩家数据」无关——项目不需要任何用户数据，所以这个 key
-# 不违反「只用公开数据源」的约束。
+# Steam Web API key：用于 IStoreService/GetAppList 全量枚举。
 STEAM_API_KEY: str = os.getenv("STEAM_API_KEY", "")
 
 

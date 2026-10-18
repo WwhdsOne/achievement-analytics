@@ -52,10 +52,7 @@ def get_dsn() -> str:
         形如 ``postgresql+psycopg://user:pw@host:port/db``，设置了 sslmode 时
         再追加 ``?sslmode=...``。
     """
-    dsn = (
-        f"postgresql+psycopg://{DB_USER}:{DB_PASSWORD}"
-        f"@{DB_HOST}:{DB_PORT}/{DB_NAME}"
-    )
+    dsn = f"postgresql+psycopg://{DB_USER}:{DB_PASSWORD}@{DB_HOST}:{DB_PORT}/{DB_NAME}"
     if DB_SSLMODE:
         dsn += f"?sslmode={DB_SSLMODE}"
     return dsn
@@ -144,7 +141,8 @@ def main() -> None:
     logging.basicConfig(level=logging.INFO, format="%(levelname)s %(message)s")
     parser = argparse.ArgumentParser(description="数据库初始化与就绪校验")
     parser.add_argument(
-        "cmd", choices=("init", "status"),
+        "cmd",
+        choices=("init", "status"),
         help="init=应用 schema.sql（幂等）；status=只检查是否已初始化",
     )
     args = parser.parse_args()

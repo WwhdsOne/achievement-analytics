@@ -1,0 +1,6 @@
+﻿config,cohort_n,eligible_target_n,available_n,at_least10_peers,insufficient_n,missing_length_n,median_peer_n
+main,183,183,181,160,2,0,33.0
+jaccard04,183,183,182,175,1,0,48.0
+jaccard06,183,183,157,120,26,0,14.0
+score_close,183,183,165,138,18,0,19.0
+length_close,183,68,46,33,22,115,9.0

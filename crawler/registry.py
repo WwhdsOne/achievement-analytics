@@ -176,7 +176,7 @@ def per_game_sources() -> list[str]:
 
 
 def bulk_sources() -> list[str]:
-    """全部批量源的标识（一次请求覆盖多款，不进队列）。"""
+    """全部批量/辅助入口标识（不进 fetch_tasks）。"""
     return [s.source for s in SOURCES.values() if s.kind == "bulk"]
 
 

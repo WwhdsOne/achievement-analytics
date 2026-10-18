@@ -104,9 +104,7 @@ def _print_steamspy(s: dict[str, Any]) -> None:
         print(f"    {tag:<30} {votes}")
 
 
-def _fetch_and_print_rawg(
-    appid: int, name_en: str, name_zh: str
-) -> dict[str, Any]:
+def _fetch_and_print_rawg(appid: int, name_en: str, name_zh: str) -> dict[str, Any]:
     """按名搜索 + appid 校验匹配 RAWG，并打印结果。返回 {} 表示未匹配/未配置。"""
     print("\n【3】RAWG（需 key，按官方英文名搜 + appid 校验）")
     # 判据是「有 key 来源」：本 demo 不认识共享密钥池（那是 worker 的活），
@@ -114,7 +112,9 @@ def _fetch_and_print_rawg(
     from crawler.rawg import key_available
 
     if not key_available():
-        print("  跳过：既无本地 RAWG_API_KEY，也无共享密钥池（worker 跑时才会注入池子）")
+        print(
+            "  跳过：既无本地 RAWG_API_KEY，也无共享密钥池（worker 跑时才会注入池子）"
+        )
         return {}
 
     from crawler.rawg import match_by_appid
@@ -237,9 +237,9 @@ def _print_record(
             {k: r[k] for k in ("api_name", "display_name", "percent")}
             for r in achievements[:3]
         ],
-        "fetched_at": datetime.now(timezone.utc).astimezone().isoformat(
-            timespec="seconds"
-        ),
+        "fetched_at": datetime.now(timezone.utc)
+        .astimezone()
+        .isoformat(timespec="seconds"),
     }
     print("  " + json.dumps(record, ensure_ascii=False, indent=2).replace("\n", "\n  "))
     if len(achievements) > 3:

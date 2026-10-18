@@ -1,0 +1,30 @@
+name: achievement-recommendation
+services:
+  recommendation:
+    build: .
+    image: achievement-recommendation:local
+    network_mode: host
+    env_file:
+      - path: runtime.env
+        format: raw
+    command:
+      - --host
+      - ${RECOMMENDATION_BIND_HOST:-127.0.0.1}
+      - --port
+      - ${RECOMMENDATION_PORT:-8605}
+      - --cache-root
+      - /runtime
+    volumes:
+      - ./runtime:/runtime
+    restart: unless-stopped
+    cpus: 1.0
+    healthcheck:
+      test: ["CMD", "/app/.venv/bin/python", "/app/health.py"]
+      interval: 30s
+      timeout: 10s
+      start_period: 15m
+      retries: 3
+    logging:
+      options:
+        max-size: 10m
+        max-file: "3"

@@ -1,0 +1,241 @@
+{
+  "schema_version": "zzy-private-source-map-v1",
+  "base_main": "abcbd81e680bd42cae168ca50e69751e252147ce",
+  "relocation_only": false,
+  "files": [
+    {
+      "path": "modeling/recommendation/__init__.py",
+      "original_path": "modeling/recommendation/__init__.py",
+      "sha256": "0856ad67922da68611627817e1a47dda796365af75a82836a24ce7d2a6ee06da"
+    },
+    {
+      "path": "modeling/recommendation/baseline.py",
+      "original_path": "modeling/recommendation/baseline.py",
+      "sha256": "651691f129118c28ce7bdd276bf4eaf163e5196e10aab7afca3d6cb702bcaa01"
+    },
+    {
+      "path": "modeling/recommendation/effect_metrics.py",
+      "original_path": "modeling/recommendation/effect_metrics.py",
+      "sha256": "b36ae063d95c2dae7a728e59be31eb314eb07de0580869ccdf6c64d1115cf06c"
+    },
+    {
+      "path": "modeling/recommendation/evaluation.py",
+      "original_path": "modeling/recommendation/evaluation.py",
+      "sha256": "0778978f7a36637f3fb497560892af8ccd57fad99d725ec3baff61d9089ec29e"
+    },
+    {
+      "path": "modeling/recommendation/graph.py",
+      "original_path": "modeling/recommendation/graph.py",
+      "sha256": "f9a25dd23a6c5da441bbb0237c9485aef19f3ff9f6ac4d8df6c06ebb8e1e3353"
+    },
+    {
+      "path": "modeling/recommendation/graph_recommender.py",
+      "original_path": "modeling/recommendation/graph_recommender.py",
+      "sha256": "9d3dddc97a8e14bbd07fed8f19beb5f8663581111fc9c70307503103df699da5"
+    },
+    {
+      "path": "modeling/recommendation/knowledge_graph.py",
+      "original_path": "modeling/recommendation/knowledge_graph.py",
+      "sha256": "9923022748ca80ae440852e69a9d02085049eaa64d2e996b9d2a7c17892d1dc2"
+    },
+    {
+      "path": "modeling/recommendation/knowledge_graph_inspector.py",
+      "original_path": "modeling/recommendation/knowledge_graph_inspector.py",
+      "sha256": "7424f8924ebd3b09e176320b911c14e11ce7dafbbca43d3fb2eec8a446be5f18"
+    },
+    {
+      "path": "modeling/recommendation/knowledge_graph_store.py",
+      "original_path": "modeling/recommendation/knowledge_graph_store.py",
+      "sha256": "6fbbc31e6f1b9334392bdb48beb7af8abbc8e9bf4cdb484655af72bd1063bff5"
+    },
+    {
+      "path": "modeling/recommendation/knowledge_graph_view.py",
+      "original_path": "modeling/recommendation/knowledge_graph_view.py",
+      "sha256": "5e2015bfb0a9048e76577a5e665b9574a52a75c129ff4edca62629f0ed9e07b5"
+    },
+    {
+      "path": "modeling/recommendation/multi_game_recommender.py",
+      "original_path": "modeling/recommendation/multi_game_recommender.py",
+      "sha256": "788b212b9e5edfcae5e627ba19e15fc25c134aa946b81c2fc1ce2702857a9b8a"
+    },
+    {
+      "path": "modeling/recommendation/query_service.py",
+      "original_path": "modeling/recommendation/query_service.py",
+      "sha256": "7745e7dcafe2ffa7572fadbd7009ae2f2e16826da52b8047c0f03cc7ce297f35",
+      "original_sha256": "9461619ae7b2573c0dc08352f7ba934ba5e8899fe90991a824413395fb430427",
+      "change": "；中文译名和简称搜索及命中提示，不改变推荐评分"
+    },
+    {
+      "path": "modeling/recommendation/query_view.py",
+      "original_path": "modeling/recommendation/query_view.py",
+      "sha256": "eaa01957e3c368ba7675357071a45440c0ce7a7d733a73c7b86d2d08c04ec608"
+    },
+    {
+      "path": "modeling/recommendation/ranking.py",
+      "original_path": "modeling/recommendation/ranking.py",
+      "sha256": "f8099a04688fdd4118a77a311f233f4ac0d5b8e0209f23f3bb677772428e0482"
+    },
+    {
+      "path": "modeling/recommendation/research_metrics.py",
+      "original_path": "modeling/recommendation/research_metrics.py",
+      "sha256": "34e377b08e5be1bec7404fa8977b751883a0e9a57289ac94067ada59bf539e2a"
+    },
+    {
+      "path": "modeling/recommendation/scoring_view.py",
+      "original_path": "modeling/recommendation/scoring_view.py",
+      "sha256": "aade0a618c2ec3ece9631b67e102f4c493e6c7042d9219f2de294b396cb8fa89"
+    },
+    {
+      "path": "modeling/recommendation/snapshot.py",
+      "original_path": "modeling/recommendation/snapshot.py",
+      "sha256": "554d27132f7b725bc3d25939a9f12dfadc1800c88c8ae1efa7e9ddecd3b31118"
+    },
+    {
+      "path": "modeling/recommendation/web.py",
+      "original_path": "modeling/recommendation/web.py",
+      "sha256": "c1e985dff05205e56b2041cba9bd3b37a8eed6c2393660376fc7d220fa467cbc",
+      "original_sha256": "6a0a4e1bf5175f7f7dc5d36194617914e481a1bdcde98e7de574d56e9b6d77ac",
+      "change": "；中文译名和简称搜索及命中提示，不改变推荐评分"
+    },
+    {
+      "path": "modeling/recommendation/query_view_assets/app.js",
+      "original_path": "modeling/recommendation/query_view_assets/app.js",
+      "sha256": "8c401f2c510e9470cbbb16c65dc5a7c27582d8684d3a0a9bd5502842712946c9",
+      "original_sha256": "e0c3fd1317c0b2380981709abe45f9a7ae01115aee720e9066b0bd892545d9aa",
+      "change": "；中文译名和简称整合原搜索框，无单独别名提示，不改变推荐评分"
+    },
+    {
+      "path": "modeling/recommendation/query_view_assets/index.html",
+      "original_path": "modeling/recommendation/query_view_assets/index.html",
+      "sha256": "a794a5dfc6de552a7d3ec66c06056a93582df3f4ca21dbe1beeb61098a81d4be",
+      "original_sha256": "e2de5d35fcb49d7746436845fa1137618447926b2c23e36ef6ec2ee7718e5676",
+      "change": "导航与辅助页资源/API使用同源子路径；未改变评分算法；中文译名和简称整合原搜索框，无单独别名提示，不改变推荐评分"
+    },
+    {
+      "path": "modeling/recommendation/query_view_assets/renderer.js",
+      "original_path": "modeling/recommendation/query_view_assets/renderer.js",
+      "sha256": "f9fe024d9875c823f171afb29d89f8c2ce36d8067fb44a3317349f4b663e4216"
+    },
+    {
+      "path": "modeling/recommendation/query_view_assets/style.css",
+      "original_path": "modeling/recommendation/query_view_assets/style.css",
+      "sha256": "36663f8b28b54252560bcb0c67d7abd5db68c18367a94d6ca27fc86c0537622c"
+    },
+    {
+      "path": "modeling/recommendation/web_assets/app.js",
+      "original_path": "modeling/recommendation/web_assets/app.js",
+      "sha256": "7ae532a5640d0495eae6851dc5cfa475bcac0efc9968585e2b4919c180ab5fd9",
+      "original_sha256": "ea8183125badef732af7e1c8f1e34ca6bfbab5063819c4cad7a44fec254e9f08",
+      "change": "导航与辅助页资源/API使用同源子路径；未改变评分算法；中文译名和简称整合原搜索框，无单独别名提示，不改变推荐评分"
+    },
+    {
+      "path": "modeling/recommendation/web_assets/index.html",
+      "original_path": "modeling/recommendation/web_assets/index.html",
+      "sha256": "41ff2fa8886e48b27b59a367dab537f1ca41e5df0014923c8420dd1e8affaf8b",
+      "original_sha256": "fc6859fd272baa5720da0939ecae2ebe8dba36102f3d4178a91b3f99486ba079",
+      "change": "导航与辅助页资源/API使用同源子路径；未改变评分算法；中文译名和简称整合原搜索框，无单独别名提示，不改变推荐评分"
+    },
+    {
+      "path": "modeling/recommendation/web_assets/style.css",
+      "original_path": "modeling/recommendation/web_assets/style.css",
+      "sha256": "4e5f8b1fcd3aaebdaba3938c9bbc5e12f0b02ff4d56879e9677301c92eb96824"
+    },
+    {
+      "path": "modeling/recommendation/kg_view_assets/app.js",
+      "original_path": "modeling/recommendation/kg_view_assets/app.js",
+      "sha256": "1d7da6392f3902879bc547b3abf1fa58569c1e50eb8a8da0335584610c168b73",
+      "original_sha256": "26f98d66f0116752c44a797aa99c60cb8c72ad5737a50078b50ae630c922e8a6",
+      "change": "导航与辅助页资源/API使用同源子路径；未改变评分算法"
+    },
+    {
+      "path": "modeling/recommendation/kg_view_assets/index.html",
+      "original_path": "modeling/recommendation/kg_view_assets/index.html",
+      "sha256": "40c80c724b16a4ef29939bfdf9ab34593bd450f6d3e515d0c8408a111928004e",
+      "original_sha256": "b0c4f3e12375b24b8b0f2cc2f0bf96f050323ea53bf4a59e5ffa2af67f8aabfb",
+      "change": "导航与辅助页资源/API使用同源子路径；未改变评分算法"
+    },
+    {
+      "path": "modeling/recommendation/kg_view_assets/style.css",
+      "original_path": "modeling/recommendation/kg_view_assets/style.css",
+      "sha256": "f905eb652c8f2370a24f27e6d5ef309ba4d011f7e19a84b7e46e575a05043b6b"
+    },
+    {
+      "path": "modeling/recommendation/scoring_view_assets/app.js",
+      "original_path": "modeling/recommendation/scoring_view_assets/app.js",
+      "sha256": "551ff186aa7eb0dde2e79c38e3b0f066918ee2abbbad78ce0314bfff12d7c5b5",
+      "original_sha256": "2017b72b012e1e8a02202138a9054b934df13b3b51c56b0d0c1306a9f149561e",
+      "change": "导航与辅助页资源/API使用同源子路径；未改变评分算法"
+    },
+    {
+      "path": "modeling/recommendation/scoring_view_assets/index.html",
+      "original_path": "modeling/recommendation/scoring_view_assets/index.html",
+      "sha256": "04d577a2f594e5632948904318a4af95c32dc72fd7fe64f76ac2aa243b4e2485",
+      "original_sha256": "bbdbeb8423c15a3340e87953aecffd421a723103e4ffc3302e5bd570d0a7289a",
+      "change": "导航与辅助页资源/API使用同源子路径；未改变评分算法"
+    },
+    {
+      "path": "modeling/recommendation/scoring_view_assets/style.css",
+      "original_path": "modeling/recommendation/scoring_view_assets/style.css",
+      "sha256": "050d61c4172ae4ee4980b45ef5d4c4e559c5fda8d5d3ee3812667dfa3600bee2"
+    },
+    {
+      "path": "modeling/recommendation/game_aliases.py",
+      "original_path": "modeling/recommendation/game_aliases.py",
+      "sha256": "dc835d44afbc8074613e3a02506ae81f76280cb875eeffb7c1cc088e2c652fe1",
+      "change": "新增本地游戏别名搜索数据或实现，不参与推荐评分"
+    },
+    {
+      "path": "modeling/recommendation/game_aliases.json",
+      "original_path": "modeling/recommendation/game_aliases.json",
+      "sha256": "8124222675a9e8b1b5856bde7cf626c40f8d40b516878521635fecc9bc5dac81",
+      "change": "新增本地游戏别名搜索数据或实现，不参与推荐评分"
+    },
+    {
+      "path": "modeling/recommendation/query_view_assets/discovery.js",
+      "original_path": null,
+      "sha256": "92f48ad1216843d80b695b338ec4fc933714dd4eb2767a237339f50f80ca009a"
+    },
+    {
+      "path": "modeling/recommendation/query_view_assets/discovery.html",
+      "original_path": null,
+      "sha256": "9dfba4861ab162bca0b0ca6f61579121941d9d56e2f5912547883ad489146a0f"
+    },
+    {
+      "path": "modeling/recommendation/query_view_assets/discovery.css",
+      "original_path": null,
+      "sha256": "4538692289a8e360122eb8deaf469455b4d0b2373e01d9555d784173409ee59f"
+    },
+    {
+      "path": "modeling/recommendation/presentation_names.py",
+      "original_path": null,
+      "sha256": "9b32b2642def81ab583aa560c2a1b50c8b59bfac559769471e7c1c104ad27922"
+    },
+    {
+      "path": "modeling/recommendation/display_names_zh.json",
+      "original_path": null,
+      "sha256": "0c55fe0ff1e5b49a673f229cbb78e553a1775b2914cb6ad0596fb1d95d49375a"
+    },
+    {
+      "path": "process/deepseek_commentary.py",
+      "original_path": null,
+      "sha256": "344ce3a8d3f66ae131ff39b04c1f31ec34922eb7ebe745a8e8aa5c8edd46152c"
+    },
+    {
+      "path": "modeling/recommendation/query_view_assets/commentary.js",
+      "original_path": null,
+      "sha256": "63c125b4af4ba86949d86148dd011eb89cac28f02336e6a180594bed35183883"
+    },
+    {
+      "path": "process/commentary_access.py",
+      "original_path": null,
+      "sha256": "15fc3a9baf92c4531269f1258912bb37757a64d4b839a481fcc016b6c1ce2164"
+    }
+  ],
+  "current_main": "e32d34bbcd4d65cf57761cb92d301e7bc2f46074",
+  "search_aliases_note": "2026-10-14：本地AppID别名表与两搜索入口；此前验证为历史记录，新验证见docs/SEARCH-ALIASES.md。",
+  "delivery_revision": "ZZY-site-v10-commentary-integration",
+  "historical_unchanged_original_files": 24,
+  "protected_recommendation_python_modules_unchanged_vs_v5": 18,
+  "commentary_format_note": "2026-10-15：点评改为结论、理由、提醒；引用默认折叠；本次验证见 docs/COMMENTARY-FORMAT.md。",
+  "commentary_integration_note": "2026-10-15：显式来源白名单适配同域反代，POST文档补齐，实际域名接入由组长完成。"
+}

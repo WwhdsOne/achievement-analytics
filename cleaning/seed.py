@@ -112,9 +112,7 @@ INSERT_TASKS = text(
     """
 )
 
-SELECT_APPIDS_RANDOM = text(
-    "SELECT appid FROM games ORDER BY random() LIMIT :n"
-)
+SELECT_APPIDS_RANDOM = text("SELECT appid FROM games ORDER BY random() LIMIT :n")
 SELECT_APPIDS_BY_REVIEWS = text(
     """
     SELECT g.appid
@@ -303,54 +301,68 @@ def main() -> None:
         description="种子：枚举全量游戏身份并物化 gap 驱动任务队列"
     )
     parser.add_argument(
-        "--limit", type=int, default=None,
+        "--limit",
+        type=int,
+        default=None,
         help="只入库前 N 款**通过过滤的**游戏（冒烟测试用；**非随机**）",
     )
     parser.add_argument(
-        "--all-games", action="store_true",
+        "--all-games",
+        action="store_true",
         help="不筛 Steam 成就，枚举全部游戏（176,932 款，含无成就的）",
     )
     parser.add_argument(
-        "--before-year", type=int, default=DEFAULT_BEFORE_YEAR,
+        "--before-year",
+        type=int,
+        default=DEFAULT_BEFORE_YEAR,
         help=f"只保留发售年份早于该年的游戏（默认 {DEFAULT_BEFORE_YEAR}）；"
-             f"发售日缺失的一律排除",
+        f"发售日缺失的一律排除",
     )
     parser.add_argument(
-        "--all-years", action="store_true",
+        "--all-years",
+        action="store_true",
         help="关闭发售年份过滤，枚举全部年份的游戏",
     )
     parser.add_argument(
-        "--sort", default=DEFAULT_SORT_BY,
+        "--sort",
+        default=DEFAULT_SORT_BY,
         help=f"枚举排序（默认 {DEFAULT_SORT_BY}）。**只有 Released_DESC 能保证"
-             f"「翻到目标年份就停」是完整的**；换别的排序会退化成全量翻页且漏项无法自知",
+        f"「翻到目标年份就停」是完整的**；换别的排序会退化成全量翻页且漏项无法自知",
     )
     parser.add_argument(
-        "--no-enumerate", action="store_true",
+        "--no-enumerate",
+        action="store_true",
         help="跳过枚举，只用库里已有的帧（帧已完整时用，省 14 分钟）",
     )
     parser.add_argument(
-        "--materialize", action="store_true", help="物化 fetch_tasks 任务队列",
+        "--materialize",
+        action="store_true",
+        help="物化 fetch_tasks 任务队列",
     )
     parser.add_argument(
-        "--sample", type=int, default=None,
+        "--sample",
+        type=int,
+        default=None,
         help="物化时只给 N 款建任务（不填=全部游戏）",
     )
     parser.add_argument(
-        "--order", default="random", choices=sorted(_ORDER_SQL),
+        "--order",
+        default="random",
+        choices=sorted(_ORDER_SQL),
         help="抽样口径；random 仅在帧完整时无偏",
     )
     parser.add_argument(
-        "--rawg-min-reviews", type=int, default=RAWG_MIN_REVIEWS,
+        "--rawg-min-reviews",
+        type=int,
+        default=RAWG_MIN_REVIEWS,
         help=f"RAWG 任务的最低评价数阈值（默认 {RAWG_MIN_REVIEWS}，0 = 不设限）。"
-             "低于阈值的游戏不建 RAWG 任务——实测 RAWG 约 6.3 次请求/游戏，"
-             "单 key 月配额只够约 3,100 款",
+        "低于阈值的游戏不建 RAWG 任务——实测 RAWG 约 6.3 次请求/游戏，"
+        "单 key 月配额只够约 3,100 款",
     )
     args = parser.parse_args()
 
     engine = get_engine()
-    frame_total = total_count(
-        games_only=True, has_achievements=not args.all_games
-    )
+    frame_total = total_count(games_only=True, has_achievements=not args.all_games)
     print(f"目标总体（当前探测）：{frame_total} 款")
 
     if not args.no_enumerate:
@@ -402,7 +414,9 @@ def main() -> None:
         if args.sample:
             appids = sample_appids(engine, args.sample, order=args.order)
             print(f"按 {args.order} 口径抽出 {len(appids)} 款")
-        added = materialize_tasks(engine, appids, rawg_min_reviews=args.rawg_min_reviews)
+        added = materialize_tasks(
+            engine, appids, rawg_min_reviews=args.rawg_min_reviews
+        )
         print(f"新增任务 {added} 行（RAWG 阈值：评价数 ≥ {args.rawg_min_reviews}）")
 
 

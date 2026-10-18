@@ -1,0 +1,27 @@
+{
+  "source_root": "result/WWH/5",
+  "copied_attribution": "王文海（WWH），LYX仅作独立只读运行适配",
+  "source_files": {
+    "wwh5/analysis.py": "bd89e8da0010a82a39e44c8e0457fff61ae8608f9604874f0d1532df5bfe1e5c",
+    "wwh5/params.py": "627dd0b43789a35470d6126ea6ecfd8750fbf53704e9be951495407d391e9e02",
+    "wwh5/storage.py": "16ebc5107c4c7b5b824b14291840e9086d627511044c76656fe9d65798a357e0",
+    "schema.sql": "b3458aa95d06913961fdb80b9702faedfbcb71524d273a4b215f8080370f91cc",
+    "report.md": "91cf09cacf0d540e45ece044d4930c808a2d3b3650a8a8c1dbe5e4b7f42c37f0",
+    "api-contract.md": "02b3c05b11d3a5d09d4eaddbb212e0c01d0bc583828b55c7334926ce7e7c5fd0",
+    "experiments.md": "609bc967a5f38516a1d5eeb8f42ebc1f1766377ff9e149395857403f713209ed",
+    "简明说明.md": "9bfda7c89b70863a9cce0a92b4d028c135632bea797fd59228bb1b79700eafc4",
+    "指令文档.md": "154b04521c71d924511073d4f05056abc7d0bfd1779f69a944f3f768bd0da789"
+  },
+  "historical_figures_baseline": "highest",
+  "source_code_current_baseline": "start",
+  "source_current_locations": {
+    "wwh5/analysis.py": "src/wwh5/analysis.py",
+    "wwh5/params.py": "src/wwh5/params.py",
+    "wwh5/storage.py": "src/wwh5/storage.py",
+    "api-contract.md": "docs/api-contract.md",
+    "experiments.md": "docs/experiments.md",
+    "指令文档.md": "docs/指令文档.md",
+    "简明说明.md": "README.md"
+  },
+  "lyx_replay_directory": "result/LYX/analysis/T0Pre"
+}

@@ -1,0 +1,184 @@
+﻿appid,name_en,main_peer_n,main_delta,jaccard04_status,jaccard04_peer_n,jaccard04_delta,jaccard04_same_direction,jaccard06_status,jaccard06_peer_n,jaccard06_delta,jaccard06_same_direction,score_close_status,score_close_peer_n,score_close_delta,score_close_same_direction,length_close_status,length_close_peer_n,length_close_delta,length_close_same_direction,jaccard_direction_stable
+1245620,ELDEN RING,46,0.15214846848525554,available,56,0.14792521423729854,true,available,33,0.15554845580404691,true,available,37,0.15554845580404691,true,missing_target_length,0,,,true
+367520,Hollow Knight,34,-0.08724914856279542,available,47,-0.061847216637803626,true,available,11,-0.049035530053732235,true,available,25,-0.061847216637803626,true,available,8,0.13192518033285183,false,true
+648800,Raft,24,-0.3008107319521931,available,29,-0.34076754238551304,true,available,8,-0.26859638362937277,true,available,18,-0.3450612180496395,true,missing_target_length,0,,,true
+489830,The Elder Scrolls V: Skyrim Special Edition,46,-0.21755955030563778,available,56,-0.21930221194150146,true,available,33,-0.21673628337647216,true,available,40,-0.21755955030563778,true,available,12,-0.06802675782401132,true,true
+238960,Path of Exile,60,0.017712252463810474,available,70,0.017712252463810474,true,available,38,0.004048588800146802,true,available,52,0.009867191282965482,true,available,11,0.01724714405126776,true,true
+1599340,Lost Ark,46,0.18507728995550055,available,56,0.18085403570754355,true,available,33,0.18847727727429192,true,available,5,0.31292882147024503,true,missing_target_length,0,,,true
+1238840,Battlefield™ 1,13,0.2700236107569682,available,13,0.2700236107569682,true,insufficient_peers,1,,,available,11,0.25232079372609656,true,insufficient_peers,3,,,false
+268910,Cuphead,12,-0.09103327950378329,available,13,-0.1028037942846192,true,available,6,-0.09103327950378329,true,available,10,-0.07794617409424362,true,missing_target_length,0,,,true
+812140,Assassin's Creed® Odyssey,46,-0.03945469842645699,available,56,-0.041197360062320665,true,available,33,-0.03863143149729137,true,available,40,-0.03945469842645699,true,missing_target_length,0,,,true
+319630,Life is Strange - Episode 1,18,-0.17645415129748265,available,26,-0.12325950402617813,true,available,9,-0.26477661795407115,true,available,18,-0.17645415129748265,true,missing_target_length,0,,,true
+588650,Dead Cells,46,0.14610123086399462,available,64,0.14687974170878348,true,available,31,0.137012550425818,true,available,31,0.137012550425818,true,available,15,0.1163043478260869,true,true
+1716740,Starfield,47,-0.07893397180348447,available,76,-0.07769035254615289,true,available,35,-0.06075661092713128,true,insufficient_peers,2,,,missing_target_length,0,,,true
+1593500,God of War,60,0.2557617843988738,available,70,0.2557617843988738,true,available,38,0.24713821237323996,true,available,40,0.23929315119239492,true,available,16,0.222655338997168,true,true
+2379780,Balatro,5,0.7304916925007625,available,5,0.7304916925007625,true,insufficient_peers,3,,,available,5,0.7304916925007625,true,missing_target_length,0,,,false
+3590,Plants vs. Zombies GOTY Edition,11,-0.13473740226779662,available,26,0.13102950694841042,false,available,6,-0.14090936883611127,true,available,11,-0.13473740226779662,true,missing_target_length,0,,,false
+1151640,Horizon Zero Dawn™ Complete Edition,47,0.05917238510050277,available,63,0.05454931872387658,true,available,36,0.07128228779795598,true,available,41,0.05454931872387658,true,missing_target_length,0,,,true
+335300,DARK SOULS™ II: Scholar of the First Sin,46,-0.013351381507382298,available,56,-0.015094043143245972,true,available,33,-0.012528114578216676,true,available,30,-0.009951394188590923,true,available,7,0.20420816879825548,false,true
+223470,POSTAL 2,48,-0.13365458821131107,available,65,-0.13765301318267417,true,available,17,-0.08965464716960228,true,available,32,-0.14782013322412565,true,available,10,-0.22206482941356812,true,true
+220240,Far Cry 3,44,0.10472484448324781,available,55,0.08401439737711147,true,available,25,0.14014794192761656,true,available,37,0.08401439737711147,true,available,18,0.038331854480922745,true,true
+1361210,"Warhammer 40,000: Darktide",30,0.07469009039921165,available,35,0.08377877083738822,true,available,12,0.12094308890990674,true,available,6,0.0840714346469481,true,missing_target_length,0,,,true
+1446780,MONSTER HUNTER RISE,46,0.12532143526646966,available,56,0.12109818101851266,true,available,33,0.12872142258526104,true,available,25,0.15728663389894088,true,missing_target_length,0,,,true
+1903340,Clair Obscur: Expedition 33,48,0.19234482267994285,available,70,0.1776960171818341,true,available,34,0.19234482267994285,true,available,30,0.1598171169618084,true,missing_target_length,0,,,true
+424840,Little Nightmares,7,-0.3421570722672314,available,27,-0.3421570722672314,true,insufficient_peers,2,,,available,5,-0.3421570722672314,true,insufficient_peers,1,,,false
+231430,Company of Heroes 2,7,0.0682325962325962,available,20,-0.009331313541839914,false,insufficient_peers,4,,,insufficient_peers,3,,,insufficient_peers,0,,,false
+2054970,Dragon's Dogma 2,60,-0.10280394819229766,available,70,-0.10280394819229766,true,available,38,-0.11771123111329296,true,insufficient_peers,2,,,missing_target_length,0,,,true
+779340,Total War: THREE KINGDOMS,13,0.21930587904072074,available,23,0.17714459759168458,true,available,9,0.14889601002106312,true,insufficient_peers,3,,,missing_target_length,0,,,true
+1313140,Cult of the Lamb,39,-0.051355247529270176,available,47,-0.051355247529270176,true,available,31,-0.051355247529270176,true,available,27,-0.07992045884295002,true,missing_target_length,0,,,true
+1687950,Persona 5 Royal,18,-0.020632307965174457,available,41,-0.04174205567394418,true,available,15,-0.04174205567394418,true,available,10,-0.045747556235432696,true,missing_target_length,0,,,true
+1943950,Escape the Backrooms,26,-0.21320275231000121,available,58,-0.17638818373972678,true,available,13,-0.17880522291128945,true,available,24,-0.21320275231000121,true,missing_target_length,0,,,true
+287700,METAL GEAR SOLID V: THE PHANTOM PAIN,27,-0.1535328323371875,available,61,-0.17480320795731502,true,available,16,-0.15533698009074565,true,available,19,-0.1348572515366795,true,missing_target_length,0,,,true
+365590,Tom Clancy’s The Division™,47,0.04350862985271048,available,63,0.038885563476084295,true,available,36,0.05561853255016369,true,available,8,0.06421907695884682,true,available,11,0.010628019323671523,true,true
+389730,TEKKEN 7,13,0.01770281703087162,available,13,0.01770281703087162,true,insufficient_peers,1,,,available,6,-0.10497702142377946,false,insufficient_peers,2,,,false
+1030840,Mafia: Definitive Edition,31,0.2400946132904896,available,53,0.2320977633477634,true,available,9,0.08734402852049916,true,available,23,0.2400946132904896,true,missing_target_length,0,,,true
+241930,Middle-earth™: Shadow of Mordor™,46,0.016211673902862767,available,56,0.011988419654905769,true,available,33,0.019611661221654142,true,available,38,0.016211673902862767,true,available,12,0.10295521102770544,true,true
+383870,Firewatch,16,0.31111440322645034,available,27,0.39135365214491036,true,available,5,0.4640395454125472,true,available,15,0.23326582278481,true,insufficient_peers,4,,,true
+703080,Planet Zoo,7,-0.2039664231574595,available,14,-0.25028244593752974,true,insufficient_peers,2,,,available,6,-0.18761766393546084,true,missing_target_length,0,,,false
+20920,The Witcher 2: Assassins of Kings Enhanced Edition,60,0.16929254319742426,available,70,0.16929254319742426,true,available,38,0.1606689711717904,true,available,52,0.16144748201657927,true,missing_target_length,0,,,true
+311690,Enter the Gungeon,46,-0.24397052035985792,available,56,-0.2457131819957216,true,available,33,-0.2431472534306923,true,available,36,-0.24397052035985792,true,available,13,-0.11189573459715643,true,true
+235460,METAL GEAR RISING: REVENGEANCE,53,0.18365508082208876,available,58,0.18409727725314967,true,available,29,0.19253632362693684,true,available,36,0.19377994288426842,true,available,13,0.08804399564803489,true,true
+205100,Dishonored,60,0.19927436184364494,available,70,0.19927436184364494,true,available,38,0.1906507898180111,true,available,37,0.19880925343110223,true,available,20,0.18561069817998127,true,true
+881100,Noita,34,-0.1361323126940906,available,51,-0.14029946609931354,true,available,11,-0.14492253247593972,true,available,20,-0.17562790769563674,true,missing_target_length,0,,,true
+1113000,Persona 4 Golden,18,-0.2650417812608167,available,41,-0.2861515289695864,true,available,15,-0.2861515289695864,true,available,10,-0.2901570295310749,true,missing_target_length,0,,,true
+212680,FTL: Faster Than Light,10,0.32983343345345395,available,16,0.384363275303282,true,available,6,0.2906876078379075,true,available,7,0.3583819173392247,true,insufficient_peers,0,,,true
+289650,Assassin's Creed® Unity,41,-0.12445154419595311,available,57,-0.12445154419595311,true,available,32,-0.1278515315147445,true,available,14,-0.1421043944708067,true,available,10,-0.015691981607013405,true,true
+207610,The Walking Dead,48,0.11373022911700809,available,70,0.14210637399746723,true,available,16,0.05358065403184048,true,available,37,0.09400984809773766,true,missing_target_length,0,,,true
+493340,Planet Coaster,13,-0.12203399596658022,available,20,-0.13715270317918538,true,available,6,-0.06443055501129878,true,available,10,-0.12249282664334617,true,insufficient_peers,0,,,true
+287390,Metro: Last Light Redux,40,-0.24132742972949156,available,59,-0.23484176624346526,true,available,17,-0.27370096260565185,true,available,32,-0.2538554440728354,true,available,12,-0.2263469027775294,true,true
+307690,Sleeping Dogs: Definitive Edition,31,-0.1027614592399187,available,53,-0.10364585210204058,true,available,9,-0.24917922601659642,true,available,25,-0.11982063798388015,true,available,6,-0.05677715972301056,true,true
+200260,Batman: Arkham City - Game of the Year Edition,53,-0.07135207496653281,available,58,-0.07075260473092707,true,available,29,-0.06926874163319943,true,available,36,-0.07379990603381706,true,missing_target_length,0,,,true
+466560,Northgard: Definitive Edition,7,0.03269751844399732,available,11,-0.03553507778859888,false,insufficient_peers,4,,,available,7,0.03269751844399732,true,missing_target_length,0,,,false
+1145350,Hades II,46,0.14959340240596042,available,56,0.14537014815800342,true,available,33,0.1529933897247518,true,available,36,0.14959340240596042,true,missing_target_length,0,,,true
+752590,A Plague Tale: Innocence,18,0.07602867003488312,available,40,0.09864779860938139,true,available,11,0.04240923909632299,true,available,15,0.07579093237577161,true,missing_target_length,0,,,true
+214490,Alien: Isolation,35,-0.23271286608448793,available,47,-0.1789792188554572,true,available,11,-0.23318834140271089,true,available,29,-0.20715044567228214,true,available,11,-0.13938969764837622,true,true
+312660,Sniper Elite 4,27,0.18342629978238642,available,61,0.14772358422117843,true,available,16,0.1839330501261348,true,available,19,0.20589990364822847,true,available,10,0.06884525127880609,true,true
+409710,BioShock™ Remastered,41,-0.05824833563980342,available,57,-0.05824833563980342,true,available,32,-0.06164832295859479,true,available,21,-0.029683124326123578,true,missing_target_length,0,,,true
+629730,Blade and Sorcery,47,-0.20843833524245894,available,76,-0.20719471598512737,true,available,35,-0.19026097436610576,true,available,31,-0.24481029308998234,true,missing_target_length,0,,,true
+204100,Max Payne 3,47,0.1130857488128848,available,51,0.1357183858460434,true,available,29,0.10118510003558051,true,available,40,0.14130096220891347,true,available,13,0.1357183858460434,true,true
+50130,Mafia II (Classic),41,0.15319148936170207,available,57,0.15319148936170207,true,available,32,0.1503274193913851,true,available,31,0.17602856073474799,true,missing_target_length,0,,,true
+2623190,The Elder Scrolls IV: Oblivion Remastered,60,-0.20136329309310602,available,70,-0.20136329309310602,true,available,38,-0.21627057601410132,true,available,29,-0.2213106676521311,true,missing_target_length,0,,,true
+1627720,Lies of P,46,0.10929784134728515,available,56,0.10507458709932815,true,available,33,0.11269782866607653,true,available,40,0.10929784134728515,true,missing_target_length,0,,,true
+1290000,PowerWash Simulator,8,0.1412609011333188,available,9,0.12145446529172584,true,available,7,0.12145446529172584,true,available,7,0.16106733697491177,true,missing_target_length,0,,,true
+253230,A Hat in Time,38,-0.10937717889337115,available,58,-0.11485946696246188,true,available,17,-0.11337560386473425,true,available,27,-0.10289151540734484,true,missing_target_length,0,,,true
+1693980,Dead Space,35,0.05305753001623942,available,47,0.09075312034340866,true,available,11,0.03385716859767157,true,available,32,0.056238559513058395,true,available,10,0.07350520241828984,true,true
+8190,Just Cause 2,53,-0.14944227147616979,available,58,-0.14884280124056404,true,available,29,-0.1473589381428364,true,available,43,-0.16441811688679786,true,available,17,-0.16441811688679786,true,true
+108710,Alan Wake,40,0.026299647944019233,available,59,0.04323338956304085,true,available,17,-0.011315929160835736,false,available,34,0.021057603715324558,true,available,13,0.0720762613345734,true,false
+202970,Call of Duty®: Black Ops II,35,0.06804487499583872,available,47,0.10574046532300796,true,available,11,0.048844513577270876,true,available,31,0.07440693398947668,true,available,7,0.048844513577270876,true,true
+367500,Dragon's Dogma: Dark Arisen,46,-0.25253990204177124,available,56,-0.2542825636776349,true,available,33,-0.25171663511260567,true,available,40,-0.25253990204177124,true,available,8,-0.1030071095601448,true,true
+243470,Watch_Dogs™,42,0.009817748011329064,available,56,0.009817748011329064,true,available,29,0.03893245573313878,true,available,17,0.003229740171930784,true,missing_target_length,0,,,true
+1325200,Nioh 2 – The Complete Edition,30,0.007231678173494127,available,33,0.01885634384475937,true,available,17,-0.02338795441005337,false,available,25,0.01885634384475937,true,missing_target_length,0,,,false
+282140,SOMA,18,-0.016453108980612807,available,40,0.022856866233609774,false,available,11,-0.048369038259047925,true,available,15,-0.03338169327944862,true,available,7,-0.03338169327944862,true,false
+599140,Graveyard Keeper,32,-0.29327053380484774,available,39,-0.3046890694913707,true,available,12,-0.2413328121906279,true,available,28,-0.3126957884163427,true,available,5,-0.10048090069311522,true,true
+476600,Call of Duty®: WWII,7,0.16315077827605523,available,7,0.16315077827605523,true,insufficient_peers,2,,,insufficient_peers,2,,,missing_target_length,0,,,false
+1288310,Firework,33,0.24734749222430547,available,51,0.3691299564739082,true,available,11,0.23632363236323634,true,available,23,0.2228690869086909,true,missing_target_length,0,,,true
+302510,Ryse: Son of Rome,46,0.0443829007196877,available,56,0.0401596464717307,true,available,33,0.04778288803847908,true,available,41,0.04778288803847908,true,insufficient_peers,4,,,true
+1845910,Dragon Age™: The Veilguard,40,0.033596032332104675,available,53,0.022177496645581718,true,available,31,0.022177496645581718,true,available,5,0.1409009009009009,true,missing_target_length,0,,,true
+692850,Bloodstained: Ritual of the Night,39,0.005728139940633925,available,48,-0.007623241566748373,false,available,31,0.02856521131367984,true,available,32,0.017146675627156882,true,available,11,0.042235555416149484,true,false
+228380,Wreckfest,7,-0.26010472804044665,available,15,-0.1336823218852256,true,insufficient_peers,0,,,insufficient_peers,4,,,missing_target_length,0,,,false
+1184370,Pathfinder: Wrath of the Righteous - Enhanced Edition,23,-0.07659624763611023,available,41,-0.09842040283010273,true,available,8,-0.07498137755014483,true,available,15,-0.07336650746417944,true,missing_target_length,0,,,true
+668580,Atomic Heart,44,-0.2539537556294331,available,58,-0.26430785692929865,true,available,28,-0.27179577963461266,true,available,24,-0.2539537556294331,true,missing_target_length,0,,,true
+1210320,Potion Craft: Alchemist Simulator,5,0.06171835340809448,available,16,-0.18273353149064722,false,insufficient_peers,0,,,available,5,0.06171835340809448,true,missing_target_length,0,,,false
+554620,Life is Strange: Before the Storm,20,0.2586871908579227,available,23,0.3082237762237764,true,available,13,0.18855254334706406,true,available,19,0.3082237762237764,true,missing_target_length,0,,,true
+207140,SpeedRunners,10,0.3645464530438634,available,14,0.3734664050481802,true,insufficient_peers,2,,,available,8,0.4041778354053371,true,insufficient_peers,0,,,false
+447530,VA-11 Hall-A: Cyberpunk Bartender Action,7,0.17501654259718777,available,20,-0.005160291679722595,false,insufficient_peers,1,,,available,5,0.17501654259718777,true,insufficient_peers,1,,,false
+250320,The Wolf Among Us,8,0.0638510479041916,available,13,0.21360267203513905,true,insufficient_peers,2,,,available,6,0.1618730259261696,true,insufficient_peers,4,,,false
+740130,Tales of ARISE,60,0.0886908940067494,available,70,0.0886908940067494,true,available,38,0.08006732198111555,true,available,49,0.08915600241929211,true,missing_target_length,0,,,true
+1282730,Loop Hero,18,-0.20980379625855278,available,45,-0.20321578841915444,true,available,14,-0.20980379625855278,true,available,12,-0.19144568813420038,true,missing_target_length,0,,,true
+1256670,Library Of Ruina,7,-0.08453943405420666,available,15,-0.12118972526968133,true,insufficient_peers,1,,,available,5,-0.1447299258395895,true,missing_target_length,0,,,false
+640820,Pathfinder: Kingmaker — Enhanced Plus Edition,24,-0.28063151097085814,available,36,-0.2603003455127649,true,available,7,-0.18324395664013182,true,available,8,-0.29528053785479524,true,missing_target_length,0,,,true
+535930,Two Point Hospital,7,-0.21356376048221387,available,14,-0.2598797832622841,true,insufficient_peers,2,,,available,6,-0.1972150012602152,true,missing_target_length,0,,,false
+1235140,Yakuza: Like a Dragon,46,0.08401547615788973,available,56,0.07979222190993274,true,available,33,0.08741546347668111,true,available,36,0.08401547615788973,true,missing_target_length,0,,,true
+417860,Emily is Away,16,0.44171992547088,available,27,0.52195917438934,true,available,5,0.5946450676569769,true,available,15,0.3638713450292397,true,insufficient_peers,0,,,true
+261030,The Walking Dead: Season Two,37,0.32053592886325416,available,48,0.3566503669320702,true,available,12,0.30109782978557487,true,available,30,0.32966728274872525,true,missing_target_length,0,,,true
+209160,Call of Duty®: Ghosts,7,0.15180905868341127,available,7,0.15180905868341127,true,insufficient_peers,2,,,insufficient_peers,2,,,missing_target_length,0,,,false
+2186680,"Warhammer 40,000: Rogue Trader",23,-0.0164057558507274,available,41,-0.0382299110447199,true,available,8,-0.014790885764762007,true,available,15,-0.013176015678796615,true,missing_target_length,0,,,true
+1874880,Arma Reforger,13,-0.042161281449036164,available,23,-0.07040986901965762,true,available,9,-0.07137648735540755,true,insufficient_peers,4,,,missing_target_length,0,,,true
+1030830,Mafia II: Definitive Edition,31,0.15275058476999043,available,53,0.14475373482726422,true,available,9,-0.0016640319494135025,false,insufficient_peers,3,,,missing_target_length,0,,,false
+220440,DmC: Devil May Cry,34,0.04611398788947074,available,47,0.06299138796078818,true,available,11,0.07944074466573597,true,available,30,0.0654116598069519,true,missing_target_length,0,,,true
+368500,Assassin's Creed® Syndicate,48,0.051696569432370665,available,70,0.0370477639342619,true,available,34,0.051696569432370665,true,available,23,0.05008169934640527,true,available,17,-0.010628019323671523,false,true
+288160,The Room,18,0.1486770556597412,available,26,0.16774834928649063,true,available,9,0.03175848212518306,true,available,18,0.1486770556597412,true,insufficient_peers,3,,,true
+794260,Outward Definitive Edition,27,-0.2764997046994966,available,45,-0.270946421497785,true,available,6,-0.3222869289743916,true,available,7,-0.2467266161028786,true,missing_target_length,0,,,true
+1189490,觅长生,18,0.10561735985422743,available,41,0.09216714769732715,true,available,15,0.09728054212480097,true,available,12,0.10561735985422743,true,missing_target_length,0,,,true
+238010,Deus Ex: Human Revolution - Director's Cut,41,-0.02856521131367984,available,57,-0.02856521131367984,true,available,32,-0.031965198632471215,true,available,35,-0.02856521131367984,true,available,10,0.17087989998786465,false,true
+41070,Serious Sam 3: BFE,53,-0.18628642667913353,available,58,-0.18568695644352778,true,available,29,-0.18420309334580015,true,available,47,-0.2012622720897616,true,missing_target_length,0,,,true
+1066780,Transport Fever 2,13,-0.06215233916184648,available,20,-0.07727104637445165,true,available,6,0.01968267521616058,false,available,10,-0.06261116983861242,true,missing_target_length,0,,,false
+557340,My Friend Pedro,12,0.1806344487949283,available,13,0.16754734338538863,true,available,6,0.18711313538846436,true,available,10,0.19603308739278114,true,missing_target_length,0,,,true
+238090,Sniper Elite 3,27,-0.21597782330272336,available,61,-0.2372481989228509,true,available,16,-0.21778197105628153,true,available,16,-0.26228904859605356,true,missing_target_length,0,,,true
+333600,NEKOPARA Vol. 1,7,0.30820335578400093,available,20,0.1357435104005501,true,insufficient_peers,1,,,available,6,0.3390625324880482,true,insufficient_peers,1,,,false
+304240,Resident Evil,18,-0.11048949039405898,available,40,-0.08372298772682779,true,available,11,-0.1421676820133826,true,available,15,-0.1271803370337833,true,available,8,-0.11048949039405898,true,true
+413420,Danganronpa 2: Goodbye Despair,19,-0.007176542298931721,available,34,0.19423163886804062,false,available,6,0.17523246943282467,false,available,18,-0.05518719816545514,true,insufficient_peers,1,,,false
+249130,LEGO® Marvel™ Super Heroes,18,-0.015901163905527593,available,21,-0.04893609315296721,true,available,12,-0.11110933703298215,true,available,17,0.017609240660134917,false,available,5,-0.04941156847119016,true,true
+260230,Valiant Hearts: The Great War™ / Soldats Inconnus : Mémoires de la Grande Guerre™,39,0.153514526710403,available,57,0.1455176767676768,true,available,26,0.16213809873603685,true,available,26,0.16213809873603685,true,missing_target_length,0,,,true
+383150,Dead Island Definitive Edition,47,0.22007458416369052,available,63,0.21545151778706434,true,available,36,0.23218448686114374,true,available,27,0.23727567298105684,true,available,18,0.19223406527268133,true,true
+71340,Sonic Generations Collection,38,-0.035133159034788364,available,58,-0.0406154471038791,true,available,17,-0.039131584006151465,true,available,32,-0.04366274840676909,true,missing_target_length,0,,,true
+247080,Crypt of the NecroDancer,33,-0.30609336798195436,available,46,-0.30691663491112,true,available,25,-0.30609336798195436,true,available,24,-0.30691663491112,true,available,9,-0.27072818203069177,true,true
+365450,Hacknet,19,-0.2825449360589248,available,34,-0.1122195861324502,true,available,6,-0.20329357466382963,true,available,19,-0.2825449360589248,true,insufficient_peers,3,,,true
+1149620,Gas Station Simulator,8,-0.0614524144285563,available,9,-0.08329195717392669,true,available,7,-0.08329195717392669,true,available,8,-0.0614524144285563,true,missing_target_length,0,,,true
+42680,Call of Duty®: Modern Warfare® 3 (2011),17,0.31362766892415844,available,48,0.31580158196763675,true,available,7,0.31362766892415844,true,available,14,0.3079697043437406,true,missing_target_length,0,,,true
+99900,Spiral Knights,60,-0.2744327198210693,available,70,-0.2744327198210693,true,available,38,-0.2893400027420646,true,available,34,-0.2596438636341456,true,insufficient_peers,2,,,true
+519860,DUSK,7,0.0018444029587431077,available,7,0.0018444029587431077,true,insufficient_peers,2,,,insufficient_peers,3,,,missing_target_length,0,,,false
+1240210,There Is No Game: Wrong Dimension,23,0.14628889823380997,available,33,0.33200613676212754,true,available,14,0.0705036379233499,true,available,19,0.12569083608880505,true,missing_target_length,0,,,true
+1097840,Gears 5,47,0.031101010195872136,available,51,0.053733647229030734,true,available,29,0.019200361418567846,true,available,6,-0.02911800853893498,false,available,13,0.053733647229030734,true,true
+239160,Thief,60,-0.09116373655208607,available,70,-0.09116373655208607,true,available,38,-0.10607101947308137,true,available,15,-0.10902777777777775,true,available,20,-0.1185990338164252,true,true
+285190,"Warhammer 40,000: Dawn of War III",14,-0.10992167037403042,available,15,-0.10932220013842467,true,insufficient_peers,2,,,insufficient_peers,0,,,insufficient_peers,3,,,false
+1948980,Hero's Adventure: Road to Passion,18,0.15633419839966523,available,41,0.14288398624276494,true,available,15,0.14799738067023877,true,available,11,0.19365321701199567,true,missing_target_length,0,,,true
+784150,Workers & Resources: Soviet Republic,11,-0.06762820666862114,available,12,-0.08912184633795944,true,insufficient_peers,4,,,available,8,-0.03563650860075279,true,missing_target_length,0,,,false
+35720,Trine 2: Complete Story,40,-0.08679037088350339,available,47,-0.08370834148568451,true,available,27,-0.09783225887409214,true,available,33,-0.09303470479802861,true,missing_target_length,0,,,true
+235540,Warhammer: End Times - Vermintide,24,-0.01518867002295693,available,38,-0.026531338583219433,true,available,9,-0.06772843524761685,true,available,16,-0.057374333947751266,true,available,7,-0.0720762613345734,true,true
+412830,STEINS;GATE,16,-0.36838471886707846,available,27,-0.15285194154544154,true,available,5,-0.5418149252135323,true,available,15,-0.4282203353054346,true,missing_target_length,0,,,true
+323470,DRAGON BALL XENOVERSE,46,0.038844310936021365,available,56,0.03462105668806437,true,available,33,0.04224429825481274,true,available,40,0.038844310936021365,true,missing_target_length,0,,,true
+350080,Wolfenstein: The Old Blood,53,0.3149549919530865,available,58,0.31539718838414743,true,available,29,0.3238362347579346,true,available,45,0.3158393848152084,true,available,12,0.24202161907781217,true,true
+1182900,A Plague Tale: Requiem,37,0.13745141296354674,available,48,0.17356585103236277,true,available,12,0.11801331388586744,true,available,35,0.1438134719571847,true,missing_target_length,0,,,true
+445980,Wizard of Legend,60,-0.09306171994473139,available,70,-0.09306171994473139,true,available,38,-0.1079690028657267,true,available,47,-0.10044167271303367,true,missing_target_length,0,,,true
+1161580,Hardspace: Shipbreaker,11,-0.0009666183357499303,available,18,0.013640984617435764,false,available,8,-0.019939474727258488,true,available,6,0.14461964384110215,false,missing_target_length,0,,,false
+359870,FINAL FANTASY X/X-2 HD Remaster,33,-0.16882743478488155,available,51,-0.053619101898791155,true,available,11,-0.2832893869479236,true,available,30,-0.17649865222680755,true,insufficient_peers,3,,,true
+425580,The Room Two,18,0.16206363958550618,available,26,0.1811349332122556,true,available,9,0.045145066050948035,true,available,18,0.16206363958550618,true,insufficient_peers,3,,,true
+235600,Tom Clancy’s Splinter Cell Blacklist,48,0.17808545832125955,available,70,0.16343665282315079,true,available,34,0.17808545832125955,true,available,23,0.17647058823529416,true,available,17,0.07525510204081637,true,true
+1583230,High On Life,47,-0.03933637954256508,available,51,-0.015962706801803672,true,available,29,-0.06489879995477088,true,available,40,-0.03656708465073194,true,missing_target_length,0,,,true
+866800,The Walking Dead: The Final Season,37,0.5247734721418933,available,48,0.5608879102107093,true,available,12,0.5053353730642139,true,available,32,0.5339048260273643,true,missing_target_length,0,,,true
+1577120,The Quarry,8,0.1313678351606104,available,9,0.17826715703777773,true,insufficient_peers,3,,,insufficient_peers,4,,,missing_target_length,0,,,false
+265550,Dead Rising 3 Apocalypse Edition,41,-0.14048425958841881,available,51,-0.14048425958841881,true,available,31,-0.1484871077974526,true,available,11,-0.2053830595431897,true,missing_target_length,0,,,true
+1490890,Demon Slayer -Kimetsu no Yaiba- The Hinokami Chronicles,53,0.21326663730712025,available,58,0.21370883373818117,true,available,29,0.22214788011196834,true,available,43,0.21415103016924214,true,missing_target_length,0,,,true
+225260,Brutal Legend,48,-0.048546500829318745,available,70,-0.05945857842631494,true,available,34,-0.048546500829318745,true,available,34,-0.05945857842631494,true,missing_target_length,0,,,true
+560130,Pillars of Eternity II: Deadfire,23,-0.003229740171930784,available,41,-0.025053895365923284,true,available,8,0.004973137753432888,false,available,20,-0.03460768421664262,true,missing_target_length,0,,,false
+236090,Dust: An Elysian Tail,46,-0.026798852224342473,available,64,-0.021556807995647798,true,available,31,-0.030797277195705575,true,available,31,-0.054338306757377386,true,available,14,-0.12164194839751968,true,true
+330830,Tales from the Borderlands,49,0.24533404029692474,available,74,0.25536619561779217,true,available,33,0.25596205962059626,true,available,35,0.19506360135371692,true,available,16,0.19527275565042068,true,true
+368070,Sniper Ghost Warrior 3,27,0.08781521460833255,available,61,0.05211249904712456,true,available,16,0.08832196495208094,true,insufficient_peers,3,,,missing_target_length,0,,,true
+241600,Rogue Legacy,46,-0.02217578584771629,available,64,-0.016933741619021614,true,available,31,-0.02617421081907939,true,available,35,-0.02617421081907939,true,available,15,-0.038885563476084295,true,true
+1746030,Murders on the Yangtze River,33,0.15132618049125862,available,51,0.2731086447408614,true,available,11,0.1403023206301895,true,available,24,0.12783806643777995,true,missing_target_length,0,,,true
+311560,Assassin’s Creed® Rogue,30,0.09588514100108708,available,66,0.07024842732508041,true,available,14,0.16596571749292843,true,available,20,0.14649948962635903,true,available,9,0.019111034244206182,true,true
+242680,Nuclear Throne,30,-0.06870321688788747,available,35,-0.06366312524985765,true,available,12,-0.04015300892591475,true,available,18,-0.08184910417361932,true,available,12,-0.14225176263219744,true,true
+557600,Gorogoa,18,0.13633312252311192,available,26,0.15540441614986134,true,available,9,0.01941454898855377,true,available,18,0.13633312252311192,true,missing_target_length,0,,,true
+233270,Far Cry 3 - Blood Dragon,53,0.14553337391455584,available,58,0.14597557034561676,true,available,29,0.15441461671940393,true,available,45,0.14433443344334435,true,missing_target_length,0,,,true
+1533420,Neon White,38,0.03278149876172959,available,58,0.02309883313061084,true,available,17,0.0497152403807512,true,available,27,0.0497152403807512,true,missing_target_length,0,,,true
+241540,State of Decay,44,-0.07904945233987315,available,55,-0.09227306312518246,true,available,25,-0.06343019135364991,true,available,28,-0.08136098552818621,true,available,18,-0.15358542340694553,true,true
+629820,Maneater,41,-0.21941354202440044,available,57,-0.21941354202440044,true,available,32,-0.22281352934319182,true,available,36,-0.21654947205408348,true,missing_target_length,0,,,true
+40700,Machinarium,20,-0.13385060711982438,available,23,-0.12355157604732198,true,available,13,-0.15132618049125862,true,available,19,-0.12355157604732198,true,missing_target_length,0,,,true
+405640,Pony Island,20,-0.4781166186776589,available,23,-0.4678175876051565,true,available,13,-0.49559219204909316,true,available,19,-0.4678175876051565,true,insufficient_peers,3,,,true
+397950,Clustertruck,4,,available,14,-0.08157360303719352,,insufficient_peers,0,,,insufficient_peers,4,,,insufficient_peers,0,,,false
+1258080,Shop Titans,9,-0.043679085490740774,available,13,0.015878082006147973,false,insufficient_peers,3,,,insufficient_peers,1,,,missing_target_length,0,,,false
+368340,CrossCode,49,-0.1287194122932192,available,74,-0.10833751138639519,true,available,33,-0.11305565704542692,true,available,37,-0.16332609598863473,true,missing_target_length,0,,,true
+536220,The Walking Dead: A New Frontier,34,0.3380870694002591,available,49,0.37530013157470893,true,available,5,0.3215664843456782,true,available,18,0.34989819964971713,true,missing_target_length,0,,,true
+2768430,ATLYSS,46,-0.16589891802380594,available,64,-0.16065687379511126,true,available,31,-0.16989734299516904,true,available,31,-0.19343837255684085,true,missing_target_length,0,,,true
+969990,SpongeBob SquarePants: Battle for Bikini Bottom - Rehydrated,34,-0.08577581695424957,available,47,-0.06037388502925778,true,available,11,-0.04756219844518639,true,available,29,-0.0651714391053213,true,missing_target_length,0,,,true
+1880330,Sanfu,16,0.3791933208493311,available,43,0.43107917409388,true,available,11,0.456323168087874,true,insufficient_peers,3,,,missing_target_length,0,,,true
+1046030,ISLANDERS,9,-0.1953635012605067,available,23,-0.34425951128156984,true,insufficient_peers,4,,,available,9,-0.1953635012605067,true,missing_target_length,0,,,false
+1382330,Persona® 5 Strikers,30,-0.1655807421055702,available,33,-0.15472786646829936,true,available,17,-0.19017219008552935,true,available,24,-0.16075605107188765,true,missing_target_length,0,,,true
+1361320,The Room 4: Old Sins,18,0.2088256912815264,available,26,0.2278969849082758,true,available,9,0.09190711774696825,true,available,18,0.2088256912815264,true,missing_target_length,0,,,true
+250760,Shovel Knight: Treasure Trove,39,0.012528114578216676,available,48,0.002576720389625753,true,available,31,0.03536518595126259,true,available,30,0.02108258029442267,true,missing_target_length,0,,,true
+228300,Remember Me,38,0.009240469200057777,available,58,-0.0014838630977276335,false,available,17,0.02617421081907939,true,available,17,0.007996849942726203,true,missing_target_length,0,,,false
+498240,Batman - The Telltale Series,14,0.14383220584725326,available,39,0.20140350877192986,true,available,10,0.08494441773387529,true,available,12,0.14383220584725326,true,available,6,0.18196540969425057,true,true
+1061910,Metal: Hellsinger,29,-0.010484088457389407,available,51,-0.011368481319511292,true,available,7,-0.15690185523406713,true,available,22,-0.03078419261020604,true,missing_target_length,0,,,true
+1113120,IXION,10,0.011159717224152599,available,20,0.0319756284510227,true,available,7,0.02119468345955139,true,insufficient_peers,4,,,missing_target_length,0,,,true
+1954200,Kena: Bridge of Spirits,34,-0.16630724260575697,available,47,-0.14090531068076517,true,available,11,-0.12809362409669378,true,available,32,-0.15462040623537626,true,missing_target_length,0,,,true
+222480,Resident Evil Revelations,40,0.15984810808894667,available,59,0.17678184970796829,true,available,17,0.13354846014492744,true,available,22,0.1278904955645096,true,missing_target_length,0,,,true
+394310,Punch Club,13,-0.11810422092960302,available,17,-0.09643209772645642,true,insufficient_peers,2,,,available,5,-0.054800275272716165,true,missing_target_length,0,,,false
+537800,Bomber Crew,8,-0.03205370340062705,available,10,-0.03205370340062705,true,available,5,0.17126890471346218,false,available,8,-0.03205370340062705,true,missing_target_length,0,,,false
+1216710,Cyber Manhunt,13,0.09020575675226006,available,37,0.016013437849943968,true,available,10,0.08940466138608555,true,available,11,0.09020575675226006,true,missing_target_length,0,,,true
+288470,Fable Anniversary,46,-0.19657715543094795,available,56,-0.19831981706681162,true,available,33,-0.19575388850178232,true,available,39,-0.18895391386419957,true,available,13,-0.16038870255051974,true,true
+335670,LISA: The Painful,33,-0.09434459232429537,available,35,-0.08861645238366145,true,available,18,-0.1252725720625288,true,available,24,-0.09774457964308675,true,missing_target_length,0,,,true
+8850,BioShock® 2,46,0.050744959713325655,available,56,0.04652170546536866,true,available,33,0.05414494703211703,true,available,40,0.050744959713325655,true,missing_target_length,0,,,true
+861650,Session: Skate Sim,0,,insufficient_peers,0,,,insufficient_peers,0,,,insufficient_peers,0,,,missing_target_length,0,,,false
+210770,Sanctum 2,15,-0.2678607834571137,available,36,-0.21265485573597304,true,available,8,-0.2863206804046814,true,available,11,-0.2678607834571137,true,missing_target_length,0,,,true
+214510,LEGO® The Lord of the Rings™,18,-0.13570975845110672,available,39,-0.14097744360902248,true,available,15,-0.11124171187462312,true,available,17,-0.11124171187462312,true,missing_target_length,0,,,true

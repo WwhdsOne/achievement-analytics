@@ -1,5 +1,15 @@
 # experiments.md — 面板与整体层面的实验记录
 
+## 2026-10-17 — 完整数据下载与每日限额（本机验收）
+
+- **许可展示补充**：下载页增加仓库、PolyForm Noncommercial License 1.0.0 链接、非商业使用与商业书面授权说明；沿用现有 LICENSE 和 README，不更换许可。第三方数据条款单独说明，保留 RAWG 非商业与回链要求。最终页面通过 1440px / 390px 浏览器布局、说明文字与链接检查，JavaScript 无异常；Go 编译通过。未将源码可得许可误写为「完全开源」。
+
+- **数据版本**：用户提供的 OSS 对象 `achievement-analytics-data.tar.gz`；未解压、未读取归档内数据库版本，未改动云库。
+- **口径与参数**：真实连接 IP；北京时间自然日，每日最多开始下载 5 次；单进程内存计数，重启清零。开始传输计数，OSS 读取失败退还；并发预占使用互斥锁。
+- **验证**：最终二进制从 `.env` 读取凭据，8 个并发真实 OSS 下载请求中 5 个返回 200、3 个返回 429；只读取 gzip 文件头后关闭连接，未完整下载。伪造 `X-Forwarded-For` 不能绕过；独立 IPv6 来源仍可下载；HEAD 返回 405；OSS 无签名访问为 403。无效凭据连续 6 次返回 502，未误耗每日额度。浏览器验证下载标签切换、直接访问与刷新 `#download`、390px 移动端布局与 JavaScript 无异常。Go 编译、`go vet`、部署脚本语法和 diff 空白检查通过。
+- **配置**：OSS key 与 secret 从不入 Git 的 `dashboard/.env` 读取；部署只传运行时凭据，不进入镜像；scratch 补 CA 公钥证书包。
+- **结论与边界**：本机验证下载入口及限额有效，未部署。每日重置按日期切换实现，未等待真实跨日；重启及多实例不共享内存计数，用户取消的请求也占次数。
+
 > 从原 `modeling/experiments.md` 迁来（该目录已随项目改为「按方向选题」而删除）。
 > 这三条记录的是**已部署面板**（http://82.157.208.173:8600）分析页数据的来源与口径：
 > 面板 `/api/analysis` 读的 `data/processed/analysis-report.json` 由 2026-10-01 那次
@@ -7,6 +17,27 @@
 > `result/<缩写>/experiments.md`。
 
 ## 实验记录
+### 2026-10-16 — 推荐服务独立部署与持久化缓存
+
+- **版本与口径**：沿用推荐快照 `recommendation-v1-c58f1d57439d2c28`，50,925款可搜索、41,279款候选，不改算法或统计口径。
+- **部署与依赖**：新增 `result/ZZY/deploy.sh` 及独立Compose、健康检查、最小 `pyproject.toml/uv.lock`；只需httpx、numpy、psycopg、python-dotenv、SQLAlchemy，根依赖不变。Go从 `dashboard/.env` 的 RECOMMENDATION_HOST/PORT 读取目标，显式CLI优先。推荐数据卷默认 `/opt/achievement-recommendation/runtime:/runtime`。
+- **缓存策略**：首次生成持久化快照和图谱，之后只核验加载；普通部署/容器重建/重启不再读库生成。仅 `--refresh-data` 显式更新，损坏版本不静默降级。DeepSeek配置从用户指定的 `result/WWH/5/.env` 提取允许字段，仅注入推荐容器，不输出密钥、不进入镜像。
+- **本机验收**：实际生成部署包、Compose配置解析、Docker镜像构建和真实数据库首次准备通过；把容器内数据库地址设为不可用的127.0.0.1后重建容器，metadata显示 persistent_cache、database_access=false、cache_reused=true，仍返回3款真实推荐，DeepSeek配置布尔值为true。健康检查、Go构建/vet、配置优先级与非法端口检查通过。raw环境文件在真实容器中保持 `$`、引号与反斜杠，不会误解析密码；包内无SSH/RAWG/Steam密钥或数据缓存，镜像无运行凭据。
+- **远程部署**：用户放行SSH22后，已分别执行 `bash result/ZZY/deploy.sh` 和 `bash dashboard/deploy.sh`，更新腾讯云推荐容器与Go面板。推荐只监听127.0.0.1:8605，宿主 `/opt/achievement-recommendation/runtime` 绑定 `/runtime`。首次生成完成后受控重启，`latest-startup.json` 的SHA256保持不变，API确认cache_reused=true、database_access=false，真实Top-3查询成功，DeepSeek配置状态为true，未触发付费调用。其他容器未重启，未执行DDL、worker或训练。
+- **公网验收**：`http://82.157.208.173:8600/#research/recommendation` 五导航、四张PNG原图、Top-5推荐与探索封面正常，1440px/390px无横向溢出，无浏览器脚本错误；页面仅6个API请求，公开metadata不含指定密钥。截图保存在 `/tmp/achievement-public-deployment/`，不入git。
+
+### 2026-10-16 — 五方向成果导航与 ZZY 推荐接入（本机）
+
+- **数据版本**：推荐服务从共享库只读提取，快照 `recommendation-v1-c58f1d57439d2c28`；50,925 款可搜索，41,279 款符合原推荐候选规则。图谱与算法版本由当前源码绑定生成，可在页面「数据版本与范围」查询。
+- **口径与参数**：不重训、不改原评分。标签/类型/开发商/发行商权重沿用 0.75/0.15/0.10/0；1–3 个唯一种子，年份含首尾、先筛后评分；推荐数 1/3/5。完整路径保留，默认展示前 8 条，其余折叠，零权重共同事实单独说明未计分。
+- **集成**：Go 面板内嵌同风格界面，只转发独立服务的 meta/search/recommend 三个 GET 接口；不引入 Python 镜像依赖、不代理 AI 点评 POST。四个未接入方向仅展示负责人、研究范围和预期产物。
+- **启动问题**：联调期间既有 Python 文件格式变化使原交付 source-map 的字节摘要失效。新增个人目录内的 `dashboard_service.py`，使用当前源码构图并保留完整事实校验，不修改旧交付摘要与算法。
+- **验收**：`scripts/check_research_browser.py` 使用真实服务检查桌面1440px/手机390px的导航、空洞骑士单款原排名、星露谷联合推荐、2020–2025筛选、年份倒置、年份1的空结果、来源展开、服务失败重试、直链与刷新。截图写 `/tmp/achievement-research/`，不入Git；本次未部署公网。
+- **结果一致性与回归**：空洞骑士+星露谷、2020–2025、top_k=3 的 Go/上游完整JSON相等；既有 `scripts/check_dashboard_browser.py` 桌面与手机搜索/全景/溢出检查通过，无脚本错误，补抓POST为404。Go构建与 `go vet ./...` 通过。
+- **图片与入口补充（同日）**：搜索与推荐卡片加入 Steam 封面及原游戏详情链接，推荐卡片提供商店链接；研究页补充游戏探索、数据全景、队列总览直达入口。四张原交付图（图谱、来源截图、AI方法对照与unknown上下界）按原字节复制到 `dashboard/figures/zzy/` 并内嵌，注明2026-10-14历史口径。浏览器验收新增图片PNG响应、四张图完整加载、原图新标签打开、三入口切换、封面进入单款详情和断图占位；桌面/手机均通过，无横向溢出和脚本错误。未修改图示数据或推荐得分。
+- **游戏探索封面接入（同日）**：沿用 ZZY 的 `https://cdn.akamai.steamstatic.com/steam/apps/<appid>/header.jpg`，扩展到发现列表、搜索结果、同开发商作品与详情页。列表封面进入原游戏详情，详情封面链接 Steam；列表懒加载，详情优先加载，失败保留游戏名及原尺寸。仅新增浏览器图片请求，不改数据仓库、采集流程或统计口径。`scripts/check_dashboard_browser.py` 桌面1440px/手机390px真实封面、封面跳转、断图占位尺寸、成就查询与全景回归均通过，无横向溢出及脚本错误；Go构建和JS语法检查通过，未部署公网。
+- **结论边界**：验证的是集成与结果一致性，不是推荐效果；相似度不是喜欢概率，未新增人工偏好效果证据。
+
 ### 2026-10-13 — 知名游戏描述性对照（Dashboard 简化）
 
 - **数据版本**：沿用 `engagement-20261001-079598c5d7ae`，未重新抓取或拟合。

@@ -1,0 +1,53 @@
+{
+  "base_main": "abcbd81e680bd42cae168ca50e69751e252147ce",
+  "relocated_source_files": 31,
+  "same_view_version": "query-view-v1-9b36eaca7ac2a35432d026c73cc842c25c8711d61566169da6da9d835fef9eb9",
+  "browser_passed": 48,
+  "browser_errors": [],
+  "browser_actual_modes": [
+    "single_2015_2016",
+    "two_seeds_2020_2025",
+    "three_seeds_to_2016",
+    "future_empty",
+    "clear_years"
+  ],
+  "browser_fixtures": [
+    "temporary_search_failure",
+    "temporary_recommend_failure",
+    "late_promise_ignoring_abort",
+    "unsafe_text"
+  ],
+  "http_checks": 14,
+  "http_responses_identical": true,
+  "path_contributions_reconstructed": 361,
+  "baseline": {
+    "candidates": 41279,
+    "status": 200,
+    "baseline_metadata_identical": true,
+    "new_port": 8607,
+    "default_personal_data_path": true
+  },
+  "ai_reference_matches": {
+    "original": true,
+    "sensitivity": true
+  },
+  "database_access": false,
+  "git_commit_or_push_performed": false,
+  "group_member_independent_run": "pending",
+  "formal_human_evaluation": false,
+  "git_eol_roundtrip": {
+    "source_files": 31,
+    "core_autocrlf": "true",
+    "personal_text_eol": "lf",
+    "git_clean_and_smudge_roundtrip_matches": true,
+    "real_index_modified": false,
+    "commit_or_push": false
+  },
+  "independent_code_review": {
+    "blocking_findings_after_fix": 0,
+    "fixed_issue": "Windows Git newline conversion can break source digests",
+    "scope": "entrypoints, paths, evaluation provenance, docs and packaging"
+  },
+  "evidence_scope": "historical_v2_offline_migration_only",
+  "current_database_validation": "database-verification.json"
+}

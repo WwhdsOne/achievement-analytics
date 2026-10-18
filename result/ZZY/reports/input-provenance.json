@@ -1,0 +1,46 @@
+{
+  "label_origin": "external_ai",
+  "formal_human_evaluation": false,
+  "reviewer_ids": [
+    "AI-DeepSeek-run01"
+  ],
+  "input_sha256": "c4abd1656dcb11606bd64680e7980a46d056e78fa01421b2777cba2a1c2270b7",
+  "protocol_sha256": "d7401b214296480bc504496e7d960667c4c374a4b802ca0c5b5fbe775a62f29e",
+  "rankings_sha256": "96e9d69897e26799129945ec06ad7bfb748cc120df50779cd9d93cfe9c3e00cc",
+  "rows": 177,
+  "label_counts": {
+    "2": 57,
+    "unknown": 20,
+    "1": 39,
+    "0": 61
+  },
+  "source_pages_verified_this_run": false,
+  "submitted_timestamps_verified": false,
+  "missing_evidence_pair_ids": [
+    "P0013",
+    "P0015",
+    "P0024",
+    "P0033",
+    "P0034",
+    "P0040",
+    "P0043",
+    "P0053",
+    "P0076",
+    "P0077",
+    "P0083",
+    "P0090",
+    "P0096",
+    "P0115",
+    "P0121",
+    "P0127",
+    "P0133",
+    "P0138",
+    "P0150",
+    "P0152"
+  ],
+  "identity_punctuation_changes": 10,
+  "historical_formal_bundle_verify": {
+    "passed": false,
+    "reason": "现有blind/README.txt与导出SHA不符；主表为CRLF差异。未修改或修复原导出文件。"
+  }
+}

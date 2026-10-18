@@ -1,0 +1,2020 @@
+{
+  "meta": {
+    "extracted_at": "2026-10-16T11:57:59.375765+00:00",
+    "rows": 648006,
+    "games": 50925,
+    "official_rows": 147354,
+    "app_type_counts": {
+      "game": 50925
+    },
+    "app_type_counts_note": "按 appid 去重后的条目数（样本核验用）",
+    "sha256": "72834076e47b8a5b6395cb91aaa4a787a207debb03a6704018047d9981535902",
+    "steamspy_fetch_window": {
+      "first": "2026-09-18 00:23:45.314827+00",
+      "last": "2026-10-01 10:28:33.325162+00"
+    },
+    "registered_version": null,
+    "note": "本机无快照文件，故直接只读查库；未写入 dataset_versions（库对本 agent 只读）",
+    "cache": "hit",
+    "taxonomy_version": "2026-10-16.1",
+    "plot_window": [
+      2014,
+      2024
+    ],
+    "growth_window": [
+      2014,
+      2020
+    ],
+    "min_base_games": 30,
+    "sample_rule": "steam_appdetails.type = 'game' 且 release_date < 2026-01-01；不因标签内容删除任何游戏"
+  },
+  "scope": {
+    "statement": "本分析支持结论：抓取时标签所描述的、不同发售年份游戏的结构差异。",
+    "not_supported": [
+      "不能据此判断某款游戏在发售当年是否流行，也不能用现今拥有量反推历史热度。",
+      "标签票数描述游戏属性，不等于「玩家更愿意玩」，不能当作玩家偏好强度。",
+      "占比上升不能直接证明历史热度或玩家偏好上升，只能说明该属性在近年发售的游戏中更常见。"
+    ],
+    "main_result_dimension": "类型与子类型",
+    "supplementary_dimensions": [
+      "机制与特色",
+      "题材设定",
+      "美术与呈现",
+      "玩家模式与支持",
+      "制作与发行属性",
+      "氛围与叙事"
+    ]
+  },
+  "sample": {
+    "rule": "steam_appdetails.type = 'game' 且 release_date < 2026-01-01；不因标签内容删除任何游戏",
+    "games": 50925,
+    "app_type_counts": {
+      "game": 50925
+    },
+    "app_type_counts_note": "按 appid 去重后的条目数（应用类型核验用）",
+    "dropped_non_game": 0,
+    "dropped_appids": []
+  },
+  "taxonomy": {
+    "version": "2026-10-16.1",
+    "main_dimension": "类型与子类型",
+    "dimension_order": [
+      "类型与子类型",
+      "机制与特色",
+      "题材设定",
+      "美术与呈现",
+      "玩家模式与支持",
+      "制作与发行属性",
+      "氛围与叙事",
+      "其他",
+      "非游戏标签"
+    ],
+    "rules": [
+      "同一标签只归一个维度，冲突在导入时直接报错。",
+      "类型与子类型只收回答「这是什么游戏」的玩法门类与子类型。",
+      "程序生成、编辑器、自定义、模组、建造、自动化等机制归「机制与特色」。",
+      "Indie、抢先体验、免费、众筹、引擎工具等归「制作与发行属性」，描述发行形态而非玩法。",
+      "交叉语义标签按「对分析问题最有解释力的那一面」归类。"
+    ],
+    "crosswalk_notes": {
+      "Indie": "官方 valve_genres 也把它列为类型，但它描述的是制作/发行身份而非玩法，会与「独立」绑定的整体规模共振，故归「制作与发行属性」，并在对照图中说明。",
+      "Early Access / Free to Play": "商业发行形态，归「制作与发行属性」；与游戏玩法结构无关。",
+      "Exploration": "原映射缺失、落到「其他」；它是玩法活动而非玩法门类，归「机制与特色」。",
+      "Dice / Time Attack / Score Attack / Boss Rush": "挑战与判定机制，归「机制与特色」，不归类型。",
+      "Time Management / Management": "Steam 官方把它们当作玩法门类（休闲管理类游戏），故留在「类型与子类型」；而同族的 Resource / Inventory Management 是机制，归「机制与特色」。",
+      "Farming / Agriculture": "作为玩法门类（农作模拟）归「类型与子类型」。",
+      "Gambling / Cooking / Nature / Futuristic": "题材设定，归「题材设定」。",
+      "RPGMaker / GameMaker": "引擎与制作工具标记，归「制作与发行属性」。",
+      "Foreign / Local Multiplayer": "本地化与联机支持功能，归「玩家模式与支持」。"
+    },
+    "dimensions": {
+      "类型与子类型": [
+        "2dfighter",
+        "2dplatformer",
+        "3dfighter",
+        "3dplatformer",
+        "4x",
+        "action",
+        "actionadventure",
+        "actionroguelike",
+        "actionrpg",
+        "actionrts",
+        "adventure",
+        "agriculture",
+        "arcade",
+        "archery",
+        "arenashooter",
+        "atv",
+        "autobattler",
+        "automobilesim",
+        "baseball",
+        "basketball",
+        "battleroyale",
+        "beatemup",
+        "bikes",
+        "bmx",
+        "boardgame",
+        "boomershooter",
+        "bowling",
+        "boxing",
+        "bullethell",
+        "cardbattler",
+        "cardgame",
+        "casual",
+        "characteractiongame",
+        "chess",
+        "chooseyourownadventure",
+        "citybuilder",
+        "clicker",
+        "collectathon",
+        "colonysim",
+        "combatracing",
+        "creaturecollector",
+        "cricket",
+        "crpg",
+        "cycling",
+        "datingsim",
+        "deckbuilding",
+        "destruction",
+        "diplomacy",
+        "driving",
+        "dungeoncrawler",
+        "education",
+        "escaperoom",
+        "extractionshooter",
+        "farming",
+        "farmingsim",
+        "fighting",
+        "fishing",
+        "flight",
+        "footballamerican",
+        "footballsoccer",
+        "fps",
+        "godgame",
+        "golf",
+        "grandstrategy",
+        "hackandslash",
+        "hacking",
+        "heroshooter",
+        "hiddenobject",
+        "hobbysim",
+        "hockey",
+        "hunting",
+        "idler",
+        "immersivesim",
+        "interactivefiction",
+        "jobsimulator",
+        "jrpg",
+        "lemmings",
+        "lifesim",
+        "logic",
+        "lootershooter",
+        "mahjong",
+        "management",
+        "match3",
+        "medical",
+        "medicalsim",
+        "metroidvania",
+        "minigames",
+        "minigolf",
+        "mining",
+        "moba",
+        "motocross",
+        "motorbike",
+        "musou",
+        "mysterydungeon",
+        "navalcombat",
+        "offroad",
+        "onrailsshooter",
+        "openworld",
+        "openworldsurvivalcraft",
+        "otome",
+        "outbreaksim",
+        "parkour",
+        "party",
+        "partybasedrpg",
+        "partygame",
+        "pinball",
+        "platformer",
+        "pointclick",
+        "politicalsim",
+        "pool",
+        "precisionplatformer",
+        "puzzle",
+        "puzzleplatformer",
+        "racing",
+        "realtime",
+        "realtimetactics",
+        "realtimewithpause",
+        "rhythm",
+        "roguelike",
+        "roguelikedeckbuilder",
+        "roguelite",
+        "roguevania",
+        "rpg",
+        "rts",
+        "rugby",
+        "runner",
+        "sandbox",
+        "shootemup",
+        "shooter",
+        "shopkeeper",
+        "simulation",
+        "skateboarding",
+        "skating",
+        "skiing",
+        "sniper",
+        "snooker",
+        "snowboarding",
+        "socialdeduction",
+        "sokoban",
+        "solitaire",
+        "soulslike",
+        "spacesim",
+        "spectaclefighter",
+        "spelling",
+        "sports",
+        "stealth",
+        "strategy",
+        "strategyrpg",
+        "survival",
+        "tabletop",
+        "tactical",
+        "tacticalrpg",
+        "tennis",
+        "thirdpersonshooter",
+        "timemanagement",
+        "topdownshooter",
+        "towerdefense",
+        "trading",
+        "tradingcardgame",
+        "traditionalroguelike",
+        "transportation",
+        "trivia",
+        "turnbased",
+        "turnbasedcombat",
+        "turnbasedstrategy",
+        "turnbasedtactics",
+        "twinstickshooter",
+        "typing",
+        "vehicularcombat",
+        "visualnovel",
+        "volleyball",
+        "walkingsimulator",
+        "wargame",
+        "wordgame",
+        "wrestling"
+      ],
+      "机制与特色": [
+        "artificialintelligence",
+        "automation",
+        "basebuilding",
+        "bossrush",
+        "building",
+        "bullettime",
+        "charactercustomization",
+        "classbased",
+        "combat",
+        "crafting",
+        "dice",
+        "economy",
+        "exploration",
+        "gridbasedmovement",
+        "guncustomization",
+        "hexgrid",
+        "inventorymanagement",
+        "investigation",
+        "leveleditor",
+        "loot",
+        "mod",
+        "moddable",
+        "musicbasedproceduralgeneration",
+        "permadeath",
+        "physics",
+        "proceduralgeneration",
+        "quicktimeevents",
+        "resourcemanagement",
+        "scoreattack",
+        "swordplay",
+        "timeattack",
+        "timemanipulation"
+      ],
+      "题材设定": [
+        "aliens",
+        "alternatehistory",
+        "america",
+        "anime",
+        "assassin",
+        "birds",
+        "capitalism",
+        "cats",
+        "coldwar",
+        "comedy",
+        "conspiracy",
+        "cooking",
+        "crime",
+        "cyberpunk",
+        "darkfantasy",
+        "demons",
+        "detective",
+        "dinosaurs",
+        "dog",
+        "dragons",
+        "drama",
+        "dungeonsdragons",
+        "dwarf",
+        "dystopian",
+        "elf",
+        "faith",
+        "fantasy",
+        "fox",
+        "futuristic",
+        "gambling",
+        "gamesworkshop",
+        "gothic",
+        "heist",
+        "hentai",
+        "historical",
+        "horror",
+        "horses",
+        "illuminati",
+        "jet",
+        "lego",
+        "lgbtq",
+        "lovecraftian",
+        "magic",
+        "mars",
+        "martialarts",
+        "mature",
+        "mechs",
+        "medieval",
+        "military",
+        "mystery",
+        "mythology",
+        "nature",
+        "naval",
+        "ninja",
+        "noir",
+        "nsfw",
+        "nudity",
+        "pirates",
+        "political",
+        "politics",
+        "postapocalyptic",
+        "psychologicalhorror",
+        "robots",
+        "romance",
+        "rome",
+        "sailing",
+        "science",
+        "scifi",
+        "sexualcontent",
+        "snow",
+        "space",
+        "spaceships",
+        "steampunk",
+        "submarine",
+        "superhero",
+        "supernatural",
+        "survivalhorror",
+        "tanks",
+        "timetravel",
+        "trains",
+        "transhumanism",
+        "underground",
+        "underwater",
+        "vampire",
+        "vikings",
+        "war",
+        "warhammer40k",
+        "werewolves",
+        "western",
+        "worldwari",
+        "worldwarii",
+        "zombies"
+      ],
+      "美术与呈现": [
+        "1980s",
+        "1990s",
+        "25d",
+        "2d",
+        "3d",
+        "8bitmusic",
+        "abstract",
+        "ambient",
+        "basedonanovel",
+        "cartoon",
+        "cartoony",
+        "cinematic",
+        "colorful",
+        "comicbook",
+        "electronic",
+        "electronicmusic",
+        "episodic",
+        "firstperson",
+        "fmv",
+        "fullmotionvideo",
+        "greatsoundtrack",
+        "handdrawn",
+        "instrumentalmusic",
+        "isometric",
+        "minimalist",
+        "music",
+        "oldschool",
+        "pixelgraphics",
+        "psychedelic",
+        "realistic",
+        "reboot",
+        "remake",
+        "retro",
+        "rockmusic",
+        "sequel",
+        "sidescroller",
+        "soundtrack",
+        "stylized",
+        "surreal",
+        "textbased",
+        "thirdperson",
+        "topdown",
+        "voxel"
+      ],
+      "玩家模式与支持": [
+        "3dvision",
+        "4playerlocal",
+        "6dof",
+        "asymmetricvr",
+        "asynchronousmultiplayer",
+        "competitive",
+        "controller",
+        "coop",
+        "coopcampaign",
+        "crossplatformmultiplayer",
+        "esports",
+        "foreign",
+        "intentionallyawkwardcontrols",
+        "lan",
+        "lancoop",
+        "localcoop",
+        "localmultiplayer",
+        "massivelymultiplayer",
+        "mmo",
+        "mmorpg",
+        "mouseonly",
+        "multiplayer",
+        "onlinecoop",
+        "pve",
+        "pvp",
+        "singleplayer",
+        "soundcard",
+        "splitscreen",
+        "teambased",
+        "touchfriendly",
+        "trackir",
+        "voicecontrol",
+        "vr"
+      ],
+      "制作与发行属性": [
+        "crowdfunded",
+        "earlyaccess",
+        "freetoplay",
+        "gamemaker",
+        "indie",
+        "kickstarter",
+        "rpgmaker"
+      ],
+      "氛围与叙事": [
+        "addictive",
+        "atmospheric",
+        "beautiful",
+        "blood",
+        "choicesmatter",
+        "classic",
+        "conversation",
+        "cozy",
+        "cultclassic",
+        "cute",
+        "dark",
+        "darkcomedy",
+        "darkhumor",
+        "difficult",
+        "dynamicnarration",
+        "emotional",
+        "epic",
+        "experience",
+        "experimental",
+        "familyfriendly",
+        "fastpaced",
+        "femaleprotagonist",
+        "funny",
+        "gore",
+        "immersive",
+        "jumpscare",
+        "linear",
+        "lorerich",
+        "masterpiece",
+        "memes",
+        "modern",
+        "multipleendings",
+        "narration",
+        "narrative",
+        "nonlinear",
+        "nostalgia",
+        "parody",
+        "philosophical",
+        "psychological",
+        "relaxing",
+        "replayvalue",
+        "satire",
+        "short",
+        "silentprotagonist",
+        "storyrich",
+        "thriller",
+        "tutorial",
+        "unforgiving",
+        "villainprotagonist",
+        "violent",
+        "wellwritten",
+        "wholesome"
+      ]
+    },
+    "non_game_tags": [
+      "360video",
+      "animationmodeling",
+      "audioproduction",
+      "benchmark",
+      "coding",
+      "designillustration",
+      "documentary",
+      "featurefilm",
+      "gamedevelopment",
+      "gaming",
+      "hardware",
+      "movie",
+      "photoediting",
+      "programming",
+      "software",
+      "softwaretraining",
+      "steammachine",
+      "utilities",
+      "videoproduction",
+      "webpublishing"
+    ],
+    "non_game_note": "只标注标签、不删除游戏；样本判据是 steam_appdetails.type。",
+    "unmapped_count": 0,
+    "unmapped_tags": []
+  },
+  "coverage": {
+    "2008": {
+      "games": 19,
+      "with_tags": 19,
+      "coverage_pct": 100.0,
+      "avg_tags_per_game": 12.68
+    },
+    "2009": {
+      "games": 46,
+      "with_tags": 46,
+      "coverage_pct": 100.0,
+      "avg_tags_per_game": 15.24
+    },
+    "2010": {
+      "games": 94,
+      "with_tags": 93,
+      "coverage_pct": 98.9,
+      "avg_tags_per_game": 13.24
+    },
+    "2011": {
+      "games": 123,
+      "with_tags": 122,
+      "coverage_pct": 99.2,
+      "avg_tags_per_game": 14.22
+    },
+    "2012": {
+      "games": 178,
+      "with_tags": 177,
+      "coverage_pct": 99.4,
+      "avg_tags_per_game": 14.61
+    },
+    "2013": {
+      "games": 292,
+      "with_tags": 286,
+      "coverage_pct": 97.9,
+      "avg_tags_per_game": 15.88
+    },
+    "2014": {
+      "games": 810,
+      "with_tags": 802,
+      "coverage_pct": 99.0,
+      "avg_tags_per_game": 13.41
+    },
+    "2015": {
+      "games": 1470,
+      "with_tags": 1461,
+      "coverage_pct": 99.4,
+      "avg_tags_per_game": 11.98
+    },
+    "2016": {
+      "games": 2259,
+      "with_tags": 2244,
+      "coverage_pct": 99.3,
+      "avg_tags_per_game": 11.28
+    },
+    "2017": {
+      "games": 3030,
+      "with_tags": 3006,
+      "coverage_pct": 99.2,
+      "avg_tags_per_game": 10.92
+    },
+    "2018": {
+      "games": 3567,
+      "with_tags": 3517,
+      "coverage_pct": 98.6,
+      "avg_tags_per_game": 11.13
+    },
+    "2019": {
+      "games": 3175,
+      "with_tags": 3112,
+      "coverage_pct": 98.0,
+      "avg_tags_per_game": 12.41
+    },
+    "2020": {
+      "games": 3767,
+      "with_tags": 3702,
+      "coverage_pct": 98.3,
+      "avg_tags_per_game": 15.51
+    },
+    "2021": {
+      "games": 4278,
+      "with_tags": 4007,
+      "coverage_pct": 93.7,
+      "avg_tags_per_game": 17.8
+    },
+    "2022": {
+      "games": 4556,
+      "with_tags": 4117,
+      "coverage_pct": 90.4,
+      "avg_tags_per_game": 17.88
+    },
+    "2023": {
+      "games": 5318,
+      "with_tags": 4653,
+      "coverage_pct": 87.5,
+      "avg_tags_per_game": 17.98
+    },
+    "2024": {
+      "games": 7831,
+      "with_tags": 6444,
+      "coverage_pct": 82.3,
+      "avg_tags_per_game": 17.79
+    },
+    "2025": {
+      "games": 10112,
+      "with_tags": 3476,
+      "coverage_pct": 34.4,
+      "avg_tags_per_game": 17.99
+    }
+  },
+  "line_tags": [
+    "Singleplayer",
+    "Indie",
+    "Casual",
+    "Action",
+    "2D",
+    "Adventure",
+    "3D",
+    "Atmospheric",
+    "Colorful",
+    "Puzzle",
+    "Simulation",
+    "Strategy"
+  ],
+  "heat_tags": [
+    "Singleplayer",
+    "Indie",
+    "Action",
+    "Casual",
+    "Adventure",
+    "2D",
+    "Puzzle",
+    "Atmospheric",
+    "Strategy",
+    "Colorful",
+    "3D",
+    "Simulation",
+    "Pixel Graphics",
+    "Story Rich",
+    "RPG",
+    "Cute",
+    "Exploration",
+    "Arcade",
+    "Fantasy",
+    "Funny",
+    "First-Person",
+    "Retro",
+    "Platformer",
+    "Family Friendly",
+    "Relaxing",
+    "Multiplayer"
+  ],
+  "tag_level": {
+    "note": "全部标签的排名（混合类型 / 机制 / 题材 / 画风 / 玩家模式 / 发行属性），只作标签趋势参考，**不可整体解释为类型增长排名**；类型结论请看 main_genre。",
+    "figure": "tag-share-lines.png",
+    "growth_main": [
+      {
+        "tag": "Colorful",
+        "base_pct": 6.98,
+        "end_pct": 21.99,
+        "delta_pp": 15.01,
+        "base_games": 56,
+        "end_games": 814
+      },
+      {
+        "tag": "Casual",
+        "base_pct": 35.16,
+        "end_pct": 47.89,
+        "delta_pp": 12.73,
+        "base_games": 282,
+        "end_games": 1773
+      },
+      {
+        "tag": "Cute",
+        "base_pct": 8.35,
+        "end_pct": 18.83,
+        "delta_pp": 10.47,
+        "base_games": 67,
+        "end_games": 697
+      },
+      {
+        "tag": "Pixel Graphics",
+        "base_pct": 13.59,
+        "end_pct": 19.29,
+        "delta_pp": 5.7,
+        "base_games": 109,
+        "end_games": 714
+      },
+      {
+        "tag": "Exploration",
+        "base_pct": 9.6,
+        "end_pct": 14.99,
+        "delta_pp": 5.39,
+        "base_games": 77,
+        "end_games": 555
+      },
+      {
+        "tag": "Cartoony",
+        "base_pct": 3.99,
+        "end_pct": 9.27,
+        "delta_pp": 5.28,
+        "base_games": 32,
+        "end_games": 343
+      },
+      {
+        "tag": "Arcade",
+        "base_pct": 13.34,
+        "end_pct": 18.21,
+        "delta_pp": 4.86,
+        "base_games": 107,
+        "end_games": 674
+      },
+      {
+        "tag": "Family Friendly",
+        "base_pct": 8.85,
+        "end_pct": 13.7,
+        "delta_pp": 4.84,
+        "base_games": 71,
+        "end_games": 507
+      },
+      {
+        "tag": "Singleplayer",
+        "base_pct": 61.1,
+        "end_pct": 65.72,
+        "delta_pp": 4.62,
+        "base_games": 490,
+        "end_games": 2433
+      },
+      {
+        "tag": "Simulation",
+        "base_pct": 16.21,
+        "end_pct": 20.21,
+        "delta_pp": 4.0,
+        "base_games": 130,
+        "end_games": 748
+      },
+      {
+        "tag": "Choices Matter",
+        "base_pct": 4.11,
+        "end_pct": 8.1,
+        "delta_pp": 3.99,
+        "base_games": 33,
+        "end_games": 300
+      },
+      {
+        "tag": "First-Person",
+        "base_pct": 10.6,
+        "end_pct": 14.45,
+        "delta_pp": 3.85,
+        "base_games": 85,
+        "end_games": 535
+      },
+      {
+        "tag": "Top-Down",
+        "base_pct": 5.74,
+        "end_pct": 9.16,
+        "delta_pp": 3.42,
+        "base_games": 46,
+        "end_games": 339
+      },
+      {
+        "tag": "Visual Novel",
+        "base_pct": 5.36,
+        "end_pct": 8.64,
+        "delta_pp": 3.28,
+        "base_games": 43,
+        "end_games": 320
+      },
+      {
+        "tag": "Old School",
+        "base_pct": 3.99,
+        "end_pct": 6.92,
+        "delta_pp": 2.93,
+        "base_games": 32,
+        "end_games": 256
+      }
+    ],
+    "growth_wide_window": [
+      {
+        "tag": "Colorful",
+        "base_pct": 6.98,
+        "end_pct": 25.9,
+        "delta_pp": 18.92,
+        "base_games": 56,
+        "end_games": 1669
+      },
+      {
+        "tag": "Singleplayer",
+        "base_pct": 61.1,
+        "end_pct": 78.8,
+        "delta_pp": 17.7,
+        "base_games": 490,
+        "end_games": 5078
+      },
+      {
+        "tag": "Exploration",
+        "base_pct": 9.6,
+        "end_pct": 25.22,
+        "delta_pp": 15.62,
+        "base_games": 77,
+        "end_games": 1625
+      },
+      {
+        "tag": "Cute",
+        "base_pct": 8.35,
+        "end_pct": 22.47,
+        "delta_pp": 14.12,
+        "base_games": 67,
+        "end_games": 1448
+      },
+      {
+        "tag": "Controller",
+        "base_pct": 6.23,
+        "end_pct": 17.33,
+        "delta_pp": 11.1,
+        "base_games": 50,
+        "end_games": 1117
+      },
+      {
+        "tag": "First-Person",
+        "base_pct": 10.6,
+        "end_pct": 20.5,
+        "delta_pp": 9.9,
+        "base_games": 85,
+        "end_games": 1321
+      },
+      {
+        "tag": "Casual",
+        "base_pct": 35.16,
+        "end_pct": 44.71,
+        "delta_pp": 9.55,
+        "base_games": 282,
+        "end_games": 2881
+      },
+      {
+        "tag": "Pixel Graphics",
+        "base_pct": 13.59,
+        "end_pct": 22.98,
+        "delta_pp": 9.39,
+        "base_games": 109,
+        "end_games": 1481
+      },
+      {
+        "tag": "2D",
+        "base_pct": 33.17,
+        "end_pct": 42.07,
+        "delta_pp": 8.9,
+        "base_games": 266,
+        "end_games": 2711
+      },
+      {
+        "tag": "Psychological Horror",
+        "base_pct": 4.36,
+        "end_pct": 12.94,
+        "delta_pp": 8.58,
+        "base_games": 35,
+        "end_games": 834
+      },
+      {
+        "tag": "Top-Down",
+        "base_pct": 5.74,
+        "end_pct": 14.14,
+        "delta_pp": 8.4,
+        "base_games": 46,
+        "end_games": 911
+      },
+      {
+        "tag": "Cartoony",
+        "base_pct": 3.99,
+        "end_pct": 11.95,
+        "delta_pp": 7.96,
+        "base_games": 32,
+        "end_games": 770
+      },
+      {
+        "tag": "Rogue-lite",
+        "base_pct": 4.36,
+        "end_pct": 11.75,
+        "delta_pp": 7.38,
+        "base_games": 35,
+        "end_games": 757
+      },
+      {
+        "tag": "Dark",
+        "base_pct": 4.24,
+        "end_pct": 11.34,
+        "delta_pp": 7.1,
+        "base_games": 34,
+        "end_games": 731
+      },
+      {
+        "tag": "Choices Matter",
+        "base_pct": 4.11,
+        "end_pct": 10.74,
+        "delta_pp": 6.62,
+        "base_games": 33,
+        "end_games": 692
+      }
+    ]
+  },
+  "main_genre": {
+    "dimension": "类型与子类型",
+    "line_tags": [
+      "Casual",
+      "Action",
+      "Adventure",
+      "Puzzle",
+      "Simulation",
+      "Strategy",
+      "RPG",
+      "Action-Adventure",
+      "Arcade",
+      "Platformer",
+      "Shooter",
+      "2D Platformer"
+    ],
+    "figure": "genre-share-lines.png",
+    "growth_figure": "genre-growth-bars.png",
+    "growth_main": [
+      {
+        "tag": "Casual",
+        "base_pct": 35.16,
+        "end_pct": 47.89,
+        "delta_pp": 12.73,
+        "base_games": 282,
+        "end_games": 1773
+      },
+      {
+        "tag": "Arcade",
+        "base_pct": 13.34,
+        "end_pct": 18.21,
+        "delta_pp": 4.86,
+        "base_games": 107,
+        "end_games": 674
+      },
+      {
+        "tag": "Simulation",
+        "base_pct": 16.21,
+        "end_pct": 20.21,
+        "delta_pp": 4.0,
+        "base_games": 130,
+        "end_games": 748
+      },
+      {
+        "tag": "Visual Novel",
+        "base_pct": 5.36,
+        "end_pct": 8.64,
+        "delta_pp": 3.28,
+        "base_games": 43,
+        "end_games": 320
+      },
+      {
+        "tag": "Puzzle",
+        "base_pct": 22.32,
+        "end_pct": 25.18,
+        "delta_pp": 2.86,
+        "base_games": 179,
+        "end_games": 932
+      },
+      {
+        "tag": "Survival",
+        "base_pct": 6.86,
+        "end_pct": 9.1,
+        "delta_pp": 2.25,
+        "base_games": 55,
+        "end_games": 337
+      },
+      {
+        "tag": "Rogue-lite",
+        "base_pct": 4.36,
+        "end_pct": 5.35,
+        "delta_pp": 0.98,
+        "base_games": 35,
+        "end_games": 198
+      },
+      {
+        "tag": "Shoot 'Em Up",
+        "base_pct": 4.86,
+        "end_pct": 5.4,
+        "delta_pp": 0.54,
+        "base_games": 39,
+        "end_games": 200
+      },
+      {
+        "tag": "FPS",
+        "base_pct": 6.11,
+        "end_pct": 6.24,
+        "delta_pp": 0.13,
+        "base_games": 49,
+        "end_games": 231
+      },
+      {
+        "tag": "Bullet Hell",
+        "base_pct": 4.86,
+        "end_pct": 4.65,
+        "delta_pp": -0.22,
+        "base_games": 39,
+        "end_games": 172
+      },
+      {
+        "tag": "Dungeon Crawler",
+        "base_pct": 4.24,
+        "end_pct": 3.54,
+        "delta_pp": -0.7,
+        "base_games": 34,
+        "end_games": 131
+      },
+      {
+        "tag": "Rogue-like",
+        "base_pct": 5.86,
+        "end_pct": 5.08,
+        "delta_pp": -0.78,
+        "base_games": 47,
+        "end_games": 188
+      },
+      {
+        "tag": "Stealth",
+        "base_pct": 4.36,
+        "end_pct": 3.24,
+        "delta_pp": -1.12,
+        "base_games": 35,
+        "end_games": 120
+      },
+      {
+        "tag": "Sandbox",
+        "base_pct": 6.11,
+        "end_pct": 4.89,
+        "delta_pp": -1.22,
+        "base_games": 49,
+        "end_games": 181
+      },
+      {
+        "tag": "Hack and Slash",
+        "base_pct": 5.11,
+        "end_pct": 3.62,
+        "delta_pp": -1.49,
+        "base_games": 41,
+        "end_games": 134
+      }
+    ],
+    "growth_wide_window": [
+      {
+        "tag": "Casual",
+        "base_pct": 35.16,
+        "end_pct": 44.71,
+        "delta_pp": 9.55,
+        "base_games": 282,
+        "end_games": 2881
+      },
+      {
+        "tag": "Rogue-lite",
+        "base_pct": 4.36,
+        "end_pct": 11.75,
+        "delta_pp": 7.38,
+        "base_games": 35,
+        "end_games": 757
+      },
+      {
+        "tag": "Rogue-like",
+        "base_pct": 5.86,
+        "end_pct": 12.1,
+        "delta_pp": 6.24,
+        "base_games": 47,
+        "end_games": 780
+      },
+      {
+        "tag": "Simulation",
+        "base_pct": 16.21,
+        "end_pct": 21.29,
+        "delta_pp": 5.08,
+        "base_games": 130,
+        "end_games": 1372
+      },
+      {
+        "tag": "Arcade",
+        "base_pct": 13.34,
+        "end_pct": 17.16,
+        "delta_pp": 3.82,
+        "base_games": 107,
+        "end_games": 1106
+      },
+      {
+        "tag": "Bullet Hell",
+        "base_pct": 4.86,
+        "end_pct": 7.42,
+        "delta_pp": 2.55,
+        "base_games": 39,
+        "end_games": 478
+      },
+      {
+        "tag": "Survival",
+        "base_pct": 6.86,
+        "end_pct": 9.25,
+        "delta_pp": 2.39,
+        "base_games": 55,
+        "end_games": 596
+      },
+      {
+        "tag": "Visual Novel",
+        "base_pct": 5.36,
+        "end_pct": 7.54,
+        "delta_pp": 2.18,
+        "base_games": 43,
+        "end_games": 486
+      },
+      {
+        "tag": "Puzzle",
+        "base_pct": 22.32,
+        "end_pct": 23.96,
+        "delta_pp": 1.64,
+        "base_games": 179,
+        "end_games": 1544
+      },
+      {
+        "tag": "Action RPG",
+        "base_pct": 5.61,
+        "end_pct": 6.94,
+        "delta_pp": 1.33,
+        "base_games": 45,
+        "end_games": 447
+      },
+      {
+        "tag": "Sandbox",
+        "base_pct": 6.11,
+        "end_pct": 6.53,
+        "delta_pp": 0.42,
+        "base_games": 49,
+        "end_games": 421
+      },
+      {
+        "tag": "Shoot 'Em Up",
+        "base_pct": 4.86,
+        "end_pct": 4.8,
+        "delta_pp": -0.07,
+        "base_games": 39,
+        "end_games": 309
+      },
+      {
+        "tag": "Hack and Slash",
+        "base_pct": 5.11,
+        "end_pct": 5.0,
+        "delta_pp": -0.12,
+        "base_games": 41,
+        "end_games": 322
+      },
+      {
+        "tag": "FPS",
+        "base_pct": 6.11,
+        "end_pct": 5.94,
+        "delta_pp": -0.17,
+        "base_games": 49,
+        "end_games": 383
+      },
+      {
+        "tag": "Dungeon Crawler",
+        "base_pct": 4.24,
+        "end_pct": 3.99,
+        "delta_pp": -0.25,
+        "base_games": 34,
+        "end_games": 257
+      }
+    ]
+  },
+  "growth_by_dimension": {
+    "机制与特色": {
+      "records": [
+        {
+          "tag": "Exploration",
+          "base_pct": 9.6,
+          "end_pct": 14.99,
+          "delta_pp": 5.39,
+          "base_games": 77,
+          "end_games": 555
+        },
+        {
+          "tag": "Building",
+          "base_pct": 3.74,
+          "end_pct": 4.84,
+          "delta_pp": 1.09,
+          "base_games": 30,
+          "end_games": 179
+        },
+        {
+          "tag": "Procedural Generation",
+          "base_pct": 4.99,
+          "end_pct": 4.92,
+          "delta_pp": -0.07,
+          "base_games": 40,
+          "end_games": 182
+        }
+      ],
+      "figure": "dimension-growth-feature.png"
+    },
+    "题材设定": {
+      "records": [
+        {
+          "tag": "Anime",
+          "base_pct": 9.48,
+          "end_pct": 12.24,
+          "delta_pp": 2.76,
+          "base_games": 76,
+          "end_games": 453
+        },
+        {
+          "tag": "Psychological Horror",
+          "base_pct": 4.36,
+          "end_pct": 6.43,
+          "delta_pp": 2.06,
+          "base_games": 35,
+          "end_games": 238
+        },
+        {
+          "tag": "Mystery",
+          "base_pct": 6.36,
+          "end_pct": 8.1,
+          "delta_pp": 1.74,
+          "base_games": 51,
+          "end_games": 300
+        },
+        {
+          "tag": "Survival Horror",
+          "base_pct": 3.74,
+          "end_pct": 4.38,
+          "delta_pp": 0.64,
+          "base_games": 30,
+          "end_games": 162
+        },
+        {
+          "tag": "Magic",
+          "base_pct": 4.11,
+          "end_pct": 4.19,
+          "delta_pp": 0.07,
+          "base_games": 33,
+          "end_games": 155
+        },
+        {
+          "tag": "Space",
+          "base_pct": 7.11,
+          "end_pct": 6.29,
+          "delta_pp": -0.81,
+          "base_games": 57,
+          "end_games": 233
+        },
+        {
+          "tag": "Horror",
+          "base_pct": 11.97,
+          "end_pct": 10.86,
+          "delta_pp": -1.11,
+          "base_games": 96,
+          "end_games": 402
+        },
+        {
+          "tag": "Comedy",
+          "base_pct": 10.97,
+          "end_pct": 9.86,
+          "delta_pp": -1.11,
+          "base_games": 88,
+          "end_games": 365
+        },
+        {
+          "tag": "Historical",
+          "base_pct": 3.99,
+          "end_pct": 2.84,
+          "delta_pp": -1.15,
+          "base_games": 32,
+          "end_games": 105
+        },
+        {
+          "tag": "Zombies",
+          "base_pct": 5.11,
+          "end_pct": 2.94,
+          "delta_pp": -2.17,
+          "base_games": 41,
+          "end_games": 109
+        },
+        {
+          "tag": "Sci-fi",
+          "base_pct": 15.34,
+          "end_pct": 12.02,
+          "delta_pp": -3.32,
+          "base_games": 123,
+          "end_games": 445
+        },
+        {
+          "tag": "Fantasy",
+          "base_pct": 17.96,
+          "end_pct": 13.24,
+          "delta_pp": -4.72,
+          "base_games": 144,
+          "end_games": 490
+        }
+      ],
+      "figure": "dimension-growth-theme.png"
+    },
+    "美术与呈现": {
+      "records": [
+        {
+          "tag": "Colorful",
+          "base_pct": 6.98,
+          "end_pct": 21.99,
+          "delta_pp": 15.01,
+          "base_games": 56,
+          "end_games": 814
+        },
+        {
+          "tag": "Pixel Graphics",
+          "base_pct": 13.59,
+          "end_pct": 19.29,
+          "delta_pp": 5.7,
+          "base_games": 109,
+          "end_games": 714
+        },
+        {
+          "tag": "Cartoony",
+          "base_pct": 3.99,
+          "end_pct": 9.27,
+          "delta_pp": 5.28,
+          "base_games": 32,
+          "end_games": 343
+        },
+        {
+          "tag": "First-Person",
+          "base_pct": 10.6,
+          "end_pct": 14.45,
+          "delta_pp": 3.85,
+          "base_games": 85,
+          "end_games": 535
+        },
+        {
+          "tag": "Top-Down",
+          "base_pct": 5.74,
+          "end_pct": 9.16,
+          "delta_pp": 3.42,
+          "base_games": 46,
+          "end_games": 339
+        },
+        {
+          "tag": "Old School",
+          "base_pct": 3.99,
+          "end_pct": 6.92,
+          "delta_pp": 2.93,
+          "base_games": 32,
+          "end_games": 256
+        },
+        {
+          "tag": "2D",
+          "base_pct": 33.17,
+          "end_pct": 35.74,
+          "delta_pp": 2.57,
+          "base_games": 266,
+          "end_games": 1323
+        },
+        {
+          "tag": "Retro",
+          "base_pct": 12.34,
+          "end_pct": 13.53,
+          "delta_pp": 1.19,
+          "base_games": 99,
+          "end_games": 501
+        },
+        {
+          "tag": "Third Person",
+          "base_pct": 9.23,
+          "end_pct": 8.4,
+          "delta_pp": -0.83,
+          "base_games": 74,
+          "end_games": 311
+        },
+        {
+          "tag": "Side Scroller",
+          "base_pct": 8.35,
+          "end_pct": 7.37,
+          "delta_pp": -0.98,
+          "base_games": 67,
+          "end_games": 273
+        },
+        {
+          "tag": "Isometric",
+          "base_pct": 4.49,
+          "end_pct": 3.08,
+          "delta_pp": -1.41,
+          "base_games": 36,
+          "end_games": 114
+        },
+        {
+          "tag": "Great Soundtrack",
+          "base_pct": 26.31,
+          "end_pct": 8.73,
+          "delta_pp": -17.58,
+          "base_games": 211,
+          "end_games": 323
+        }
+      ],
+      "figure": "dimension-growth-visual.png"
+    },
+    "玩家模式与支持": {
+      "records": [
+        {
+          "tag": "Singleplayer",
+          "base_pct": 61.1,
+          "end_pct": 65.72,
+          "delta_pp": 4.62,
+          "base_games": 490,
+          "end_games": 2433
+        },
+        {
+          "tag": "Local Multiplayer",
+          "base_pct": 6.23,
+          "end_pct": 6.48,
+          "delta_pp": 0.25,
+          "base_games": 50,
+          "end_games": 240
+        },
+        {
+          "tag": "Controller",
+          "base_pct": 6.23,
+          "end_pct": 6.4,
+          "delta_pp": 0.17,
+          "base_games": 50,
+          "end_games": 237
+        },
+        {
+          "tag": "Online Co-Op",
+          "base_pct": 5.86,
+          "end_pct": 3.62,
+          "delta_pp": -2.24,
+          "base_games": 47,
+          "end_games": 134
+        },
+        {
+          "tag": "Local Co-Op",
+          "base_pct": 7.98,
+          "end_pct": 5.24,
+          "delta_pp": -2.74,
+          "base_games": 64,
+          "end_games": 194
+        },
+        {
+          "tag": "Co-op",
+          "base_pct": 13.47,
+          "end_pct": 7.78,
+          "delta_pp": -5.69,
+          "base_games": 108,
+          "end_games": 288
+        },
+        {
+          "tag": "Multiplayer",
+          "base_pct": 21.45,
+          "end_pct": 13.83,
+          "delta_pp": -7.62,
+          "base_games": 172,
+          "end_games": 512
+        }
+      ],
+      "figure": "dimension-growth-players.png"
+    },
+    "制作与发行属性": {
+      "records": [
+        {
+          "tag": "Free to Play",
+          "base_pct": 4.86,
+          "end_pct": 7.19,
+          "delta_pp": 2.32,
+          "base_games": 39,
+          "end_games": 266
+        },
+        {
+          "tag": "Indie",
+          "base_pct": 76.81,
+          "end_pct": 70.31,
+          "delta_pp": -6.49,
+          "base_games": 616,
+          "end_games": 2603
+        }
+      ],
+      "figure": "dimension-growth-production.png"
+    },
+    "氛围与叙事": {
+      "records": [
+        {
+          "tag": "Cute",
+          "base_pct": 8.35,
+          "end_pct": 18.83,
+          "delta_pp": 10.47,
+          "base_games": 67,
+          "end_games": 697
+        },
+        {
+          "tag": "Family Friendly",
+          "base_pct": 8.85,
+          "end_pct": 13.7,
+          "delta_pp": 4.84,
+          "base_games": 71,
+          "end_games": 507
+        },
+        {
+          "tag": "Choices Matter",
+          "base_pct": 4.11,
+          "end_pct": 8.1,
+          "delta_pp": 3.99,
+          "base_games": 33,
+          "end_games": 300
+        },
+        {
+          "tag": "Funny",
+          "base_pct": 13.97,
+          "end_pct": 16.75,
+          "delta_pp": 2.78,
+          "base_games": 112,
+          "end_games": 620
+        },
+        {
+          "tag": "Atmospheric",
+          "base_pct": 21.07,
+          "end_pct": 23.37,
+          "delta_pp": 2.29,
+          "base_games": 169,
+          "end_games": 865
+        },
+        {
+          "tag": "Dark",
+          "base_pct": 4.24,
+          "end_pct": 6.37,
+          "delta_pp": 2.14,
+          "base_games": 34,
+          "end_games": 236
+        },
+        {
+          "tag": "Story Rich",
+          "base_pct": 17.71,
+          "end_pct": 19.1,
+          "delta_pp": 1.39,
+          "base_games": 142,
+          "end_games": 707
+        },
+        {
+          "tag": "Replay Value",
+          "base_pct": 4.99,
+          "end_pct": 5.27,
+          "delta_pp": 0.28,
+          "base_games": 40,
+          "end_games": 195
+        },
+        {
+          "tag": "Fast-Paced",
+          "base_pct": 4.74,
+          "end_pct": 4.78,
+          "delta_pp": 0.04,
+          "base_games": 38,
+          "end_games": 177
+        },
+        {
+          "tag": "Gore",
+          "base_pct": 6.98,
+          "end_pct": 6.46,
+          "delta_pp": -0.53,
+          "base_games": 56,
+          "end_games": 239
+        },
+        {
+          "tag": "Short",
+          "base_pct": 6.36,
+          "end_pct": 4.59,
+          "delta_pp": -1.77,
+          "base_games": 51,
+          "end_games": 170
+        },
+        {
+          "tag": "Classic",
+          "base_pct": 5.74,
+          "end_pct": 1.76,
+          "delta_pp": -3.98,
+          "base_games": 46,
+          "end_games": 65
+        },
+        {
+          "tag": "Difficult",
+          "base_pct": 17.58,
+          "end_pct": 13.26,
+          "delta_pp": -4.32,
+          "base_games": 141,
+          "end_games": 491
+        },
+        {
+          "tag": "Female Protagonist",
+          "base_pct": 16.96,
+          "end_pct": 9.16,
+          "delta_pp": -7.8,
+          "base_games": 136,
+          "end_games": 339
+        }
+      ],
+      "figure": "dimension-growth-mood.png"
+    }
+  },
+  "official_genre": {
+    "source": "steam_appdetails.valve_genres",
+    "figure": "official-genre-compare.png",
+    "picked": [
+      "Indie",
+      "Casual",
+      "Action",
+      "Adventure",
+      "Simulation",
+      "Strategy",
+      "RPG",
+      "Free To Play"
+    ],
+    "coverage_pct": {
+      "2014": 99.9,
+      "2015": 100.0,
+      "2016": 100.0,
+      "2017": 99.8,
+      "2018": 99.9,
+      "2019": 100.0,
+      "2020": 99.9,
+      "2021": 100.0,
+      "2022": 100.0,
+      "2023": 99.9,
+      "2024": 99.9,
+      "2025": 99.9
+    },
+    "share_pct": {
+      "2014": {
+        "Indie": 75.8,
+        "Casual": 26.9,
+        "Action": 48.8,
+        "Adventure": 41.0,
+        "Simulation": 12.5,
+        "Strategy": 23.3,
+        "RPG": 22.7,
+        "Free To Play": 3.9
+      },
+      "2015": {
+        "Indie": 82.2,
+        "Casual": 28.1,
+        "Action": 49.6,
+        "Adventure": 40.9,
+        "Simulation": 14.9,
+        "Strategy": 22.0,
+        "RPG": 21.6,
+        "Free To Play": 4.4
+      },
+      "2016": {
+        "Indie": 79.9,
+        "Casual": 36.9,
+        "Action": 48.6,
+        "Adventure": 39.0,
+        "Simulation": 17.0,
+        "Strategy": 19.5,
+        "RPG": 15.7,
+        "Free To Play": 4.4
+      },
+      "2017": {
+        "Indie": 81.7,
+        "Casual": 41.8,
+        "Action": 48.0,
+        "Adventure": 40.5,
+        "Simulation": 16.6,
+        "Strategy": 18.5,
+        "RPG": 14.7,
+        "Free To Play": 5.5
+      },
+      "2018": {
+        "Indie": 84.6,
+        "Casual": 47.1,
+        "Action": 44.6,
+        "Adventure": 39.9,
+        "Simulation": 18.8,
+        "Strategy": 18.2,
+        "RPG": 15.9,
+        "Free To Play": 4.8
+      },
+      "2019": {
+        "Indie": 84.1,
+        "Casual": 41.7,
+        "Action": 47.2,
+        "Adventure": 45.2,
+        "Simulation": 18.4,
+        "Strategy": 21.0,
+        "RPG": 19.1,
+        "Free To Play": 6.0
+      },
+      "2020": {
+        "Indie": 83.3,
+        "Casual": 45.2,
+        "Action": 46.8,
+        "Adventure": 45.2,
+        "Simulation": 19.8,
+        "Strategy": 20.4,
+        "RPG": 16.9,
+        "Free To Play": 7.3
+      },
+      "2021": {
+        "Indie": 82.9,
+        "Casual": 48.4,
+        "Action": 46.8,
+        "Adventure": 48.1,
+        "Simulation": 20.3,
+        "Strategy": 21.4,
+        "RPG": 18.8,
+        "Free To Play": 7.0
+      },
+      "2022": {
+        "Indie": 82.6,
+        "Casual": 48.8,
+        "Action": 48.8,
+        "Adventure": 48.4,
+        "Simulation": 22.2,
+        "Strategy": 24.8,
+        "RPG": 19.8,
+        "Free To Play": 8.8
+      },
+      "2023": {
+        "Indie": 84.9,
+        "Casual": 51.7,
+        "Action": 51.8,
+        "Adventure": 49.6,
+        "Simulation": 23.8,
+        "Strategy": 25.2,
+        "RPG": 21.8,
+        "Free To Play": 8.4
+      },
+      "2024": {
+        "Indie": 91.3,
+        "Casual": 57.1,
+        "Action": 51.4,
+        "Adventure": 50.1,
+        "Simulation": 26.8,
+        "Strategy": 24.7,
+        "RPG": 21.9,
+        "Free To Play": 15.0
+      }
+    },
+    "note": "官方类型粗粒度且与本项目细分标签口径不同，仅作对照；不默认官方类型优于细分标签，两者共用同一固定分母。"
+  },
+  "robustness": {
+    "tags": [
+      "3D",
+      "Indie",
+      "Great Soundtrack",
+      "Colorful",
+      "Singleplayer",
+      "Action-Adventure"
+    ],
+    "free_share_by_year_pct": {
+      "2008": {
+        "all_games": 5.3,
+        "tagged_games": 5.3
+      },
+      "2009": {
+        "all_games": 4.3,
+        "tagged_games": 4.3
+      },
+      "2010": {
+        "all_games": 4.3,
+        "tagged_games": 4.3
+      },
+      "2011": {
+        "all_games": 6.5,
+        "tagged_games": 6.6
+      },
+      "2012": {
+        "all_games": 2.8,
+        "tagged_games": 2.3
+      },
+      "2013": {
+        "all_games": 4.5,
+        "tagged_games": 4.5
+      },
+      "2014": {
+        "all_games": 5.8,
+        "tagged_games": 5.7
+      },
+      "2015": {
+        "all_games": 7.3,
+        "tagged_games": 7.3
+      },
+      "2016": {
+        "all_games": 7.2,
+        "tagged_games": 7.3
+      },
+      "2017": {
+        "all_games": 9.8,
+        "tagged_games": 9.8
+      },
+      "2018": {
+        "all_games": 8.4,
+        "tagged_games": 8.5
+      },
+      "2019": {
+        "all_games": 10.3,
+        "tagged_games": 10.5
+      },
+      "2020": {
+        "all_games": 11.0,
+        "tagged_games": 11.1
+      },
+      "2021": {
+        "all_games": 10.4,
+        "tagged_games": 6.2
+      },
+      "2022": {
+        "all_games": 11.7,
+        "tagged_games": 5.2
+      },
+      "2023": {
+        "all_games": 11.2,
+        "tagged_games": 4.5
+      },
+      "2024": {
+        "all_games": 13.7,
+        "tagged_games": 4.1
+      },
+      "2025": {
+        "all_games": 10.1,
+        "tagged_games": 2.3
+      }
+    },
+    "note": "缺失标签的游戏以免费游戏为主；上表是免费游戏在「全部游戏」与「有标签游戏」中的占比落差，落差越大说明缺失越非随机。「仅付费游戏口径方向一致」只说明趋势对剔除免费游戏这一项样本限制稳健，不能证明已排除所有缺失偏差。"
+  },
+  "dimension_coverage": {
+    "2014": {
+      "类型与子类型": 100.0,
+      "机制与特色": 33.7,
+      "题材设定": 66.6,
+      "美术与呈现": 70.9,
+      "玩家模式与支持": 70.2,
+      "制作与发行属性": 78.1,
+      "氛围与叙事": 64.1,
+      "其他": 0.0,
+      "非游戏标签": 1.0
+    },
+    "2015": {
+      "类型与子类型": 99.6,
+      "机制与特色": 31.0,
+      "题材设定": 62.4,
+      "美术与呈现": 64.8,
+      "玩家模式与支持": 58.2,
+      "制作与发行属性": 82.1,
+      "氛围与叙事": 59.5,
+      "其他": 0.0,
+      "非游戏标签": 1.2
+    },
+    "2016": {
+      "类型与子类型": 99.6,
+      "机制与特色": 27.1,
+      "题材设定": 55.7,
+      "美术与呈现": 58.4,
+      "玩家模式与支持": 56.6,
+      "制作与发行属性": 81.6,
+      "氛围与叙事": 56.2,
+      "其他": 0.0,
+      "非游戏标签": 0.9
+    },
+    "2017": {
+      "类型与子类型": 99.3,
+      "机制与特色": 26.3,
+      "题材设定": 50.6,
+      "美术与呈现": 54.6,
+      "玩家模式与支持": 54.7,
+      "制作与发行属性": 84.6,
+      "氛围与叙事": 55.1,
+      "其他": 0.0,
+      "非游戏标签": 1.0
+    },
+    "2018": {
+      "类型与子类型": 99.0,
+      "机制与特色": 27.9,
+      "题材设定": 50.2,
+      "美术与呈现": 56.2,
+      "玩家模式与支持": 55.2,
+      "制作与发行属性": 84.5,
+      "氛围与叙事": 57.7,
+      "其他": 0.0,
+      "非游戏标签": 1.2
+    },
+    "2019": {
+      "类型与子类型": 99.3,
+      "机制与特色": 34.4,
+      "题材设定": 56.9,
+      "美术与呈现": 62.4,
+      "玩家模式与支持": 59.1,
+      "制作与发行属性": 82.3,
+      "氛围与叙事": 62.6,
+      "其他": 0.0,
+      "非游戏标签": 1.4
+    },
+    "2020": {
+      "类型与子类型": 99.9,
+      "机制与特色": 51.8,
+      "题材设定": 69.8,
+      "美术与呈现": 83.6,
+      "玩家模式与支持": 77.0,
+      "制作与发行属性": 74.2,
+      "氛围与叙事": 78.4,
+      "其他": 0.0,
+      "非游戏标签": 1.8
+    },
+    "2021": {
+      "类型与子类型": 99.9,
+      "机制与特色": 67.5,
+      "题材设定": 79.0,
+      "美术与呈现": 95.6,
+      "玩家模式与支持": 85.9,
+      "制作与发行属性": 58.7,
+      "氛围与叙事": 85.3,
+      "其他": 0.0,
+      "非游戏标签": 2.6
+    },
+    "2022": {
+      "类型与子类型": 100.0,
+      "机制与特色": 68.3,
+      "题材设定": 80.1,
+      "美术与呈现": 96.9,
+      "玩家模式与支持": 88.1,
+      "制作与发行属性": 54.3,
+      "氛围与叙事": 85.1,
+      "其他": 0.0,
+      "非游戏标签": 2.7
+    },
+    "2023": {
+      "类型与子类型": 100.0,
+      "机制与特色": 70.5,
+      "题材设定": 81.5,
+      "美术与呈现": 96.5,
+      "玩家模式与支持": 88.1,
+      "制作与发行属性": 51.5,
+      "氛围与叙事": 83.1,
+      "其他": 0.0,
+      "非游戏标签": 2.9
+    },
+    "2024": {
+      "类型与子类型": 99.9,
+      "机制与特色": 69.6,
+      "题材设定": 82.6,
+      "美术与呈现": 97.1,
+      "玩家模式与支持": 88.6,
+      "制作与发行属性": 54.7,
+      "氛围与叙事": 83.0,
+      "其他": 0.0,
+      "非游戏标签": 3.0
+    }
+  },
+  "dimension_note": "维度覆盖率 = 该年该维度至少命中一个标签的游戏 ÷ 该年有效标签游戏数，所有维度共用同一固定样本与分母；主维度接近 100% 属正常（几乎每款游戏都有类型标签），因此它的内部结构由图 genre-share-lines.png 与 genre-growth-bars.png 呈现。",
+  "caveats": [
+    "标签是抓取当时的 Steam 用户标签，不是当年标签；库中无当年的玩家数、销量或评论历史记录，不能用它判断某游戏在当年是否流行，也不能用现今拥有量反推历史热度。",
+    "标签票数描述的是游戏属性，不等于「玩家更愿意玩」；本分析支持的结论只是抓取时标签所描述的不同发售年份游戏结构差异，占比上升不能直接证明历史热度上升。",
+    "2026 年未纳入分析帧（口径 release_date < 2026-01-01）且尚未结束，其年度数量不可与完整年份直接比较。",
+    "各年标签覆盖率不同，2021 年起逐年下降、2025 年不足 35%，覆盖率低的年份占比不可与覆盖率高的年份直接比较。",
+    "多标签游戏在每个标签上重复计入，各标签占比之和大于 100%，不构成互斥分割。",
+    "「仅付费游戏口径方向一致」只说明趋势对剔除免费游戏这一项样本限制稳健，不能证明已排除所有缺失偏差。",
+    "kind='theme' 是入库标记而非语义分类；类型 / 机制 / 题材等区分只由本脚本带版本的 DIMENSIONS 映射给出。"
+  ]
+}

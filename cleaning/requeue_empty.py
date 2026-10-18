@@ -60,20 +60,25 @@ REQUEUE = text(
 def main() -> None:
     parser = argparse.ArgumentParser(description="把终态任务放回队列重新核验")
     parser.add_argument(
-        "--source", default=None,
+        "--source",
+        default=None,
         help="只处理这些源（逗号分隔）；默认全部源",
     )
     parser.add_argument(
-        "--status", default="empty",
+        "--status",
+        default="empty",
         help="要复核的终态（逗号分隔），默认 empty；"
-             "exhausted 也可一起传——那类「重试耗尽」同样是可复核的终态",
+        "exhausted 也可一起传——那类「重试耗尽」同样是可复核的终态",
     )
     parser.add_argument(
-        "--limit", type=int, default=None,
+        "--limit",
+        type=int,
+        default=None,
         help="每个源最多重置多少条；默认不限",
     )
     parser.add_argument(
-        "--apply", action="store_true",
+        "--apply",
+        action="store_true",
         help="真的写库；不加这个参数只统计（dry-run）",
     )
     args = parser.parse_args()
@@ -114,7 +119,9 @@ def main() -> None:
                     {"source": source, "appid": appid, "statuses": statuses},
                 ).rowcount
     logger.info("已把 %d 条终态任务放回队列（worker 下一轮会自动重验）", moved)
-    print(f"\n✓ 已重置 {moved:,} 条。启动 worker 即可重验：uv run python -m cleaning.worker")
+    print(
+        f"\n✓ 已重置 {moved:,} 条。启动 worker 即可重验：uv run python -m cleaning.worker"
+    )
 
 
 if __name__ == "__main__":

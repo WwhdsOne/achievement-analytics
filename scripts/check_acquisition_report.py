@@ -14,26 +14,44 @@ def main() -> None:
     checks = []
     with sync_playwright() as tool:
         browser = tool.chromium.launch(
-            executable_path="/Applications/Google Chrome.app/Contents/MacOS/Google Chrome", headless=True,
+            executable_path="/Applications/Google Chrome.app/Contents/MacOS/Google Chrome",
+            headless=True,
         )
-        for name, width, height in (("desktop", 1440, 960), ("laptop", 1280, 720), ("mobile", 390, 844)):
+        for name, width, height in (
+            ("desktop", 1440, 960),
+            ("laptop", 1280, 720),
+            ("mobile", 390, 844),
+        ):
             page = browser.new_page(viewport={"width": width, "height": height})
             errors = []
             page.on("pageerror", lambda error: errors.append(str(error)))
-            page.goto((root / "docs/data-acquisition-report.html").as_uri(), wait_until="networkidle")
+            page.goto(
+                (root / "docs/data-acquisition-report.html").as_uri(),
+                wait_until="networkidle",
+            )
             for i in range(7):
                 page.select_option("#pageSelect", str(i))
-                page.wait_for_function("i => Number(document.body.dataset.page) === i", arg=i)
+                page.wait_for_function(
+                    "i => Number(document.body.dataset.page) === i", arg=i
+                )
                 assert page.locator(".slide:visible").count() == 1
                 assert page.locator(".slide:visible h1").inner_text().strip()
-                assert not page.evaluate("document.documentElement.scrollWidth > innerWidth + 1")
-                assert page.locator('.slide:visible img').evaluate_all(
+                assert not page.evaluate(
+                    "document.documentElement.scrollWidth > innerWidth + 1"
+                )
+                assert page.locator(".slide:visible img").evaluate_all(
                     "images => images.every(image => image.complete && image.naturalWidth > 0)"
                 )
                 if name != "mobile":
-                    assert not page.evaluate("document.documentElement.scrollHeight > innerHeight + 1"), f"{name}/{i} vertical overflow"
-                page.screenshot(path=str(output / f"{name}-{i+1:02}.png"), full_page=True, animations="disabled")
-                checks.append({"viewport": name, "page": i+1})
+                    assert not page.evaluate(
+                        "document.documentElement.scrollHeight > innerHeight + 1"
+                    ), f"{name}/{i} vertical overflow"
+                page.screenshot(
+                    path=str(output / f"{name}-{i + 1:02}.png"),
+                    full_page=True,
+                    animations="disabled",
+                )
+                checks.append({"viewport": name, "page": i + 1})
             page.select_option("#pageSelect", "0")
             page.get_by_role("button", name="下一页", exact=True).click()
             assert page.locator("#pageNumber").inner_text() == "02 / 07"
@@ -44,7 +62,12 @@ def main() -> None:
             assert not errors, errors
             page.close()
         browser.close()
-    print(json.dumps({"checks": len(checks), "screenshots": str(output), "page_errors": 0}, ensure_ascii=False))
+    print(
+        json.dumps(
+            {"checks": len(checks), "screenshots": str(output), "page_errors": 0},
+            ensure_ascii=False,
+        )
+    )
 
 
 if __name__ == "__main__":

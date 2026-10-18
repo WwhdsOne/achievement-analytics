@@ -18,7 +18,7 @@
 --          FROM information_schema.columns WHERE table_name='games';
 --   6. 数据源：Steam 商店搜索（全量枚举，bulk）/ Steam appdetails / 全局成就完成率 /
 --      Steam 社区成就页 / SteamSpy / RAWG。**源的清单与限速配额都在 sources 表里**，
---      加源只改那张表。
+--      加源须同时更新 sources 与 crawler/registry.py。
 --      **IGDB 已于 2026-09-15 放弃**：它需 Twitch OAuth2，而 Twitch 两步验证在国内
 --      手机号上走不通；其时长（RAWG playtime 已覆盖）、评分（RAWG metacritic 已覆盖）
 --      价值已由 RAWG 承接，只剩系列归属属加分项，故整表移除。
@@ -95,6 +95,28 @@ CREATE TABLE IF NOT EXISTS rawg_games (
     status_dropped INTEGER,
     status_playing INTEGER,
     fetched_at     TIMESTAMPTZ NOT NULL DEFAULT now()
+);
+
+-- ── 1.4b HowLongToBeat 时长分解（Kaggle 快照 CSV 导入，非在线抓取）──────────
+-- RAWG 的 playtime 只有一个平均值；本表提供 main（主线）/ extra（主线+支线）/
+-- completionist（完美通关）三类分解时长，是「游戏时长结构」的更细测量。
+--
+-- 数据来源是静态 CSV 快照（all_games_PC.csv，全平台 PC 游戏 6.9 万款），
+-- **没有 appid**，只能按游戏名匹配 games 表后导入（见 cleaning/import_hltb.py）。
+-- 因此天然覆盖不全：CSV 里有大量前 Steam 时代、无 Steam 成就的老游戏，
+-- 它们根本不在 games 表里（2026-10-15 实测有时长的行能匹配约 36%）。
+-- match_method 记录每行怎么匹配上的，供人工复核与误差评估。
+
+CREATE TABLE IF NOT EXISTS hltb_games (
+    appid               INTEGER      PRIMARY KEY REFERENCES games (appid) ON DELETE CASCADE,
+    hltb_id             INTEGER,
+    name                TEXT,
+    main_hours          NUMERIC(7, 2),
+    extra_hours         NUMERIC(7, 2),
+    completionist_hours NUMERIC(7, 2),
+    people_polled       INTEGER,
+    match_method        TEXT         NOT NULL CHECK (match_method IN ('exact', 'relaxed')),
+    imported_at         TIMESTAMPTZ  NOT NULL DEFAULT now()
 );
 
 -- ── 1.5 成就（一行一成就）───────────────────────────────────────────────────
@@ -508,14 +530,19 @@ SELECT
     d.ach_count,
     d.median_percent,
     d.p10_percent,
-    d.hard_ratio
+    d.hard_ratio,
+    h.main_hours          AS hltb_main_hours,
+    h.extra_hours         AS hltb_extra_hours,
+    h.completionist_hours AS hltb_completionist_hours,
+    h.people_polled       AS hltb_people_polled
 FROM games g
 LEFT JOIN steam_appdetails   a  USING (appid)
 LEFT JOIN steamspy_games     s  USING (appid)
 LEFT JOIN rawg_games         r  USING (appid)
 LEFT JOIN store_search_games ss USING (appid)
 LEFT JOIN game_engagement    ge USING (appid)
-LEFT JOIN game_difficulty    d  USING (appid);
+LEFT JOIN game_difficulty    d  USING (appid)
+LEFT JOIN hltb_games         h  USING (appid);
 
 -- ════════════════════════════════════════════════════════════════════════════
 -- 四、表注释
@@ -538,6 +565,10 @@ COMMENT ON TABLE rawg_games IS
     'RAWG（需 key）：评分（metacritic / rating）+ **时长（playtime）** + '
     '**玩家进度分布（status_*）**。后两者是本项目唯一的时长与弃坑率来源；'
     '题材标签与 SteamSpy 高度重叠且更脏，只作补充。';
+COMMENT ON TABLE hltb_games IS
+    'HowLongToBeat 时长分解（主线/支线/完美通关）。来自静态 Kaggle CSV 快照，'
+    '无 appid，按游戏名匹配 games 表后导入（cleaning/import_hltb.py）；'
+    'match_method 记录匹配方式，老游戏不在 games 表导致覆盖不全属预期。';
 COMMENT ON TABLE achievements IS
     '成就（一行一成就）。position 是「全局完成率接口」与「社区成就页」的按位对齐序号——'
     '两源成就顺序一致（2026-09-15 实测），按位 zip 即得到 api_name→display_name 映射。';
@@ -623,6 +654,20 @@ COMMENT ON COLUMN rawg_games.status_toplay IS 'RAWG 用户标记「待玩」的�
 COMMENT ON COLUMN rawg_games.status_dropped IS 'RAWG 用户标记「已弃坑」的人数。**「玩家不愿意玩」最直接的信号**';
 COMMENT ON COLUMN rawg_games.status_playing IS 'RAWG 用户标记「正在玩」的人数';
 COMMENT ON COLUMN rawg_games.fetched_at IS '本行数据的抓取时间';
+
+-- hltb_games
+COMMENT ON COLUMN hltb_games.appid IS '外键 → games.appid（由游戏名匹配得到，见 match_method）';
+COMMENT ON COLUMN hltb_games.hltb_id IS 'HLTB 站内游戏 id（CSV 的 id 列），溯源用';
+COMMENT ON COLUMN hltb_games.name IS 'CSV 侧的游戏原名（匹配凭据，保留以便人工核对）';
+COMMENT ON COLUMN hltb_games.main_hours IS '主线通关时长（小时，玩家提交中位数）。NULL=该游戏无人提交';
+COMMENT ON COLUMN hltb_games.extra_hours IS '主线+支线时长（小时）';
+COMMENT ON COLUMN hltb_games.completionist_hours IS '完美通关（全收集）时长（小时）';
+COMMENT ON COLUMN hltb_games.people_polled IS '提交时长数据的玩家数——三类时长的**样本量**，'
+    '判断时长可信度要看它（个位数提交的时长噪声很大）';
+COMMENT ON COLUMN hltb_games.match_method IS
+    '匹配方式：exact=规范化（小写/去商标符/压空白）后精确相等；'
+    'relaxed=再去标点与冠词后**唯一**命中（防歧义）。relaxed 行建议抽查';
+COMMENT ON COLUMN hltb_games.imported_at IS '导入时刻（静态快照，非在线抓取，无 fetched_at 语义）';
 
 -- achievements
 COMMENT ON COLUMN achievements.appid IS '外键 → games.appid';
@@ -739,6 +784,10 @@ COMMENT ON COLUMN games_full.ach_count IS '成就总数';
 COMMENT ON COLUMN games_full.median_percent IS '全局完成率中位数';
 COMMENT ON COLUMN games_full.p10_percent IS '全局完成率 P10 分位';
 COMMENT ON COLUMN games_full.hard_ratio IS '极难成就占比（完成率 < 10%）';
+COMMENT ON COLUMN games_full.hltb_main_hours IS 'HLTB 主线时长（小时），名称匹配导入，覆盖不全';
+COMMENT ON COLUMN games_full.hltb_extra_hours IS 'HLTB 主线+支线时长（小时）';
+COMMENT ON COLUMN games_full.hltb_completionist_hours IS 'HLTB 完美通关时长（小时）';
+COMMENT ON COLUMN games_full.hltb_people_polled IS 'HLTB 时长样本量（提交人数）';
 
 -- ════════════════════════════════════════════════════════════════════════════
 -- 八、抓取覆盖与进度：回答「还缺什么 / 下一步该抓谁 / 跑了多少」
@@ -811,6 +860,7 @@ SELECT
     max(t.updated_at)                                       AS last_activity_at
 FROM sources s
 LEFT JOIN fetch_tasks t ON t.source = s.source
+WHERE s.kind = 'per_game'
 GROUP BY s.source, s.kind, s.daily_quota, s.monthly_quota;
 
 -- 配额余额：日限与月限都要看（SteamSpy 是日限 1000，RAWG 是月限 20000）

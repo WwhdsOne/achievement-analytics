@@ -1,0 +1,49 @@
+﻿group,appid,name_en,name_zh,local_id,display_name,sequence_position,source_checkpoint_index,source_checkpoint_order,stage,route,confidence,requires_start,rate,normalized_rate,node_fraction,is_first,is_middle,is_end
+1,1593500,God of War,God of War,2,The Journey Begins,1,0,1,start,common,0.9,false,0.87,1.0,0.0,true,false,false
+1,1593500,God of War,God of War,4,A New Friend,2,1,2,early,common,0.8,false,0.754,0.8666666666666667,0.1,false,false,false
+1,1593500,God of War,God of War,6,Feels Like Home,3,2,3,early,common,0.7,false,0.631,0.725287356321839,0.2,false,false,false
+1,1593500,God of War,God of War,8,Dragon Slayer,4,3,4,middle,common,0.9,false,0.5760000000000001,0.6620689655172415,0.3,false,false,false
+1,1593500,God of War,God of War,9,Troubling Consequences,5,4,5,middle,common,0.8,false,0.539,0.6195402298850575,0.4,false,false,false
+1,1593500,God of War,God of War,10,"Hello, Old Friend",6,5,6,middle,common,0.8,false,0.532,0.6114942528735633,0.5,false,true,false
+1,1593500,God of War,God of War,11,Promise Fulfilled,7,6,7,middle,common,0.8,false,0.528,0.6068965517241379,0.6,false,false,false
+1,1593500,God of War,God of War,12,Round 2,8,7,8,middle,common,0.7,false,0.505,0.5804597701149425,0.7,false,false,false
+1,1593500,God of War,God of War,13,Past Haunts,9,8,9,late,common,0.8,false,0.501,0.5758620689655173,0.8,false,false,false
+1,1593500,God of War,God of War,15,Twilight Beckons,10,9,10,late,common,0.8,false,0.475,0.5459770114942528,0.9,false,false,false
+1,1593500,God of War,God of War,16,Last Wish,11,10,11,end,common,0.9,false,0.469,0.5390804597701149,1.0,false,false,true
+1,220240,Far Cry 3,Far Cry 3,1,First Blood,1,0,1,start,common,0.95,true,0.196,1.0,0.0,true,false,false
+1,220240,Far Cry 3,Far Cry 3,3,Magic Mushroom,2,1,2,early,common,0.9,false,0.15,0.7653061224489796,0.1,false,false,false
+1,220240,Far Cry 3,Far Cry 3,9,Worst Date Ever,3,2,3,early,common,0.9,false,0.126,0.6428571428571428,0.2,false,false,false
+1,220240,Far Cry 3,Far Cry 3,12,One of Us,4,3,4,middle,common,0.9,false,0.11800000000000001,0.6020408163265306,0.3,false,false,false
+1,220240,Far Cry 3,Far Cry 3,16,Hands Off My Stoner,5,4,5,middle,common,0.9,false,0.102,0.520408163265306,0.4,false,false,false
+1,220240,Far Cry 3,Far Cry 3,18,Retake Wall Street,6,5,6,middle,common,0.9,false,0.09300000000000001,0.4744897959183674,0.5,false,true,false
+1,220240,Far Cry 3,Far Cry 3,19,Have I Told You?,7,6,7,middle,common,0.85,false,0.09,0.4591836734693877,0.6,false,false,false
+1,220240,Far Cry 3,Far Cry 3,20,Taken for Granted,8,7,8,late,common,0.9,false,0.08900000000000001,0.45408163265306123,0.7,false,false,false
+1,220240,Far Cry 3,Far Cry 3,21,Higher Than a Kite,9,8,9,late,common,0.9,false,0.087,0.4438775510204081,0.8,false,false,false
+1,220240,Far Cry 3,Far Cry 3,25,Deep Cover,10,9,10,late,common,0.9,false,0.077,0.39285714285714285,0.9,false,false,false
+1,220240,Far Cry 3,Far Cry 3,28,What a Trip,11,10,11,end,common,0.9,false,0.071,0.36224489795918363,1.0,false,false,true
+2,367520,Hollow Knight,Hollow Knight,2,Falsehood,1,0,1,start,common,0.95,false,0.713,1.0,0.0,true,false,false
+2,367520,Hollow Knight,Hollow Knight,3,Test of Resolve,2,1,2,early,common,0.95,false,0.627,0.8793828892005611,0.1,false,false,false
+2,367520,Hollow Knight,Hollow Knight,6,Illumination,3,2,3,middle,common,0.9,false,0.47,0.6591865357643759,0.2,false,false,false
+2,367520,Hollow Knight,Hollow Knight,7,Respect,4,3,4,middle,common,0.9,false,0.465,0.6521739130434783,0.3,false,false,false
+2,367520,Hollow Knight,Hollow Knight,9,Honour,5,4,5,middle,common,0.85,false,0.42700000000000005,0.5988779803646564,0.4,false,false,false
+2,367520,Hollow Knight,Hollow Knight,10,Release,6,5,6,late,common,0.9,false,0.418,0.5862552594670407,0.5,false,true,false
+2,367520,Hollow Knight,Hollow Knight,12,Beast,7,6,7,late,common,0.9,false,0.38799999999999996,0.544179523141655,0.6,false,false,false
+2,367520,Hollow Knight,Hollow Knight,16,Teacher,8,7,8,late,common,0.9,false,0.377,0.5287517531556802,0.7,false,false,false
+2,367520,Hollow Knight,Hollow Knight,18,Watcher,9,8,9,late,common,0.9,false,0.375,0.5259467040673212,0.8,false,false,false
+2,367520,Hollow Knight,Hollow Knight,21,Execution,10,9,10,late,common,0.85,false,0.33299999999999996,0.46704067321178117,0.9,false,false,false
+2,367520,Hollow Knight,Hollow Knight,33,The Hollow Knight,11,10,11,end,common,0.95,false,0.244,0.34221598877980364,1.0,false,false,true
+2,489830,The Elder Scrolls V: Skyrim Special Edition,The Elder Scrolls V: Skyrim Special Edition,1,Unbound,1,0,1,start,common,0.9,false,0.722,1.0,0.0,true,false,false
+2,489830,The Elder Scrolls V: Skyrim Special Edition,The Elder Scrolls V: Skyrim Special Edition,4,Bleak Falls Barrow,2,1,2,early,common,0.9,true,0.499,0.6911357340720222,0.125,false,false,false
+2,489830,The Elder Scrolls V: Skyrim Special Edition,The Elder Scrolls V: Skyrim Special Edition,5,Dragon Soul,3,2,3,early,common,0.9,true,0.495,0.685595567867036,0.25,false,false,false
+2,489830,The Elder Scrolls V: Skyrim Special Edition,The Elder Scrolls V: Skyrim Special Edition,7,The Way of the Voice,4,3,4,early,common,0.9,true,0.373,0.5166204986149585,0.375,false,false,false
+2,489830,The Elder Scrolls V: Skyrim Special Edition,The Elder Scrolls V: Skyrim Special Edition,20,Diplomatic Immunity,5,4,5,middle,common,0.9,true,0.221,0.3060941828254848,0.5,false,true,false
+2,489830,The Elder Scrolls V: Skyrim Special Edition,The Elder Scrolls V: Skyrim Special Edition,23,Alduin's Wall,6,5,6,middle,common,0.9,true,0.184,0.2548476454293629,0.625,false,false,false
+2,489830,The Elder Scrolls V: Skyrim Special Edition,The Elder Scrolls V: Skyrim Special Edition,33,Elder Knowledge,7,6,7,middle,common,0.9,true,0.156,0.21606648199445985,0.75,false,false,false
+2,489830,The Elder Scrolls V: Skyrim Special Edition,The Elder Scrolls V: Skyrim Special Edition,40,The Fallen,8,7,8,late,common,0.9,true,0.132,0.18282548476454294,0.875,false,false,false
+2,489830,The Elder Scrolls V: Skyrim Special Edition,The Elder Scrolls V: Skyrim Special Edition,43,Dragonslayer,9,8,9,end,common,0.9,true,0.126,0.1745152354570637,1.0,false,false,true
+3,424840,Little Nightmares,Little Nightmares,1,The Prison,1,0,1,start,common,0.85,true,0.513,1.0,0.0,true,false,false
+3,424840,Little Nightmares,Little Nightmares,2,The Lair,2,1,2,early,common,0.8,false,0.36700000000000005,0.7153996101364524,0.2,false,false,false
+3,424840,Little Nightmares,Little Nightmares,4,The Kitchen,3,2,3,middle,common,0.75,false,0.321,0.6257309941520468,0.4,false,true,false
+3,424840,Little Nightmares,Little Nightmares,5,The Guest Area,4,3,4,late,common,0.75,false,0.306,0.5964912280701754,0.6,false,false,false
+3,424840,Little Nightmares,Little Nightmares,6,The Lady's Quarters,5,4,5,late,common,0.7,false,0.3,0.5847953216374269,0.8,false,false,false
+3,424840,Little Nightmares,Little Nightmares,10,End in Sight,6,5,6,end,common,0.65,false,0.052000000000000005,0.101364522417154,1.0,false,false,true

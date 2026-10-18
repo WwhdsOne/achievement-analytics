@@ -13,6 +13,8 @@ secrets.*
 data/raw/
 data/interim/
 data/processed/
+# 后台采集的聚合进度日志与进程元数据
+data/run/
 
 # Python
 __pycache__/
@@ -35,6 +37,7 @@ node_modules/
 inkos.json
 .nvmrc
 .node-version
+.workbuddy
 
 # 图表生成的临时产物（最终稿在 docs/presentations/）
 .chart-data-*/

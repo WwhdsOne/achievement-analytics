@@ -1,0 +1,722 @@
+{
+  "schema_version": "game-search-aliases-v1",
+  "games": {
+    "1245620": {
+      "name_en": "ELDEN RING",
+      "aliases": [
+        "艾尔登法环",
+        "老头环"
+      ]
+    },
+    "367520": {
+      "name_en": "Hollow Knight",
+      "aliases": [
+        "空洞骑士"
+      ]
+    },
+    "413150": {
+      "name_en": "Stardew Valley",
+      "aliases": [
+        "星露谷物语",
+        "星露谷"
+      ]
+    },
+    "646570": {
+      "name_en": "Slay the Spire",
+      "aliases": [
+        "杀戮尖塔",
+        "尖塔"
+      ]
+    },
+    "632470": {
+      "name_en": "Disco Elysium - The Final Cut",
+      "aliases": [
+        "极乐迪斯科"
+      ]
+    },
+    "255710": {
+      "name_en": "Cities: Skylines",
+      "aliases": [
+        "城市天际线",
+        "城市：天际线",
+        "都市天际线"
+      ]
+    },
+    "620": {
+      "name_en": "Portal 2",
+      "aliases": [
+        "传送门2",
+        "传送门 2"
+      ]
+    },
+    "227300": {
+      "name_en": "Euro Truck Simulator 2",
+      "aliases": [
+        "欧洲卡车模拟2",
+        "欧洲卡车模拟 2",
+        "欧卡2"
+      ]
+    },
+    "1091500": {
+      "name_en": "Cyberpunk 2077",
+      "aliases": [
+        "赛博朋克2077",
+        "赛博朋克 2077",
+        "电驭叛客2077"
+      ]
+    },
+    "1086940": {
+      "name_en": "Baldur's Gate 3",
+      "aliases": [
+        "博德之门3",
+        "博德之门 3",
+        "博德3",
+        "BG3"
+      ]
+    },
+    "105600": {
+      "name_en": "Terraria",
+      "aliases": [
+        "泰拉瑞亚"
+      ]
+    },
+    "1145360": {
+      "name_en": "Hades",
+      "aliases": [
+        "哈迪斯",
+        "黑帝斯"
+      ]
+    },
+    "236430": {
+      "name_en": "DARK SOULS™ II",
+      "aliases": [
+        "黑暗之魂2",
+        "黑魂2",
+        "魂2"
+      ]
+    },
+    "374320": {
+      "name_en": "DARK SOULS™ III",
+      "aliases": [
+        "黑暗之魂3",
+        "黑魂3",
+        "魂3"
+      ]
+    },
+    "570940": {
+      "name_en": "DARK SOULS™: REMASTERED",
+      "aliases": [
+        "黑暗之魂重制版",
+        "黑暗之魂1重制版",
+        "黑魂重制版",
+        "黑魂1",
+        "魂1"
+      ]
+    },
+    "814380": {
+      "name_en": "Sekiro™: Shadows Die Twice - GOTY Edition",
+      "aliases": [
+        "只狼",
+        "只狼影逝二度",
+        "只狼：影逝二度"
+      ]
+    },
+    "582010": {
+      "name_en": "Monster Hunter: World",
+      "aliases": [
+        "怪物猎人世界",
+        "怪物猎人：世界",
+        "怪猎世界",
+        "MHW"
+      ]
+    },
+    "1446780": {
+      "name_en": "MONSTER HUNTER RISE",
+      "aliases": [
+        "怪物猎人崛起",
+        "怪猎崛起",
+        "MHR"
+      ]
+    },
+    "1174180": {
+      "name_en": "Red Dead Redemption 2",
+      "aliases": [
+        "荒野大镖客2",
+        "荒野大镖客：救赎2",
+        "大镖客2"
+      ]
+    },
+    "292030": {
+      "name_en": "The Witcher 3: Wild Hunt - Complete Edition",
+      "aliases": [
+        "巫师3",
+        "巫师 3",
+        "巫师3狂猎",
+        "巫师3：狂猎"
+      ]
+    },
+    "489830": {
+      "name_en": "The Elder Scrolls V: Skyrim Special Edition",
+      "aliases": [
+        "上古卷轴5",
+        "上古卷轴5天际",
+        "老滚5",
+        "天际特别版"
+      ]
+    },
+    "377160": {
+      "name_en": "Fallout 4",
+      "aliases": [
+        "辐射4",
+        "辐射 4",
+        "异尘余生4"
+      ]
+    },
+    "1151640": {
+      "name_en": "Horizon Zero Dawn™ Complete Edition",
+      "aliases": [
+        "地平线零之曙光",
+        "地平线：零之曙光",
+        "地平线黎明时分"
+      ]
+    },
+    "1593500": {
+      "name_en": "God of War",
+      "aliases": [
+        "战神",
+        "战神4",
+        "战神 4"
+      ]
+    },
+    "990080": {
+      "name_en": "Hogwarts Legacy",
+      "aliases": [
+        "霍格沃茨之遗",
+        "霍格沃兹之遗"
+      ]
+    },
+    "548430": {
+      "name_en": "Deep Rock Galactic",
+      "aliases": [
+        "深岩银河",
+        "DRG"
+      ]
+    },
+    "1057090": {
+      "name_en": "Ori and the Will of the Wisps",
+      "aliases": [
+        "奥日与精灵意志",
+        "奥日2",
+        "奥里与精灵意志"
+      ]
+    },
+    "261570": {
+      "name_en": "Ori and the Blind Forest",
+      "aliases": [
+        "奥日与黑暗森林",
+        "奥日1",
+        "奥里与黑暗森林"
+      ]
+    },
+    "588650": {
+      "name_en": "Dead Cells",
+      "aliases": [
+        "死亡细胞",
+        "重生细胞"
+      ]
+    },
+    "252490": {
+      "name_en": "Rust",
+      "aliases": [
+        "腐蚀"
+      ]
+    },
+    "346110": {
+      "name_en": "ARK: Survival Evolved",
+      "aliases": [
+        "方舟生存进化",
+        "方舟：生存进化"
+      ]
+    },
+    "1817070": {
+      "name_en": "Marvel’s Spider-Man Remastered",
+      "aliases": [
+        "漫威蜘蛛侠重制版",
+        "漫威蜘蛛侠",
+        "蜘蛛侠重制版"
+      ]
+    },
+    "1144200": {
+      "name_en": "Ready or Not",
+      "aliases": [
+        "严阵以待"
+      ]
+    },
+    "1172470": {
+      "name_en": "Apex Legends™",
+      "aliases": [
+        "Apex英雄",
+        "APEX 英雄",
+        "顶点英雄"
+      ]
+    },
+    "960090": {
+      "name_en": "Bloons TD 6",
+      "aliases": [
+        "气球塔防6",
+        "气球塔防 6",
+        "猴子塔防6",
+        "BTD6"
+      ]
+    },
+    "264710": {
+      "name_en": "Subnautica",
+      "aliases": [
+        "深海迷航",
+        "美丽水世界"
+      ]
+    },
+    "219990": {
+      "name_en": "Grim Dawn",
+      "aliases": [
+        "恐怖黎明"
+      ]
+    },
+    "435150": {
+      "name_en": "Divinity: Original Sin 2 - Definitive Edition",
+      "aliases": [
+        "神界原罪2",
+        "神界：原罪2",
+        "神界原罪 2"
+      ]
+    },
+    "550": {
+      "name_en": "Left 4 Dead 2",
+      "aliases": [
+        "求生之路2",
+        "求生之路 2",
+        "生存之旅2",
+        "L4D2"
+      ]
+    },
+    "945360": {
+      "name_en": "Among Us",
+      "aliases": [
+        "我们之中",
+        "在我们之中",
+        "太空狼人杀"
+      ]
+    },
+    "1113560": {
+      "name_en": "NieR Replicant™ ver.1.22474487139...",
+      "aliases": [
+        "尼尔人工生命",
+        "尼尔：人工生命"
+      ]
+    },
+    "221380": {
+      "name_en": "Age of Empires II (Retired)",
+      "aliases": [
+        "帝国时代2高清版",
+        "帝国时代2 HD"
+      ]
+    },
+    "813780": {
+      "name_en": "Age of Empires II: Definitive Edition",
+      "aliases": [
+        "帝国时代2决定版",
+        "帝国时代2：决定版",
+        "帝国时代2终极版"
+      ]
+    },
+    "1203220": {
+      "name_en": "NARAKA: BLADEPOINT",
+      "aliases": [
+        "永劫无间"
+      ]
+    },
+    "268910": {
+      "name_en": "Cuphead",
+      "aliases": [
+        "茶杯头",
+        "杯头"
+      ]
+    },
+    "504230": {
+      "name_en": "Celeste",
+      "aliases": [
+        "蔚蓝"
+      ]
+    },
+    "753640": {
+      "name_en": "Outer Wilds",
+      "aliases": [
+        "星际拓荒",
+        "星際拓荒"
+      ]
+    },
+    "275850": {
+      "name_en": "No Man's Sky",
+      "aliases": [
+        "无人深空",
+        "無人深空"
+      ]
+    },
+    "427520": {
+      "name_en": "Factorio",
+      "aliases": [
+        "异星工厂"
+      ]
+    },
+    "526870": {
+      "name_en": "Satisfactory",
+      "aliases": [
+        "幸福工厂",
+        "满意工厂"
+      ]
+    },
+    "1366540": {
+      "name_en": "Dyson Sphere Program",
+      "aliases": [
+        "戴森球计划",
+        "戴森球",
+        "DSP"
+      ]
+    },
+    "1326470": {
+      "name_en": "Sons Of The Forest",
+      "aliases": [
+        "森林之子",
+        "森林2"
+      ]
+    },
+    "648800": {
+      "name_en": "Raft",
+      "aliases": [
+        "木筏求生",
+        "木筏生存"
+      ]
+    },
+    "251570": {
+      "name_en": "7 Days to Die",
+      "aliases": [
+        "七日杀",
+        "7日杀"
+      ]
+    },
+    "239140": {
+      "name_en": "Dying Light",
+      "aliases": [
+        "消逝的光芒",
+        "消逝的光芒1",
+        "消光1"
+      ]
+    },
+    "534380": {
+      "name_en": "Dying Light 2 Stay Human: Reloaded Edition",
+      "aliases": [
+        "消逝的光芒2",
+        "消逝的光芒 2",
+        "消光2"
+      ]
+    },
+    "1426210": {
+      "name_en": "It Takes Two",
+      "aliases": [
+        "双人成行",
+        "雙人成行"
+      ]
+    },
+    "1222700": {
+      "name_en": "A Way Out",
+      "aliases": [
+        "逃出生天"
+      ]
+    },
+    "728880": {
+      "name_en": "Overcooked! 2",
+      "aliases": [
+        "胡闹厨房2",
+        "胡闹厨房 2",
+        "分手厨房2",
+        "煮糊了2"
+      ]
+    },
+    "448510": {
+      "name_en": "Overcooked",
+      "aliases": [
+        "胡闹厨房",
+        "胡闹厨房1",
+        "分手厨房1",
+        "煮糊了"
+      ]
+    },
+    "238460": {
+      "name_en": "BattleBlock Theater®",
+      "aliases": [
+        "战斗砖块剧场",
+        "战斗方块剧场"
+      ]
+    },
+    "204360": {
+      "name_en": "Castle Crashers®",
+      "aliases": [
+        "城堡破坏者",
+        "城堡毁灭者"
+      ]
+    },
+    "477160": {
+      "name_en": "Human Fall Flat",
+      "aliases": [
+        "人类一败涂地",
+        "人類一敗塗地"
+      ]
+    },
+    "285900": {
+      "name_en": "Gang Beasts",
+      "aliases": [
+        "基佬大乱斗"
+      ]
+    },
+    "1260320": {
+      "name_en": "Party Animals",
+      "aliases": [
+        "猛兽派对",
+        "动物派对"
+      ]
+    },
+    "1172620": {
+      "name_en": "Sea of Thieves: 2026 Edition",
+      "aliases": [
+        "盗贼之海",
+        "盜賊之海"
+      ]
+    },
+    "739630": {
+      "name_en": "Phasmophobia",
+      "aliases": [
+        "恐鬼症"
+      ]
+    },
+    "2379780": {
+      "name_en": "Balatro",
+      "aliases": [
+        "小丑牌"
+      ]
+    },
+    "1794680": {
+      "name_en": "Vampire Survivors",
+      "aliases": [
+        "吸血鬼幸存者",
+        "吸血鬼倖存者"
+      ]
+    },
+    "1942280": {
+      "name_en": "Brotato",
+      "aliases": [
+        "土豆兄弟",
+        "马铃薯兄弟"
+      ]
+    },
+    "1092790": {
+      "name_en": "Inscryption",
+      "aliases": [
+        "邪恶冥刻"
+      ]
+    },
+    "1868140": {
+      "name_en": "DAVE THE DIVER",
+      "aliases": [
+        "潜水员戴夫",
+        "潜水戴夫",
+        "戴夫"
+      ]
+    },
+    "1562430": {
+      "name_en": "DREDGE",
+      "aliases": [
+        "渔帆暗涌",
+        "漁帆暗湧"
+      ]
+    },
+    "1313140": {
+      "name_en": "Cult of the Lamb",
+      "aliases": [
+        "咩咩启示录"
+      ]
+    },
+    "813230": {
+      "name_en": "ANIMAL WELL",
+      "aliases": [
+        "动物井",
+        "動物井"
+      ]
+    },
+    "553420": {
+      "name_en": "TUNIC",
+      "aliases": [
+        "小狐狸",
+        "TUNIC小狐狸"
+      ]
+    },
+    "1332010": {
+      "name_en": "Stray",
+      "aliases": [
+        "迷失",
+        "流浪猫",
+        "Stray迷失"
+      ]
+    },
+    "2358720": {
+      "name_en": "Black Myth: Wukong",
+      "aliases": [
+        "黑神话悟空",
+        "黑神话：悟空",
+        "黑神话",
+        "黑猴"
+      ]
+    },
+    "1809540": {
+      "name_en": "Nine Sols",
+      "aliases": [
+        "九日"
+      ]
+    },
+    "1687950": {
+      "name_en": "Persona 5 Royal",
+      "aliases": [
+        "女神异闻录5皇家版",
+        "女神异闻录5",
+        "P5R",
+        "P5皇家版"
+      ]
+    },
+    "1113000": {
+      "name_en": "Persona 4 Golden",
+      "aliases": [
+        "女神异闻录4黄金版",
+        "女神异闻录4",
+        "P4G"
+      ]
+    },
+    "2161700": {
+      "name_en": "Persona 3 Reload",
+      "aliases": [
+        "女神异闻录3重制版",
+        "女神异闻录3 Reload",
+        "P3R"
+      ]
+    },
+    "524220": {
+      "name_en": "NieR:Automata™",
+      "aliases": [
+        "尼尔机械纪元",
+        "尼尔：机械纪元",
+        "尼尔自动人形"
+      ]
+    },
+    "2050650": {
+      "name_en": "Resident Evil 4",
+      "aliases": [
+        "生化危机4重制版",
+        "生化4重制版",
+        "RE4重制版"
+      ]
+    },
+    "883710": {
+      "name_en": "Resident Evil 2",
+      "aliases": [
+        "生化危机2重制版",
+        "生化2重制版",
+        "RE2重制版"
+      ]
+    },
+    "952060": {
+      "name_en": "Resident Evil 3",
+      "aliases": [
+        "生化危机3重制版",
+        "生化3重制版",
+        "RE3重制版"
+      ]
+    },
+    "418370": {
+      "name_en": "Resident Evil 7 Biohazard",
+      "aliases": [
+        "生化危机7",
+        "生化7",
+        "RE7"
+      ]
+    },
+    "1196590": {
+      "name_en": "Resident Evil Village",
+      "aliases": [
+        "生化危机8",
+        "生化8",
+        "生化危机村庄",
+        "RE8"
+      ]
+    },
+    "208650": {
+      "name_en": "Batman™: Arkham Knight",
+      "aliases": [
+        "蝙蝠侠阿卡姆骑士",
+        "蝙蝠侠：阿卡姆骑士",
+        "阿卡姆骑士"
+      ]
+    },
+    "552520": {
+      "name_en": "Far Cry® 5",
+      "aliases": [
+        "孤岛惊魂5",
+        "孤岛惊魂 5"
+      ]
+    },
+    "812140": {
+      "name_en": "Assassin's Creed® Odyssey",
+      "aliases": [
+        "刺客信条奥德赛",
+        "刺客信条：奥德赛",
+        "奥德赛"
+      ]
+    },
+    "582160": {
+      "name_en": "Assassin's Creed® Origins",
+      "aliases": [
+        "刺客信条起源",
+        "刺客信条：起源"
+      ]
+    },
+    "289070": {
+      "name_en": "Sid Meier’s Civilization® VI",
+      "aliases": [
+        "文明6",
+        "文明 6",
+        "文明VI",
+        "席德梅尔的文明6"
+      ]
+    },
+    "1466860": {
+      "name_en": "Age of Empires IV: Anniversary Edition",
+      "aliases": [
+        "帝国时代4",
+        "帝国时代 4",
+        "帝国4",
+        "AOE4"
+      ]
+    },
+    "1084600": {
+      "name_en": "My Time at Sandrock",
+      "aliases": [
+        "沙石镇时光",
+        "沙石镇"
+      ]
+    },
+    "504210": {
+      "name_en": "SHENZHEN I/O",
+      "aliases": [
+        "深圳IO",
+        "深圳 I/O"
+      ]
+    }
+  }
+}

@@ -1,0 +1,199 @@
+﻿appid,title,frame_rank,primary_gameplay,gameplay_labels,dataset_version,cohort_sha256
+1245620,ELDEN RING,4,action,action|rpg|adventure,wwh5-2026-10-13T10:26:09.722887+00:00,26b6a452b72e9466bced793868e7af8bd01c15980cf9bb4e27ab0799316f477b
+367520,Hollow Knight,29,platformer,platformer|action|adventure,wwh5-2026-10-13T10:26:09.722887+00:00,26b6a452b72e9466bced793868e7af8bd01c15980cf9bb4e27ab0799316f477b
+648800,Raft,39,survival,survival|simulation|adventure|action|strategy,wwh5-2026-10-13T10:26:09.722887+00:00,26b6a452b72e9466bced793868e7af8bd01c15980cf9bb4e27ab0799316f477b
+489830,The Elder Scrolls V: Skyrim Special Edition,43,rpg,rpg|action|adventure,wwh5-2026-10-13T10:26:09.722887+00:00,26b6a452b72e9466bced793868e7af8bd01c15980cf9bb4e27ab0799316f477b
+238960,Path of Exile,66,action,action|rpg|adventure|other,wwh5-2026-10-13T10:26:09.722887+00:00,26b6a452b72e9466bced793868e7af8bd01c15980cf9bb4e27ab0799316f477b
+379720,DOOM,77,action,action|adventure|survival,wwh5-2026-10-13T10:26:09.722887+00:00,26b6a452b72e9466bced793868e7af8bd01c15980cf9bb4e27ab0799316f477b
+1599340,Lost Ark,81,action,action|rpg|adventure,wwh5-2026-10-13T10:26:09.722887+00:00,26b6a452b72e9466bced793868e7af8bd01c15980cf9bb4e27ab0799316f477b
+1238840,Battlefield™ 1,83,action,action|other,wwh5-2026-10-13T10:26:09.722887+00:00,26b6a452b72e9466bced793868e7af8bd01c15980cf9bb4e27ab0799316f477b
+268910,Cuphead,85,platformer,platformer|action|other,wwh5-2026-10-13T10:26:09.722887+00:00,26b6a452b72e9466bced793868e7af8bd01c15980cf9bb4e27ab0799316f477b
+646570,Slay the Spire,87,strategy,strategy|rpg|casual,wwh5-2026-10-13T10:26:09.722887+00:00,26b6a452b72e9466bced793868e7af8bd01c15980cf9bb4e27ab0799316f477b
+812140,Assassin's Creed® Odyssey,94,action,action|rpg|adventure,wwh5-2026-10-13T10:26:09.722887+00:00,26b6a452b72e9466bced793868e7af8bd01c15980cf9bb4e27ab0799316f477b
+319630,Life is Strange - Episode 1,95,adventure,adventure|casual|puzzle,wwh5-2026-10-13T10:26:09.722887+00:00,26b6a452b72e9466bced793868e7af8bd01c15980cf9bb4e27ab0799316f477b
+588650,Dead Cells,97,action,action|platformer|adventure|rpg,wwh5-2026-10-13T10:26:09.722887+00:00,26b6a452b72e9466bced793868e7af8bd01c15980cf9bb4e27ab0799316f477b
+1716740,Starfield,99,rpg,rpg|action|adventure|simulation,wwh5-2026-10-13T10:26:09.722887+00:00,26b6a452b72e9466bced793868e7af8bd01c15980cf9bb4e27ab0799316f477b
+1593500,God of War,105,action,action|adventure|rpg,wwh5-2026-10-13T10:26:09.722887+00:00,26b6a452b72e9466bced793868e7af8bd01c15980cf9bb4e27ab0799316f477b
+2379780,Balatro,107,strategy,strategy|casual|other,wwh5-2026-10-13T10:26:09.722887+00:00,26b6a452b72e9466bced793868e7af8bd01c15980cf9bb4e27ab0799316f477b
+3590,Plants vs. Zombies GOTY Edition,117,strategy,strategy|puzzle|casual|adventure,wwh5-2026-10-13T10:26:09.722887+00:00,26b6a452b72e9466bced793868e7af8bd01c15980cf9bb4e27ab0799316f477b
+1151640,Horizon Zero Dawn™ Complete Edition,136,action,action|rpg|adventure|survival|other,wwh5-2026-10-13T10:26:09.722887+00:00,26b6a452b72e9466bced793868e7af8bd01c15980cf9bb4e27ab0799316f477b
+335300,DARK SOULS™ II: Scholar of the First Sin,151,action,action|rpg|adventure,wwh5-2026-10-13T10:26:09.722887+00:00,26b6a452b72e9466bced793868e7af8bd01c15980cf9bb4e27ab0799316f477b
+223470,POSTAL 2,152,action,action|adventure|simulation|other,wwh5-2026-10-13T10:26:09.722887+00:00,26b6a452b72e9466bced793868e7af8bd01c15980cf9bb4e27ab0799316f477b
+220240,Far Cry 3,153,action,action|adventure|rpg|survival|simulation,wwh5-2026-10-13T10:26:09.722887+00:00,26b6a452b72e9466bced793868e7af8bd01c15980cf9bb4e27ab0799316f477b
+1361210,"Warhammer 40,000: Darktide",156,action,action|rpg|other,wwh5-2026-10-13T10:26:09.722887+00:00,26b6a452b72e9466bced793868e7af8bd01c15980cf9bb4e27ab0799316f477b
+1446780,MONSTER HUNTER RISE,157,action,action|rpg|adventure,wwh5-2026-10-13T10:26:09.722887+00:00,26b6a452b72e9466bced793868e7af8bd01c15980cf9bb4e27ab0799316f477b
+1903340,Clair Obscur: Expedition 33,165,rpg,rpg|action|adventure|strategy,wwh5-2026-10-13T10:26:09.722887+00:00,26b6a452b72e9466bced793868e7af8bd01c15980cf9bb4e27ab0799316f477b
+424840,Little Nightmares,167,platformer,platformer|puzzle|adventure|survival,wwh5-2026-10-13T10:26:09.722887+00:00,26b6a452b72e9466bced793868e7af8bd01c15980cf9bb4e27ab0799316f477b
+231430,Company of Heroes 2,168,strategy,strategy|simulation|action,wwh5-2026-10-13T10:26:09.722887+00:00,26b6a452b72e9466bced793868e7af8bd01c15980cf9bb4e27ab0799316f477b
+2054970,Dragon's Dogma 2,172,action,action|rpg|adventure,wwh5-2026-10-13T10:26:09.722887+00:00,26b6a452b72e9466bced793868e7af8bd01c15980cf9bb4e27ab0799316f477b
+779340,Total War: THREE KINGDOMS,175,strategy,strategy|simulation|action,wwh5-2026-10-13T10:26:09.722887+00:00,26b6a452b72e9466bced793868e7af8bd01c15980cf9bb4e27ab0799316f477b
+1313140,Cult of the Lamb,176,action,action|adventure|strategy|simulation|rpg,wwh5-2026-10-13T10:26:09.722887+00:00,26b6a452b72e9466bced793868e7af8bd01c15980cf9bb4e27ab0799316f477b
+1687950,Persona 5 Royal,177,rpg,rpg|adventure|simulation|strategy,wwh5-2026-10-13T10:26:09.722887+00:00,26b6a452b72e9466bced793868e7af8bd01c15980cf9bb4e27ab0799316f477b
+1943950,Escape the Backrooms,179,adventure,adventure|survival|action|puzzle|other,wwh5-2026-10-13T10:26:09.722887+00:00,26b6a452b72e9466bced793868e7af8bd01c15980cf9bb4e27ab0799316f477b
+287700,METAL GEAR SOLID V: THE PHANTOM PAIN,184,action,action|adventure|simulation|strategy,wwh5-2026-10-13T10:26:09.722887+00:00,26b6a452b72e9466bced793868e7af8bd01c15980cf9bb4e27ab0799316f477b
+365590,Tom Clancy’s The Division™,195,action,action|rpg|adventure|survival,wwh5-2026-10-13T10:26:09.722887+00:00,26b6a452b72e9466bced793868e7af8bd01c15980cf9bb4e27ab0799316f477b
+389730,TEKKEN 7,196,action,action|other,wwh5-2026-10-13T10:26:09.722887+00:00,26b6a452b72e9466bced793868e7af8bd01c15980cf9bb4e27ab0799316f477b
+1030840,Mafia: Definitive Edition,198,action,action|adventure|racing|other,wwh5-2026-10-13T10:26:09.722887+00:00,26b6a452b72e9466bced793868e7af8bd01c15980cf9bb4e27ab0799316f477b
+241930,Middle-earth™: Shadow of Mordor™,201,action,action|rpg|adventure|other,wwh5-2026-10-13T10:26:09.722887+00:00,26b6a452b72e9466bced793868e7af8bd01c15980cf9bb4e27ab0799316f477b
+383870,Firewatch,202,adventure,adventure|simulation|casual,wwh5-2026-10-13T10:26:09.722887+00:00,26b6a452b72e9466bced793868e7af8bd01c15980cf9bb4e27ab0799316f477b
+703080,Planet Zoo,204,simulation,simulation|strategy|casual,wwh5-2026-10-13T10:26:09.722887+00:00,26b6a452b72e9466bced793868e7af8bd01c15980cf9bb4e27ab0799316f477b
+20920,The Witcher 2: Assassins of Kings Enhanced Edition,206,rpg,rpg|action|adventure,wwh5-2026-10-13T10:26:09.722887+00:00,26b6a452b72e9466bced793868e7af8bd01c15980cf9bb4e27ab0799316f477b
+311690,Enter the Gungeon,207,action,action|adventure|rpg|other,wwh5-2026-10-13T10:26:09.722887+00:00,26b6a452b72e9466bced793868e7af8bd01c15980cf9bb4e27ab0799316f477b
+235460,METAL GEAR RISING: REVENGEANCE,214,action,action|adventure,wwh5-2026-10-13T10:26:09.722887+00:00,26b6a452b72e9466bced793868e7af8bd01c15980cf9bb4e27ab0799316f477b
+205100,Dishonored,221,action,action|adventure|rpg,wwh5-2026-10-13T10:26:09.722887+00:00,26b6a452b72e9466bced793868e7af8bd01c15980cf9bb4e27ab0799316f477b
+881100,Noita,231,action,action|rpg|adventure|platformer|survival|simulation,wwh5-2026-10-13T10:26:09.722887+00:00,26b6a452b72e9466bced793868e7af8bd01c15980cf9bb4e27ab0799316f477b
+1113000,Persona 4 Golden,232,rpg,rpg|adventure|simulation|strategy,wwh5-2026-10-13T10:26:09.722887+00:00,26b6a452b72e9466bced793868e7af8bd01c15980cf9bb4e27ab0799316f477b
+212680,FTL: Faster Than Light,240,strategy,strategy|simulation|rpg|survival,wwh5-2026-10-13T10:26:09.722887+00:00,26b6a452b72e9466bced793868e7af8bd01c15980cf9bb4e27ab0799316f477b
+289650,Assassin's Creed® Unity,244,action,action|adventure|rpg|simulation,wwh5-2026-10-13T10:26:09.722887+00:00,26b6a452b72e9466bced793868e7af8bd01c15980cf9bb4e27ab0799316f477b
+207610,The Walking Dead,248,adventure,adventure|puzzle|action,wwh5-2026-10-13T10:26:09.722887+00:00,26b6a452b72e9466bced793868e7af8bd01c15980cf9bb4e27ab0799316f477b
+493340,Planet Coaster,262,simulation,simulation|strategy|casual,wwh5-2026-10-13T10:26:09.722887+00:00,26b6a452b72e9466bced793868e7af8bd01c15980cf9bb4e27ab0799316f477b
+287390,Metro: Last Light Redux,263,action,action|adventure|survival,wwh5-2026-10-13T10:26:09.722887+00:00,26b6a452b72e9466bced793868e7af8bd01c15980cf9bb4e27ab0799316f477b
+307690,Sleeping Dogs: Definitive Edition,264,action,action|adventure|racing|other,wwh5-2026-10-13T10:26:09.722887+00:00,26b6a452b72e9466bced793868e7af8bd01c15980cf9bb4e27ab0799316f477b
+200260,Batman: Arkham City - Game of the Year Edition,265,action,action|adventure|other,wwh5-2026-10-13T10:26:09.722887+00:00,26b6a452b72e9466bced793868e7af8bd01c15980cf9bb4e27ab0799316f477b
+466560,Northgard: Definitive Edition,286,strategy,strategy|simulation|survival,wwh5-2026-10-13T10:26:09.722887+00:00,26b6a452b72e9466bced793868e7af8bd01c15980cf9bb4e27ab0799316f477b
+1145350,Hades II,288,action,action|rpg|adventure|other,wwh5-2026-10-13T10:26:09.722887+00:00,26b6a452b72e9466bced793868e7af8bd01c15980cf9bb4e27ab0799316f477b
+752590,A Plague Tale: Innocence,291,action,action|adventure|puzzle|survival|other,wwh5-2026-10-13T10:26:09.722887+00:00,26b6a452b72e9466bced793868e7af8bd01c15980cf9bb4e27ab0799316f477b
+214490,Alien: Isolation,299,action,action|adventure|survival|other,wwh5-2026-10-13T10:26:09.722887+00:00,26b6a452b72e9466bced793868e7af8bd01c15980cf9bb4e27ab0799316f477b
+312660,Sniper Elite 4,306,action,action|adventure|simulation|strategy,wwh5-2026-10-13T10:26:09.722887+00:00,26b6a452b72e9466bced793868e7af8bd01c15980cf9bb4e27ab0799316f477b
+409710,BioShock™ Remastered,309,action,action|adventure|rpg|simulation,wwh5-2026-10-13T10:26:09.722887+00:00,26b6a452b72e9466bced793868e7af8bd01c15980cf9bb4e27ab0799316f477b
+629730,Blade and Sorcery,312,action,action|adventure|simulation|rpg,wwh5-2026-10-13T10:26:09.722887+00:00,26b6a452b72e9466bced793868e7af8bd01c15980cf9bb4e27ab0799316f477b
+204100,Max Payne 3,318,action,action|adventure,wwh5-2026-10-13T10:26:09.722887+00:00,26b6a452b72e9466bced793868e7af8bd01c15980cf9bb4e27ab0799316f477b
+307780,Mortal Kombat X,324,action,action|adventure|other,wwh5-2026-10-13T10:26:09.722887+00:00,26b6a452b72e9466bced793868e7af8bd01c15980cf9bb4e27ab0799316f477b
+50130,Mafia II (Classic),330,action,action|adventure|rpg|simulation|other,wwh5-2026-10-13T10:26:09.722887+00:00,26b6a452b72e9466bced793868e7af8bd01c15980cf9bb4e27ab0799316f477b
+2623190,The Elder Scrolls IV: Oblivion Remastered,342,rpg,rpg|action|adventure,wwh5-2026-10-13T10:26:09.722887+00:00,26b6a452b72e9466bced793868e7af8bd01c15980cf9bb4e27ab0799316f477b
+1627720,Lies of P,343,action,action|rpg|adventure,wwh5-2026-10-13T10:26:09.722887+00:00,26b6a452b72e9466bced793868e7af8bd01c15980cf9bb4e27ab0799316f477b
+1290000,PowerWash Simulator,345,simulation,simulation|casual,wwh5-2026-10-13T10:26:09.722887+00:00,26b6a452b72e9466bced793868e7af8bd01c15980cf9bb4e27ab0799316f477b
+253230,A Hat in Time,346,platformer,platformer|action|adventure,wwh5-2026-10-13T10:26:09.722887+00:00,26b6a452b72e9466bced793868e7af8bd01c15980cf9bb4e27ab0799316f477b
+1693980,Dead Space,351,action,action|adventure|survival,wwh5-2026-10-13T10:26:09.722887+00:00,26b6a452b72e9466bced793868e7af8bd01c15980cf9bb4e27ab0799316f477b
+8190,Just Cause 2,353,action,action|adventure|other,wwh5-2026-10-13T10:26:09.722887+00:00,26b6a452b72e9466bced793868e7af8bd01c15980cf9bb4e27ab0799316f477b
+108710,Alan Wake,358,action,action|adventure|survival,wwh5-2026-10-13T10:26:09.722887+00:00,26b6a452b72e9466bced793868e7af8bd01c15980cf9bb4e27ab0799316f477b
+202970,Call of Duty®: Black Ops II,368,action,action|adventure|survival,wwh5-2026-10-13T10:26:09.722887+00:00,26b6a452b72e9466bced793868e7af8bd01c15980cf9bb4e27ab0799316f477b
+367500,Dragon's Dogma: Dark Arisen,370,action,action|rpg|adventure,wwh5-2026-10-13T10:26:09.722887+00:00,26b6a452b72e9466bced793868e7af8bd01c15980cf9bb4e27ab0799316f477b
+243470,Watch_Dogs™,375,action,action|adventure|rpg|simulation|strategy|other,wwh5-2026-10-13T10:26:09.722887+00:00,26b6a452b72e9466bced793868e7af8bd01c15980cf9bb4e27ab0799316f477b
+1325200,Nioh 2 – The Complete Edition,376,action,action|rpg,wwh5-2026-10-13T10:26:09.722887+00:00,26b6a452b72e9466bced793868e7af8bd01c15980cf9bb4e27ab0799316f477b
+282140,SOMA,378,adventure,adventure|survival|puzzle|action,wwh5-2026-10-13T10:26:09.722887+00:00,26b6a452b72e9466bced793868e7af8bd01c15980cf9bb4e27ab0799316f477b
+599140,Graveyard Keeper,393,simulation,simulation|rpg|adventure,wwh5-2026-10-13T10:26:09.722887+00:00,26b6a452b72e9466bced793868e7af8bd01c15980cf9bb4e27ab0799316f477b
+476600,Call of Duty®: WWII,396,action,action|other,wwh5-2026-10-13T10:26:09.722887+00:00,26b6a452b72e9466bced793868e7af8bd01c15980cf9bb4e27ab0799316f477b
+1288310,Firework,409,puzzle,puzzle|adventure|rpg|other,wwh5-2026-10-13T10:26:09.722887+00:00,26b6a452b72e9466bced793868e7af8bd01c15980cf9bb4e27ab0799316f477b
+302510,Ryse: Son of Rome,415,action,action|adventure|rpg,wwh5-2026-10-13T10:26:09.722887+00:00,26b6a452b72e9466bced793868e7af8bd01c15980cf9bb4e27ab0799316f477b
+204450,Call of Juarez: Gunslinger,416,action,action|adventure,wwh5-2026-10-13T10:26:09.722887+00:00,26b6a452b72e9466bced793868e7af8bd01c15980cf9bb4e27ab0799316f477b
+1845910,Dragon Age™: The Veilguard,418,rpg,rpg|action|adventure|strategy,wwh5-2026-10-13T10:26:09.722887+00:00,26b6a452b72e9466bced793868e7af8bd01c15980cf9bb4e27ab0799316f477b
+692850,Bloodstained: Ritual of the Night,423,action,action|adventure|rpg|platformer,wwh5-2026-10-13T10:26:09.722887+00:00,26b6a452b72e9466bced793868e7af8bd01c15980cf9bb4e27ab0799316f477b
+228380,Wreckfest,431,racing,racing|action|simulation,wwh5-2026-10-13T10:26:09.722887+00:00,26b6a452b72e9466bced793868e7af8bd01c15980cf9bb4e27ab0799316f477b
+1184370,Pathfinder: Wrath of the Righteous - Enhanced Edition,434,rpg,rpg|strategy|adventure,wwh5-2026-10-13T10:26:09.722887+00:00,26b6a452b72e9466bced793868e7af8bd01c15980cf9bb4e27ab0799316f477b
+668580,Atomic Heart,437,action,action|adventure|rpg|puzzle|survival,wwh5-2026-10-13T10:26:09.722887+00:00,26b6a452b72e9466bced793868e7af8bd01c15980cf9bb4e27ab0799316f477b
+1210320,Potion Craft: Alchemist Simulator,441,simulation,simulation|rpg|casual|other,wwh5-2026-10-13T10:26:09.722887+00:00,26b6a452b72e9466bced793868e7af8bd01c15980cf9bb4e27ab0799316f477b
+107100,Bastion,442,action,action|rpg,wwh5-2026-10-13T10:26:09.722887+00:00,26b6a452b72e9466bced793868e7af8bd01c15980cf9bb4e27ab0799316f477b
+554620,Life is Strange: Before the Storm,445,adventure,adventure|puzzle|other,wwh5-2026-10-13T10:26:09.722887+00:00,26b6a452b72e9466bced793868e7af8bd01c15980cf9bb4e27ab0799316f477b
+207140,SpeedRunners,451,platformer,platformer|racing|action,wwh5-2026-10-13T10:26:09.722887+00:00,26b6a452b72e9466bced793868e7af8bd01c15980cf9bb4e27ab0799316f477b
+447530,VA-11 Hall-A: Cyberpunk Bartender Action,456,simulation,simulation|adventure|casual,wwh5-2026-10-13T10:26:09.722887+00:00,26b6a452b72e9466bced793868e7af8bd01c15980cf9bb4e27ab0799316f477b
+383980,Rivals of Aether,459,action,action|platformer,wwh5-2026-10-13T10:26:09.722887+00:00,26b6a452b72e9466bced793868e7af8bd01c15980cf9bb4e27ab0799316f477b
+250320,The Wolf Among Us,463,adventure,adventure|casual|puzzle,wwh5-2026-10-13T10:26:09.722887+00:00,26b6a452b72e9466bced793868e7af8bd01c15980cf9bb4e27ab0799316f477b
+740130,Tales of ARISE,476,rpg,rpg|action|adventure,wwh5-2026-10-13T10:26:09.722887+00:00,26b6a452b72e9466bced793868e7af8bd01c15980cf9bb4e27ab0799316f477b
+1282730,Loop Hero,477,rpg,rpg|strategy|adventure|simulation,wwh5-2026-10-13T10:26:09.722887+00:00,26b6a452b72e9466bced793868e7af8bd01c15980cf9bb4e27ab0799316f477b
+1256670,Library Of Ruina,479,rpg,rpg|strategy|casual,wwh5-2026-10-13T10:26:09.722887+00:00,26b6a452b72e9466bced793868e7af8bd01c15980cf9bb4e27ab0799316f477b
+640820,Pathfinder: Kingmaker — Enhanced Plus Edition,491,rpg,rpg|strategy|adventure,wwh5-2026-10-13T10:26:09.722887+00:00,26b6a452b72e9466bced793868e7af8bd01c15980cf9bb4e27ab0799316f477b
+535930,Two Point Hospital,493,simulation,simulation|strategy|casual,wwh5-2026-10-13T10:26:09.722887+00:00,26b6a452b72e9466bced793868e7af8bd01c15980cf9bb4e27ab0799316f477b
+1235140,Yakuza: Like a Dragon,494,rpg,rpg|adventure|action,wwh5-2026-10-13T10:26:09.722887+00:00,26b6a452b72e9466bced793868e7af8bd01c15980cf9bb4e27ab0799316f477b
+417860,Emily is Away,505,adventure,adventure|simulation|casual,wwh5-2026-10-13T10:26:09.722887+00:00,26b6a452b72e9466bced793868e7af8bd01c15980cf9bb4e27ab0799316f477b
+261030,The Walking Dead: Season Two,507,adventure,adventure|action|puzzle,wwh5-2026-10-13T10:26:09.722887+00:00,26b6a452b72e9466bced793868e7af8bd01c15980cf9bb4e27ab0799316f477b
+1144400,Senren＊Banka,516,adventure,adventure|casual,wwh5-2026-10-13T10:26:09.722887+00:00,26b6a452b72e9466bced793868e7af8bd01c15980cf9bb4e27ab0799316f477b
+209160,Call of Duty®: Ghosts,521,action,action,wwh5-2026-10-13T10:26:09.722887+00:00,26b6a452b72e9466bced793868e7af8bd01c15980cf9bb4e27ab0799316f477b
+2186680,"Warhammer 40,000: Rogue Trader",523,rpg,rpg|strategy|adventure,wwh5-2026-10-13T10:26:09.722887+00:00,26b6a452b72e9466bced793868e7af8bd01c15980cf9bb4e27ab0799316f477b
+1874880,Arma Reforger,524,action,action|simulation|strategy|other,wwh5-2026-10-13T10:26:09.722887+00:00,26b6a452b72e9466bced793868e7af8bd01c15980cf9bb4e27ab0799316f477b
+1030830,Mafia II: Definitive Edition,533,action,action|adventure|racing,wwh5-2026-10-13T10:26:09.722887+00:00,26b6a452b72e9466bced793868e7af8bd01c15980cf9bb4e27ab0799316f477b
+220440,DmC: Devil May Cry,540,action,action|adventure|platformer,wwh5-2026-10-13T10:26:09.722887+00:00,26b6a452b72e9466bced793868e7af8bd01c15980cf9bb4e27ab0799316f477b
+368500,Assassin's Creed® Syndicate,546,action,action|adventure|rpg|strategy,wwh5-2026-10-13T10:26:09.722887+00:00,26b6a452b72e9466bced793868e7af8bd01c15980cf9bb4e27ab0799316f477b
+288160,The Room,561,puzzle,puzzle|adventure|casual|other,wwh5-2026-10-13T10:26:09.722887+00:00,26b6a452b72e9466bced793868e7af8bd01c15980cf9bb4e27ab0799316f477b
+794260,Outward Definitive Edition,568,rpg,rpg|adventure|survival,wwh5-2026-10-13T10:26:09.722887+00:00,26b6a452b72e9466bced793868e7af8bd01c15980cf9bb4e27ab0799316f477b
+1189490,觅长生,570,rpg,rpg|strategy|simulation|adventure,wwh5-2026-10-13T10:26:09.722887+00:00,26b6a452b72e9466bced793868e7af8bd01c15980cf9bb4e27ab0799316f477b
+238010,Deus Ex: Human Revolution - Director's Cut,576,action,action|rpg|adventure|simulation,wwh5-2026-10-13T10:26:09.722887+00:00,26b6a452b72e9466bced793868e7af8bd01c15980cf9bb4e27ab0799316f477b
+41070,Serious Sam 3: BFE,583,action,action|adventure,wwh5-2026-10-13T10:26:09.722887+00:00,26b6a452b72e9466bced793868e7af8bd01c15980cf9bb4e27ab0799316f477b
+1066780,Transport Fever 2,586,simulation,simulation|strategy|casual,wwh5-2026-10-13T10:26:09.722887+00:00,26b6a452b72e9466bced793868e7af8bd01c15980cf9bb4e27ab0799316f477b
+557340,My Friend Pedro,589,platformer,platformer|action,wwh5-2026-10-13T10:26:09.722887+00:00,26b6a452b72e9466bced793868e7af8bd01c15980cf9bb4e27ab0799316f477b
+238090,Sniper Elite 3,596,action,action|adventure|simulation|strategy,wwh5-2026-10-13T10:26:09.722887+00:00,26b6a452b72e9466bced793868e7af8bd01c15980cf9bb4e27ab0799316f477b
+333600,NEKOPARA Vol. 1,601,adventure,adventure|casual|simulation,wwh5-2026-10-13T10:26:09.722887+00:00,26b6a452b72e9466bced793868e7af8bd01c15980cf9bb4e27ab0799316f477b
+304240,Resident Evil,603,survival,survival|action|adventure|puzzle,wwh5-2026-10-13T10:26:09.722887+00:00,26b6a452b72e9466bced793868e7af8bd01c15980cf9bb4e27ab0799316f477b
+413420,Danganronpa 2: Goodbye Despair,607,adventure,adventure|puzzle|simulation,wwh5-2026-10-13T10:26:09.722887+00:00,26b6a452b72e9466bced793868e7af8bd01c15980cf9bb4e27ab0799316f477b
+249130,LEGO® Marvel™ Super Heroes,610,action,action|adventure|platformer|puzzle|casual,wwh5-2026-10-13T10:26:09.722887+00:00,26b6a452b72e9466bced793868e7af8bd01c15980cf9bb4e27ab0799316f477b
+260230,Valiant Hearts: The Great War™ / Soldats Inconnus : Mémoires de la Grande Guerre™,617,adventure,adventure|puzzle|platformer|action|rpg|other,wwh5-2026-10-13T10:26:09.722887+00:00,26b6a452b72e9466bced793868e7af8bd01c15980cf9bb4e27ab0799316f477b
+383150,Dead Island Definitive Edition,620,action,action|rpg|survival|adventure,wwh5-2026-10-13T10:26:09.722887+00:00,26b6a452b72e9466bced793868e7af8bd01c15980cf9bb4e27ab0799316f477b
+71340,Sonic Generations Collection,624,platformer,platformer|action|adventure,wwh5-2026-10-13T10:26:09.722887+00:00,26b6a452b72e9466bced793868e7af8bd01c15980cf9bb4e27ab0799316f477b
+247080,Crypt of the NecroDancer,626,rhythm,rhythm|rpg|adventure|action,wwh5-2026-10-13T10:26:09.722887+00:00,26b6a452b72e9466bced793868e7af8bd01c15980cf9bb4e27ab0799316f477b
+365450,Hacknet,627,simulation,simulation|adventure|puzzle,wwh5-2026-10-13T10:26:09.722887+00:00,26b6a452b72e9466bced793868e7af8bd01c15980cf9bb4e27ab0799316f477b
+1149620,Gas Station Simulator,631,simulation,simulation|casual,wwh5-2026-10-13T10:26:09.722887+00:00,26b6a452b72e9466bced793868e7af8bd01c15980cf9bb4e27ab0799316f477b
+42680,Call of Duty®: Modern Warfare® 3 (2011),633,action,action|adventure|casual|survival,wwh5-2026-10-13T10:26:09.722887+00:00,26b6a452b72e9466bced793868e7af8bd01c15980cf9bb4e27ab0799316f477b
+99900,Spiral Knights,650,action,action|rpg|adventure,wwh5-2026-10-13T10:26:09.722887+00:00,26b6a452b72e9466bced793868e7af8bd01c15980cf9bb4e27ab0799316f477b
+519860,DUSK,654,action,action|other,wwh5-2026-10-13T10:26:09.722887+00:00,26b6a452b72e9466bced793868e7af8bd01c15980cf9bb4e27ab0799316f477b
+1240210,There Is No Game: Wrong Dimension,655,puzzle,puzzle|adventure|casual|simulation|rpg,wwh5-2026-10-13T10:26:09.722887+00:00,26b6a452b72e9466bced793868e7af8bd01c15980cf9bb4e27ab0799316f477b
+1097840,Gears 5,658,action,action|adventure|other,wwh5-2026-10-13T10:26:09.722887+00:00,26b6a452b72e9466bced793868e7af8bd01c15980cf9bb4e27ab0799316f477b
+239160,Thief,659,action,action|adventure|rpg,wwh5-2026-10-13T10:26:09.722887+00:00,26b6a452b72e9466bced793868e7af8bd01c15980cf9bb4e27ab0799316f477b
+882100,XCOM®: Chimera Squad,670,strategy,strategy|rpg|action,wwh5-2026-10-13T10:26:09.722887+00:00,26b6a452b72e9466bced793868e7af8bd01c15980cf9bb4e27ab0799316f477b
+1094520,Sands of Salzaar,675,rpg,rpg|action|adventure|strategy|simulation,wwh5-2026-10-13T10:26:09.722887+00:00,26b6a452b72e9466bced793868e7af8bd01c15980cf9bb4e27ab0799316f477b
+285190,"Warhammer 40,000: Dawn of War III",678,strategy,strategy|action|other,wwh5-2026-10-13T10:26:09.722887+00:00,26b6a452b72e9466bced793868e7af8bd01c15980cf9bb4e27ab0799316f477b
+1948980,Hero's Adventure: Road to Passion,688,rpg,rpg|strategy|adventure|simulation,wwh5-2026-10-13T10:26:09.722887+00:00,26b6a452b72e9466bced793868e7af8bd01c15980cf9bb4e27ab0799316f477b
+784150,Workers & Resources: Soviet Republic,691,simulation,simulation|strategy|other,wwh5-2026-10-13T10:26:09.722887+00:00,26b6a452b72e9466bced793868e7af8bd01c15980cf9bb4e27ab0799316f477b
+35720,Trine 2: Complete Story,714,platformer,platformer|puzzle|action|adventure|rpg,wwh5-2026-10-13T10:26:09.722887+00:00,26b6a452b72e9466bced793868e7af8bd01c15980cf9bb4e27ab0799316f477b
+235540,Warhammer: End Times - Vermintide,727,action,action|rpg|survival,wwh5-2026-10-13T10:26:09.722887+00:00,26b6a452b72e9466bced793868e7af8bd01c15980cf9bb4e27ab0799316f477b
+412830,STEINS;GATE,728,adventure,adventure|simulation|casual,wwh5-2026-10-13T10:26:09.722887+00:00,26b6a452b72e9466bced793868e7af8bd01c15980cf9bb4e27ab0799316f477b
+323470,DRAGON BALL XENOVERSE,732,action,action|rpg|adventure,wwh5-2026-10-13T10:26:09.722887+00:00,26b6a452b72e9466bced793868e7af8bd01c15980cf9bb4e27ab0799316f477b
+350080,Wolfenstein: The Old Blood,735,action,action|adventure|other,wwh5-2026-10-13T10:26:09.722887+00:00,26b6a452b72e9466bced793868e7af8bd01c15980cf9bb4e27ab0799316f477b
+1182900,A Plague Tale: Requiem,741,action,action|adventure|puzzle|other,wwh5-2026-10-13T10:26:09.722887+00:00,26b6a452b72e9466bced793868e7af8bd01c15980cf9bb4e27ab0799316f477b
+445980,Wizard of Legend,743,action,action|adventure|rpg,wwh5-2026-10-13T10:26:09.722887+00:00,26b6a452b72e9466bced793868e7af8bd01c15980cf9bb4e27ab0799316f477b
+1161580,Hardspace: Shipbreaker,748,simulation,simulation|action|strategy|puzzle,wwh5-2026-10-13T10:26:09.722887+00:00,26b6a452b72e9466bced793868e7af8bd01c15980cf9bb4e27ab0799316f477b
+590380,Into the Breach,752,strategy,strategy|rpg|puzzle|simulation,wwh5-2026-10-13T10:26:09.722887+00:00,26b6a452b72e9466bced793868e7af8bd01c15980cf9bb4e27ab0799316f477b
+359870,FINAL FANTASY X/X-2 HD Remaster,756,rpg,rpg|adventure|puzzle,wwh5-2026-10-13T10:26:09.722887+00:00,26b6a452b72e9466bced793868e7af8bd01c15980cf9bb4e27ab0799316f477b
+425580,The Room Two,759,puzzle,puzzle|adventure|casual,wwh5-2026-10-13T10:26:09.722887+00:00,26b6a452b72e9466bced793868e7af8bd01c15980cf9bb4e27ab0799316f477b
+760060,Mutant Year Zero: Road to Eden,760,strategy,strategy|rpg|adventure,wwh5-2026-10-13T10:26:09.722887+00:00,26b6a452b72e9466bced793868e7af8bd01c15980cf9bb4e27ab0799316f477b
+235600,Tom Clancy’s Splinter Cell Blacklist,763,action,action|adventure|strategy|rpg,wwh5-2026-10-13T10:26:09.722887+00:00,26b6a452b72e9466bced793868e7af8bd01c15980cf9bb4e27ab0799316f477b
+1583230,High On Life,776,action,action|adventure|other,wwh5-2026-10-13T10:26:09.722887+00:00,26b6a452b72e9466bced793868e7af8bd01c15980cf9bb4e27ab0799316f477b
+866800,The Walking Dead: The Final Season,778,adventure,adventure|action|puzzle,wwh5-2026-10-13T10:26:09.722887+00:00,26b6a452b72e9466bced793868e7af8bd01c15980cf9bb4e27ab0799316f477b
+1577120,The Quarry,780,adventure,adventure|survival|other,wwh5-2026-10-13T10:26:09.722887+00:00,26b6a452b72e9466bced793868e7af8bd01c15980cf9bb4e27ab0799316f477b
+265550,Dead Rising 3 Apocalypse Edition,787,action,action|adventure|rpg|survival,wwh5-2026-10-13T10:26:09.722887+00:00,26b6a452b72e9466bced793868e7af8bd01c15980cf9bb4e27ab0799316f477b
+362680,Fran Bow,791,adventure,adventure|puzzle,wwh5-2026-10-13T10:26:09.722887+00:00,26b6a452b72e9466bced793868e7af8bd01c15980cf9bb4e27ab0799316f477b
+1490890,Demon Slayer -Kimetsu no Yaiba- The Hinokami Chronicles,793,action,action|adventure|other,wwh5-2026-10-13T10:26:09.722887+00:00,26b6a452b72e9466bced793868e7af8bd01c15980cf9bb4e27ab0799316f477b
+225260,Brutal Legend,795,action,action|adventure|rpg|strategy,wwh5-2026-10-13T10:26:09.722887+00:00,26b6a452b72e9466bced793868e7af8bd01c15980cf9bb4e27ab0799316f477b
+560130,Pillars of Eternity II: Deadfire,797,rpg,rpg|adventure|strategy,wwh5-2026-10-13T10:26:09.722887+00:00,26b6a452b72e9466bced793868e7af8bd01c15980cf9bb4e27ab0799316f477b
+236090,Dust: An Elysian Tail,805,action,action|adventure|rpg|platformer,wwh5-2026-10-13T10:26:09.722887+00:00,26b6a452b72e9466bced793868e7af8bd01c15980cf9bb4e27ab0799316f477b
+330830,Tales from the Borderlands,808,adventure,adventure|puzzle|action|rpg,wwh5-2026-10-13T10:26:09.722887+00:00,26b6a452b72e9466bced793868e7af8bd01c15980cf9bb4e27ab0799316f477b
+368070,Sniper Ghost Warrior 3,809,action,action|adventure|strategy|simulation,wwh5-2026-10-13T10:26:09.722887+00:00,26b6a452b72e9466bced793868e7af8bd01c15980cf9bb4e27ab0799316f477b
+241600,Rogue Legacy,811,platformer,platformer|action|rpg|adventure,wwh5-2026-10-13T10:26:09.722887+00:00,26b6a452b72e9466bced793868e7af8bd01c15980cf9bb4e27ab0799316f477b
+1746030,Murders on the Yangtze River,818,adventure,adventure|puzzle|rpg,wwh5-2026-10-13T10:26:09.722887+00:00,26b6a452b72e9466bced793868e7af8bd01c15980cf9bb4e27ab0799316f477b
+388410,Darksiders II Deathinitive Edition,819,action,action|adventure|rpg|platformer|puzzle,wwh5-2026-10-13T10:26:09.722887+00:00,26b6a452b72e9466bced793868e7af8bd01c15980cf9bb4e27ab0799316f477b
+311560,Assassin’s Creed® Rogue,820,action,action|adventure|simulation|puzzle,wwh5-2026-10-13T10:26:09.722887+00:00,26b6a452b72e9466bced793868e7af8bd01c15980cf9bb4e27ab0799316f477b
+242680,Nuclear Throne,825,action,action|rpg|other,wwh5-2026-10-13T10:26:09.722887+00:00,26b6a452b72e9466bced793868e7af8bd01c15980cf9bb4e27ab0799316f477b
+557600,Gorogoa,826,puzzle,puzzle|adventure|casual,wwh5-2026-10-13T10:26:09.722887+00:00,26b6a452b72e9466bced793868e7af8bd01c15980cf9bb4e27ab0799316f477b
+233270,Far Cry 3 - Blood Dragon,833,action,action|adventure|other,wwh5-2026-10-13T10:26:09.722887+00:00,26b6a452b72e9466bced793868e7af8bd01c15980cf9bb4e27ab0799316f477b
+1533420,Neon White,834,platformer,platformer|action|adventure|other,wwh5-2026-10-13T10:26:09.722887+00:00,26b6a452b72e9466bced793868e7af8bd01c15980cf9bb4e27ab0799316f477b
+241540,State of Decay,841,action,action|adventure|rpg|simulation|survival,wwh5-2026-10-13T10:26:09.722887+00:00,26b6a452b72e9466bced793868e7af8bd01c15980cf9bb4e27ab0799316f477b
+385800,NEKOPARA Vol. 0,842,adventure,adventure|casual|simulation,wwh5-2026-10-13T10:26:09.722887+00:00,26b6a452b72e9466bced793868e7af8bd01c15980cf9bb4e27ab0799316f477b
+629820,Maneater,845,action,action|adventure|rpg|simulation,wwh5-2026-10-13T10:26:09.722887+00:00,26b6a452b72e9466bced793868e7af8bd01c15980cf9bb4e27ab0799316f477b
+40700,Machinarium,850,adventure,adventure|puzzle,wwh5-2026-10-13T10:26:09.722887+00:00,26b6a452b72e9466bced793868e7af8bd01c15980cf9bb4e27ab0799316f477b
+405640,Pony Island,853,puzzle,puzzle|adventure|other,wwh5-2026-10-13T10:26:09.722887+00:00,26b6a452b72e9466bced793868e7af8bd01c15980cf9bb4e27ab0799316f477b
+397950,Clustertruck,854,platformer,platformer|action|adventure|simulation|racing|casual|strategy,wwh5-2026-10-13T10:26:09.722887+00:00,26b6a452b72e9466bced793868e7af8bd01c15980cf9bb4e27ab0799316f477b
+1258080,Shop Titans,865,simulation,simulation|rpg|casual|other,wwh5-2026-10-13T10:26:09.722887+00:00,26b6a452b72e9466bced793868e7af8bd01c15980cf9bb4e27ab0799316f477b
+368340,CrossCode,867,action,action|rpg|adventure|puzzle,wwh5-2026-10-13T10:26:09.722887+00:00,26b6a452b72e9466bced793868e7af8bd01c15980cf9bb4e27ab0799316f477b
+536220,The Walking Dead: A New Frontier,868,adventure,adventure|casual|action,wwh5-2026-10-13T10:26:09.722887+00:00,26b6a452b72e9466bced793868e7af8bd01c15980cf9bb4e27ab0799316f477b
+2768430,ATLYSS,870,rpg,rpg|action|adventure|platformer,wwh5-2026-10-13T10:26:09.722887+00:00,26b6a452b72e9466bced793868e7af8bd01c15980cf9bb4e27ab0799316f477b
+969990,SpongeBob SquarePants: Battle for Bikini Bottom - Rehydrated,873,platformer,platformer|action|adventure,wwh5-2026-10-13T10:26:09.722887+00:00,26b6a452b72e9466bced793868e7af8bd01c15980cf9bb4e27ab0799316f477b
+1880330,Sanfu,875,adventure,adventure|puzzle|rpg|platformer,wwh5-2026-10-13T10:26:09.722887+00:00,26b6a452b72e9466bced793868e7af8bd01c15980cf9bb4e27ab0799316f477b
+1046030,ISLANDERS,885,strategy,strategy|puzzle|simulation|casual,wwh5-2026-10-13T10:26:09.722887+00:00,26b6a452b72e9466bced793868e7af8bd01c15980cf9bb4e27ab0799316f477b
+1382330,Persona® 5 Strikers,886,action,action|rpg,wwh5-2026-10-13T10:26:09.722887+00:00,26b6a452b72e9466bced793868e7af8bd01c15980cf9bb4e27ab0799316f477b
+1361320,The Room 4: Old Sins,890,puzzle,puzzle|adventure|casual|other,wwh5-2026-10-13T10:26:09.722887+00:00,26b6a452b72e9466bced793868e7af8bd01c15980cf9bb4e27ab0799316f477b
+250760,Shovel Knight: Treasure Trove,900,platformer,platformer|action|adventure|rpg,wwh5-2026-10-13T10:26:09.722887+00:00,26b6a452b72e9466bced793868e7af8bd01c15980cf9bb4e27ab0799316f477b
+228300,Remember Me,901,action,action|adventure|platformer,wwh5-2026-10-13T10:26:09.722887+00:00,26b6a452b72e9466bced793868e7af8bd01c15980cf9bb4e27ab0799316f477b
+498240,Batman - The Telltale Series,910,adventure,adventure|action|puzzle|casual,wwh5-2026-10-13T10:26:09.722887+00:00,26b6a452b72e9466bced793868e7af8bd01c15980cf9bb4e27ab0799316f477b
+1061910,Metal: Hellsinger,913,action,action|rhythm|adventure,wwh5-2026-10-13T10:26:09.722887+00:00,26b6a452b72e9466bced793868e7af8bd01c15980cf9bb4e27ab0799316f477b
+1113120,IXION,917,strategy,strategy|simulation|survival|adventure,wwh5-2026-10-13T10:26:09.722887+00:00,26b6a452b72e9466bced793868e7af8bd01c15980cf9bb4e27ab0799316f477b
+35700,Trine Enchanted Edition,934,platformer,platformer|puzzle|action|adventure,wwh5-2026-10-13T10:26:09.722887+00:00,26b6a452b72e9466bced793868e7af8bd01c15980cf9bb4e27ab0799316f477b
+1954200,Kena: Bridge of Spirits,938,action,action|adventure|platformer,wwh5-2026-10-13T10:26:09.722887+00:00,26b6a452b72e9466bced793868e7af8bd01c15980cf9bb4e27ab0799316f477b
+222480,Resident Evil Revelations,940,action,action|adventure|survival,wwh5-2026-10-13T10:26:09.722887+00:00,26b6a452b72e9466bced793868e7af8bd01c15980cf9bb4e27ab0799316f477b
+394310,Punch Club,959,simulation,simulation|rpg|action|sports|strategy,wwh5-2026-10-13T10:26:09.722887+00:00,26b6a452b72e9466bced793868e7af8bd01c15980cf9bb4e27ab0799316f477b
+537800,Bomber Crew,968,simulation,simulation|strategy|action|survival|casual,wwh5-2026-10-13T10:26:09.722887+00:00,26b6a452b72e9466bced793868e7af8bd01c15980cf9bb4e27ab0799316f477b
+1216710,Cyber Manhunt,969,simulation,simulation|puzzle|adventure|rpg,wwh5-2026-10-13T10:26:09.722887+00:00,26b6a452b72e9466bced793868e7af8bd01c15980cf9bb4e27ab0799316f477b
+288470,Fable Anniversary,973,action,action|rpg|adventure,wwh5-2026-10-13T10:26:09.722887+00:00,26b6a452b72e9466bced793868e7af8bd01c15980cf9bb4e27ab0799316f477b
+335670,LISA: The Painful,974,rpg,rpg|adventure,wwh5-2026-10-13T10:26:09.722887+00:00,26b6a452b72e9466bced793868e7af8bd01c15980cf9bb4e27ab0799316f477b
+8850,BioShock® 2,985,action,action|rpg|adventure|other,wwh5-2026-10-13T10:26:09.722887+00:00,26b6a452b72e9466bced793868e7af8bd01c15980cf9bb4e27ab0799316f477b
+861650,Session: Skate Sim,986,sports,sports|simulation,wwh5-2026-10-13T10:26:09.722887+00:00,26b6a452b72e9466bced793868e7af8bd01c15980cf9bb4e27ab0799316f477b
+210770,Sanctum 2,992,action,action|strategy|rpg|survival,wwh5-2026-10-13T10:26:09.722887+00:00,26b6a452b72e9466bced793868e7af8bd01c15980cf9bb4e27ab0799316f477b
+214510,LEGO® The Lord of the Rings™,997,action,action|adventure|platformer|puzzle,wwh5-2026-10-13T10:26:09.722887+00:00,26b6a452b72e9466bced793868e7af8bd01c15980cf9bb4e27ab0799316f477b

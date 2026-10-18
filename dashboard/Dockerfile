@@ -12,6 +12,8 @@ FROM scratch
 
 # 由 deploy.sh 里 `CGO_ENABLED=0 GOOS=linux GOARCH=amd64 go build` 产出
 COPY achievement-dashboard /dashboard
+# scratch 没有系统信任库；仅补 CA 公钥证书以校验 OSS HTTPS。
+COPY ca-certificates.crt /etc/ssl/certs/ca-certificates.crt
 
 # CWD 是 /app，配合 compose 里 ./data:/app/data 的挂载；
 # --report 留空时面板会自己找到 data/processed/analysis-report.json

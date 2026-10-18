@@ -1,0 +1,31 @@
+﻿appid,title,panel,metric,label,value,node_count,ending_type,three_point_available
+1593500,God of War,coverage,p_s,首节点,0.87,11,unified,true
+1593500,God of War,coverage,p_m,位置中位节点,0.532,11,unified,true
+1593500,God of War,coverage,p_f,代表结局,0.469,11,unified,true
+220240,Far Cry 3,coverage,p_s,首节点,0.196,11,unified,true
+220240,Far Cry 3,coverage,p_m,位置中位节点,0.09300000000000001,11,unified,true
+220240,Far Cry 3,coverage,p_f,代表结局,0.071,11,unified,true
+367520,Hollow Knight,coverage,p_s,首节点,0.713,11,multi,true
+367520,Hollow Knight,coverage,p_m,位置中位节点,0.418,11,multi,true
+367520,Hollow Knight,coverage,p_f,代表结局,0.244,11,multi,true
+489830,The Elder Scrolls V: Skyrim Special Edition,coverage,p_s,首节点,0.722,9,multi,true
+489830,The Elder Scrolls V: Skyrim Special Edition,coverage,p_m,位置中位节点,0.221,9,multi,true
+489830,The Elder Scrolls V: Skyrim Special Edition,coverage,p_f,代表结局,0.126,9,multi,true
+424840,Little Nightmares,coverage,p_s,首节点,0.513,6,unified,true
+424840,Little Nightmares,coverage,p_m,位置中位节点,0.321,6,unified,true
+424840,Little Nightmares,coverage,p_f,代表结局,0.052000000000000005,6,unified,true
+1593500,God of War,progress,early_progress_ratio,前段：中 / 首,0.6114942528735633,11,unified,true
+1593500,God of War,progress,late_progress_ratio,后段：末 / 中,0.8815789473684209,11,unified,true
+1593500,God of War,progress,overall_progress_ratio,全程：末 / 首,0.5390804597701149,11,unified,true
+220240,Far Cry 3,progress,early_progress_ratio,前段：中 / 首,0.4744897959183674,11,unified,true
+220240,Far Cry 3,progress,late_progress_ratio,后段：末 / 中,0.7634408602150536,11,unified,true
+220240,Far Cry 3,progress,overall_progress_ratio,全程：末 / 首,0.36224489795918363,11,unified,true
+367520,Hollow Knight,progress,early_progress_ratio,前段：中 / 首,0.5862552594670407,11,multi,true
+367520,Hollow Knight,progress,late_progress_ratio,后段：末 / 中,0.583732057416268,11,multi,true
+367520,Hollow Knight,progress,overall_progress_ratio,全程：末 / 首,0.34221598877980364,11,multi,true
+489830,The Elder Scrolls V: Skyrim Special Edition,progress,early_progress_ratio,前段：中 / 首,0.3060941828254848,9,multi,true
+489830,The Elder Scrolls V: Skyrim Special Edition,progress,late_progress_ratio,后段：末 / 中,0.5701357466063348,9,multi,true
+489830,The Elder Scrolls V: Skyrim Special Edition,progress,overall_progress_ratio,全程：末 / 首,0.1745152354570637,9,multi,true
+424840,Little Nightmares,progress,early_progress_ratio,前段：中 / 首,0.6257309941520468,6,unified,true
+424840,Little Nightmares,progress,late_progress_ratio,后段：末 / 中,0.161993769470405,6,unified,true
+424840,Little Nightmares,progress,overall_progress_ratio,全程：末 / 首,0.101364522417154,6,unified,true

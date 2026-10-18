@@ -1,8 +1,6 @@
 """crawler.steam_api — Steam 公开数据采集模块
 
-全部数据源免 key。2026-09-15 决定：个人 Steam API key 只能覆盖 key 持有者
-本人的逐玩家数据，对本项目的**游戏级**分析没有价值，因此不申请、不使用
-任何 key。
+本模块数据源免 key，用于**游戏级**分析。
 
 使用的公开数据源：
 - appdetails（商店接口）：游戏元数据 + 成就概览。**单 appid 请求**，实测多
@@ -96,15 +94,20 @@ def fetch_appdetails(
             # 软拒绝（HTTP 200 但 success=false）：隔几秒再试，别急着判「无数据」
             logger.warning(
                 "appdetails 软拒绝（%d/%d）：appid=%s，%s 后重试",
-                attempt, _EMPTY_RETRY_ATTEMPTS, appid,
-                f"{_EMPTY_RETRY_DELAY_SEC}s" if attempt < _EMPTY_RETRY_ATTEMPTS else "—",
+                attempt,
+                _EMPTY_RETRY_ATTEMPTS,
+                appid,
+                f"{_EMPTY_RETRY_DELAY_SEC}s"
+                if attempt < _EMPTY_RETRY_ATTEMPTS
+                else "—",
             )
             if attempt < _EMPTY_RETRY_ATTEMPTS:
                 time.sleep(_EMPTY_RETRY_DELAY_SEC)
         else:
             logger.warning(
                 "appdetails 连续 %d 次软拒绝，判为无数据：appid=%s",
-                _EMPTY_RETRY_ATTEMPTS, appid,
+                _EMPTY_RETRY_ATTEMPTS,
+                appid,
             )
     return result
 
@@ -146,8 +149,7 @@ def fetch_global_achievement_percentages(appid: int) -> list[dict[str, Any]]:
     """
     try:
         payload = request_json(
-            f"{WEB_API_BASE}/ISteamUserStats/"
-            f"GetGlobalAchievementPercentagesForApp/v2/",
+            f"{WEB_API_BASE}/ISteamUserStats/GetGlobalAchievementPercentagesForApp/v2/",
             {"gameid": appid, "format": "json"},
             source="global_ach",
         )
@@ -183,9 +185,7 @@ def fetch_community_achievements(appid: int) -> list[dict[str, Any]]:
         [{"display_name": 展示名, "percent": 完成率(float),
           "description": 成就描述}, ...]；页面无成就时返回空列表。
     """
-    text = request_text(
-        COMMUNITY_STATS_URL.format(appid=appid), source="community_ach"
-    )
+    text = request_text(COMMUNITY_STATS_URL.format(appid=appid), source="community_ach")
     rows = _parse_achievement_rows(text)
     if not rows:
         logger.warning("社区成就页解析不到成就行：appid=%s", appid)

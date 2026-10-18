@@ -1,0 +1,27 @@
+{
+  "version": "ZZY-site-v9",
+  "date": "2026-10-15",
+  "navigation": "brand and learn-more menu only",
+  "deepseek_integration": "implemented; private key intentionally empty; live call not verified",
+  "actual_external_call": false,
+  "actual_api_key_configured": false,
+  "tests": {
+    "pytest_private": 41,
+    "pytest_existing_query_contracts": 112,
+    "node_presentation": 8,
+    "browser_deepseek": 11,
+    "browser_usability": 19,
+    "browser_existing": 47,
+    "historical_queries": 6
+  },
+  "provider_tests": "httpx.MockTransport; browser fixtures explicitly marked",
+  "readme_unchanged_vs_v8": true,
+  "readme_sha256": "dde6e4cebdc06bda96e1813b3022fe713724928259cb68b4725c32fb4ac2baf5",
+  "private_config_packaged": false,
+  "database_access": false,
+  "scoring_unchanged": true,
+  "official_docs": [
+    "https://api-docs.deepseek.com/api/create-chat-completion/",
+    "https://api-docs.deepseek.com/guides/json_mode/"
+  ]
+}

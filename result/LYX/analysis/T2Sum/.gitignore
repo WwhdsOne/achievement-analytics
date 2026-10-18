@@ -1,0 +1,10 @@
+__pycache__/
+runtime/
+*.csv
+manifest.json
+data.json
+
+# 正式分析结果随代码提交；运行缓存等其他忽略规则保持不变。
+!/output/**/*.csv
+!/output/**/manifest.json
+!/output/**/data.json

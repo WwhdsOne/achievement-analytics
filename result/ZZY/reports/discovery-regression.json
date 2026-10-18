@@ -1,0 +1,62 @@
+{
+  "status": "passed",
+  "protected_modules": 18,
+  "protected_module_sha_identical": true,
+  "database_access": false,
+  "comparison": "frozen replay-v2 query reports; pre-v5 alias version bindings excluded, all actual ranking fields and paths compared",
+  "checks": [
+    {
+      "query": 1,
+      "seeds": [
+        1245620
+      ],
+      "results": 5,
+      "ranking_content_and_paths_identical": true
+    },
+    {
+      "query": 2,
+      "seeds": [
+        1245620,
+        374320
+      ],
+      "results": 5,
+      "ranking_content_and_paths_identical": true
+    },
+    {
+      "query": 3,
+      "seeds": [
+        413150,
+        646570,
+        367520
+      ],
+      "results": 5,
+      "ranking_content_and_paths_identical": true
+    },
+    {
+      "query": 4,
+      "seeds": [
+        413150
+      ],
+      "results": 5,
+      "ranking_content_and_paths_identical": true
+    },
+    {
+      "query": 5,
+      "seeds": [
+        269430,
+        11240,
+        55020
+      ],
+      "results": 0,
+      "ranking_content_and_paths_identical": true
+    },
+    {
+      "query": 6,
+      "seeds": [
+        1245620
+      ],
+      "results": 5,
+      "ranking_content_and_paths_identical": true
+    }
+  ]
+}

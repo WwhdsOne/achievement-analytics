@@ -1,0 +1,8 @@
+.env
+.env.*
+*.env
+runtime/
+upload.tar.gz
+__pycache__/
+*.py[cod]
+.venv/

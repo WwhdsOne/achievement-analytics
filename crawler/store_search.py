@@ -107,7 +107,7 @@ PAGE_MAX_ATTEMPTS = 3
 PAGE_BACKOFF_SEC = 5.0
 
 # Steam 商店搜索的分类过滤值
-CATEGORY_GAMES = 998       # 「游戏」，排除 DLC / 软体 / 原声带
+CATEGORY_GAMES = 998  # 「游戏」，排除 DLC / 软体 / 原声带
 CATEGORY_ACHIEVEMENTS = 22  # 「Steam 成就」
 
 # ── results_html 解析 ─────────────────────────────────────
@@ -124,9 +124,7 @@ _ROW_SPLIT = re.compile(r'(?=<a href="https://store\.steampowered\.com/app/)')
 _APPID_RE = re.compile(r'data-ds-appid="(\d+)"')
 _TAGIDS_RE = re.compile(r'data-ds-tagids="\[([\d,\s]*)\]"')
 _TITLE_RE = re.compile(r'<span class="title">(.*?)</span>', re.S)
-_RELEASED_RE = re.compile(
-    r'<div class="search_released[^"]*">\s*(.*?)\s*</div>', re.S
-)
+_RELEASED_RE = re.compile(r'<div class="search_released[^"]*">\s*(.*?)\s*</div>', re.S)
 _PRICE_RE = re.compile(r'data-price-final="(\d+)"')
 # 注意：class 里是评价档位的 **CSS slug**（positive / very_positive ...），
 # 展示名（"Very Positive"）只在 tooltip 第一行，别抓错（2026-09-17 踩到）
@@ -196,9 +194,7 @@ def parse_search_page(html_text: str) -> list[dict[str, Any]]:
 
         tag_m = _TAGIDS_RE.search(block)
         tag_ids = (
-            [int(x) for x in tag_m.group(1).split(",") if x.strip()]
-            if tag_m
-            else []
+            [int(x) for x in tag_m.group(1).split(",") if x.strip()] if tag_m else []
         )
 
         released_m = _RELEASED_RE.search(block)
@@ -226,9 +222,7 @@ def parse_search_page(html_text: str) -> list[dict[str, Any]]:
                 "appid": int(appid_m.group(1)),
                 "name_en": html.unescape(title_m.group(1)).strip(),
                 "release_date": (
-                    html.unescape(released_m.group(1)).strip()
-                    if released_m
-                    else None
+                    html.unescape(released_m.group(1)).strip() if released_m else None
                 ),
                 "tag_ids": tag_ids,
                 "review_label": review_label,
