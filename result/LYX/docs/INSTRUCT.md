@@ -1,10 +1,10 @@
 # LYX分析使用与读图说明：T1Core与T2Sum六项任务
 
-更新：2026-10-17。阅读对象：刘宇翔、组长及需要复现或讲解图表的组员。
+更新：2026-10-19。阅读对象：刘宇翔、组长及需要复现或讲解图表的组员。
 
-本文件解释“做了什么、如何调用、图上在比较什么、能得出什么结论”。程序与字段细节见[T1Core说明](../analysis/T1Core/README.md)、[T2Sum说明](../analysis/T2Sum/README.md)及[同类参照说明](../analysis/T2Sum/BENCHMARK.md)，网页交互交接见[DEPLOY](DEPLOY.md)，固定图见[T1图集](../analysis/T1Core/figures/README.md)与[T2图集](../analysis/T2Sum/figures/README.md)。本文描述当前已实现的命令；网页高亮等尚未实现的交互另在DEPLOY中标明。
+本文件解释“做了什么、如何调用、图上在比较什么、能得出什么结论”。程序与字段细节见[T1Core说明](../analysis/T1Core/README.md)、[T2Sum说明](../analysis/T2Sum/README.md)及[同类参照说明](../analysis/T2Sum/BENCHMARK.md)，网页交接见[DEPLOY](DEPLOY.md)，固定图见[T1图集](../analysis/T1Core/figures/README.md)与[T2图集](../analysis/T2Sum/figures/README.md)。六项任务现已整合为[WEB交互简报](../WEB/index.html)，支持1～5款选择、图表切换和高亮；它读取冻结结果，不在点击时运行下文的Python分析命令，当前尚未公网部署。
 
-快速定位：[命令总览](#3-运行前提与命令总览) · [任务5口碑](#8-任务5口碑与主线推进) · [任务6同类参照](#9-任务6玩法多标签下的同类参照) · [刷新与讲解顺序](#10-快速使用顺序与核验)。任务1～4的详细说明保留在第4～7节。
+快速定位：[网页使用](#31-已有网页的打开预览与核验) · [命令总览](#32-python分析与出图接口) · [任务5口碑](#8-任务5口碑与主线推进) · [任务6同类参照](#9-任务6玩法多标签下的同类参照) · [刷新与讲解顺序](#10-快速使用顺序与核验)。任务1～4的详细说明保留在第4～7节。
 
 ## 1. 六项任务如何连起来
 
@@ -57,11 +57,34 @@
 
 数值保留精度，比例内部通常为0～1；CSV为空表示缺失，不能读成0。`*_pp`表示百分点；内部的后段减前段差值仍为比例，需要展示时乘100。CSV为UTF-8 BOM，布尔序列化为true/false；JSON的缺失为null。
 
-manifest记录来源版本、参数、清单和产物哈希；PNG用于直接看图，SVG可缩放。CSV、数据JSON和manifest是本地忽略产物，不会随Git自动上传。当前程序仍会读SQLite核对快照或名称；已有CSV不代表所有命令已能脱离数据库运行。
+manifest记录来源版本、参数、清单和产物哈希；PNG用于直接看图，SVG可缩放。当前T1Core/output、T2Sum/output已按交付要求纳入Git；SQLite、runtime和其他被忽略附件仍须单独准备。原Python分析/查询程序仍会读SQLite核对快照或名称；已有CSV不代表所有原命令均能脱离数据库运行。WEB则只消费现有26张CSV与7份manifest，构建后把展示数据内嵌到HTML，查看与交互均不读取SQLite。
 
 ## 3. 运行前提与命令总览
 
-以下终端命令均从LYX目录运行：
+### 3.1 已有网页的打开、预览与核验
+
+直接打开[WEB/index.html](../WEB/index.html)可查看六项任务的核心交互。默认选中Hollow Knight与Dead Cells；搜索限于198款有效主线游戏，支持AppID、英文名及已有中文名，最多选5款。时长、口碑、类型等总体背景不随选择缩小；缺失值保留原因，不补零。
+
+推荐使用本机HTTP预览，使页面末尾21张原图、33份来源及完整文档链接都能按原目录访问。以下命令从**仓库根目录**执行：
+
+```powershell
+uv run --frozen --no-sync python -X utf8 -B -m http.server 8765 --bind 127.0.0.1 --directory result/LYX
+```
+
+打开`http://127.0.0.1:8765/WEB/index.html`，结束时在启动服务的终端按Ctrl+C。服务根应为LYX；仅托管WEB或单独复制index.html仍支持核心交互，但无法访问上级docs、analysis中的附件。HTML的脚本、样式、数据均已内嵌；内置浏览器已核验HTTP访问，未直接实测file://离线模式。
+
+只有修改WEB源码或更新冻结结果时才需重新构建。下列命令也从**仓库根目录**执行，第一条写入WEB成品，第二条只读检查成品与来源一致性：
+
+```powershell
+uv run --frozen --no-sync python -X utf8 -B result/LYX/WEB/build.py
+uv run --frozen --no-sync python -X utf8 -B result/LYX/WEB/verify.py
+```
+
+二者均不连接数据库、不请求DeepSeek、不重跑分析统计；构建只写WEB/index.html与source_manifest.json。详细操作、文件分工与交互范围见[WEB使用说明](../WEB/README.md)。当前浏览器28项检查的记录与边界见[WEB验收](../WEB/ACCEPTANCE.md)：消费CSV自身哈希与关键数值关系已通过检查，但仍保留6条历史父manifest指纹漂移警告，不能表述为全部历史审计链同步通过。
+
+### 3.2 Python分析与出图接口
+
+本节之后的分析终端命令均从LYX目录运行：
 
 ```powershell
 cd D:\PycharmProjects\achievement-analytics
@@ -251,7 +274,7 @@ uv --cache-dir analysis/T1Core/runtime/uv-cache run --frozen --no-sync python -X
 uv --cache-dir analysis/T1Core/runtime/uv-cache run --frozen --no-sync python -X utf8 -B analysis/T1Core/analyze_duration_references.py
 ```
 
-这两个入口均为固定样本分析，没有新增按1～5款筛选时长的命令。网页保留65款背景并高亮选择是下一阶段交互设想，不是当前命令已经具备的功能。
+这两个Python入口均为固定样本分析，没有新增按1～5款筛选时长的CLI参数。WEB已独立实现保留65款背景、选择高亮和三种参考耗时切换，直接读取已存结果，不调用这两条命令重跑统计。
 
 ### 7.3 图10～12怎么看
 
@@ -423,11 +446,11 @@ DOOM在198款目录内但只有两节点，状态outside_three_point_cohort；Cl
 | benchmark_cases.csv / semantic_caveats.csv | 自动核查案例、全183款已知疑点或尚未逐项核验状态 |
 | data.json / manifest.json / report.md | 完整离线结果、来源/规则/指纹、解释与原节点文本 |
 
-query_benchmark只读查询已有默认结果，不会重新构建参照；与CLI重算路径不同。数据约15 MB，网页按视图和AppID返回小块，避免每次选择传全915行与全部成员；接口与条件切换能力边界见[DEPLOY](DEPLOY.md)。
+query_benchmark只读查询已有默认结果，不会重新构建参照；与CLI重算路径不同。原完整data.json约15 MB。已完成的静态网页通过WEB/data_adapter.py只读整理各条件摘要和成员，内嵌后在浏览器按AppID/config筛选，不调用query_benchmark，也不向后端逐次请求。原Python查询与未来HTTP接口的能力边界见[DEPLOY](DEPLOY.md)。
 
 ## 10. 快速使用顺序与核验
 
-只查看结果：先看[T1图集](../analysis/T1Core/figures/README.md)、[T2图集](../analysis/T2Sum/figures/README.md)及对应report，不需要重跑。需要全量刷新时，在来源版本匹配前提下，顺序为T0基线（必要时）→T1 prepare→types/trajectory/duration及参考补图→T2 reputation→benchmark。T1 --output只隔离输出，不自动改变下游默认输入路径；不要把试跑输出当作已经替换正式底表。
+只查看结果：先打开[交互简报](../WEB/index.html)，或看[T1图集](../analysis/T1Core/figures/README.md)、[T2图集](../analysis/T2Sum/figures/README.md)及对应report，不需要重跑。网页交互视图提炼核心问题，原21张图通过末尾图集入口保留，不随选择生成新PNG。需要全量刷新时，在来源版本匹配前提下，顺序为T0基线（必要时）→T1 prepare→types/trajectory/duration及参考补图→T2 reputation→benchmark→WEB build→WEB verify。T1 --output只隔离输出，不自动改变下游默认输入路径；不要把试跑输出当作已经替换正式底表。
 
 1. 讲解先说明1000→198→183，时长65、三评分140、主参照181各自的资格条件。
 2. 用任务1解释覆盖与阶段比、首节点和位置中位；任务2先交代主类型/多标签，再比较组内汇总。
@@ -435,6 +458,6 @@ query_benchmark只读查询已有默认结果，不会重新构建参照；与CL
 4. 用任务5展示口碑与推进的不同维度，用任务6说明相对同类位置；随时回到节点原文和资格台账。
 5. 网页保持固定总体背景＋选择详情，具体布局、能力边界和验收见[DEPLOY](DEPLOY.md)。
 
-2026-10-17已真实运行10条命令覆盖公共准备与五专题，49张CSV与现有交付逐字一致，30张PNG和对应SVG完整，三个只读查询均核验1～5款；两份SQLite和既有结果未变。本次只整合文档，未重新运行这些统计。可复用[交接说明](../analysis/delivery/README.md)中的打包核验入口，运行实录留在本地忽略的delivery/runtime。
+2026-10-17已真实运行10条命令覆盖公共准备与五专题，49张CSV与当时交付逐字一致，30张PNG和对应SVG完整，三个只读查询均核验1～5款；两份SQLite和既有结果未变。2026-10-19新增WEB静态交付，核验1～5款联动、分组、固定总体、缺失及桌面/手机容器布局；没有重算原统计。完整WEB记录见[验收说明](../WEB/ACCEPTANCE.md)。原数据附件仍可复用[交接说明](../analysis/delivery/README.md)中的打包入口，运行实录留在本地忽略的delivery/runtime。
 
-所有任务没有合成统一的玩家“粘性总分”，当前未训练回归模型，也没有个人留存/因果识别。输入来源、单位、缺失与语义限制都是结论的一部分；代码/说明走Git，CSV/JSON/SQLite与数据附件需单独交接。
+所有任务没有合成统一的玩家“粘性总分”，当前未训练回归模型，也没有个人留存/因果识别。输入来源、单位、缺失与语义限制都是结论的一部分。重点案例人工审核已由WWH完成，依据2026-10-17刘宇翔确认；这不等于198款全部逐项人工审核。代码、说明与当前纳入Git的output结果可随仓库交接；SQLite及其他忽略附件按需单独提供，单独演示WEB核心交互不需要数据库。

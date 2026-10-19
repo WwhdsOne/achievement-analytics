@@ -1,11 +1,12 @@
 # LYX分析目录
 
-更新：2026-10-17。当前已完成任务1公共指标和任务2～6五个分析专题，覆盖固定图01～21；真实运行核验已通过。分析以游戏为单位，正式使用“节点覆盖、阶段推进、游戏级关联与同类参照”，不将聚合数据直接解释为玩家留存或因果。
+更新：2026-10-19。当前已完成任务1公共指标和任务2～6五个分析专题，覆盖固定图01～21，并在同级[WEB](../WEB/README.md)完成静态交互展示。分析以游戏为单位，正式使用“节点覆盖、阶段推进、游戏级关联与同类参照”，不将聚合数据直接解释为玩家留存或因果。原分析运行与网页核验记录分开保留，历史来源清单指纹不同步仍有说明。
 
 ## 从这里开始
 
 | 需要做什么 | 阅读入口 |
 |---|---|
+| 直接选择1～5款游戏体验六项分析 | [网页成品](../WEB/index.html) · [使用/构建](../WEB/README.md) · [网页核验](../WEB/ACCEPTANCE.md) |
 | 查命令、参数、各任务含义和逐图读法 | [统一使用指南：docs/INSTRUCT.md](../docs/INSTRUCT.md) |
 | 给组长看页面布局、游戏选择、高亮、评分/参照切换及数据契约 | [统一网页交接：docs/DEPLOY.md](../docs/DEPLOY.md) |
 | 看研究任务、样本和解释边界 | [data_plan.md](../docs/data_plan.md) |
@@ -31,7 +32,7 @@ analysis/
 | T2Sum | [README](T2Sum/README.md)、[BENCHMARK](T2Sum/BENCHMARK.md) | 口碑与同类参照均完成；未训练回归模型 |
 | delivery | [README](delivery/README.md) | 本地数据附件与核验入口已就绪，未执行远程上传或网页部署 |
 
-各阶段的runtime仅保存本地运行、图形缓存和验收记录；output中的CSV/数据JSON/manifest以及数据库按忽略规则单独交接。删除process旧运行历史不影响当前分析输入与结果。
+各阶段的runtime仅保存本地运行、图形缓存和验收记录；T1/T2正式output中的CSV/数据JSON/manifest已经纳入Git，数据库、T0本地基线及delivery/package继续按既有规则单独保留或交接。删除process旧运行历史不影响当前分析输入与结果。
 
 ## 六项任务和图表范围
 
@@ -81,16 +82,16 @@ T2Sum建议使用自身缓存路径 `--cache-dir analysis/T2Sum/runtime/uv-cache
 
 ## 游戏选择与网页能力
 
-| 分析 | 已实现的选择方式 | 总体背景如何处理 |
+| 分析 | 已实现的选择方式 | 网页背景与联动 |
 |---|---|---|
-| 任务1 | CLI输入1～5款AppID/已有中英文名 | 展示所选指标 |
-| 任务2 | CLI固定总体，无单独选择参数 | 网页可定位成员，类型统计不随选择改变 |
-| 任务3 | CLI及query_trajectory支持自选分组 | 保留原节点顺序，每组1～5款；不套自动案例条件 |
-| 任务4 | CLI固定65款，无高亮参数 | 网页高亮和三种参考切换是待实现交互 |
-| 任务5 | CLI静态高亮、query_reputation只读查询 | 固定183/140款，保留缺评分/缺三节点状态 |
-| 任务6 | CLI自选、query_benchmark只读查询 | 主背景181款不随选择变；参照不足不补零 |
+| 任务1 | CLI及WEB支持1～5款AppID/已有中英文名 | 网页展示所选节点覆盖或阶段推进 |
+| 任务2 | CLI固定总体；WEB可切主类型/完整标签并查看成员 | 类型统计固定183款，不随选择改变 |
+| 任务3 | CLI/query_trajectory自选分组；WEB支持最多5款的分组对比 | 默认每组2款或指定组数均分，保留全部有效节点与原顺序 |
+| 任务4 | CLI固定65款；WEB已实现高亮和三种参考切换 | 始终固定65款及对应统计；缺失保留说明 |
+| 任务5 | CLI静态高亮/query_reputation；WEB可切视图、阶段和评分 | 固定183/140款，保留缺评分/缺三节点状态 |
+| 任务6 | CLI/query_benchmark；WEB按五条件真实结果切换 | 各条件总体背景不随选择变；参照不足不补零 |
 
-名称按已有appid/name_en/name_zh匹配，歧义和重复报错，不补造中文译名。query_benchmark当前没有config参数；网页若切五种条件，需要组长按已保存的条件结果/成员表适配，不能把主条件数据只换标题。现有Python查询部分仍依赖本地SQLite，尚无这些分析专用的HTTP接口或已部署交互页面。详细布局与能力边界见[DEPLOY](../docs/DEPLOY.md)。
+Python入口按已有appid/name_en/name_zh匹配，歧义和重复报错；WEB按已有名称/AppID展示搜索候选，已选游戏不重复加入，最多5款，不补造中文译名。query_benchmark仍没有config参数；WEB适配器已独立读取五条件的已存结果和成员，未修改这个Python函数或把主条件只换标题。现有Python查询部分仍依赖本地SQLite，WEB浏览只用内嵌结果。当前本地交互页面已完成，但尚无分析专用HTTP接口或公网部署；详细交接见[DEPLOY](../docs/DEPLOY.md)。
 
 ## 数据输入、产物与交接
 
@@ -100,10 +101,12 @@ T2Sum建议使用自身缓存路径 `--cache-dir analysis/T2Sum/runtime/uv-cache
 
 现成交接目录 `delivery/package/` 约40.8 MB、123个文件，含49张结果CSV、42个PNG/SVG、9份源表摘录及198款game_catalog.csv。source_tables.csv、result_tables.csv、analysis_summary.csv分别提供来源、结果与任务总表，delivery_manifest.json登记相对路径和内容哈希。
 
-只做网页展示优先单独传结果包；按当前Python代码完整复算还需两份原SQLite。局部CSV摘录不能直接替代原库，Git拉代码也不会获得被忽略的数据。上传选择、体量和包核验命令见[delivery说明](delivery/README.md)；本目录不执行上传、发布或面板部署。
+只演示现成网页时可单独交付`WEB/index.html`；完整报告、原图和来源链接需保留LYX相对结构。修改网页后重建需保留适配器消费的26张CSV及7份manifest；按当前Python分析代码完整复算还需两份原SQLite。局部CSV摘录不能直接替代原库，Git拉代码也不会获得被忽略的数据。完整结果包、上传选择与核验命令见[delivery说明](delivery/README.md)，网页交接见[WEB说明](../WEB/README.md)；尚未执行公网发布或面板部署。
 
 ## 最近运行核验
 
 2026-10-17已实际执行10条命令，覆盖基线、公共准备、五专题、时长补图和自选分组，全部成功；重新生成的49张CSV与现有交付逐字一致，30张PNG及配套SVG完整，三个只读查询均覆盖1～5款输入。239个保护文件指纹未变，包含两库和既有数值/图；日志未见警告或Traceback。
 
 [本机运行核验报告](delivery/runtime/run_check_20261017T043521Z/REPORT.md)及其acceptance.json保存命令、耗时、产物和保护结果；这些运行记录属于本地忽略文件，Git克隆后不会自动携带。本次README更新仅同步导航与状态，没有重新执行统计、修改程序或写数据库。
+
+2026-10-19网页实施另有28项浏览器检查、桌面/手机布局及33份来源文件核验，见[WEB/ACCEPTANCE](../WEB/ACCEPTANCE.md)。已消费CSV自身校验与数值关系通过，6条历史父manifest漂移仍记录为警告；该网页验收不替代原分析链严格审计，也不将当前完整审计写为全部通过。

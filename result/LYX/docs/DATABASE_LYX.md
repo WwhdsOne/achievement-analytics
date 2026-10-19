@@ -1,6 +1,6 @@
 # LYX本地数据库：原始准备与DeepSeek分类
 
-更新：2026-10-17。文件 `result/LYX/database/achievements.sqlite`，SQLite `user_version=4`。本轮只读检查完整性与外键通过，未修改数据库。分析现已采用[WWH冻结库](DATABASE_WWH.md)，本库主要为分析补充HLTB三类参考耗时，仍保留既有DeepSeek分类成果。
+数据库核验快照：2026-10-17；网页用途说明更新：2026-10-19。文件 `result/LYX/database/achievements.sqlite`，SQLite `user_version=4`。原核验的完整性与外键通过，本次文档同步未重新查询或修改数据库。分析现已采用[WWH冻结库](DATABASE_WWH.md)，本库主要为分析补充HLTB三类参考耗时，仍保留既有DeepSeek分类成果。
 
 ## 当前只读核查
 
@@ -77,4 +77,4 @@ FROM achievement_types t JOIN achievements a USING(appid,api_name)
 WHERE t.display_name IS NOT a.display_name;
 ```
 
-网页交接只需[delivery/package](../analysis/delivery/README.md)中已导出的游戏/时长摘录和计算结果；完整代码复算则保留整份原SQLite及指纹。不得将SQLite、累计CSV或原始导出提交Git。
+现成[WEB交互简报](../WEB/index.html)已内嵌由正式结果表整理的游戏/时长展示数据，打开页面不读本SQLite。只演示可交付单文件HTML；重建页面读取T1/T2已有CSV与manifest，不重新查询本库。若另外适配数据，可参考[delivery/package](../analysis/delivery/README.md)中的游戏/时长摘录和计算结果；按现有分析代码完整复算仍需整份原SQLite及指纹。不得将SQLite、累计CSV或原始导出提交Git；网页打开、构建与交接见[WEB说明](../WEB/README.md)。

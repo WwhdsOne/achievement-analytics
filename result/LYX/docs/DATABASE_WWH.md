@@ -1,8 +1,8 @@
 # WWH借用冻结数据库：当前分析主源
 
-更新：2026-10-17。只读文件 `result/LYX/NewDB/wwh5.sqlite3`；约105.8 MB，SQLite user_version=0（此库按自身schema/metadata校验，不是LYX schema4）。源项目为组长WWH的第5方向，LYX复制适配程序在[analysis/T0Pre](../analysis/T0Pre/README.md)。不修改原分类、剧情标识、数组顺序或数据库。
+数据库核验快照：2026-10-17；网页用途说明更新：2026-10-19。只读文件 `result/LYX/NewDB/wwh5.sqlite3`；约105.8 MB，SQLite user_version=0（此库按自身schema/metadata校验，不是LYX schema4）。源项目为组长WWH的第5方向，LYX复制适配程序在[analysis/T0Pre](../analysis/T0Pre/README.md)。本次文档同步未重新查询或修改原分类、剧情标识、数组顺序或数据库。
 
-版本：`wwh5-2026-10-13T10:26:09.722887+00:00`；输入SHA256：`17a0c8e213e73d38ebf20939d5a26413dd49b858d3b315b4c6afa12722d0ebb0`；文件SHA256：`4c6ad6553b408efbecdd209c669f7ef9250da0f38c4f60e0e631660aaa35fae9`。本轮integrity_check=ok，foreign_key_check无问题。这是冻结快照，不是今日实时Steam统计。
+版本：`wwh5-2026-10-13T10:26:09.722887+00:00`；输入SHA256：`17a0c8e213e73d38ebf20939d5a26413dd49b858d3b315b4c6afa12722d0ebb0`；文件SHA256：`4c6ad6553b408efbecdd209c669f7ef9250da0f38c4f60e0e631660aaa35fae9`。2026-10-17记录的integrity_check=ok，foreign_key_check无问题。这是冻结快照，不是今日实时Steam统计。
 
 ## 原表与字段
 
@@ -57,4 +57,4 @@ T0Pre保留原模型分类、证据门槛与质量剔除规则，在highest基�
 
 PyCharm新增SQLite数据源选择本文件，保持只读使用。[storage.py](../analysis/T0Pre/wwh_replay/storage.py)的connect使用mode=ro、query_only和一致读事务，检查八张必需表；各层manifest再核对数据库SHA及固定样本。复制后只要文件字节不变，路径不同不影响指纹；应保留LYX内预期相对路径或显式适配。
 
-网页优先用[交接包](../analysis/delivery/README.md)里的49张结果CSV、JSON和图，而非直接查询原请求响应历史。198款源表摘录包含11143条成就/11143条成就分类、198条玩法/剧情记录和587条调用索引，但它只是分析来源的局部说明，不能取代原完整SQLite供T0全范围重跑。原库含model_calls大段历史文本，完整复算时私下传整库，不提交Git，也不作为公开静态文件发布。数据页面使用RAWG数据时保留RAWG来源回链。
+当前[WEB简报](../WEB/index.html)由T1/T2正式结果的26张CSV与7份manifest构建，玩法、剧情节点和评分均沿用冻结来源，浏览时不读取本库或原请求响应。只演示可交付单文件HTML；修改后重建页面也只读已有结果。需自行适配时可用[交接包](../analysis/delivery/README.md)中的49张结果CSV、JSON和图。198款源表摘录包含11143条成就/11143条成就分类、198条玩法/剧情记录和587条调用索引，但不能取代原完整SQLite供T0全范围重跑。原库含model_calls大段历史文本，完整复算时私下传整库，不提交Git，也不作为公开静态文件发布。页面已保留RAWG来源回链；构建、交接及来源警告见[WEB说明](../WEB/README.md)。
