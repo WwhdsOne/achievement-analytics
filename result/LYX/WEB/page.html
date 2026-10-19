@@ -1,0 +1,90 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <meta name="description" content="从198款游戏的主线成就出发，探索阶段推进、玩法差异、游玩投入、口碑与同类参照。刘宇翔的Steam成就分析项目简报。">
+  <meta name="theme-color" content="#173b70">
+  <title>玩到哪里 · 主线推进与游玩投入研究</title>
+  <style>/*__STYLE__*/</style>
+</head>
+<body>
+<a class="skip-link" href="#main">跳到正文</a>
+<header class="site-header">
+  <a class="brand" href="#top" aria-label="玩到哪里，返回首页"><span class="brand-mark" aria-hidden="true">↗</span><span>玩到哪里<span class="brand-sub">PLAY / PROGRESS</span></span></a>
+  <nav class="main-nav" aria-label="章节导航"><a class="nav-link" href="#explore">指标与过程</a><a class="nav-link" href="#types">玩法</a><a class="nav-link" href="#time">投入</a><a class="nav-link" href="#reputation">口碑</a><a class="nav-link" href="#peers">同类</a><a class="nav-link" href="#methods">依据</a></nav>
+  <button type="button" class="header-action" id="print-page">打印简报 <span aria-hidden="true">↗</span></button>
+</header>
+<main id="main">
+  <div class="shell">
+    <section class="hero" id="top" aria-labelledby="hero-title">
+      <div class="hero-grid">
+        <div class="hero-proof"><p class="eyebrow">STEAM ACHIEVEMENT STUDY · LYX</p><h1 class="hero-title" id="hero-title">玩家愿意<br>玩到<span>哪里？</span></h1><p class="hero-copy">通关只是一个终点。<br>把主线拆开，看看过程、投入和口碑之间的联系。</p><div class="hero-meta"><span>刘宇翔 · 课程项目</span><span>冻结快照 · 2026.10.13</span></div><a class="primary-link" href="#story">从一组有意思的对比开始 <span aria-hidden="true">↓</span></a></div>
+        <div class="hero-visual"><div class="panel-kicker"><span>同样的终点 · 不同的路径</span><span>真实节点</span></div>__HERO_SVG__<div class="hero-foot"><span><i class="swatch" style="--game-color:#77b6ff"></i>Splinter Cell Blacklist</span><span><i class="swatch" style="--game-color:#f5b169"></i>Dead Cells</span></div><p class="hero-chart-note">各自首节点归一为100%；横轴为节点位置，非时间。</p></div>
+      </div>
+      <div class="scope-grid" aria-label="不同分析的有效样本范围"><div class="scope-item"><b>198</b><span>有效主线曲线</span></div><div class="scope-item"><b>183</b><span>完整三节点</span></div><div class="scope-item"><b>65</b><span>共同游玩时长</span></div><div class="scope-item"><b>140</b><span>三种评分齐全</span></div><div class="scope-item"><b>181</b><span>同类参照有效</span></div></div>
+      <p class="source-strip">从热门1000款冻结游戏中，按各专题的有效条件取样。这里观察的是游戏级聚合覆盖，不是玩家级留存。</p>
+    </section>
+
+    <section class="section" id="story" aria-labelledby="story-title">
+      <div class="section-head"><div><p class="section-number">START HERE / 一组对比</p><h2 class="section-heading" id="story-title">终点几乎一样，落差却发生在两端。</h2></div><p class="section-intro">两款游戏都有11个有效节点。只看末节点相对首节点的比例，它们十分接近；展开过程，差别才出现。</p></div>
+      <div class="panel"><div class="chart-top"><div><p class="panel-kicker">完整主线过程 · 固定示例</p><div class="chart-legend" id="story-legend"></div></div><button class="text-button" id="load-story" type="button">用这两款继续探索 ↗</button></div><div id="story-chart" class="vis"></div><div id="story-cases" class="compare-grid"></div><p class="figure-note">序列沿用已接受的剧情数组顺序。粗线标出相邻相对降幅最大的区间；相对降幅与原始覆盖的百分点差分别展示。</p></div>
+      <div class="insight"><span>这组对比告诉我们</span><p>相近的全程推进比，可能来自不同的过程形态。<strong>先看在哪一段出现差异，再讨论终点。</strong></p></div>
+    </section>
+  </div>
+
+  <aside class="selector-sticky" aria-label="全局游戏选择"><div class="shell selector-bar"><div class="query-label"><b>把你的游戏放进来</b><span>选择影响对比与高亮，总体样本保持固定</span></div><div class="search-wrap"><label class="sr-only" for="game-search">搜索AppID、英文名或已有中文名</label><input id="game-search" class="search-input" type="search" placeholder="搜索游戏名或 AppID…" autocomplete="off" role="combobox" aria-autocomplete="list" aria-expanded="false" aria-controls="search-results"><div class="search-results" id="search-results" role="listbox" hidden></div></div><button type="button" class="text-button" id="clear-selection">清空选择</button><div id="selected-games" class="selected-games" aria-label="已选游戏"></div><div class="sample-buttons"><span>试试</span><button type="button" data-preset="familiar">Hollow Knight × Dead Cells</button><button type="button" data-preset="five">五款一起看</button><button type="button" data-preset="missing">看看缺失如何处理</button></div><p class="select-message" id="selection-message" role="status" aria-live="polite"></p></div></aside>
+
+  <div class="shell">
+    <section class="section" id="explore" aria-labelledby="explore-title">
+      <div class="section-head"><div><p class="section-number">01 + 03 / 指标与过程</p><h2 class="section-heading" id="explore-title">从三个节点开始，展开一整条主线。</h2></div><p class="section-intro">首、中、末覆盖说明玩家覆盖到哪里；前段、后段、全程推进比，说明相对前置节点保留了多少覆盖。</p></div>
+      <div class="formula-line"><div class="formula-cell"><span>前段推进比</span><b>中节点 ÷ 首节点</b></div><div class="formula-cell"><span>后段推进比</span><b>末节点 ÷ 中节点</b></div><div class="formula-cell"><span>全程推进比</span><b>末节点 ÷ 首节点</b></div></div>
+      <div id="overall-stats" class="stat-grid" aria-label="183款完整三节点游戏的逐游戏推进中位数"></div>
+      <p class="figure-note">以下三个数分别为同183款游戏的逐指标中位数，不能相乘或互除；下方图表展示所选游戏。</p>
+      <div class="panel"><div class="control-row"><div class="segmented" data-control="explore-view" role="group" aria-label="指标或完整过程"><button type="button" data-value="stages" aria-pressed="true">三节点对比</button><button type="button" data-value="trajectory" aria-pressed="false">完整节点过程</button></div><div class="segmented" id="stage-controls" data-control="stage-view" role="group" aria-label="对比指标"><button type="button" data-value="coverage" aria-pressed="false">节点覆盖</button><button type="button" data-value="progress" aria-pressed="true">阶段推进</button></div><div id="trajectory-controls" class="chart-controls" hidden><label>分组方式 <select id="group-mode"><option value="size">每组款数</option><option value="count">组数均分</option></select></label><label><span id="group-label">每组</span> <select id="group-value"><option value="1">1</option><option value="2" selected>2</option><option value="3">3</option><option value="4">4</option><option value="5">5</option></select></label></div></div><div id="stage-chart" class="vis"></div><div id="trajectory-charts" hidden></div><p id="explore-note" class="figure-note"></p></div>
+      <div class="stage-cards" id="stage-cards"></div>
+      <details class="details-panel"><summary>这几个指标，应该怎样理解？</summary><p>中节点是有效序列的数组位置中位，偶数时取靠前一项，非游玩时间的一半。多个结局选取解锁率最高的代表结局，并列取原数组先出现项，不相加。只有两个节点的游戏保留首末比，中节点及前后段为空。</p><p>三个推进比在同一游戏内满足前段×后段＝全程；不同游戏集合的各列中位数不能直接相乘或相除。首节点不等于首次启动，代表末节点也需要结合成就原文理解。</p><button class="text-button" type="button" id="export-selection">下载所选游戏指标 CSV ↓</button></details>
+    </section>
+
+    <section class="section" id="types" aria-labelledby="types-title">
+      <div class="section-head"><div><p class="section-number">02 / 玩法差异</p><h2 class="section-heading" id="types-title">分组的方式，也会改变看到的差异。</h2></div><p class="section-intro">“主要属于冒险类”与“带有冒险标签”并非同一批游戏。两种口径并列查看，结论才有上下文。</p></div>
+      <div class="panel"><div class="control-row"><div class="segmented" data-control="type-scheme" role="group" aria-label="类型分组口径"><button type="button" data-value="primary" aria-pressed="true">主类型 · 互斥</button><button type="button" data-value="multilabel" aria-pressed="false">完整标签 · 可重叠</button></div><span class="badge">固定183款完整三节点</span></div><div id="type-chart" class="vis"></div><p class="figure-note">每格为游戏级中位数，类型名后为有效游戏数；n≥5进入图表，n≥10可查看95%游戏级Bootstrap区间。多标签人数不可相加。</p><div class="chart-legend"><span>点击类型，展开成员与所选游戏的位置。</span></div><div id="type-detail" class="table-scroll"></div></div>
+      <div class="insight"><span>值得注意的变化</span><p id="type-insight">冒险与解谜的全程推进，会随主类型／完整标签口径明显变化。它描述了成员构成差异，不能被当成标签带来的因果效果。</p></div>
+    </section>
+
+    <section class="section" id="time" aria-labelledby="time-title">
+      <div class="section-head"><div><p class="section-number">04 / 游玩投入</p><h2 class="section-heading" id="time-title">玩了多久，要放在内容长度里看。</h2></div><p class="section-intro">同样十个小时，对短流程与长流程的意义不同。把平均游玩时长除以不同内容目标的参考耗时，再观察它与主线推进的关系。</p></div>
+      <div class="panel"><div class="control-row"><div class="segmented" data-control="time-reference" role="group" aria-label="参考耗时口径"><button type="button" data-value="main" aria-pressed="true">主线</button><button type="button" data-value="extra" aria-pressed="false">主线＋支线</button><button type="button" data-value="complete" aria-pressed="false">全收集</button></div><span class="badge">背景始终65款</span></div><div class="split"><div><div id="time-chart" class="vis"></div><div id="time-stats" class="stats-ribbon"></div></div><aside id="time-cards" class="details-stack" aria-label="所选游戏的时长与位置"></aside></div><p class="figure-note" id="time-note"></p></div>
+      <div class="stat-grid" id="time-comparison"></div>
+      <details class="details-panel"><summary>时间比值不是个人完成百分比</summary><p>RAWG playtime按项目约定作为游戏级平均游玩时长；HLTB为主线、主线＋额外内容、全收集的参考耗时。两者来自不同统计群体，比值≥1不能证明个人已完成相应内容。三个比值共享分子，也不是三个独立研究。</p><p>相关使用游戏级Spearman与2000次重采样区间。比值的分母也包含内容长度信息，点估计较高不等于已经证明预测能力更优或因果关系。</p></details>
+    </section>
+
+    <section class="section" id="reputation" aria-labelledby="reputation-title">
+      <div class="section-head"><div><p class="section-number">05 / 口碑与推进</p><h2 class="section-heading" id="reputation-title">评价好，也不一定推进得更多。</h2></div><p class="section-intro">把评价与推进放在两个坐标上，能看到它们各自提供的信息；换用不同评分来源时，比较保持在共同样本内。</p></div>
+      <div class="panel"><div class="control-row"><div class="segmented" data-control="reputation-view" role="group" aria-label="口碑分析视图"><button type="button" data-value="quadrants" aria-pressed="true">Steam四象限</button><button type="button" data-value="stages" aria-pressed="false">阶段关系</button><button type="button" data-value="sources" aria-pressed="false">三种评分</button></div><label id="reputation-stage-control" hidden>推进阶段 <select id="reputation-stage"><option value="early_progress_ratio">前段</option><option value="late_progress_ratio" selected>后段</option><option value="overall_progress_ratio">全程</option></select></label><label id="rating-source-control" hidden>评分来源 <select id="rating-source"><option value="steam_positive_ratio">Steam好评率</option><option value="metacritic">Metacritic</option><option value="rawg_rating">RAWG</option></select></label><span id="reputation-scope" class="badge"></span></div><div class="split"><div><div id="reputation-chart" class="vis"></div><div id="reputation-stats" class="stats-ribbon"></div></div><aside id="reputation-cards" class="details-stack" aria-label="口碑观察与选择信息"></aside></div><p class="figure-note" id="reputation-note"></p><div id="quadrant-buttons" class="stat-grid"></div><div id="quadrant-detail" class="table-scroll"></div></div>
+      <div class="insight"><span>看见了什么共性</span><p>好评≥90%、后段推进≥80%的28款中，19款带有解谜标签，占67.9%；全部183款的对应占比为20.8%。这是看图后形成的标签构成探索，提示可以继续分层，尚未证明某种玩法造成较高推进。</p></div>
+    </section>
+
+    <section class="section" id="peers" aria-labelledby="peers-title">
+      <div class="section-head"><div><p class="section-number">06 / 相对同类</p><h2 class="section-heading" id="peers-title">高不高，要先说明和谁比较。</h2></div><p class="section-intro">用相近玩法建立每款游戏自己的参照集合，看看实际推进与同类中位数相差多少，再展开差距出现的阶段。</p></div>
+      <div class="panel"><div class="control-row"><label>参照条件 <select id="peer-config"><option value="main">主条件 · 相似度≥0.5</option><option value="jaccard04">相似度≥0.4</option><option value="jaccard06">相似度≥0.6</option><option value="score_close">主条件＋好评接近</option><option value="length_close">主条件＋长度接近</option></select></label><span class="badge" id="peer-scope"></span></div><div class="split"><div><div id="peer-chart" class="vis"></div><p class="figure-note">对角线上方＝实际高于自己的同类参照；蓝色填充为差值≥0，棕色为差值&lt;0，游戏色描边及编号标记选择。前后段与全程分别取参照中位数，不能将三个中位数相乘。</p></div><aside id="peer-cards" class="details-stack" aria-label="所选游戏与同类比较"></aside></div><div id="peer-gap-chart" class="vis"></div><details class="details-panel"><summary>展开所选游戏的完整参照名单</summary><div id="peer-members" class="table-scroll"></div></details></div>
+      <details class="details-panel"><summary>相似玩法参照是怎样建立的？</summary><p>完整玩法标签的Jaccard相似度＝交集数量／并集数量，忽略other、uncertain；同结局口径、排除目标自身，参照游戏等权，不用推进结果筛选。至少5款参照才报告中位数、差和百分位。好评接近为差≤10个百分点；长度接近为主线参考耗时比≤2，仅有68款具备目标时长。</p><p>箱体Q1—Q3描述其他参照游戏之间的分散，不是置信区间；多个目标的参照可能重叠。这里是透明的描述基准，没有回归、因果控制或游戏质量排名。</p></details>
+    </section>
+
+    <section class="section" id="methods" aria-labelledby="methods-title">
+      <div class="section-head"><div><p class="section-number">TAKEAWAYS / 工作与依据</p><h2 class="section-heading" id="methods-title">把“粘性”拆开，解释才具体。</h2></div><p class="section-intro">用覆盖、阶段、过程、投入、口碑和同类位置回答不同的问题。保留每项指标的含义，比合成一个总分更便于审查。</p></div>
+      <div class="method-grid"><article class="task-card"><span>01</span><h3>同一终点，多种过程</h3><p>用前后段与完整曲线补充全程推进，定位值得解释的主线节点。</p></article><article class="task-card"><span>02</span><h3>比较需要尺度</h3><p>玩法分组、内容参考耗时和同类参照，都改变了比较的上下文。</p></article><article class="task-card"><span>03</span><h3>好评与推进并列看</h3><p>两项提供不同信息。聚合关联可以提出问题，不能替代玩家轨迹和因果证据。</p></article></div>
+      <div class="panel"><div class="panel-head"><div><p class="panel-kicker">我的实现</p><h3>从已有数据，到能解释的分析产物</h3></div><span class="badge">刘宇翔 · LYX</span></div><div class="task-grid" id="task-grid"></div><p class="panel-note">主分析复用WWH已有分类、主线阶段、剧情数组顺序与玩法；重点案例人工审核已由WWH完成。LYX完成指标构建、六项分析整合、图表、结果表、报告与本展示页面；不将复用的分类或审核记为新增个人标注。</p></div>
+      <div class="artifact-grid"><a class="artifact-card" href="../docs/ANALYSIS.md" target="_blank" rel="noopener"><span>REPORT</span><h3>完整分析报告 ↗</h3><p>指标、案例、结论及逐项来源。</p></a><a class="artifact-card" href="../docs/INSTRUCT.md" target="_blank" rel="noopener"><span>GUIDE</span><h3>使用与读图指南 ↗</h3><p>全部任务命令与01—21图说明。</p></a><a class="artifact-card" href="../docs/experiments.md" target="_blank" rel="noopener"><span>RECORD</span><h3>实施与实验记录 ↗</h3><p>历史口径、核验和当前问题。</p></a></div>
+      <details class="details-panel"><summary>查看原始21张图与结果表入口</summary><p class="small muted">交互视图提炼了各专题的核心问题。下方保留完整原图入口，可用于报告和答辩；原图为已存案例及固定样本，不随页面选择变化。需要保留LYX目录结构。结果表可从下方来源清单打开。</p><div id="artifact-catalog" class="artifact-grid"></div></details>
+      <details class="details-panel"><summary>数据版本、来源与解释边界</summary><div class="evidence-grid"><div><h3>当前页面使用的版本</h3><dl id="source-meta" class="source-files"></dl></div><div><h3>阅读时保留这些边界</h3><ul class="evidence-list"><li>热门1000款及其子样本，非Steam全库随机样本。</li><li>成就覆盖为游戏级聚合快照，不能计算真实玩家留存、流失或因果效果。</li><li>位置中位非时间中点；代表结局目标因游戏而异。</li><li>重点案例人工审核完成，不扩大为全部198款逐项人工审核。</li><li>各平台人群和采集时间不同；缺失保留，不补零。</li><li>当前历史父级清单存在元数据指纹不同步，已存数值独立复核一致；页面不宣称完整审计链全部通过。</li></ul></div></div><details><summary>展开本页面的来源文件清单</summary><div id="source-files" class="table-scroll"></div></details><p class="small muted">页面图形按已有结果重新呈现，未重新分类、训练模型或生成Bootstrap统计。单文件复制后核心内容仍可离线查看；上方完整文档链接需要保留仓库目录。</p></details>
+    </section>
+    <footer class="footer"><div><b>玩到哪里 · PLAY / PROGRESS</b><p>刘宇翔 / Steam成就数据分析 / 本地静态项目简报</p></div><div><p>来源：Steam成就与SteamSpy、<a href="https://rawg.io/" target="_blank" rel="noopener noreferrer">RAWG</a>、HLTB；主线与玩法采用小组冻结分类。</p><p>冻结数据 __DATASET_VERSION__ · 页面生成 __BUILD_DATE__</p></div></footer>
+  </div>
+</main>
+<div class="chart-tooltip" id="chart-tooltip" role="tooltip" hidden></div>
+<noscript><p class="notice shell">此页面的说明与摘要可直接阅读；图表切换和游戏对比需要开启JavaScript。页面使用内嵌冻结数据，不需要联网获取数据。</p></noscript>
+<script id="lyx-data" type="application/json">__DATA__</script>
+<script>/*__APP__*/</script>
+</body>
+</html>
