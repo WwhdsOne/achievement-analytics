@@ -1,5 +1,20 @@
 # ZZY实验与交付记录
 
+## 2026-10-20：独立 Rust 磁盘推荐实现与对照
+
+- 原 Python 源码、入口及部署完整保留；新建 rust-recommendation，使用只读 SQLite 和 8 MiB 页缓存、磁盘临时文件、逐候选计算与串行请求，不连接云库。独立 scratch 部署，默认 8606 / CPU1 / 内存256MiB，原 Python 8605 保留。
+- 固定 recommendation-v1-c58f1d57439d2c28 / kg-v1-99ed019b805815a32e2414cb09007475b11c2adaf39c5d488fbdc571c8ba78e5。50,925 游戏、41,279 候选、895,023 事实与 895,044 证据全部流式导入并逐游戏回放；256MiB 容器约116秒完成，未 OOM。SQLite1,418,588,160字节，仅存磁盘，摘要438e99b30e61b5fb6bf12a32936bc56dd2f3b67783c2d558acbde5987cd26fb5。
+- ARM64 与最终 AMD64 Docker 各69/69真实对照通过，每轮138请求、23,443数值（1e-12容差）、2,728来源事实、1,364解释路径；权重、年份先筛、种子均分、排名与事实解释保持，使用独立Rust版本绑定。Go桌面/手机真实推荐交互通过。
+- ARM64容器进程RSS空闲约2.3MiB、请求后11.6MiB，Docker工作集并发峰值156.4MiB，含可回收文件缓存总量达到256MiB上限且未OOM；不能将RSS当容器总内存。串行请求2.48–3.41秒。对照Python工作集约1.70GiB峰值，限制分别256MiB/4GiB，耗时不能归因到语言本身。
+- 首次部署优先从服务器既有Python缓存导入，普通部署验证并复用SQLite；显式更新核对远端实际SHA，相同数据不再上传。原服务保留，切换后须停止原容器才能释放其内存。本次未SSH、未部署、未提交。完整口径与命令见 [RESULTS](rust-recommendation/RESULTS.md)。
+
+## 2026-10-20：推荐服务本机 Docker 内存基线
+
+- 仅评估与真实测量，未改算法、未部署、未提交。使用现有最小 Python 部署包，本机 ARM64 / Docker 29.6.1，1 CPU、4 GiB 容器上限、只读缓存与根文件系统，不提供数据库或 AI 凭据。
+- 数据：recommendation-v1-c58f1d57439d2c28，图谱 kg-v1-99ed019b805815a32e2414cb09007475b11c2adaf39c5d488fbdc571c8ba78e5，41,279 候选。第二轮接口确认 persistent_cache / database_access=false / cache_reused=true，指针不变。
+- 两轮空闲工作集中位数约 1.41–1.43 GiB，4 并发峰值约 1.70–1.73 GiB。第二轮启动 21.2 秒，串行推荐 0.65–1.55 秒；14 次推荐均返回 5 款，重复请求串行与并发的响应摘要一致。Docker 工作集扣 inactive_file，另记录 RSS / 原始 cgroup / 高水位，不能混算。
+- 新增 deploy/benchmark_memory.py 复现脚本；完整第二轮 JSON 在忽略目录 build/deploy/。结论：值得做 Rust 在线运行时对照，保留现有冻结输入、评分与解释，未宣称 Rust 已测节省。详情与面板静态资源持久化方案见 [评估记录](../../docs/dashboard-performance-2026-10-20.md)。
+
 ## 2026-10-14：适配最新main的个人目录交付
 
 - 基准：main abcbd81e680bd42cae168ca50e69751e252147ce。先读取组员成果和现行规范，再在独立worktree装配；仅新增result/ZZY，保留原开发目录和System32原项目。

@@ -1,0 +1,26 @@
+[package]
+name = "achievement-recommendation-rust"
+version = "0.1.0"
+edition = "2024"
+description = "Read-only disk-backed explainable Steam recommendation service"
+publish = false
+
+[dependencies]
+anyhow = "1"
+chrono = { version = "0.4", default-features = false, features = ["std"] }
+flate2 = "1"
+rusqlite = { version = "0.40.2", features = ["bundled"] }
+serde = { version = "1", features = ["derive"] }
+serde_json = "1"
+sha2 = "0.10"
+tiny_http = "0.12"
+unicode-casefold = "0.2"
+unicode-normalization = "0.1"
+url = "2"
+
+[profile.release]
+opt-level = "s"
+lto = true
+codegen-units = 1
+strip = true
+panic = "abort"

@@ -1,0 +1,28 @@
+name: achievement-recommendation-rust
+services:
+  recommendation-rust:
+    image: ${RUST_RECOMMENDATION_IMAGE:-achievement-recommendation-rust:local}
+    network_mode: host
+    read_only: true
+    pids_limit: 64
+    cap_drop: [ALL]
+    security_opt: [no-new-privileges:true]
+    volumes:
+      - ./data:/data:ro
+      # Disk-backed SQLite temporary storage; deliberately no tmpfs.
+      - ./scratch:/tmp:rw
+    command:
+      - serve
+      - --db
+      - /data/current/recommendation.sqlite
+      - --host
+      - ${RUST_RECOMMENDATION_BIND_HOST:-127.0.0.1}
+      - --port
+      - "${RUST_RECOMMENDATION_PORT:-8606}"
+    restart: unless-stopped
+    healthcheck:
+      test: [CMD, /recommendation, health, --port, "${RUST_RECOMMENDATION_PORT:-8606}"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 120s

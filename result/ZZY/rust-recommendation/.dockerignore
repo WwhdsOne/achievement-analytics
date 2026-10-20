@@ -1,0 +1,11 @@
+# This file also works as Dockerfile.dockerignore in a result/ZZY context.
+**
+!rust-recommendation/
+!rust-recommendation/Cargo.toml
+!rust-recommendation/Cargo.lock
+!rust-recommendation/src/
+!rust-recommendation/src/**
+!modeling/
+!modeling/recommendation/
+!modeling/recommendation/game_aliases.json
+!modeling/recommendation/display_names_zh.json
