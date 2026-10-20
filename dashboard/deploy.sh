@@ -2,11 +2,12 @@
 # 【在本机跑】把面板部署到服务器。dashboard/ 是自包含的，本脚本只读同目录的 .env。
 #
 #   bash dashboard/deploy.sh          # 或在 dashboard/ 里 `bash deploy.sh`
+#   bash dashboard/deploy.sh --prepare-only  # 只编译打包，不读凭据、不连接服务器
 #
 # 做四件事：
 #   1. 交叉编译 linux/amd64 静态二进制（面板不需要 CGO）
 #   2. 抽出数据库、推荐连接与 OSS 下载凭据，值原样照搬
-#   3. 把二进制 / Dockerfile / compose / 抽出的 env / 分析报告打包传到服务器固定目录
+#   3. 代码单独打包；冻结内容校验服务器实际 SHA256，仅传缺失/变化的文件
 #   4. 远端 `docker compose up -d --build` → 远端探活 → 本机探公网 → 确认写接口不存在
 #
 # 凭据都在 dashboard/.env（不入 git）。.env 里两段各自独立填写：
@@ -25,8 +26,15 @@ STAGE="build/stage"
 ARCHIVE="build/upload.tar.gz"
 CONTAINER_ENV="build/container.env"
 REPORT="../data/processed/analysis-report.json"
+PREPARE_ONLY=0
+case "${1:-}" in
+  --prepare-only) PREPARE_ONLY=1 ;;
+  '') ;;
+  *) echo "用法：bash dashboard/deploy.sh [--prepare-only]"; exit 2 ;;
+esac
 
 # ── 读本目录的 .env（不覆盖已导出的环境变量）──────────────────────────────
+if [ "$PREPARE_ONLY" = 0 ]; then
 [ -f .env ] || { echo "✗ 缺少 $HERE/.env——它保存数据库与部署凭据，不入 git"; exit 1; }
 while IFS= read -r line || [ -n "$line" ]; do
   case "$line" in ''|'#'*) continue ;; esac
@@ -35,14 +43,17 @@ while IFS= read -r line || [ -n "$line" ]; do
   [ -z "$key" ] && continue
   if [ -z "${!key+x}" ]; then val="${val%\"}"; val="${val#\"}"; export "$key=$val"; fi
 done < .env
+fi
 CA_CERT_FILE="${CA_CERT_FILE:-/etc/ssl/cert.pem}"
 
+if [ "$PREPARE_ONLY" = 0 ]; then
 : "${DEPLOY_HOST:?dashboard/.env 里缺少 DEPLOY_HOST}"
 : "${DEPLOY_USER:?dashboard/.env 里缺少 DEPLOY_USER}"
 : "${DEPLOY_PASSWORD:?dashboard/.env 里缺少 DEPLOY_PASSWORD}"
 DEPLOY_PATH="${DEPLOY_PATH:-/opt/achievement-dashboard}"
 DEPLOY_PORT="${DEPLOY_PORT:-8600}"
 TARGET="${DEPLOY_USER}@${DEPLOY_HOST}"
+fi
 
 # ── expect 免交互应答密码 ────────────────────────────────────────────────
 # 两个 helper 都把「远端命令是否成功」的退出码透传出来，set -e 才能生效。
@@ -89,13 +100,20 @@ remote_put() {  # $1 = 本地文件，$2 = 远端目录（只传单个文件：E
 # ── 0. 前置检查 ──────────────────────────────────────────────────────────
 echo "==> 0/4 前置检查"
 command -v go >/dev/null     || { echo "    ✗ 本机没有 go"; exit 1; }
+command -v python3 >/dev/null || { echo "    ✗ 本机没有 python3（仅本机内容打包用）"; exit 1; }
+if [ "$PREPARE_ONLY" = 0 ]; then
 command -v expect >/dev/null || { echo "    ✗ 本机没有 expect（macOS 自带；Linux 需 apt install expect）"; exit 1; }
+fi
 [ -f "$CA_CERT_FILE" ] || { echo "    ✗ 缺少 HTTPS CA 证书包，可用 CA_CERT_FILE 指定"; exit 1; }
-: "${OSS_ACCESS_KEY_ID:?dashboard/.env 里缺少 OSS_ACCESS_KEY_ID}"
-: "${OSS_ACCESS_KEY_SECRET:?dashboard/.env 里缺少 OSS_ACCESS_KEY_SECRET}"
 [ -f "$REPORT" ] || {
-  echo "    ✗ 缺少 $REPORT——分析页的数据源，生成方式见 docs/commands.md §8"; exit 1; }
-echo "    目标 ${TARGET}:${DEPLOY_PATH}  端口 ${DEPLOY_PORT}"
+  echo "    ✗ 缺少 $REPORT——请从已有备份恢复历史分析快照（生成代码已删除）"; exit 1; }
+if [ "$PREPARE_ONLY" = 0 ]; then
+  : "${OSS_ACCESS_KEY_ID:?dashboard/.env 里缺少 OSS_ACCESS_KEY_ID}"
+  : "${OSS_ACCESS_KEY_SECRET:?dashboard/.env 里缺少 OSS_ACCESS_KEY_SECRET}"
+  echo "    目标 ${TARGET}:${DEPLOY_PATH}  端口 ${DEPLOY_PORT}"
+fi
+python3 ../scripts/sync_lyx_bundle.py --check
+python3 ../scripts/dashboard_content.py prepare
 
 # ── 1. 交叉编译 ─────────────────────────────────────────────────────────
 echo "==> 1/4 交叉编译 linux/amd64 静态二进制"
@@ -106,6 +124,7 @@ printf '    %s\n' "$(ls -lh "$BINARY" | awk '{print $5}')"
 
 # ── 2. 抽出容器连库需要的配置 ───────────────────────────────────────────
 echo "==> 2/4 抽出容器连库配置（原样，不改写）"
+if [ "$PREPARE_ONLY" = 0 ]; then
 umask 077
 {
   echo "# 由 dashboard/deploy.sh 从本机 dashboard/.env 抽出，**不要手改**。"
@@ -115,26 +134,47 @@ umask 077
 } > "$CONTAINER_ENV"
 chmod 600 "$CONTAINER_ENV"
 awk -F= '/^[A-Z_]+=/{print "    "$1}' "$CONTAINER_ENV"
+fi
 
 # ── 3. 打包上传 ─────────────────────────────────────────────────────────
 # 打成一个 tar 再传：只需一次 scp，也就只需应答一次密码，而且不会踩
 # 「spawn 不展开文件列表」那个坑。stage 里的布局就是服务器部署目录的最终布局。
 echo "==> 3/4 打包上传"
 rm -rf "$STAGE"
-mkdir -p "$STAGE/data/processed"
+mkdir -p "$STAGE"
 cp "$BINARY" "$STAGE/achievement-dashboard"
 cp Dockerfile docker-compose.yml .dockerignore "$STAGE/"
 cp "$CA_CERT_FILE" "$STAGE/ca-certificates.crt"
-cp "$CONTAINER_ENV" "$STAGE/.env"          # 落地即 .env，省掉一次远端改名
-cp "$REPORT" "$STAGE/data/processed/analysis-report.json"
+if [ "$PREPARE_ONLY" = 0 ]; then
+  cp "$CONTAINER_ENV" "$STAGE/.env"          # 落地即 .env，省掉一次远端改名
+fi
+cp build/content-plan/manifest.tsv "$STAGE/content-manifest.tsv"
+cp ../scripts/dashboard_content.sh "$STAGE/content-sync.sh"
 # COPYFILE_DISABLE=1：macOS 的 tar 默认会给带扩展属性的文件附带 ._* 的 AppleDouble
 # 文件，传到服务器上就是一堆垃圾（实测会在部署目录里多出 ._achievement-dashboard）
 COPYFILE_DISABLE=1 tar -czf "$ARCHIVE" -C "$STAGE" .
 
-remote_run "mkdir -p '$DEPLOY_PATH/data/processed'"
+if [ "$PREPARE_ONLY" = 1 ]; then
+  echo "==> 仅打包完成：${HERE}/${ARCHIVE}（不含冻结数据、报告或凭据）"
+  echo "    内容清单：$HERE/build/content-plan/manifest.tsv"
+  echo "    本机模拟：python3 scripts/dashboard_content.py local --remote-dir /tmp/dashboard-content"
+  exit 0
+fi
+
+remote_run "mkdir -p '$DEPLOY_PATH'"
 remote_put "$ARCHIVE" "$DEPLOY_PATH"
 remote_run "cd '$DEPLOY_PATH' && tar -xzf upload.tar.gz && rm -f upload.tar.gz && chmod 600 .env"
 echo "    已上传并解包：$(printf '%s' "$(ls -lh "$ARCHIVE" | awk '{print $5}')")"
+
+# 服务器逐文件读实际内容校验，既不相信旧 manifest，也不因目录存在就跳过。
+# 首次上传所有内容；之后只传缺失/变化/损坏的 SHA256 对象。旧版本保留，指针原子切换。
+remote_run "cd '$DEPLOY_PATH' && bash content-sync.sh plan '$DEPLOY_PATH/content' content-manifest.tsv '$DEPLOY_PATH'" \
+  | tee build/content-plan/probe.log
+python3 ../scripts/dashboard_content.py payload \
+  --manifest build/content-plan/manifest.tsv --probe build/content-plan/probe.log \
+  --output build/content-delta.tar.gz
+remote_put build/content-delta.tar.gz "$DEPLOY_PATH"
+remote_run "cd '$DEPLOY_PATH' && bash content-sync.sh install '$DEPLOY_PATH/content' '$DEPLOY_PATH/content-delta.tar.gz' '$DEPLOY_PATH' && rm content-delta.tar.gz"
 
 echo "==> 4/4 远端重建并启动"
 remote_run "cd '$DEPLOY_PATH' && docker compose up -d --build && docker compose ps"

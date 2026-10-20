@@ -21,9 +21,8 @@ services:
     # 运行时注入数据库、推荐连接、OSS 下载凭据；不含 SSH 凭据，不进入镜像。
     env_file: .env
     volumes:
-      # 分析报告（data/processed/analysis-report.json）由部署脚本上传到这里，
-      # 也是 /api/analysis 的数据源
-      - ./data:/app/data
+      # 挂载父目录，current 原子切换后容器立即可见；冻结数据不进镜像。
+      - ./content:/app/content:ro
     restart: unless-stopped
     # 镜像的 ENTRYPOINT 是 /dashboard，这里只追加参数
     command:
@@ -33,6 +32,10 @@ services:
       - "8600"
       - --rate-limit
       - "60"           # 每个 IP 每分钟对 /api/* 的请求上限（循环地址豁免）
+      - --content-dir
+      - /app/content/current
+      - --report
+      - /app/content/current/data/processed/analysis-report.json
     healthcheck:
       # scratch 里没有 shell / curl / wget，健康检查只能由二进制自己完成
       test: ["CMD", "/dashboard", "-health", "-port", "8600"]

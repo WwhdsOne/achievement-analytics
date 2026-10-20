@@ -30,7 +30,7 @@ func resolveRecommendationURL(explicit string) (string, error) {
 	}
 	port := strings.TrimSpace(os.Getenv("RECOMMENDATION_PORT"))
 	if port == "" {
-		port = "8605"
+		port = "8606"
 	}
 	n, err := strconv.Atoi(port)
 	if err != nil || n < 1 || n > 65535 {
@@ -43,7 +43,7 @@ func resolveRecommendationURL(explicit string) (string, error) {
 func recommendationHandler(target string) (http.HandlerFunc, error) {
 	upstream, err := url.Parse(target)
 	if err != nil || upstream == nil || upstream.Scheme != "http" || upstream.Host == "" || upstream.User != nil || upstream.RawQuery != "" || upstream.Fragment != "" || (upstream.Path != "" && upstream.Path != "/") {
-		return nil, fmt.Errorf("推荐服务需要不含路径、凭据和查询参数的 http 地址，如 http://127.0.0.1:8605")
+		return nil, fmt.Errorf("推荐服务需要不含路径、凭据和查询参数的 http 地址，如 http://127.0.0.1:8606")
 	}
 	client := &http.Client{Timeout: 45 * time.Second, CheckRedirect: func(_ *http.Request, _ []*http.Request) error { return http.ErrUseLastResponse }}
 	return func(w http.ResponseWriter, r *http.Request) {

@@ -6,17 +6,22 @@
 .research-dashboard-links strong { display: block; font-size: 12px; }
 .research-dashboard-links span { display: block; color: var(--L3); font-size: 11px; line-height: 1.7; margin-top: 6px; }
 .research-dashboard-links a:focus-visible { outline: 2px solid var(--INK); outline-offset: 4px; }
-.research-layout { display: grid; grid-template-columns: 228px minmax(0, 1fr); gap: 36px; align-items: start; }
-.research-sidebar { position: sticky; top: 90px; }
-.research-label, .research-kicker { font-size: 10px; font-weight: 700; letter-spacing: .12em; color: var(--L3); }
-.research-label { padding: 0 12px 16px; }
-.research-sidebar a { display: grid; grid-template-columns: 24px 1fr; gap: 8px; padding: 16px 12px; border-top: 1px solid var(--GRID); color: var(--L3); text-decoration: none; border-radius: 0; transition: background .2s; }
-.research-sidebar a:hover { background: #f0efeb70; }
-.research-sidebar a[aria-current="page"] { background: var(--INK); color: var(--PAPER); border-radius: 14px; border-top-color: transparent; }
-.research-sidebar a > span { font-size: 10px; padding-top: 3px; font-variant-numeric: tabular-nums; }
-.research-sidebar strong { display: block; font-size: 13px; line-height: 1.7; }
-.research-sidebar small { display: block; font-size: 10px; font-weight: 400; opacity: .75; margin-top: 4px; }
-.research-side-note { color: var(--L3); font-size: 11px; line-height: 1.9; padding: 24px 12px; }
+/* 研究方向改为顶部标签条：一次只显示一个方向，不再用左侧目录。
+   标签只放序号与短名，全名与负责人在 title 属性与正文标题里。 */
+.research-tabs { border-bottom: 1px solid var(--FAINT); margin-bottom: 24px; }
+#researchNav { display: flex; gap: 8px; overflow-x: auto; padding: 2px 1px 14px; scrollbar-width: thin; }
+#researchNav a {
+  flex: 0 0 auto; display: inline-flex; align-items: baseline; gap: 7px;
+  padding: 9px 15px; border: 1px solid var(--GRID); border-radius: 999px;
+  background: #fff; color: var(--L3); text-decoration: none;
+  transition: color .2s, background .2s, border-color .2s;
+}
+#researchNav a:hover { border-color: var(--L5); color: var(--INK); }
+#researchNav a[aria-current="page"] { background: var(--INK); border-color: var(--INK); color: var(--PAPER); }
+#researchNav a > span { font-size: 10px; font-variant-numeric: tabular-nums; opacity: .55; }
+#researchNav a[aria-current="page"] > span { opacity: .75; }
+#researchNav strong { font-size: 12.5px; font-weight: 600; white-space: nowrap; }
+.research-kicker { font-size: 10px; font-weight: 700; letter-spacing: .12em; color: var(--L3); }
 .research-content { min-width: 0; }
 .research-intro { padding: 4px 0 24px; border-bottom: 1px solid var(--FAINT); margin-bottom: 24px; }
 .research-intro h2 { font-size: 27px; letter-spacing: -.04em; margin: 10px 0; }
@@ -26,7 +31,7 @@
 .research-content .card { padding: 24px; }
 .research-content .card h3 { font-size: 15px; margin-bottom: 8px; }
 .research-note { color: var(--L3); font-size: 12px; line-height: 1.85; }
-.research-content button:focus-visible, .research-content a:focus-visible, .research-sidebar a:focus-visible { outline: 2px solid var(--INK); outline-offset: 4px; }
+.research-content button:focus-visible, .research-content a:focus-visible, #researchNav a:focus-visible { outline: 2px solid var(--INK); outline-offset: 4px; }
 .research-content input:focus-visible, .research-content select:focus-visible { outline: 2px solid var(--INK); outline-offset: 3px; }
 .research-content .ghost { border: 1px solid var(--FAINT); background: transparent; color: var(--INK); padding: 7px 13px; font-size: 11px; }
 .research-empty { padding: 36px 0 12px; }
@@ -110,7 +115,6 @@
 .rec-figure figcaption strong { font-size: 12px; }
 .rec-figure figcaption p { color: var(--L3); font-size: 11px; line-height: 1.8; margin-top: 6px; }
 @media (max-width: 900px) {
-  .research-layout { grid-template-columns: 190px minmax(0, 1fr); gap: 22px; }
   .rec-filters button { margin-left: 0; }
   .rec-candidate-overview { gap: 14px; }
   .rec-candidate-overview > .rec-cover { width: 150px; }
@@ -118,14 +122,9 @@
 @media (max-width: 680px) {
   .research-dashboard-links { gap: 12px; }
   .research-dashboard-links span { font-size: 10px; }
-  .research-layout { display: block; }
-  .research-sidebar { position: static; margin-bottom: 24px; }
-  #researchNav { display: flex; gap: 8px; overflow-x: auto; padding: 4px 2px 10px; }
-  .research-sidebar a { min-width: 162px; padding: 12px; border: 1px solid var(--FAINT); border-radius: 14px; grid-template-columns: 20px 1fr; }
-  .research-sidebar strong { font-size: 12px; }
-  .research-side-note { display: none; }
-  .research-label { padding: 0 0 8px; }
-  .research-label::after { content: ' · 左右滑动切换'; font-weight: 400; letter-spacing: 0; }
+  #researchNav { gap: 6px; padding-bottom: 12px; }
+  #researchNav a { padding: 8px 12px; }
+  #researchNav strong { font-size: 12px; }
   .research-intro h2 { font-size: 24px; }
   .research-content .card, .rec-candidate { padding: 20px; }
   .rec-candidate-head { grid-template-columns: 26px minmax(0, 1fr); gap: 8px; }

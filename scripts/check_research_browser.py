@@ -72,7 +72,16 @@ def main() -> None:
                 expect(page.locator("#recSearch")).to_be_visible()
             for topic in ("trends", "clusters", "retention", "reputation"):
                 page.locator(f'#researchNav a[href="#research/{topic}"]').click()
-                expect(page.locator(".research-empty")).to_be_visible()
+                if topic == "clusters":
+                    expect(page.locator("#clusterReport .cluster-shape")).to_have_count(5)
+                elif topic == "trends":
+                    expect(page.locator("#trendReport .trend-image")).to_have_count(4)
+                elif topic == "retention":
+                    expect(page.locator("#retFrame")).to_have_attribute(
+                        "src", "/assets/research/lyx/WEB/index.html"
+                    )
+                else:
+                    expect(page.locator(".research-empty")).to_be_visible()
                 expect(
                     page.locator("#researchNav a[aria-current=page]")
                 ).to_have_attribute("href", "#research/" + topic)

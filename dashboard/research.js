@@ -5,12 +5,18 @@
   const esc = escapeHtml;
   const fields = {tags: '玩家标签', genres: '游戏类型', developers: '开发商', publishers: '发行商'};
   const topics = [
-    {id: 'trends', title: '发售年份与潮流类型演变', kind: '主线', owner: '杨金辉', scope: '沿着发售年份，观察不同游戏类型的数量分布与潮流变化。', outputs: ['年度趋势', '类型热力图']},
-    {id: 'clusters', title: '游戏画像聚类', kind: '扩展', owner: '耶美田', scope: '从游戏特征中寻找相似的画像，理解不同游戏类别及其代表作品。', outputs: ['游戏类别', '代表作品']},
-    {id: 'recommendation', title: '可解释推荐', kind: '主线', owner: '朱政宇', scope: '选几款你喜欢的游戏，从共同的标签、类型与创作者关系中，发现下一款。', outputs: ['相似游戏', '推荐理由']},
-    {id: 'retention', title: '实际完成曲线与游戏用户粘性分析', kind: '主线', owner: '王文海、刘宇翔', scope: '围绕关键主线节点的完成率，结合内容分类与跨平台对照，观察玩家持续游玩的线索。', outputs: ['关键主线节点完成率', '内容分类', '跨平台对照']},
-    {id: 'reputation', title: '游戏口碑预测与关联因素', kind: '扩展', owner: '王文海', scope: '以简单基线为对照，评估游戏口碑预测效果，分析与口碑相关的游戏特征。', outputs: ['预测评估', '相关因素']},
+    {id: 'trends', tab: '类型潮流', title: '发售年份与潮流类型演变', kind: '主线', owner: '杨金辉', scope: '按发售年份比较游戏类型、题材和玩家模式的构成变化。', outputs: ['类型占比趋势', '官方分类对照', '题材与玩家模式']},
+    {id: 'clusters', tab: '画像聚类', title: '游戏画像聚类', kind: '扩展', owner: '耶美田', scope: '把成就解锁情况相近的游戏分成五类，看看各类的分布、常见标签和热门作品。', outputs: ['五类成就分布', '类型关联', '热门作品']},
+    {id: 'recommendation', tab: '可解释推荐', title: '可解释推荐', kind: '主线', owner: '朱政宇', scope: '选几款你喜欢的游戏，从共同的标签、类型与创作者关系中，发现下一款。', outputs: ['相似游戏', '推荐理由']},
+    {id: 'retention', tab: '实际完成曲线', title: '实际完成曲线与游戏用户粘性分析', kind: '主线', owner: '王文海、刘宇翔', scope: '直接嵌入刘宇翔的原始交互简报：六项分析串成一页，可自选 1–5 款游戏联动查看阶段推进、时长投入、口碑与同类参照。', outputs: ['主线指标', '玩法比较', '完整过程', '游玩投入', '口碑关联', '同类参照']},
+    {id: 'reputation', tab: '口碑预测', title: '游戏口碑预测与关联因素', kind: '扩展', owner: '王文海', scope: '以简单基线为对照，评估游戏口碑预测效果，分析与口碑相关的游戏特征。', outputs: ['预测评估', '相关因素']},
   ];
+  const BADGES = {
+    recommendation: '交互成果',
+    clusters: '图解报告 · 2026-10-17',
+    trends: '图解报告 · 2026-10-16',
+    retention: '原始交付页 · 2026-10-20',
+  };
   let active = '', selected = [], meta = null, metaPromise = null;
   let searchData = null, searchTerm = '', searchOffset = 0;
   let searchToken = 0, recommendToken = 0, searchAbort = null, recommendAbort = null;
@@ -53,10 +59,17 @@
     active = topic.id;
     ++searchToken; ++recommendToken;
     searchAbort?.abort(); recommendAbort?.abort();
-    $('researchNav').innerHTML = topics.map((t, i) => `<a href="#research/${t.id}" ${t.id === active ? 'aria-current="page"' : ''}><span>0${i+1}</span><div><strong>${t.title}</strong><small>${t.kind} · ${t.owner}</small></div></a>`).join('');
-    $('researchContent').innerHTML = `<header class="research-intro"><span class="research-kicker">RESEARCH / 0${topics.indexOf(topic)+1}</span><h2>${topic.title}</h2><p>${topic.scope}</p><div class="research-byline"><span>研究者 · ${topic.owner}</span><span class="research-badge">${topic.kind}</span><span class="research-badge">${active === 'recommendation' ? '交互成果' : '待接入'}</span></div></header>`;
+    // 顶部标签条：只放序号与短名，全名和负责人在 title 与正文标题里
+    $('researchNav').innerHTML = topics.map((t, i) => `<a href="#research/${t.id}" title="${esc(t.title)} · ${esc(t.owner)}" ${t.id === active ? 'aria-current="page"' : ''}><span>0${i+1}</span><strong>${esc(t.tab)}</strong></a>`).join('');
+    $('researchContent').innerHTML = `<header class="research-intro"><span class="research-kicker">RESEARCH / 0${topics.indexOf(topic)+1}</span><h2>${topic.title}</h2><p>${topic.scope}</p><div class="research-byline"><span>研究者 · ${topic.owner}</span><span class="research-badge">${topic.kind}</span><span class="research-badge">${BADGES[active] || '待接入'}</span></div></header>`;
     if (active === 'recommendation') {
       mountRecommendation();
+    } else if (active === 'clusters') {
+      window.ClusterResearch.mount($('researchContent'));
+    } else if (active === 'trends') {
+      window.TrendResearch.mount($('researchContent'));
+    } else if (active === 'retention') {
+      window.RetentionResearch.mount($('researchContent'));
     } else {
       $('researchContent').insertAdjacentHTML('beforeend', `<section class="card research-empty"><div class="research-empty-mark">0${topics.indexOf(topic)+1} /</div><h3>这个方向的成果，正在汇集。</h3><p class="research-note">这里将展示${topic.owner}的研究结果。当前尚未接入展示内容。</p><div class="research-deliverables">${topic.outputs.map(s => `<span>${s}</span>`).join('')}</div></section>`);
     }

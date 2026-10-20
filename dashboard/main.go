@@ -10,7 +10,7 @@
 //	go run ./dashboard -port 8601 --rate-limit 60        # 本机验收
 //
 // 设计要点：
-//   - 前端文件用 //go:embed 打包，部署时只有一个静态二进制，镜像 FROM scratch
+//   - 小型前端用 //go:embed 打包；研究原页、原图与报告从持久化只读目录提供
 //   - 只读：所有 SQL 都是 SELECT，没有 DDL、没有写库路径
 //   - 限速只作用于 /api/* 且**豁免循环地址**，否则容器健康检查会把自己的限速打满
 package main
@@ -27,22 +27,37 @@ import (
 	"net/http"
 	"os"
 	"os/signal"
+	"path/filepath"
 	"strings"
 	"sync"
 	"syscall"
 	"time"
 )
 
-//go:embed index.html explore.js explore.css overview.js research.js research.css favicon.png figures/zzy/*.png
+//go:embed index.html explore.js explore.css overview.js research.js research.css clusters.js clusters.css trends.js trends.css retention.js retention.css favicon.png
 var frontend embed.FS
 
 var assets = map[string]struct{ file, ctype string }{
-	"/assets/explore.js":   {"explore.js", "text/javascript; charset=utf-8"},
-	"/assets/explore.css":  {"explore.css", "text/css; charset=utf-8"},
-	"/assets/overview.js":  {"overview.js", "text/javascript; charset=utf-8"},
-	"/assets/research.js":  {"research.js", "text/javascript; charset=utf-8"},
-	"/assets/research.css": {"research.css", "text/css; charset=utf-8"},
-	"/favicon.png":         {"favicon.png", "image/png"},
+	"/assets/explore.js":                                {"explore.js", "text/javascript; charset=utf-8"},
+	"/assets/explore.css":                               {"explore.css", "text/css; charset=utf-8"},
+	"/assets/overview.js":                               {"overview.js", "text/javascript; charset=utf-8"},
+	"/assets/research.js":                               {"research.js", "text/javascript; charset=utf-8"},
+	"/assets/research.css":                              {"research.css", "text/css; charset=utf-8"},
+	"/assets/clusters.js":                               {"clusters.js", "text/javascript; charset=utf-8"},
+	"/assets/clusters.css":                              {"clusters.css", "text/css; charset=utf-8"},
+	"/assets/trends.js":                                 {"trends.js", "text/javascript; charset=utf-8"},
+	"/assets/trends.css":                                {"trends.css", "text/css; charset=utf-8"},
+	"/assets/retention.js":                              {"retention.js", "text/javascript; charset=utf-8"},
+	"/assets/retention.css":                             {"retention.css", "text/css; charset=utf-8"},
+	"/assets/research/yjh/trend-data.json":              {"trend-data.json", "application/json; charset=utf-8"},
+	"/assets/research/yjh/genre-share.png":              {"figures/yjh/genre-share.png", "image/png"},
+	"/assets/research/yjh/official-genre.png":           {"figures/yjh/official-genre.png", "image/png"},
+	"/assets/research/yjh/theme-growth.png":             {"figures/yjh/theme-growth.png", "image/png"},
+	"/assets/research/yjh/player-growth.png":            {"figures/yjh/player-growth.png", "image/png"},
+	"/assets/research/ymt/cluster-data.json":            {"cluster-data.json", "application/json; charset=utf-8"},
+	"/assets/research/ymt/shape-pca.png":                {"figures/ymt/shape-pca.png", "image/png"},
+	"/assets/research/ymt/tier-pca.png":                 {"figures/ymt/tier-pca.png", "image/png"},
+	"/favicon.png":                                      {"favicon.png", "image/png"},
 	"/assets/research/zzy/current-knowledge-graph.png":  {"figures/zzy/current-knowledge-graph.png", "image/png"},
 	"/assets/research/zzy/current-path-explanation.png": {"figures/zzy/current-path-explanation.png", "image/png"},
 	"/assets/research/zzy/ai-method-comparison.png":     {"figures/zzy/ai-method-comparison.png", "image/png"},
@@ -206,6 +221,43 @@ func static(name, ctype string) http.HandlerFunc {
 	}
 }
 
+// staticTree 从持久化目录按原相对结构提供文件，不列目录。
+//
+// LYX 的交付页不是单文件：它用相对路径引用 ../docs 与 ../analysis 下的文档、原图和来源
+// 明细，所以只能整棵树一起发布，逐个登记到 assets 表反而会断链。
+//
+// 不能用 http.FileServerFS：它会把以 /index.html 结尾的路径 301 到目录（Go 的内置行为），
+// 而这里连目录索引都不提供，重定向过去只会得到一个 404。目录一律 404——静态资源不需要
+// 可浏览的文件清单。
+func staticTree(dir string) http.HandlerFunc {
+	files := os.DirFS(dir)
+	return func(w http.ResponseWriter, r *http.Request) {
+		name := strings.TrimPrefix(r.URL.Path, "/")
+		if name == "" || strings.HasSuffix(name, "/") {
+			writeError(w, http.StatusNotFound, "not found")
+			return
+		}
+		file, err := files.Open(name)
+		if err != nil {
+			writeError(w, http.StatusNotFound, "not found")
+			return
+		}
+		defer file.Close()
+		info, err := file.Stat()
+		if err != nil || info.IsDir() {
+			writeError(w, http.StatusNotFound, "not found")
+			return
+		}
+		seeker, ok := file.(io.ReadSeeker)
+		if !ok {
+			writeError(w, http.StatusInternalServerError, "静态资源不可读")
+			return
+		}
+		w.Header().Set("X-Content-Type-Options", "nosniff")
+		http.ServeContent(w, r, info.Name(), info.ModTime(), seeker)
+	}
+}
+
 // runHealth 对自己发一次请求做自检，供容器健康检查使用。
 //
 // 镜像 FROM scratch，里面没有 shell、没有 curl，所以健康检查只能由二进制自己完成。
@@ -256,6 +308,7 @@ func main() {
 		"每个 IP 每分钟对 /api/* 的请求上限；0 = 不限速（默认，本机开发用）")
 	reportPath := flag.String("report", "",
 		"分析报告路径；留空则自动在候选路径里找（容器内与本机两种跑法都能用）")
+	contentDir := flag.String("content-dir", ".", "研究静态内容目录；本机默认 dashboard/，容器使用持久化版本目录")
 	envFile := flag.String("env-file", ".env",
 		"面板自己的 .env（在 dashboard/ 目录里），不再读仓库根的 .env；容器里由 compose 注入")
 	recommendationURL := flag.String("recommendation-url", "", "覆盖 RECOMMENDATION_HOST/PORT 的完整内网 HTTP 地址")
@@ -293,8 +346,18 @@ func main() {
 	// "GET /{$}" 才是「只匹配根路径」；写成 "GET /" 会变成匹配所有路径的兜底项
 	mux.HandleFunc("GET /{$}", static("index.html", "text/html; charset=utf-8"))
 	for path, a := range assets {
-		mux.HandleFunc("GET "+path, static(a.file, a.ctype))
+		if strings.HasPrefix(a.file, "figures/") || strings.HasSuffix(a.file, "-data.json") {
+			file := a.file
+			mux.HandleFunc("GET "+path, func(w http.ResponseWriter, r *http.Request) {
+				w.Header().Set("X-Content-Type-Options", "nosniff")
+				http.ServeFile(w, r, filepath.Join(*contentDir, file))
+			})
+		} else {
+			mux.HandleFunc("GET "+path, static(a.file, a.ctype))
+		}
 	}
+	// LYX 的交付页连同附件按原目录结构提供，页内 ../ 相对链接才能解析
+	mux.Handle("GET /assets/research/lyx/", http.StripPrefix("/assets/research/lyx", staticTree(filepath.Join(*contentDir, "lyx"))))
 	mux.HandleFunc("GET /api/progress", srv.handleProgress)
 	mux.HandleFunc("GET /api/game", srv.handleGame)
 	mux.HandleFunc("GET /api/explore", srv.handleExplore)
@@ -335,6 +398,7 @@ func main() {
 	log.Printf("面板已启动：http://%s:%d%s", *host, *port, suffix)
 	log.Printf("数据库：%s", dbTarget())
 	log.Printf("分析报告：%s", report)
+	log.Printf("研究静态内容：%s", *contentDir)
 	log.Printf("推荐服务：%s", recommendationTarget)
 
 	<-ctx.Done()

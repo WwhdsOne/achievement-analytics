@@ -219,6 +219,9 @@
 </style>
 <link rel="stylesheet" href="/assets/explore.css">
 <link rel="stylesheet" href="/assets/research.css">
+<link rel="stylesheet" href="/assets/clusters.css">
+<link rel="stylesheet" href="/assets/trends.css">
+<link rel="stylesheet" href="/assets/retention.css">
 </head>
 <body>
 
@@ -275,14 +278,10 @@
         <a href="#queue"><strong>队列总览 ↗</strong><span>采集进度与各数据源获取情况</span></a>
       </div>
     </header>
-    <div class="research-layout">
-      <aside class="research-sidebar" aria-label="研究方向">
-        <p class="research-label">研究目录 / 05</p>
-        <div id="researchNav"></div>
-        <p class="research-side-note">公开游戏数据中的线索，<br>与可以追溯的分析依据。</p>
-      </aside>
-      <main id="researchContent" class="research-content"></main>
-    </div>
+    <nav class="research-tabs" aria-label="研究方向">
+      <div id="researchNav"></div>
+    </nav>
+    <main id="researchContent" class="research-content"></main>
     <footer class="explore-footer">来源：Steam / SteamSpy / <a href="https://rawg.io/" target="_blank" rel="noopener noreferrer">RAWG</a> · 各方向的数据范围与版本以成果说明为准。</footer>
   </div>
 
@@ -825,6 +824,9 @@ progressLoop();
 </script>
 <script src="/assets/overview.js"></script>
 <script src="/assets/research.js"></script>
+<script src="/assets/clusters.js"></script>
+<script src="/assets/trends.js"></script>
+<script src="/assets/retention.js"></script>
 <script src="/assets/explore.js"></script>
 </body>
 </html>
