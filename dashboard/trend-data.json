@@ -1,0 +1,363 @@
+{
+  "meta": {
+    "games": 50925,
+    "extracted_at": "2026-10-16T11:57:59.375765+00:00",
+    "input_sha256": "72834076e47b8a5b6395cb91aaa4a787a207debb03a6704018047d9981535902",
+    "taxonomy_version": "2026-10-16.1",
+    "plot_window": [
+      2014,
+      2024
+    ],
+    "growth_window": [
+      2014,
+      2020
+    ],
+    "minimum_base_games": 30,
+    "sample_rule": "steam_appdetails.type = 'game' 且 release_date < 2026-01-01；不因标签内容删除任何游戏",
+    "tag_fetch_window": {
+      "first": "2026-09-18 00:23:45.314827+00",
+      "last": "2026-10-01 10:28:33.325162+00"
+    },
+    "sources": {
+      "result/YJH/第二版/tag-trends.json": "be86fd242d197459d55150c9fb19abe378459bcdabcc95319dae2ac547026ca8",
+      "result/YJH/第二版/tag_trends.py": "a5f7508d6dd54d46b29b271a10bd0a4aec27d7927d7f355df772896668338b11",
+      "result/YJH/第二版/标签中英对照.csv": "1934b3af29a7c8c74c0b76e0749fd4a9e5b5fdd6f241a27d04a1c1ebebcbd1e8",
+      "result/YJH/第二版/游戏类型占比趋势.png": "cc77138f03f6429bb253c4b1e8458d3ccfd435138fc3e11670e601f47dde8c88",
+      "result/YJH/第二版/官方类型占比对照.png": "6798a658956a9d92d46e6b45dbcf848db320488ba8aadf2f84a8c0c3d04591f8",
+      "result/YJH/第二版/题材设定标签增长榜.png": "a9bb413a92322067214ad91d5878b092fe5a04d61c763e9d8499e9a939b9d16b",
+      "result/YJH/第二版/玩家模式标签增长榜.png": "d39d4e8510a503064802da559a41aeb99747414080ce853b20286f4e3393e867"
+    },
+    "label_overrides": {
+      "Comedy": "喜剧"
+    }
+  },
+  "coverage": {
+    "2008": {
+      "games": 19,
+      "with_tags": 19,
+      "coverage_pct": 100.0,
+      "avg_tags_per_game": 12.68
+    },
+    "2009": {
+      "games": 46,
+      "with_tags": 46,
+      "coverage_pct": 100.0,
+      "avg_tags_per_game": 15.24
+    },
+    "2010": {
+      "games": 94,
+      "with_tags": 93,
+      "coverage_pct": 98.9,
+      "avg_tags_per_game": 13.24
+    },
+    "2011": {
+      "games": 123,
+      "with_tags": 122,
+      "coverage_pct": 99.2,
+      "avg_tags_per_game": 14.22
+    },
+    "2012": {
+      "games": 178,
+      "with_tags": 177,
+      "coverage_pct": 99.4,
+      "avg_tags_per_game": 14.61
+    },
+    "2013": {
+      "games": 292,
+      "with_tags": 286,
+      "coverage_pct": 97.9,
+      "avg_tags_per_game": 15.88
+    },
+    "2014": {
+      "games": 810,
+      "with_tags": 802,
+      "coverage_pct": 99.0,
+      "avg_tags_per_game": 13.41
+    },
+    "2015": {
+      "games": 1470,
+      "with_tags": 1461,
+      "coverage_pct": 99.4,
+      "avg_tags_per_game": 11.98
+    },
+    "2016": {
+      "games": 2259,
+      "with_tags": 2244,
+      "coverage_pct": 99.3,
+      "avg_tags_per_game": 11.28
+    },
+    "2017": {
+      "games": 3030,
+      "with_tags": 3006,
+      "coverage_pct": 99.2,
+      "avg_tags_per_game": 10.92
+    },
+    "2018": {
+      "games": 3567,
+      "with_tags": 3517,
+      "coverage_pct": 98.6,
+      "avg_tags_per_game": 11.13
+    },
+    "2019": {
+      "games": 3175,
+      "with_tags": 3112,
+      "coverage_pct": 98.0,
+      "avg_tags_per_game": 12.41
+    },
+    "2020": {
+      "games": 3767,
+      "with_tags": 3702,
+      "coverage_pct": 98.3,
+      "avg_tags_per_game": 15.51
+    },
+    "2021": {
+      "games": 4278,
+      "with_tags": 4007,
+      "coverage_pct": 93.7,
+      "avg_tags_per_game": 17.8
+    },
+    "2022": {
+      "games": 4556,
+      "with_tags": 4117,
+      "coverage_pct": 90.4,
+      "avg_tags_per_game": 17.88
+    },
+    "2023": {
+      "games": 5318,
+      "with_tags": 4653,
+      "coverage_pct": 87.5,
+      "avg_tags_per_game": 17.98
+    },
+    "2024": {
+      "games": 7831,
+      "with_tags": 6444,
+      "coverage_pct": 82.3,
+      "avg_tags_per_game": 17.79
+    },
+    "2025": {
+      "games": 10112,
+      "with_tags": 3476,
+      "coverage_pct": 34.4,
+      "avg_tags_per_game": 17.99
+    }
+  },
+  "casual_comparison": {
+    "tag": "Casual",
+    "base_pct": 35.16,
+    "end_pct": 44.71,
+    "delta_pp": 9.55,
+    "base_games": 282,
+    "end_games": 2881
+  },
+  "theme_growth": [
+    {
+      "tag": "Anime",
+      "base_pct": 9.48,
+      "end_pct": 12.24,
+      "delta_pp": 2.76,
+      "base_games": 76,
+      "end_games": 453
+    },
+    {
+      "tag": "Psychological Horror",
+      "base_pct": 4.36,
+      "end_pct": 6.43,
+      "delta_pp": 2.06,
+      "base_games": 35,
+      "end_games": 238
+    },
+    {
+      "tag": "Mystery",
+      "base_pct": 6.36,
+      "end_pct": 8.1,
+      "delta_pp": 1.74,
+      "base_games": 51,
+      "end_games": 300
+    },
+    {
+      "tag": "Survival Horror",
+      "base_pct": 3.74,
+      "end_pct": 4.38,
+      "delta_pp": 0.64,
+      "base_games": 30,
+      "end_games": 162
+    },
+    {
+      "tag": "Magic",
+      "base_pct": 4.11,
+      "end_pct": 4.19,
+      "delta_pp": 0.07,
+      "base_games": 33,
+      "end_games": 155
+    },
+    {
+      "tag": "Space",
+      "base_pct": 7.11,
+      "end_pct": 6.29,
+      "delta_pp": -0.81,
+      "base_games": 57,
+      "end_games": 233
+    },
+    {
+      "tag": "Horror",
+      "base_pct": 11.97,
+      "end_pct": 10.86,
+      "delta_pp": -1.11,
+      "base_games": 96,
+      "end_games": 402
+    },
+    {
+      "tag": "Comedy",
+      "base_pct": 10.97,
+      "end_pct": 9.86,
+      "delta_pp": -1.11,
+      "base_games": 88,
+      "end_games": 365
+    },
+    {
+      "tag": "Historical",
+      "base_pct": 3.99,
+      "end_pct": 2.84,
+      "delta_pp": -1.15,
+      "base_games": 32,
+      "end_games": 105
+    },
+    {
+      "tag": "Zombies",
+      "base_pct": 5.11,
+      "end_pct": 2.94,
+      "delta_pp": -2.17,
+      "base_games": 41,
+      "end_games": 109
+    }
+  ],
+  "player_growth": [
+    {
+      "tag": "Singleplayer",
+      "base_pct": 61.1,
+      "end_pct": 65.72,
+      "delta_pp": 4.62,
+      "base_games": 490,
+      "end_games": 2433
+    },
+    {
+      "tag": "Local Multiplayer",
+      "base_pct": 6.23,
+      "end_pct": 6.48,
+      "delta_pp": 0.25,
+      "base_games": 50,
+      "end_games": 240
+    },
+    {
+      "tag": "Controller",
+      "base_pct": 6.23,
+      "end_pct": 6.4,
+      "delta_pp": 0.17,
+      "base_games": 50,
+      "end_games": 237
+    },
+    {
+      "tag": "Online Co-Op",
+      "base_pct": 5.86,
+      "end_pct": 3.62,
+      "delta_pp": -2.24,
+      "base_games": 47,
+      "end_games": 134
+    },
+    {
+      "tag": "Local Co-Op",
+      "base_pct": 7.98,
+      "end_pct": 5.24,
+      "delta_pp": -2.74,
+      "base_games": 64,
+      "end_games": 194
+    },
+    {
+      "tag": "Co-op",
+      "base_pct": 13.47,
+      "end_pct": 7.78,
+      "delta_pp": -5.69,
+      "base_games": 108,
+      "end_games": 288
+    },
+    {
+      "tag": "Multiplayer",
+      "base_pct": 21.45,
+      "end_pct": 13.83,
+      "delta_pp": -7.62,
+      "base_games": 172,
+      "end_games": 512
+    }
+  ],
+  "labels": {
+    "Anime": "日系动画",
+    "Co-op": "合作",
+    "Comedy": "喜剧",
+    "Controller": "手柄支持",
+    "Historical": "历史",
+    "Horror": "恐怖",
+    "Local Co-Op": "本地合作",
+    "Local Multiplayer": "本地多人",
+    "Magic": "魔法",
+    "Multiplayer": "多人",
+    "Mystery": "悬疑",
+    "Online Co-Op": "在线合作",
+    "Psychological Horror": "心理恐怖",
+    "Singleplayer": "单人",
+    "Space": "太空",
+    "Survival Horror": "生存恐怖",
+    "Zombies": "丧尸"
+  },
+  "official_share": {
+    "2014": {
+      "Indie": 75.8,
+      "Casual": 26.9,
+      "Action": 48.8,
+      "Adventure": 41.0,
+      "Simulation": 12.5,
+      "Strategy": 23.3,
+      "RPG": 22.7,
+      "Free To Play": 3.9
+    },
+    "2024": {
+      "Indie": 91.3,
+      "Casual": 57.1,
+      "Action": 51.4,
+      "Adventure": 50.1,
+      "Simulation": 26.8,
+      "Strategy": 24.7,
+      "RPG": 21.9,
+      "Free To Play": 15.0
+    }
+  },
+  "figures": [
+    {
+      "id": "genre",
+      "source": "result/YJH/第二版/游戏类型占比趋势.png",
+      "file": "genre-share.png",
+      "width": 2300,
+      "height": 1120
+    },
+    {
+      "id": "official",
+      "source": "result/YJH/第二版/官方类型占比对照.png",
+      "file": "official-genre.png",
+      "width": 2300,
+      "height": 1040
+    },
+    {
+      "id": "theme",
+      "source": "result/YJH/第二版/题材设定标签增长榜.png",
+      "file": "theme-growth.png",
+      "width": 2120,
+      "height": 1380
+    },
+    {
+      "id": "players",
+      "source": "result/YJH/第二版/玩家模式标签增长榜.png",
+      "file": "player-growth.png",
+      "width": 2120,
+      "height": 1080
+    }
+  ]
+}

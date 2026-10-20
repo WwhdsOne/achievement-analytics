@@ -1,0 +1,40 @@
+/* 年份研究沿用研究目录的纸色与墨色，原图完整展示并支持放大。 */
+#trendReport { color: var(--INK); }
+.trend-lead { padding: 8px 0 30px; }
+.trend-step { font-size: 10px; font-weight: 700; color: var(--L3); letter-spacing: .08em; margin-bottom: 12px; }
+.trend-lead h3 { font-size: clamp(26px, 3vw, 38px); line-height: 1.45; letter-spacing: -.04em; }
+.trend-lead > p:not(.trend-step) { max-width: 720px; margin-top: 16px; font-size: 13px; line-height: 1.9; color: var(--L3); }
+.trend-kpis { display: grid; grid-template-columns: .9fr 1.1fr 1.1fr; gap: 24px; padding-top: 22px; margin-top: 26px; border-top: 1px solid var(--FAINT); }
+.trend-kpis strong { display: block; font-size: clamp(21px, 2.1vw, 29px); font-variant-numeric: tabular-nums; letter-spacing: -.05em; }
+.trend-kpis span { display: block; font-size: 11px; line-height: 1.8; color: var(--L3); margin-top: 8px; }
+.trend-section { margin-bottom: 26px; }
+.trend-section h3 { font-size: 19px !important; line-height: 1.7; }
+.trend-purpose { font-size: 12px; line-height: 1.9; color: var(--L3); margin: 8px 0 18px; }
+.trend-image { display: block; color: var(--INK); text-decoration: none; background: #f6f7f9; border: 1px solid var(--GRID); border-radius: 10px; overflow: hidden; }
+.trend-image img { display: block; width: 100%; height: auto; }
+.trend-image > span { display: block; padding: 10px 14px; font-size: 11px; text-align: right; }
+.trend-image:hover > span { text-decoration: underline; text-underline-offset: 4px; }
+.trend-explanation { border-top: 1px solid var(--GRID); padding-top: 16px; margin-top: 18px; }
+.trend-explanation b { display: block; font-size: 12px; margin-bottom: 8px; }
+.trend-explanation p { font-size: 12px; line-height: 1.95; }
+.trend-figure-note { font-size: 11px; color: var(--L3); line-height: 1.9; margin-top: 14px; }
+.trend-definition { padding: 12px 14px; border-left: 3px solid #3b6ea5; background: #3b6ea50a; font-size: 12px; line-height: 1.9; margin-bottom: 18px; }
+.trend-label-key { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 8px; margin-top: 16px; }
+.trend-label-key > span { display: block; padding: 9px 10px; border: 1px solid var(--GRID); border-radius: 8px; overflow-wrap: anywhere; }
+.trend-label-key b { display: block; font-size: 11px; font-weight: 500; }
+.trend-label-key small { display: block; font-size: 10px; color: var(--L3); line-height: 1.7; margin-top: 3px; }
+.trend-footer { padding: 8px 0 28px; overflow-wrap: anywhere; }
+.trend-error button { margin-top: 16px; }
+@media (max-width: 900px) {
+  .trend-kpis { gap: 12px; }
+  .trend-kpis strong { font-size: 22px; }
+}
+@media (max-width: 680px) {
+  .trend-kpis { grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 18px 12px; }
+  .trend-kpis > div:first-child { grid-column: 1 / -1; }
+  .trend-kpis > div:first-child strong { font-size: 32px; }
+  .trend-kpis strong { font-size: 22px; }
+  .trend-kpis span { font-size: 10px; }
+  .trend-section h3 { font-size: 17px !important; }
+  .trend-label-key { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+}
