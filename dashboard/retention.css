@@ -1,0 +1,49 @@
+/* 研究方向 04「实际完成曲线与游戏用户粘性」。
+ *
+ * 板块内只有一段说明 + 一个装满视口的 iframe。作用域一律 #retentionReport，
+ * 类名统一 ret- 前缀，避免与 trends / clusters 的全局样式互相污染。
+ */
+#retentionReport { color: var(--INK); }
+
+#retentionReport .ret-intro {
+  display: flex; align-items: flex-start; justify-content: space-between;
+  gap: 16px; flex-wrap: wrap; padding: 2px 0 14px;
+}
+#retentionReport .ret-lead {
+  flex: 1 1 420px; max-width: 680px;
+  font-size: 13px; line-height: 1.95; color: var(--L3);
+}
+#retentionReport .ret-actions { display: flex; align-items: center; gap: 12px; flex-wrap: wrap; padding-top: 2px; }
+#retentionReport .ret-open {
+  font-size: 12px; color: var(--INK); text-decoration: underline; text-underline-offset: 4px;
+}
+#retentionReport .ret-open:hover { color: var(--L3); }
+#retentionReport .ret-fullscreen { white-space: nowrap; }
+
+#retentionReport .ret-frame-wrap {
+  background: #fff; border: 1px solid var(--GRID); border-radius: 16px; overflow: hidden;
+}
+#retentionReport .ret-frame {
+  display: block; width: 100%; border: 0; background: #fff;
+  height: min(78vh, 920px); min-height: 720px;
+}
+#retentionReport .ret-hint { margin-top: 10px; font-size: 11px; line-height: 1.8; color: var(--L4); }
+
+/* 全屏：把整个板块提到最上层，iframe 占满剩余高度 */
+#retentionReport.is-fullscreen {
+  position: fixed; inset: 0; z-index: 60; overflow: hidden;
+  display: flex; flex-direction: column; gap: 10px;
+  background: #E3E2DC; padding: 12px 16px 14px;
+}
+#retentionReport.is-fullscreen .ret-intro { padding-bottom: 0; }
+#retentionReport.is-fullscreen .ret-lead { font-size: 12px; }
+#retentionReport.is-fullscreen .ret-frame-wrap { flex: 1; min-height: 0; }
+#retentionReport.is-fullscreen .ret-frame { height: 100%; min-height: 0; }
+#retentionReport.is-fullscreen .ret-hint { display: none; }
+
+@media (max-width: 680px) {
+  #retentionReport .ret-intro { flex-direction: column; gap: 10px; }
+  #retentionReport .ret-frame { height: 72vh; min-height: 560px; }
+  #retentionReport.is-fullscreen { padding: 8px 8px 10px; }
+  #retentionReport.is-fullscreen .ret-lead { display: none; }
+}
