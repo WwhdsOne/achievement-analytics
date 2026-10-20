@@ -32,6 +32,45 @@
     return `<a class="rec-cover${compact ? ' rec-cover-compact' : ''}" href="#explore/game/${id}" aria-label="查看《${name}》游戏数据"><span aria-hidden="true">${name}</span><img src="https://cdn.akamai.steamstatic.com/steam/apps/${id}/header.jpg" alt="" loading="lazy" decoding="async" referrerpolicy="no-referrer" width="460" height="215"></a>`;
   }
 
+  /** 方法说明：推荐流程图与打分公式，与 Rust 服务 scoring.rs 的实现逐条对应。 */
+  function methodSection() {
+    const frac = (top, bottom) => `<span class="frac"><span>${top}</span><span>${bottom}</span></span>`;
+    const steps = [
+      ['搜索并选定种子（1–3 款）', '<p>在冻结快照内按中文名、英文名、常见别名或 AppID 检索；每款种子先过推荐资格校验——缺 SteamSpy 标签、成就摘要缺失、成就名映射未解决等会逐条给出原因。</p>', '任一种子不合格 → 整个查询返回 seed_ineligible，不对其余种子偷偷继续。'],
+      ['年份过滤（先筛再算）', '<p>候选必须：通过资格校验、发售年落在起始–结束年份内（含端点）、且不是已选种子。筛后剩余 N 款构成这一次的 IDF 参考集。</p>', 'N = 0 → 返回 no_candidates 空结果，不自动放宽条件。'],
+      ['倒排查候选', '<p>在参考集内，与任一种子在「玩家标签 / 官方类型 / 开发商」三类正权重关系上共享至少一个实体的游戏才成为候选；发行商权重为 0，不参与召回，只作为证据展示。</p>', ''],
+      ['逐候选 × 逐种子打分（公式 ①–③）', '<p>四类关系分别算 IDF 加权 Jaccard 相似度（②），再按权重线性合成单种子相似度分（③）。所有求和用精确累加（fsum），避免浮点误差。</p>', ''],
+      ['等权平均合成总分（公式 ④）', '<p>M 款种子等权合并：total = 相似度分之和 ÷ M。total ≤ 0 的候选直接剔除。</p>', '剔除后为空 → no_shared_relation，不生成任何兜底结果。'],
+      ['排序取 Top-K 并回查解释（公式 ⑤）', '<p>按 total 降序、同分取 appid 更小者，保留前 K 款。对每款展开逐条路径贡献（⑤），全部路径贡献相加必须精确重建总分（误差 ≤ 10⁻¹²，否则拒绝展示），每条路径附双端事实编号供回查原始来源。</p>', ''],
+    ];
+    const formulas = [
+      ['①', `idf(e) = ln ${frac('N + 1', 'df(e) + 1')} + 1`, '实体稀有度。e 是一个具体实体（某个标签 / 类型 / 开发商），df(e) 是参考集中同样拥有它的游戏数，N 是参考集游戏总数；+1 为平滑项。越冷门的关系 idf 越大——人人都有的大众标签几乎不贡献分数。'],
+      ['②', `sim<sub>f</sub>(s, c) = ${frac('Σ<sub>e ∈ S(f)</sub> idf(e)', 'Σ<sub>e ∈ U(f)</sub> idf(e)')}`, '每类关系的 IDF 加权 Jaccard。s 为种子、c 为候选；S(f) 是双方在该关系上的共享实体集合，U(f) 是并集。分子只数共享，分母含双方独有实体——种子有而候选没有的关系同样拉低相似度；分母为 0（双方该类都空）时记 0。'],
+      ['③', `score(s, c) = Σ<sub>f</sub> w<sub>f</sub> · sim<sub>f</sub>(s, c)`, '单种子相似度总分：四类关系的加权线性组合，权重见下表。'],
+      ['④', `total(c) = ${frac('1', 'M')} · Σ<sub>s</sub> score(s, c)`, '多种子合并：M 款种子等权平均（零分种子也保留份额，允许部分匹配）；只选一款时 M = 1，即自身分数。'],
+      ['⑤', `contrib(e) = w<sub>f</sub> · ${frac('idf(e)', 'Σ<sub>e′ ∈ U(f)</sub> idf(e′)')} · ${frac('1', 'M')}`, '结果页每条「《种子》→ 关系 ← 《候选》」路径旁的贡献值：该关系在这个候选上的原始贡献再乘种子权重。同一候选的全部路径贡献相加恰好等于它的总分（服务端逐款校验）。'],
+    ];
+    return `<details class="card rec-method"><summary>这些推荐是怎么来的？—— 搜索流程与打分公式</summary>
+      <h4>推荐搜索流程</h4>
+      <ol class="rec-flow-steps">${steps.map(([title, body, branch], i) => `
+        <li>${i ? '<div class="rec-flow-arrow" aria-hidden="true"></div>' : ''}<div class="rec-flow-node"><span class="rec-flow-no">${i + 1}</span><div><strong>${title}</strong>${body}</div></div>${branch ? `<p class="rec-flow-branch">✕ ${branch}</p>` : ''}</li>`).join('')}
+      </ol>
+      <p class="research-note">服务端固定的执行顺序：年份过滤 → IDF → 排序 → 取 Top-K（filter_order），与上图一致。</p>
+      <h4>打分公式</h4>
+      <p class="research-note">符号：f 遍历四类关系（tags / genres / developers / publishers）；w<sub>f</sub> 为该类权重；s 为种子游戏，c 为候选游戏，M 为种子数量。</p>
+      <div class="rec-formula-list">${formulas.map(([tag, math, note]) => `
+        <div class="rec-formula"><span class="rec-formula-tag">${tag}</span><div class="rec-formula-body"><span class="math">${math}</span><p>${note}</p></div></div>`).join('')}
+      </div>
+      <div class="rec-table-wrap"><table class="rec-table"><caption class="sr-only">四类关系的权重配置</caption><thead><tr><th>关系 f</th><th>数据来源</th><th>权重 w<sub>f</sub></th><th>说明</th></tr></thead><tbody>
+        <tr><td>玩家标签 tags</td><td>SteamSpy 主题标签</td><td>0.75</td><td>主要信号：玩家自发打的题材 / 玩法标签</td></tr>
+        <tr><td>官方类型 genres</td><td>Steam 官方分类</td><td>0.15</td><td>商店登记的类型</td></tr>
+        <tr><td>开发商 developers</td><td>Steam 开发商字段</td><td>0.10</td><td>同一工作室</td></tr>
+        <tr><td>发行商 publishers</td><td>Steam 发行商字段</td><td>0.00</td><td>不计分，只展示共同事实</td></tr>
+      </tbody></table></div>
+      <p class="research-note">朱政宇的知识图谱连接游戏与玩家标签、官方类型、开发商和发行商。推荐沿用原服务的权重与相似度评分，多款游戏按原算法合并贡献，年份先筛选再排名；展开每款结果可回查关系贡献及双端事实编号。</p>
+      <p class="research-note">简单对照组为标签相似度基线，本页展示知识图谱推荐。关系相似度不是喜欢概率，当前权重为人为配置、未经独立人工效果验证。共同开发商或发行商也不直接证明玩法相似。</p>
+      <p class="research-note">只搜索本次加载的数据快照；可搜索到不代表符合推荐资格。缺少标签、成就摘要或映射未解决的游戏会说明原因。没有符合条件的候选时保留空结果。</p></details>`;
+  }
   /** 原交付图示与实时推荐分开标注，避免把历史辅助评价当作当前效果。 */
   function figures() {
     const images = [
@@ -86,7 +125,7 @@
       <p id="recMessage" class="rec-message" role="status"></p></section>
       <section id="recResults" aria-live="polite"></section>
       ${figures()}
-      <details class="card rec-method"><summary>这些推荐是怎么来的？</summary><p class="research-note">朱政宇的知识图谱连接游戏与玩家标签、官方类型、开发商和发行商。推荐沿用原服务的权重与相似度评分，多款游戏按原算法合并贡献，年份先筛选再排名；展开每款结果可回查关系贡献及双端事实编号。</p><p class="research-note">简单对照组为标签相似度基线，本页展示知识图谱推荐。关系相似度不是喜欢概率，当前权重未经独立人工效果验证。共同开发商或发行商也不直接证明玩法相似。</p><p class="research-note">只搜索本次加载的数据快照；可搜索到不代表符合推荐资格。缺少标签、成就摘要或映射未解决的游戏会说明原因。没有符合条件的候选时保留空结果。</p></details>`);
+      ${methodSection()}`);
     $('recSearch').addEventListener('submit', event => { event.preventDefault(); search($('recInput').value.trim(), 0); });
     $('recForm').addEventListener('submit', recommend);
     for (const id of ['recYearMin', 'recYearMax', 'recCount']) $(id).addEventListener('input', invalidateResults);
