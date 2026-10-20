@@ -1,6 +1,6 @@
 {
   "page_version": "lyx-web-story-v1",
-  "built_at": "2026-10-20T13:48:30+08:00",
+  "built_at": "2026-10-20T13:59:27+08:00",
   "dataset_version": "wwh5-2026-10-13T10:26:09.722887+00:00",
   "counts": {
     "curves": 198,
@@ -297,15 +297,15 @@
   ],
   "web_sources": {
     "page.html": "a1ae854e12f8ddae9a8b146005938f8c11441c662629ab8b5e4204d4f95e51e5",
-    "style.css": "d2a80519c73bb8e235ac63491b3432d4da0009d5440da4934cc773077f0c6522",
+    "style.css": "a24048d9152eca69e2c2861b54197ef6ea648ea2f7ef1cd6b56eb9dbd3e74599",
     "app.js": "8581a57757023f59a519fee6c74fb1cd3b030e713a3b1ffc29e172aa58bd992f",
     "data_adapter.py": "852fdef3757d7bf1da47a1d234a5877d413fd4cf6b9477b916d698488b3261b7",
     "build.py": "f2c5fe32cebdec93c5ce3c8e1d74cea0ebab5c3949ce5cfc6507a0047c18fe21"
   },
   "outputs": {
     "index.html": {
-      "sha256": "5eceee16c774506568c13c41e774c0892c7496e7a0941994bce818154e65fd63",
-      "bytes": 5334155
+      "sha256": "914f97258a5a196a48331fb4e358829e29cd3ff7500af2085b6fc21db9f1d8d7",
+      "bytes": 5334221
     }
   },
   "database_writes": false,
