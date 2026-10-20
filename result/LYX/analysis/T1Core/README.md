@@ -1,8 +1,8 @@
 # T1Core：主线指标、类型、过程与时长分析
 
-实施日期：2026-10-16。负责人：刘宇翔。已完成[data_plan](../../docs/data_plan.md)中的专题1指标准备、游戏对比、专题2类型阶段、专题3完整过程和专题4固定65款时长分析。任务5口碑与任务6同类参照已在[T2Sum](../T2Sum/README.md)完成，交接与审查见[delivery](../delivery/README.md)。当前图集统一位于[figures](figures/README.md)，编号01～15。
+实施日期：2026-10-16。负责人：刘宇翔。已完成[data_plan](../../docs/data_plan.md)中的专题1指标准备、游戏对比、专题2类型阶段、专题3完整过程和专题4固定69款时长分析。任务5口碑与任务6同类参照已在[T2Sum](../T2Sum/README.md)完成，交接与审查见[delivery](../delivery/README.md)。当前图集统一位于[figures](figures/README.md)，编号01～15。
 
-阅读入口：[INSTRUCT.md](../../docs/INSTRUCT.md)已统一汇总T1Core与T2Sum六项任务、完整命令、逐图读法、实际例子和解释边界；[DEPLOY.md](../../docs/DEPLOY.md)交接网页布局、交互与数据方案，包含任务4固定65款高亮、任务5评分口径与任务6参照条件切换和缺失处理。部署与前端交互由组长后续实施，文中明确区分已有能力与建议新增；本README继续作为程序参数、字段与保护规则的技术参考。
+阅读入口：[INSTRUCT.md](../../docs/INSTRUCT.md)已统一汇总T1Core与T2Sum六项任务、完整命令、逐图读法、实际例子和解释边界；[DEPLOY.md](../../docs/DEPLOY.md)交接网页布局、交互与数据方案，包含任务4固定69款高亮、任务5评分口径与任务6参照条件切换和缺失处理。部署与前端交互由组长后续实施，文中明确区分已有能力与建议新增；本README继续作为程序参数、字段与保护规则的技术参考。
 
 ## 运行
 
@@ -189,35 +189,35 @@ uv --cache-dir analysis/T1Core/runtime/uv-cache run --frozen --no-sync python -X
 
 默认数值表和报告写入`output/duration_analysis`，图10～13集中figures；自定义`--output`限T1Core独立目录，图片放该目录的figures，不覆盖默认图集。不能指向旧底表、comparisons、type_analysis、trajectory_analysis或默认图集目录；duration不接受游戏选择或分组参数，游戏选择仅用于compare/trajectory，view仅用于compare。
 
-### 数据与固定65款
+### 数据与固定69款
 
-所有主图均为同一65款，按原排名顺序冻结AppID，清单SHA256为`41aed4f5c6cfff37d0032fc3bfb3812a8d30b48e3ef0058cab7865cf90a42271`。
+所有主图均为同一69款，按原排名顺序冻结AppID，清单SHA256为`48d3f0600fbbb2cbaff4e1ffe3df9d330af35ab6ec70e384906a9161ff82e4a9`。
 
 - 主线、三节点与阶段推进继续读取既有指标表，固定主范围198款，其中三节点183款。
-- HLTB `main_hours`只读旧本地库`database/achievements.sqlite`。198款中正值75、NULL85、本地未匹配37、零值1；其中三节点且正值68款。本地未匹配不等于HLTB网站无数据。
-- RAWG `playtime`读取借用库games.payload.rawg，并与旧库playtime逐项核对这68款；两份副本当前完全一致。其中3款RAWG缺失，最终交集65款，不补零或用一类时长填补另一类。
-- 按负责人授权的研究口径，RAWG作为用户平均游玩时长，HLTB作为主线参考耗时，均为小时。R=`playtime/main_hours`，50款R<1、15款R>=1；R不是个人主线完成度或通关后游玩量。
+- HLTB `main_hours`只读旧本地库`database/achievements.sqlite`，再叠加人工确认输入。原快照198款中正值75、NULL85、本地未匹配37、零值1；补充后三款NULL转为分析层有效值，正值78、NULL82；完整三节点且HLTB正值由68变71。本地未匹配不等于HLTB网站无数据。
+- RAWG `playtime`读取借用库games.payload.rawg，并与旧库playtime逐项核对这68款；两份副本当前完全一致。原快照有3款RAWG缺失，人工补充God of War后仅2款仍缺失；再增加3款HLTB，最终共同样本69款，不补零或用一类时长填补另一类。
+- 按负责人授权的研究口径，RAWG作为用户平均游玩时长，HLTB作为主线参考耗时，均为小时。R=`playtime/main_hours`，53款R<1、16款R>=1；R不是个人主线完成度或通关后游玩量。
 - 名称按同AppID交叉核对，出现差异或RAWG副本不一致时停止，不自动按名称改配；两份数据库只读事务，不合并或回写。不做类型分组、着色、拟合或对照。
 
 ### 统计与图
 
-Spearman使用平均秩处理整数RAWG时长的并列；对65行游戏联合重采样2000次、种子42，以2.5/97.5百分位给相关区间，记录有效重复数。计算两种时长及R与三个推进比的9项关联，另列两种时长的关联，共10项；不按p值挑选结论，不做复杂曲线或自动门槛搜索。
+Spearman使用平均秩处理整数RAWG时长的并列；对69行游戏联合重采样2000次、种子42，以2.5/97.5百分位给相关区间，记录有效重复数。计算两种时长及R与三个推进比的9项关联，另列两种时长的关联，共10项；不按p值挑选结论，不做复杂曲线或自动门槛搜索。
 
-HLTB四个预先规定区间≤5、>5～15、>15～30、>30小时分别10、30、18、7款；保存阶段比中位数/四分位范围，n>=10才给游戏级Bootstrap中位数区间。仍以每款游戏为单位、不按评论数或成就条数加权，不开展类型对照。
+HLTB四个预先规定区间≤5、>5～15、>15～30、>30小时分别10、30、20、9款；保存阶段比中位数/四分位范围，n>=10才给游戏级Bootstrap中位数区间。仍以每款游戏为单位、不按评论数或成就条数加权，不开展类型对照。
 
 | 图 | 用途 |
 |---|---|
 | [10_time_comparison](figures/10_time_comparison.png) | HLTB主线参考耗时×RAWG平均游玩时长，虚线为相等参考，颜色为全程推进比 |
-| [11_length_progress](figures/11_length_progress.png) | 主线参考耗时与前/后/全程推进，三个面板同65款 |
+| [11_length_progress](figures/11_length_progress.png) | 主线参考耗时与前/后/全程推进，三个面板同69款 |
 | [12_playtime_progress](figures/12_playtime_progress.png) | 平均游玩时长与前/后/全程推进，布局同11 |
 | [13_time_ratio](figures/13_time_ratio.png) | R与全程推进，R=1及全程样本中位数作描述参考，旁列固定规则选出的案例 |
 
-案例按R>=1/<1、全程>=65款中位数/<中位数划四象限，每区按`abs(log2(R))`降序、推进偏离中位数距离降序、AppID升序取一款，无样本不调阈值补齐。这是探索性极端案例，不是各区的典型代表，也不是入库/质量门槛。
+案例按R>=1/<1、全程>=69款中位数/<中位数划四象限，每区按`abs(log2(R))`降序、推进偏离中位数距离降序、AppID升序取一款，无样本不调阈值补齐。这是探索性极端案例，不是各区的典型代表，也不是入库/质量门槛。
 
 | 文件 | 内容 |
 |---|---|
-| [analyze_duration.py](analyze_duration.py) | 双库只读、65款冻结、统计、案例和四张图 |
-| [duration_cohort.csv](output/duration_analysis/duration_cohort.csv) | 固定65款的两类时长、R、六项节点/推进指标和来源质量标记 |
+| [analyze_duration.py](analyze_duration.py) | 双库只读、69款冻结、统计、案例和四张图 |
+| [duration_cohort.csv](output/duration_analysis/duration_cohort.csv) | 固定69款的两类时长、R、六项节点/推进指标和来源质量标记 |
 | [duration_eligibility.csv](output/duration_analysis/duration_eligibility.csv) | 198款逐步筛选、三节点标记、两源时长状态和明确排除原因 |
 | [duration_summary.csv](output/duration_analysis/duration_summary.csv) | 三个时长变量与三个推进比的游戏级分布 |
 | [time_correlations.csv](output/duration_analysis/time_correlations.csv) | 10项Spearman及游戏级区间、并列数量信息、有效重采样数 |
@@ -226,7 +226,7 @@ HLTB四个预先规定区间≤5、>5～15、>15～30、>30小时分别10、30�
 | [report.md](output/duration_analysis/report.md) | 全部实际统计、图、来源与解释边界 |
 | [manifest.json](output/duration_analysis/manifest.json) | 样本、两源指纹、参数、保护核验和产物哈希 |
 
-两类时长与成就覆盖的来源口径不同，不宣称来自同一批玩家。65款是有效交集，不代表全部Steam；R含HLTB分母，因此保留两种原始时长独立分析作对照。相关和样本重采样区间不证明因果，也不覆盖模型标注误差；不把全程推进比当日留存。所有原底表、01～09图、其他分析结果、数据库和共享依赖文件保持不变。独立数值、区间、边界和图面核验见[runtime/duration_acceptance.json](runtime/duration_acceptance.json)。
+两类时长与成就覆盖的来源口径不同，不宣称来自同一批玩家。69款是有效交集，不代表全部Steam；R含HLTB分母，因此保留两种原始时长独立分析作对照。相关和样本重采样区间不证明因果，也不覆盖模型标注误差；不把全程推进比当日留存。所有原底表、01～09图、其他分析结果、数据库和共享依赖文件保持不变。独立数值、区间、边界和图面核验见[runtime/duration_acceptance.json](runtime/duration_acceptance.json)。
 
 ### 补充14～15：主线＋支线与全收集参考耗时
 
@@ -236,22 +236,22 @@ HLTB四个预先规定区间≤5、>5～15、>15～30、>30小时分别10、30�
 uv --cache-dir analysis/T1Core/runtime/uv-cache run --frozen --no-sync python -X utf8 -B analysis/T1Core/analyze_duration_references.py
 ```
 
-沿用13号图的同65款、原全程推进比与案例规则；只读旧库`games_time.extra_hours`和`completionist_hours`，两列均65款正值，顺序异常0。前者对应HLTB Main + Extras（主线＋额外内容，此处简称主线＋支线），后者对应Completionist完整游玩参考（此处简称全收集），不等于Steam全成就耗时。
+沿用13号图的同69款、原全程推进比与案例规则；只读旧库`games_time.extra_hours`和`completionist_hours`并叠加人工确认的HLTB补空值，有效输入两列均69款正值，顺序异常0。前者对应HLTB Main + Extras（主线＋额外内容，此处简称主线＋支线），后者对应Completionist完整游玩参考（此处简称全收集），不等于Steam全成就耗时。
 
 | 图 | 横轴 | 纵轴 | R<1 / R>=1 |
 |---|---|---|---|
 | [14_extra_time_ratio](figures/14_extra_time_ratio.png) | playtime / extra_hours | 原全程推进比p_f/p_s | 60 / 5款 |
 | [15_completionist_time_ratio](figures/15_completionist_time_ratio.png) | playtime / completionist_hours | 原全程推进比p_f/p_s | 63 / 2款 |
 
-Spearman、整行游戏Bootstrap 2000次、种子42与13号图完全一致，两个相关系数分别+0.647和+0.617。案例仍按四象限取极端值；全收集图的“R>=1且推进低于中位数”象限为0款，明确留空，不改变阈值。纵轴没有改成支线或全收集完成率，时长比也不代表个人内容完成比例。
+Spearman、整行游戏Bootstrap 2000次、种子42与13号图完全一致，两个相关系数分别+0.652和+0.630。案例仍按四象限取极端值；全收集图的“R>=1且推进低于中位数”象限为0款，明确留空，不改变阈值。纵轴没有改成支线或全收集完成率，时长比也不代表个人内容完成比例。
 
-实现为[analyze_duration_references.py](analyze_duration_references.py)，默认新增[output/duration_references报告](output/duration_references/report.md)、reference_cohort.csv（65款原值与两个新比值）、reference_correlations.csv（两项关联及区间）、reference_cases.csv（按reference_field区分案例，time_ratio为该参考口径的比值）与manifest.json。支持`--output`指定T1Core内独立目录，图随之放其figures；拒绝覆盖旧分析和默认图集目录。
+实现为[analyze_duration_references.py](analyze_duration_references.py)，默认新增[output/duration_references报告](output/duration_references/report.md)、reference_cohort.csv（69款原值与两个新比值）、reference_correlations.csv（两项关联及区间）、reference_cases.csv（按reference_field区分案例，time_ratio为该参考口径的比值）与manifest.json。支持`--output`指定T1Core内独立目录，图随之放其figures；拒绝覆盖旧分析和默认图集目录。
 
 原duration入口及其完整产物保持不变；01～13图、两份数据库、底表、T0Pre和共享依赖文件均保持不变。来源、数值、区间、图面和旧产物保护核验见[runtime/duration_references_acceptance.json](runtime/duration_references_acceptance.json)。
 
 ## 数据来源与范围
 
-- 主线、分类与类型来源：`result/LYX/NewDB/wwh5.sqlite3`，只读；时长专题额外只读旧本地库的HLTB字段，形成65款子样本，不替换198款主范围。
+- 主线、分类与类型来源：`result/LYX/NewDB/wwh5.sqlite3`，只读；时长专题额外只读旧本地库的HLTB字段，叠加人工补充后形成69款子样本，不替换198款主范围。
 - 唯一入选范围：T0Pre默认highest口径下，`curve.completion` 非空的198个AppID，保持原冻结排名顺序。
 - 当前清单SHA256：`26b6a452b72e9466bced793868e7af8bd01c15980cf9bb4e27ab0799316f477b`。它是AppID数组的canonical JSON SHA256，不是CSV文件的SHA256。
 - 复用T0Pre的storage只读连接、story_curve筛选和参数；只调用计算函数，不调用T0Pre的analyze入口或文件写入函数。
@@ -296,7 +296,7 @@ WWH选样基准为highest；T1新增三节点比值的分母为首节点。两�
 | [analyze_types.py](analyze_types.py) | 专题2：主类型与完整标签分组、阶段分布、样本与结局对照 |
 | [analyze_trajectory.py](analyze_trajectory.py) | 专题3：完整主线过程、相邻区间、候选与案例曲线 |
 | [compare_trajectory.py](compare_trajectory.py) | 专题3自选：名称/AppID解析、1～5款分组、只读查询、曲线/区间图及JSON/CSV |
-| [analyze_duration.py](analyze_duration.py) | 专题4：65款共同样本的两类时长、相对比值和推进关联 |
+| [analyze_duration.py](analyze_duration.py) | 专题4：69款共同样本的两类时长、相对比值和推进关联 |
 | [output/cohort.csv](output/cohort.csv) | 一款游戏一行：AppID、展示名、原排名、WWH玩法、版本、范围指纹 |
 | [output/checkpoints.csv](output/checkpoints.csv) | 一项WWH有效公共节点一行，包含未选中的备选结局、原数组位置、阶段、条件、解锁率、选点角色 |
 | [output/game_metrics.csv](output/game_metrics.csv) | 一款游戏一行，保留全部198款、三节点及指标、缺失与来源标记 |
@@ -322,3 +322,7 @@ prepare每轮均核对：198款及顺序不变、重算曲线与T0Pre一致、�
 这些指标描述模型标注主线节点的聚合覆盖差异，不直接代表用户留存或弃坑；没有节点包含关系证据时不解释为条件玩家比例。不同游戏节点密度、首节点和代表结局的含义仍可能不同。
 
 报告中各项游戏级中位数分别使用该字段的有效游戏集合，不能将这些汇总中位数互除来代替逐游戏比值，也不能将它们连成同一批玩家的留存轨迹。离线边界与CSV核验记录见 [runtime/acceptance.json](runtime/acceptance.json)。
+
+## 2026年10月20日任务4补充
+
+原65款加4款人工补充形成69款。10个值保存在[人工时长输入](inputs/manual_duration_supplements.csv)，两份数据库不变。10～15图、结果表、来源清单和网页同步更新；默认预选Hollow Knight、奥德赛、33号远征队、God of War、艾尔登法环。全程推进相关：主线比+0.652、主线加额外内容比+0.652、全收集比+0.630。任务5和任务6原样本、原统计不变。

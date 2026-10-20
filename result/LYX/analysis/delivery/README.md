@@ -26,7 +26,7 @@
 |---|---|---|---|
 | 类型与阶段，02～07 | game_metrics、cohort、game_membership | group_summary、sensitivity_summary、case_pairs | 总体图固定183完整三节点；198为另列补充；主类型与多标签不能混算或把多标签人数相加 |
 | 完整过程，08～09 | checkpoints、adjacent_nodes | game_profiles、case_candidates | 可以按名称/AppID选游戏；按组切分；节点相对位置不是实际时间 |
-| 时长，10～15 | duration_eligibility、duration_cohort、reference_cohort | time_correlations、reference_correlations、duration_groups等 | 背景固定65款，建议高亮所选；不合格选择展示缺失原因，不能补零或改变整体统计 |
+| 时长，10～15 | duration_eligibility、duration_cohort、reference_cohort | time_correlations、reference_correlations、duration_groups等 | 背景固定69款，建议高亮所选；不合格选择展示缺失原因，不能补零或改变整体统计 |
 | 口碑，16～18 | reputation_eligibility、reputation_cohort、rating_common | reputation_correlations、reputation_quadrants、score_summary及探索表 | 16/17用183款，18固定共同140款；1～5款选择只高亮；综合秩是探索指标，不是质量排名 |
 | 同类参照，19～21 | peer_conditions、peer_membership、semantic_caveats | peer_benchmark、peer_coverage、matched_sensitivity等 | 183目标中181满足主口径；不足5个参照显示不足，不计算假零差；全背景保持固定 |
 
@@ -45,3 +45,5 @@ uv --cache-dir analysis/delivery/runtime/uv-cache run --frozen --no-sync python 
 `snapshot`保存清理前保护文件与体量，已有快照时拒绝覆盖；`build`从既有结果核验并打包，已有package时拒绝覆盖以防混合版本；`verify`检查包内哈希和本轮239个保护文件。组长只拿到结果包和此脚本时，可保持delivery/package布局运行`audit_delivery.py verify-package`，仅用Python标准库检查缺失、多余文件及内容哈希，不需要SQLite、旧缓存、密钥或科学计算依赖。未来刷新数据时，人工移动旧package和本轮before快照，再依次snapshot/build。输出只在delivery内，数据库始终mode=ro；不重新分类、不重画图、不修改既有分析结果。此工具是交接核验程序，不是新增pytest测试。
 
 本轮核验报告见[AUDIT.md](AUDIT.md)，详细机器记录留本地 `runtime/audit.json`。package内原manifest保留历史绝对路径和代码哈希，仅作来源记录；跨机器校验包内容使用delivery_manifest的相对路径，不能拿历史绝对路径直接当服务器地址。
+
+2026-10-20：任务4已用人工补充形成69款；交接需增加T1Core/inputs/manual_duration_supplements.csv。现有package仍为历史版本，本次不覆盖旧包；当前网页使用正式output与人工输入，可独立运行。

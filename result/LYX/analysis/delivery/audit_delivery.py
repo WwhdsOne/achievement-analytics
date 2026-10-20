@@ -221,7 +221,7 @@ def build() -> dict[str, Any]:
     write_csv(PACKAGE/"source_tables.csv", rows)
     write_csv(PACKAGE/"game_catalog.csv", result["catalog"])
     artifacts = []
-    folders = [CORE/"output", CORE/"figures", SUM/"output", SUM/"figures"]
+    folders = [CORE/"output", CORE/"figures", CORE/"inputs", SUM/"output", SUM/"figures", SUM/"inputs"]
     excluded = {"comparisons","trajectory_comparisons","selections","benchmark_selections"}
     for folder in folders:
         for path in sorted(folder.rglob("*")):
@@ -233,14 +233,14 @@ def build() -> dict[str, Any]:
             shutil.copyfile(path,target)
             artifacts.append({"path":relative.as_posix(),"rows":len(read_csv(path)) if path.suffix == ".csv" else "",
                               "columns":"|".join(read_csv(path)[0]) if path.suffix == ".csv" else "",
-                              "bytes":path.stat().st_size,"sha256":sha(path),"role":"result_table" if path.suffix==".csv" else "manifest" if path.name=="manifest.json" else "figure" if path.suffix in (".png",".svg") else "result_context"})
+                              "bytes":path.stat().st_size,"sha256":sha(path),"role":"source_supplement" if "inputs" in relative.parts else "result_table" if path.suffix==".csv" else "manifest" if path.name=="manifest.json" else "figure" if path.suffix in (".png",".svg") else "result_context"})
     write_csv(PACKAGE/"result_tables.csv", artifacts)
     topics = [
         {"task":1,"subject":"主线指标准备","games":198,"figures":"01","source":"WWH:games/achievements/achievement_labels/story_labels/game_labels/model_calls/metadata","detail":"T1Core/output/game_metrics.csv;checkpoints.csv","summary":"T1Core/output/manifest.json","meaning":"183完整三节点；15两节点；比值非玩家级留存"},
         {"task":2,"subject":"类型与阶段","games":183,"figures":"02-07","source":"共用指标与game_labels.payload.gameplay","detail":"T1Core/output/type_analysis/game_membership.csv","summary":"T1Core/output/type_analysis/group_summary.csv;sensitivity_summary.csv","meaning":"主类型互斥/多标签重叠；198另存补充"},
         {"task":3,"subject":"完整主线过程","games":198,"figures":"08-09","source":"共用checkpoints.csv原数组顺序","detail":"T1Core/output/trajectory_analysis/adjacent_nodes.csv","summary":"T1Core/output/trajectory_analysis/game_profiles.csv","meaning":"1741序列节点、1543相邻段；横轴不是时长"},
-        {"task":4,"subject":"时长与推进","games":65,"figures":"10-15","source":"WWH:games.payload.rawg.playtime + LYX:games_time三类HLTB","detail":"T1Core/output/duration_references/reference_cohort.csv","summary":"T1Core/output/duration_analysis/time_correlations.csv;duration_references/reference_correlations.csv","meaning":"固定65；平均/参考比值不是个人完成度"},
-        {"task":5,"subject":"口碑与推进","games":183,"figures":"16-18","source":"WWH:games.payload positive/negative/rawg；LYX:games_time主线时长对照","detail":"T2Sum/output/reputation/reputation_cohort.csv;rating_common.csv","summary":"T2Sum/output/reputation/reputation_correlations.csv;reputation_quadrants.csv","meaning":"Steam183、三评分共同140；观察性相关"},
+        {"task":4,"subject":"时长与推进","games":69,"figures":"10-15","source":"WWH:games.payload.rawg.playtime + LYX:games_time三类HLTB + T1Core/inputs/manual_duration_supplements.csv用户确认10字段","detail":"T1Core/output/duration_references/reference_cohort.csv","summary":"T1Core/output/duration_analysis/time_correlations.csv;duration_references/reference_correlations.csv","meaning":"原65加人工补充4款，共69；平均/参考比值不是个人完成度"},
+        {"task":5,"subject":"口碑与推进","games":183,"figures":"16-18","source":"WWH:games.payload positive/negative/rawg；LYX:games_time主线时长对照","detail":"T2Sum/output/reputation/reputation_cohort.csv;rating_common.csv","summary":"T2Sum/output/reputation/reputation_correlations.csv;reputation_quadrants.csv","meaning":"Steam183、三评分共同142；观察性相关"},
         {"task":6,"subject":"同类参照基线","games":183,"figures":"19-21","source":"专题5底表+game_labels玩法+achievements节点原文","detail":"T2Sum/output/benchmark/peer_membership.csv;peer_conditions.csv","summary":"T2Sum/output/benchmark/peer_benchmark.csv;peer_coverage.csv;matched_sensitivity.csv","meaning":"主口径181可比较、2参照不足；不等于质量排名"},
     ]
     write_csv(PACKAGE/"analysis_summary.csv", topics)

@@ -279,11 +279,11 @@ def exploration_report(data: Json) -> str:
         rows += [f"- {cell(g['name_en'])}（{g['appid']}）：好评{g[SCORES[0]]:.2%}、后段{g[PROGRESS[1]]:.2%}，但前段仅{g[PROGRESS[0]]:.2%}、全程{g[PROGRESS[2]]:.2%}。高后段不能消除此前差距。"]
         nodes=[r for r in data["case_checkpoints"] if r["appid"]==g["appid"]]
         rows += ["  本地节点为"+" → ".join(f"{cell(r['display_name'])}（{r['percent']:.1f}%）" for r in nodes)+"；中/末描述缺失时，不能仅按名称确认普通剧情必经性。"]
-    rows += ["", "18号同140款的RAWG全程ρ高于Steam，但已有报告保留成对差值与区间，不能因为散点看起来更陡就下结论；评分单位、人群和游戏构成均不同。",
+    rows += ["", "18号同142款的RAWG全程ρ高于Steam，但已有报告保留成对差值与区间，不能因为散点看起来更陡就下结论；评分单位、人群和游戏构成均不同。",
              "下一步最有价值的是人工核对上述严格末节点/缺描述节点，讨论是否应另标为“多任务线/完整战役/一局胜利/特定模式”的推进代理；是否改变数据或主口径须另行确认。",
-             "然后可在保留现有模型口径的同时，补充“普通单次主线结局”子样本；目前只记录发现，不自动清洗、不改变183/140范围，不把类型富集写成因果。", "",
+             "然后可在保留现有模型口径的同时，补充“普通单次主线结局”子样本；目前只记录发现，不自动清洗、不改变183/142范围，不把类型富集写成因果。", "",
              "复核明细：[标签构成](exploration_multilabel.csv)、[标签组合](exploration_tag_pairs.csv)、[区域成员](exploration_memberships.csv)、",
              "[自由文本标签](exploration_text_labels.csv)、[区域统计](exploration_group_summary.csv)、[9组边界](exploration_region_boundaries.csv)、",
              "[183款共同表现排序](exploration_joint_rankings.csv)、[权重对照](exploration_rank_weights.csv)、[原始三节点](exploration_case_checkpoints.csv)、",
-             "[分组描述相关](exploration_descriptive_correlations.csv)。本节依据冻结本地数据，未作外部信息补全或游戏质量断言。", ""]
+             "[分组描述相关](exploration_descriptive_correlations.csv)。本节依据冻结本地数据叠加已确认的任务5评分更新，不作游戏质量断言。", ""]
     return "\n".join(rows)

@@ -16,8 +16,10 @@ sys.path.insert(0, str(CORE))
 from compare_games import load_catalog, select_games
 from prepare_metrics import csv_text, digest, source
 
+from rating_inputs import load_supplements, resolve_value, value_source
+
 Json = dict[str, Any]
-VERSION = "lyx-reputation-three-point-v1"
+VERSION = "lyx-reputation-three-point-rating-update-v2"
 PROGRESS = ("early_progress_ratio", "late_progress_ratio", "overall_progress_ratio")
 SCORES = ("steam_positive_ratio", "metacritic", "rawg_rating")
 LABELS = {"steam_positive_ratio": "Steam好评率", "metacritic": "Metacritic媒体评分",
@@ -69,6 +71,8 @@ def score_status(value: Any, maximum: float) -> str:
 def load_data() -> tuple[list[Json], list[Json], Json]:
     """Verify earlier CSV hashes, then build the 183-game cohort without changing sources."""
     catalog, audit = load_catalog()
+    supplements, supplement_audit = load_supplements(catalog)
+    baseline_common_ids = []
     appids = [g["appid"] for g in catalog]
     placeholders = ",".join("?" for _ in appids)
     with source.connect(source.DEFAULT_DB) as conn:
@@ -95,7 +99,12 @@ def load_data() -> tuple[list[Json], list[Json], Json]:
         complete = complete and g["p_s"] > 0 and g["p_m"] > 0
         if complete and len({g[k] for k in ("first_local_id", "middle_local_id", "end_local_id")}) != 3:
             raise ValueError("三节点身份不独立")
-        media, rating = rawg.get("metacritic"), rawg.get("rating")
+        original_media, original_rating = rawg.get("metacritic"), rawg.get("rating")
+        if complete and score_status(original_media, 100) == "valid" and score_status(original_rating, 5) == "valid":
+            baseline_common_ids.append(g["appid"])
+        media = resolve_value(g["appid"], "metacritic", original_media, supplements)
+        rating = resolve_value(g["appid"], "rawg_rating", original_rating, supplements)
+        ratings_count = resolve_value(g["appid"], "rawg_ratings_count", rawg.get("ratings_count"), supplements)
         media_status, rawg_status = score_status(media, 100), score_status(rating, 5)
         steam_status = "valid" if counts_ok and denominator > 0 else "invalid_denominator"
         main = hours.get(g["appid"])
@@ -107,10 +116,15 @@ def load_data() -> tuple[list[Json], list[Json], Json]:
                "positive": positive, "negative": negative, "review_count": p.get("review_count"),
                "steam_positive_ratio": positive / denominator if steam_status == "valid" else None,
                "steam_status": steam_status, "steamspy_fetched_at": p.get("steamspy_fetched_at"),
-               "metacritic_raw": media, "metacritic": media if media_status == "valid" else None,
-               "metacritic_status": media_status, "rawg_rating_raw": rating,
+               "metacritic_raw": original_media, "metacritic": media if media_status == "valid" else None,
+               "metacritic_status": media_status, "rawg_rating_raw": original_rating,
                "rawg_rating": rating if rawg_status == "valid" else None, "rawg_status": rawg_status,
-               "rawg_ratings_count": rawg.get("ratings_count"), "rawg_fetched_at": rawg.get("fetched_at"),
+               "rawg_ratings_count": ratings_count, "rawg_ratings_count_raw": rawg.get("ratings_count"),
+               "metacritic_source": value_source(g["appid"], "metacritic", supplements),
+               "rawg_rating_source": value_source(g["appid"], "rawg_rating", supplements),
+               "rawg_ratings_count_source": value_source(g["appid"], "rawg_ratings_count", supplements),
+               "rating_provided_on": "2026-10-20" if any(i == g["appid"] for i, _ in supplements) else None,
+               "rawg_fetched_at": rawg.get("fetched_at"),
                "hltb_main_hours": main if finite(main) and main > 0 else None,
                "three_scores_common": complete and all(s == "valid" for s in (steam_status, media_status, rawg_status))}
         rows.append(row)
@@ -124,10 +138,14 @@ def load_data() -> tuple[list[Json], list[Json], Json]:
               "rawg_zero": sum(g["rawg_status"] == "zero" for g in games),
               "hltb": sum(g["hltb_main_hours"] is not None for g in games),
               "common_hltb": sum(g["hltb_main_hours"] is not None for g in common)}
-    if counts != {"base":198,"three_point":183,"excluded":15,"steam":183,"metacritic":140,
-                  "rawg":173,"common":140,"rawg_null":5,"rawg_zero":5,"hltb":68,"common_hltb":61}:
+    if counts != {"base":198,"three_point":183,"excluded":15,"steam":183,"metacritic":142,
+                  "rawg":174,"common":142,"rawg_null":4,"rawg_zero":5,"hltb":68,"common_hltb":62}:
         raise ValueError(f"冻结样本覆盖改变，请先核验：{counts}")
-    audit.update({"counts": counts, "three_point_appids_sha256": digest([g["appid"] for g in games]),
+    if len(baseline_common_ids) != 140 or set(g["appid"] for g in common) - set(baseline_common_ids) != {1903340, 1593500}:
+        raise ValueError("本轮共同评分样本必须为原140款加已确认的两款")
+    audit.update({"manual_supplements": supplement_audit,
+                  "baseline_common_appids_sha256": digest(baseline_common_ids),
+                  "counts": counts, "three_point_appids_sha256": digest([g["appid"] for g in games]),
                   "common_appids_sha256": digest([g["appid"] for g in common])})
     return games, rows, audit
 

@@ -1,199 +1,199 @@
-﻿appid,title,three_point_available,main_hours,playtime,hltb_status,rawg_status,time_order_anomaly,exclusion_reason,included
-1245620,ELDEN RING,true,,62,null,positive,false,hltb_null,false
-367520,Hollow Knight,true,26.94,7,positive,positive,false,included,true
-648800,Raft,true,,8,null,positive,false,hltb_null,false
-489830,The Elder Scrolls V: Skyrim Special Edition,true,25.81,9,positive,positive,false,included,true
-238960,Path of Exile,true,30.07,6,positive,positive,false,included,true
-379720,DOOM,false,11.69,10,positive,positive,false,missing_three_point,false
-1599340,Lost Ark,true,,10,null,positive,false,hltb_null,false
-1238840,Battlefield™ 1,true,6.74,6,positive,positive,false,included,true
-268910,Cuphead,true,,6,null,positive,false,hltb_null,false
-646570,Slay the Spire,false,,12,null,positive,false,missing_three_point,false
-812140,Assassin's Creed® Odyssey,true,,31,null,positive,false,hltb_null,false
-319630,Life is Strange - Episode 1,true,,6,null,positive,false,hltb_null,false
-588650,Dead Cells,true,14.07,10,positive,positive,false,included,true
-1716740,Starfield,true,,29,null,positive,false,hltb_null,false
-1593500,God of War,true,20.55,,positive,null,false,rawg_null,false
-2379780,Balatro,true,,14,null,positive,false,hltb_null,false
-3590,Plants vs. Zombies GOTY Edition,true,,5,null,positive,false,hltb_null,false
-1151640,Horizon Zero Dawn™ Complete Edition,true,,13,null,positive,false,hltb_null,false
-335300,DARK SOULS™ II: Scholar of the First Sin,true,35.87,25,positive,positive,false,included,true
-223470,POSTAL 2,true,7.03,4,positive,positive,false,included,true
-220240,Far Cry 3,true,15.67,16,positive,positive,false,included,true
-1361210,"Warhammer 40,000: Darktide",true,,9,null,positive,false,hltb_null,false
-1446780,MONSTER HUNTER RISE,true,,15,null,positive,false,hltb_null,false
-1903340,Clair Obscur: Expedition 33,true,,26,null,positive,false,hltb_null,false
-424840,Little Nightmares,true,3.55,3,positive,positive,false,included,true
-231430,Company of Heroes 2,true,15.32,4,positive,positive,false,included,true
-2054970,Dragon's Dogma 2,true,,22,null,positive,false,hltb_null,false
-779340,Total War: THREE KINGDOMS,true,,10,null,positive,false,hltb_null,false
-1313140,Cult of the Lamb,true,,10,null,positive,false,hltb_null,false
-1687950,Persona 5 Royal,true,,12,null,positive,false,hltb_null,false
-1943950,Escape the Backrooms,true,,4,null,positive,false,hltb_null,false
-287700,METAL GEAR SOLID V: THE PHANTOM PAIN,true,,22,null,positive,false,hltb_null,false
-365590,Tom Clancy’s The Division™,true,24.15,27,positive,positive,false,included,true
-389730,TEKKEN 7,true,3.56,7,positive,positive,false,included,true
-1030840,Mafia: Definitive Edition,true,,10,null,positive,false,hltb_null,false
-241930,Middle-earth™: Shadow of Mordor™,true,15.66,13,positive,positive,false,included,true
-383870,Firewatch,true,4.06,5,positive,positive,false,included,true
-703080,Planet Zoo,true,,5,null,positive,false,hltb_null,false
-20920,The Witcher 2: Assassins of Kings Enhanced Edition,true,,7,null,positive,false,hltb_null,false
-311690,Enter the Gungeon,true,23.09,6,positive,positive,false,included,true
-235460,METAL GEAR RISING: REVENGEANCE,true,7.15,6,positive,positive,false,included,true
-205100,Dishonored,true,12.13,9,positive,positive,false,included,true
-881100,Noita,true,,3,null,positive,false,hltb_null,false
-1113000,Persona 4 Golden,true,,10,null,positive,false,hltb_null,false
-212680,FTL: Faster Than Light,true,12.65,6,positive,positive,false,included,true
-289650,Assassin's Creed® Unity,true,17.18,14,positive,positive,false,included,true
-207610,The Walking Dead,true,,8,null,positive,false,hltb_null,false
-493340,Planet Coaster,true,27.72,5,positive,positive,false,included,true
-287390,Metro: Last Light Redux,true,9.73,7,positive,positive,false,included,true
-307690,Sleeping Dogs: Definitive Edition,true,14.32,6,positive,positive,false,included,true
-200260,Batman: Arkham City - Game of the Year Edition,true,,9,null,positive,false,hltb_null,false
-466560,Northgard: Definitive Edition,true,,5,null,positive,false,hltb_null,false
-1145350,Hades II,true,,8,null,positive,false,hltb_null,false
-752590,A Plague Tale: Innocence,true,,7,null,positive,false,hltb_null,false
-214490,Alien: Isolation,true,18.57,4,positive,positive,false,included,true
-312660,Sniper Elite 4,true,10.71,6,positive,positive,false,included,true
-409710,BioShock™ Remastered,true,,4,null,positive,false,hltb_null,false
-629730,Blade and Sorcery,true,,2,null,positive,false,hltb_null,false
-204100,Max Payne 3,true,10.03,10,positive,positive,false,included,true
-307780,Mortal Kombat X,false,5.64,7,positive,positive,false,missing_three_point,false
-50130,Mafia II (Classic),true,,13,null,positive,false,hltb_null,false
-2623190,The Elder Scrolls IV: Oblivion Remastered,true,,10,null,positive,false,hltb_null,false
-1627720,Lies of P,true,,27,null,positive,false,hltb_null,false
-1290000,PowerWash Simulator,true,,11,null,positive,false,hltb_null,false
-253230,A Hat in Time,true,,6,null,positive,false,hltb_null,false
-1693980,Dead Space,true,11.9,4,positive,positive,false,included,true
-8190,Just Cause 2,true,17.7,3,positive,positive,false,included,true
-108710,Alan Wake,true,11.18,5,positive,positive,false,included,true
-202970,Call of Duty®: Black Ops II,true,7.05,,positive,null,false,rawg_null,false
-367500,Dragon's Dogma: Dark Arisen,true,33.07,7,positive,positive,false,included,true
-243470,Watch_Dogs™,true,,16,null,positive,false,hltb_null,false
-1325200,Nioh 2 – The Complete Edition,true,,14,null,positive,false,hltb_null,false
-282140,SOMA,true,9.08,6,positive,positive,false,included,true
-599140,Graveyard Keeper,true,45.45,7,positive,positive,false,included,true
-476600,Call of Duty®: WWII,true,,6,null,positive,false,hltb_null,false
-1288310,Firework,true,,,not_in_local_table,null,false,hltb_not_in_local_table,false
-302510,Ryse: Son of Rome,true,6.39,6,positive,positive,false,included,true
-204450,Call of Juarez: Gunslinger,false,5.08,5,positive,positive,false,missing_three_point,false
-1845910,Dragon Age™: The Veilguard,true,,43,null,positive,false,hltb_null,false
-692850,Bloodstained: Ritual of the Night,true,14.05,6,positive,positive,false,included,true
-228380,Wreckfest,true,,3,null,positive,false,hltb_null,false
-1184370,Pathfinder: Wrath of the Righteous - Enhanced Edition,true,,10,null,positive,false,hltb_null,false
-668580,Atomic Heart,true,,12,null,positive,false,hltb_null,false
-1210320,Potion Craft: Alchemist Simulator,true,,3,null,positive,false,hltb_null,false
-107100,Bastion,false,6.25,4,positive,positive,false,missing_three_point,false
-554620,Life is Strange: Before the Storm,true,,11,null,positive,false,hltb_null,false
-207140,SpeedRunners,true,2.14,4,positive,positive,false,included,true
-447530,VA-11 Hall-A: Cyberpunk Bartender Action,true,10.95,5,positive,positive,false,included,true
-383980,Rivals of Aether,false,1.49,4,positive,positive,false,missing_three_point,false
-250320,The Wolf Among Us,true,8.62,9,positive,positive,false,included,true
-740130,Tales of ARISE,true,,13,null,positive,false,hltb_null,false
-1282730,Loop Hero,true,,10,null,positive,false,hltb_null,false
-1256670,Library Of Ruina,true,,5,null,positive,false,hltb_null,false
-640820,Pathfinder: Kingmaker — Enhanced Plus Edition,true,,10,null,positive,false,hltb_null,false
-535930,Two Point Hospital,true,,4,null,positive,false,hltb_null,false
-1235140,Yakuza: Like a Dragon,true,,17,null,positive,false,hltb_null,false
-417860,Emily is Away,true,0.66,1,positive,positive,false,included,true
-261030,The Walking Dead: Season Two,true,,,null,null,false,hltb_null,false
-1144400,Senren＊Banka,false,,3,not_in_local_table,positive,false,missing_three_point,false
-209160,Call of Duty®: Ghosts,true,,6,not_in_local_table,positive,false,hltb_not_in_local_table,false
-2186680,"Warhammer 40,000: Rogue Trader",true,,9,null,positive,false,hltb_null,false
-1874880,Arma Reforger,true,0.0,3,zero,positive,false,hltb_zero,false
-1030830,Mafia II: Definitive Edition,true,,3,null,positive,false,hltb_null,false
-220440,DmC: Devil May Cry,true,,6,not_in_local_table,positive,false,hltb_not_in_local_table,false
-368500,Assassin's Creed® Syndicate,true,18.66,22,positive,positive,false,included,true
-288160,The Room,true,2.56,3,positive,positive,false,included,true
-794260,Outward Definitive Edition,true,,4,null,positive,false,hltb_null,false
-1189490,觅长生,true,,7,not_in_local_table,positive,false,hltb_not_in_local_table,false
-238010,Deus Ex: Human Revolution - Director's Cut,true,23.24,6,positive,positive,false,included,true
-41070,Serious Sam 3: BFE,true,,4,not_in_local_table,positive,false,hltb_not_in_local_table,false
-1066780,Transport Fever 2,true,,11,null,positive,false,hltb_null,false
-557340,My Friend Pedro,true,,3,null,positive,false,hltb_null,false
-238090,Sniper Elite 3,true,,5,not_in_local_table,positive,false,hltb_not_in_local_table,false
-333600,NEKOPARA Vol. 1,true,4.46,4,positive,positive,false,included,true
-304240,Resident Evil,true,11.25,,positive,null,false,rawg_null,false
-413420,Danganronpa 2: Goodbye Despair,true,33.45,27,positive,positive,false,included,true
-249130,LEGO® Marvel™ Super Heroes,true,12.28,8,positive,positive,false,included,true
-260230,Valiant Hearts: The Great War™ / Soldats Inconnus : Mémoires de la Grande Guerre™,true,,6,not_in_local_table,positive,false,hltb_not_in_local_table,false
-383150,Dead Island Definitive Edition,true,15.86,7,positive,positive,false,included,true
-71340,Sonic Generations Collection,true,,2,null,positive,false,hltb_null,false
-247080,Crypt of the NecroDancer,true,14.17,4,positive,positive,false,included,true
-365450,Hacknet,true,7.11,3,positive,positive,false,included,true
-1149620,Gas Station Simulator,true,,6,null,positive,false,hltb_null,false
-42680,Call of Duty®: Modern Warfare® 3 (2011),true,,8,not_in_local_table,positive,false,hltb_not_in_local_table,false
-99900,Spiral Knights,true,48.7,2,positive,positive,false,included,true
-519860,DUSK,true,,3,null,positive,false,hltb_null,false
-1240210,There Is No Game: Wrong Dimension,true,,5,null,positive,false,hltb_null,false
-1097840,Gears 5,true,11.18,7,positive,positive,false,included,true
-239160,Thief,true,11.0,5,positive,positive,false,included,true
-882100,XCOM®: Chimera Squad,false,,4,null,positive,false,missing_three_point,false
-1094520,Sands of Salzaar,false,,3,not_in_local_table,positive,false,missing_three_point,false
-285190,"Warhammer 40,000: Dawn of War III",true,17.37,5,positive,positive,false,included,true
-1948980,Hero's Adventure: Road to Passion,true,,6,not_in_local_table,positive,false,hltb_not_in_local_table,false
-784150,Workers & Resources: Soviet Republic,true,,2,null,positive,false,hltb_null,false
-35720,Trine 2: Complete Story,true,,4,not_in_local_table,positive,false,hltb_not_in_local_table,false
-235540,Warhammer: End Times - Vermintide,true,8.26,5,positive,positive,false,included,true
-412830,STEINS;GATE,true,,5,not_in_local_table,positive,false,hltb_not_in_local_table,false
-323470,DRAGON BALL XENOVERSE,true,,8,not_in_local_table,positive,false,hltb_not_in_local_table,false
-350080,Wolfenstein: The Old Blood,true,5.92,7,positive,positive,false,included,true
-1182900,A Plague Tale: Requiem,true,,5,null,positive,false,hltb_null,false
-445980,Wizard of Legend,true,,3,null,positive,false,hltb_null,false
-1161580,Hardspace: Shipbreaker,true,,6,null,positive,false,hltb_null,false
-590380,Into the Breach,false,5.51,5,positive,positive,false,missing_three_point,false
-359870,FINAL FANTASY X/X-2 HD Remaster,true,50.41,6,positive,positive,false,included,true
-425580,The Room Two,true,3.13,4,positive,positive,false,included,true
-760060,Mutant Year Zero: Road to Eden,false,,4,not_in_local_table,positive,false,missing_three_point,false
-235600,Tom Clancy’s Splinter Cell Blacklist,true,10.76,10,positive,positive,false,included,true
-1583230,High On Life,true,,4,null,positive,false,hltb_null,false
-866800,The Walking Dead: The Final Season,true,,10,not_in_local_table,positive,false,hltb_not_in_local_table,false
-1577120,The Quarry,true,,5,null,positive,false,hltb_null,false
-265550,Dead Rising 3 Apocalypse Edition,true,,6,not_in_local_table,positive,false,hltb_not_in_local_table,false
-362680,Fran Bow,false,7.66,7,positive,positive,false,missing_three_point,false
-1490890,Demon Slayer -Kimetsu no Yaiba- The Hinokami Chronicles,true,,5,null,positive,false,hltb_null,false
-225260,Brutal Legend,true,,5,not_in_local_table,positive,false,hltb_not_in_local_table,false
-560130,Pillars of Eternity II: Deadfire,true,,9,null,positive,false,hltb_null,false
-236090,Dust: An Elysian Tail,true,10.1,4,positive,positive,false,included,true
-330830,Tales from the Borderlands,true,10.58,11,positive,positive,false,included,true
-368070,Sniper Ghost Warrior 3,true,,12,not_in_local_table,positive,false,hltb_not_in_local_table,false
-241600,Rogue Legacy,true,16.37,6,positive,positive,false,included,true
-1746030,Murders on the Yangtze River,true,,16,not_in_local_table,positive,false,hltb_not_in_local_table,false
-388410,Darksiders II Deathinitive Edition,false,,9,not_in_local_table,positive,false,missing_three_point,false
-311560,Assassin’s Creed® Rogue,true,10.58,12,positive,positive,false,included,true
-242680,Nuclear Throne,true,17.23,5,positive,positive,false,included,true
-557600,Gorogoa,true,,2,not_in_local_table,positive,false,hltb_not_in_local_table,false
-233270,Far Cry 3 - Blood Dragon,true,,4,null,positive,false,hltb_null,false
-1533420,Neon White,true,,7,null,positive,false,hltb_null,false
-241540,State of Decay,true,15.64,5,positive,positive,false,included,true
-385800,NEKOPARA Vol. 0,false,,4,not_in_local_table,positive,false,missing_three_point,false
-629820,Maneater,true,,4,null,positive,false,hltb_null,false
-40700,Machinarium,true,,3,not_in_local_table,positive,false,hltb_not_in_local_table,false
-405640,Pony Island,true,2.4,3,positive,positive,false,included,true
-397950,Clustertruck,true,3.64,2,positive,positive,false,included,true
-1258080,Shop Titans,true,,2,not_in_local_table,positive,false,hltb_not_in_local_table,false
-368340,CrossCode,true,,5,null,positive,false,hltb_null,false
-536220,The Walking Dead: A New Frontier,true,,9,not_in_local_table,positive,false,hltb_not_in_local_table,false
-2768430,ATLYSS,true,,5,null,positive,false,hltb_null,false
-969990,SpongeBob SquarePants: Battle for Bikini Bottom - Rehydrated,true,,3,null,positive,false,hltb_null,false
-1880330,Sanfu,true,,5,null,positive,false,hltb_null,false
-1046030,ISLANDERS,true,,2,null,positive,false,hltb_null,false
-1382330,Persona® 5 Strikers,true,,9,not_in_local_table,positive,false,hltb_not_in_local_table,false
-1361320,The Room 4: Old Sins,true,,5,null,positive,false,hltb_null,false
-250760,Shovel Knight: Treasure Trove,true,,4,null,positive,false,hltb_null,false
-228300,Remember Me,true,,5,not_in_local_table,positive,false,hltb_not_in_local_table,false
-498240,Batman - The Telltale Series,true,8.35,9,positive,positive,false,included,true
-1061910,Metal: Hellsinger,true,,3,null,positive,false,hltb_null,false
-1113120,IXION,true,,8,null,positive,false,hltb_null,false
-35700,Trine Enchanted Edition,false,,4,not_in_local_table,positive,false,missing_three_point,false
-1954200,Kena: Bridge of Spirits,true,,4,not_in_local_table,positive,false,hltb_not_in_local_table,false
-222480,Resident Evil Revelations,true,,8,not_in_local_table,positive,false,hltb_not_in_local_table,false
-394310,Punch Club,true,,5,not_in_local_table,positive,false,hltb_not_in_local_table,false
-537800,Bomber Crew,true,,3,not_in_local_table,positive,false,hltb_not_in_local_table,false
-1216710,Cyber Manhunt,true,,5,not_in_local_table,positive,false,hltb_not_in_local_table,false
-288470,Fable Anniversary,true,13.47,4,positive,positive,false,included,true
-335670,LISA: The Painful,true,,4,null,positive,false,hltb_null,false
-8850,BioShock® 2,true,,3,not_in_local_table,positive,false,hltb_not_in_local_table,false
-861650,Session: Skate Sim,true,,0,null,zero,false,hltb_null,false
-210770,Sanctum 2,true,,3,not_in_local_table,positive,false,hltb_not_in_local_table,false
-214510,LEGO® The Lord of the Rings™,true,,2,not_in_local_table,positive,false,hltb_not_in_local_table,false
+﻿appid,title,three_point_available,main_hours,playtime,hltb_status,rawg_status,time_order_anomaly,exclusion_reason,included,original_main_hours,original_playtime,main_hours_source,playtime_source,manual_fields
+1245620,ELDEN RING,true,60.0,62,positive,positive,false,included,true,,62,manual_confirmed:HLTB,snapshot:RAWG,completionist_hours|extra_hours|main_hours
+367520,Hollow Knight,true,26.94,7,positive,positive,false,included,true,26.94,7,snapshot:HLTB,snapshot:RAWG,
+648800,Raft,true,,8,null,positive,false,hltb_null,false,,8,snapshot:HLTB,snapshot:RAWG,
+489830,The Elder Scrolls V: Skyrim Special Edition,true,25.81,9,positive,positive,false,included,true,25.81,9,snapshot:HLTB,snapshot:RAWG,
+238960,Path of Exile,true,30.07,6,positive,positive,false,included,true,30.07,6,snapshot:HLTB,snapshot:RAWG,
+379720,DOOM,false,11.69,10,positive,positive,false,missing_three_point,false,11.69,10,snapshot:HLTB,snapshot:RAWG,
+1599340,Lost Ark,true,,10,null,positive,false,hltb_null,false,,10,snapshot:HLTB,snapshot:RAWG,
+1238840,Battlefield™ 1,true,6.74,6,positive,positive,false,included,true,6.74,6,snapshot:HLTB,snapshot:RAWG,
+268910,Cuphead,true,,6,null,positive,false,hltb_null,false,,6,snapshot:HLTB,snapshot:RAWG,
+646570,Slay the Spire,false,,12,null,positive,false,missing_three_point,false,,12,snapshot:HLTB,snapshot:RAWG,
+812140,Assassin's Creed® Odyssey,true,45.5,31,positive,positive,false,included,true,,31,manual_confirmed:HLTB,snapshot:RAWG,completionist_hours|extra_hours|main_hours
+319630,Life is Strange - Episode 1,true,,6,null,positive,false,hltb_null,false,,6,snapshot:HLTB,snapshot:RAWG,
+588650,Dead Cells,true,14.07,10,positive,positive,false,included,true,14.07,10,snapshot:HLTB,snapshot:RAWG,
+1716740,Starfield,true,,29,null,positive,false,hltb_null,false,,29,snapshot:HLTB,snapshot:RAWG,
+1593500,God of War,true,20.55,15.0,positive,positive,false,included,true,20.55,,snapshot:HLTB,manual_confirmed:RAWG,playtime
+2379780,Balatro,true,,14,null,positive,false,hltb_null,false,,14,snapshot:HLTB,snapshot:RAWG,
+3590,Plants vs. Zombies GOTY Edition,true,,5,null,positive,false,hltb_null,false,,5,snapshot:HLTB,snapshot:RAWG,
+1151640,Horizon Zero Dawn™ Complete Edition,true,,13,null,positive,false,hltb_null,false,,13,snapshot:HLTB,snapshot:RAWG,
+335300,DARK SOULS™ II: Scholar of the First Sin,true,35.87,25,positive,positive,false,included,true,35.87,25,snapshot:HLTB,snapshot:RAWG,
+223470,POSTAL 2,true,7.03,4,positive,positive,false,included,true,7.03,4,snapshot:HLTB,snapshot:RAWG,
+220240,Far Cry 3,true,15.67,16,positive,positive,false,included,true,15.67,16,snapshot:HLTB,snapshot:RAWG,
+1361210,"Warhammer 40,000: Darktide",true,,9,null,positive,false,hltb_null,false,,9,snapshot:HLTB,snapshot:RAWG,
+1446780,MONSTER HUNTER RISE,true,,15,null,positive,false,hltb_null,false,,15,snapshot:HLTB,snapshot:RAWG,
+1903340,Clair Obscur: Expedition 33,true,29.5,26,positive,positive,false,included,true,,26,manual_confirmed:HLTB,snapshot:RAWG,completionist_hours|extra_hours|main_hours
+424840,Little Nightmares,true,3.55,3,positive,positive,false,included,true,3.55,3,snapshot:HLTB,snapshot:RAWG,
+231430,Company of Heroes 2,true,15.32,4,positive,positive,false,included,true,15.32,4,snapshot:HLTB,snapshot:RAWG,
+2054970,Dragon's Dogma 2,true,,22,null,positive,false,hltb_null,false,,22,snapshot:HLTB,snapshot:RAWG,
+779340,Total War: THREE KINGDOMS,true,,10,null,positive,false,hltb_null,false,,10,snapshot:HLTB,snapshot:RAWG,
+1313140,Cult of the Lamb,true,,10,null,positive,false,hltb_null,false,,10,snapshot:HLTB,snapshot:RAWG,
+1687950,Persona 5 Royal,true,,12,null,positive,false,hltb_null,false,,12,snapshot:HLTB,snapshot:RAWG,
+1943950,Escape the Backrooms,true,,4,null,positive,false,hltb_null,false,,4,snapshot:HLTB,snapshot:RAWG,
+287700,METAL GEAR SOLID V: THE PHANTOM PAIN,true,,22,null,positive,false,hltb_null,false,,22,snapshot:HLTB,snapshot:RAWG,
+365590,Tom Clancy’s The Division™,true,24.15,27,positive,positive,false,included,true,24.15,27,snapshot:HLTB,snapshot:RAWG,
+389730,TEKKEN 7,true,3.56,7,positive,positive,false,included,true,3.56,7,snapshot:HLTB,snapshot:RAWG,
+1030840,Mafia: Definitive Edition,true,,10,null,positive,false,hltb_null,false,,10,snapshot:HLTB,snapshot:RAWG,
+241930,Middle-earth™: Shadow of Mordor™,true,15.66,13,positive,positive,false,included,true,15.66,13,snapshot:HLTB,snapshot:RAWG,
+383870,Firewatch,true,4.06,5,positive,positive,false,included,true,4.06,5,snapshot:HLTB,snapshot:RAWG,
+703080,Planet Zoo,true,,5,null,positive,false,hltb_null,false,,5,snapshot:HLTB,snapshot:RAWG,
+20920,The Witcher 2: Assassins of Kings Enhanced Edition,true,,7,null,positive,false,hltb_null,false,,7,snapshot:HLTB,snapshot:RAWG,
+311690,Enter the Gungeon,true,23.09,6,positive,positive,false,included,true,23.09,6,snapshot:HLTB,snapshot:RAWG,
+235460,METAL GEAR RISING: REVENGEANCE,true,7.15,6,positive,positive,false,included,true,7.15,6,snapshot:HLTB,snapshot:RAWG,
+205100,Dishonored,true,12.13,9,positive,positive,false,included,true,12.13,9,snapshot:HLTB,snapshot:RAWG,
+881100,Noita,true,,3,null,positive,false,hltb_null,false,,3,snapshot:HLTB,snapshot:RAWG,
+1113000,Persona 4 Golden,true,,10,null,positive,false,hltb_null,false,,10,snapshot:HLTB,snapshot:RAWG,
+212680,FTL: Faster Than Light,true,12.65,6,positive,positive,false,included,true,12.65,6,snapshot:HLTB,snapshot:RAWG,
+289650,Assassin's Creed® Unity,true,17.18,14,positive,positive,false,included,true,17.18,14,snapshot:HLTB,snapshot:RAWG,
+207610,The Walking Dead,true,,8,null,positive,false,hltb_null,false,,8,snapshot:HLTB,snapshot:RAWG,
+493340,Planet Coaster,true,27.72,5,positive,positive,false,included,true,27.72,5,snapshot:HLTB,snapshot:RAWG,
+287390,Metro: Last Light Redux,true,9.73,7,positive,positive,false,included,true,9.73,7,snapshot:HLTB,snapshot:RAWG,
+307690,Sleeping Dogs: Definitive Edition,true,14.32,6,positive,positive,false,included,true,14.32,6,snapshot:HLTB,snapshot:RAWG,
+200260,Batman: Arkham City - Game of the Year Edition,true,,9,null,positive,false,hltb_null,false,,9,snapshot:HLTB,snapshot:RAWG,
+466560,Northgard: Definitive Edition,true,,5,null,positive,false,hltb_null,false,,5,snapshot:HLTB,snapshot:RAWG,
+1145350,Hades II,true,,8,null,positive,false,hltb_null,false,,8,snapshot:HLTB,snapshot:RAWG,
+752590,A Plague Tale: Innocence,true,,7,null,positive,false,hltb_null,false,,7,snapshot:HLTB,snapshot:RAWG,
+214490,Alien: Isolation,true,18.57,4,positive,positive,false,included,true,18.57,4,snapshot:HLTB,snapshot:RAWG,
+312660,Sniper Elite 4,true,10.71,6,positive,positive,false,included,true,10.71,6,snapshot:HLTB,snapshot:RAWG,
+409710,BioShock™ Remastered,true,,4,null,positive,false,hltb_null,false,,4,snapshot:HLTB,snapshot:RAWG,
+629730,Blade and Sorcery,true,,2,null,positive,false,hltb_null,false,,2,snapshot:HLTB,snapshot:RAWG,
+204100,Max Payne 3,true,10.03,10,positive,positive,false,included,true,10.03,10,snapshot:HLTB,snapshot:RAWG,
+307780,Mortal Kombat X,false,5.64,7,positive,positive,false,missing_three_point,false,5.64,7,snapshot:HLTB,snapshot:RAWG,
+50130,Mafia II (Classic),true,,13,null,positive,false,hltb_null,false,,13,snapshot:HLTB,snapshot:RAWG,
+2623190,The Elder Scrolls IV: Oblivion Remastered,true,,10,null,positive,false,hltb_null,false,,10,snapshot:HLTB,snapshot:RAWG,
+1627720,Lies of P,true,,27,null,positive,false,hltb_null,false,,27,snapshot:HLTB,snapshot:RAWG,
+1290000,PowerWash Simulator,true,,11,null,positive,false,hltb_null,false,,11,snapshot:HLTB,snapshot:RAWG,
+253230,A Hat in Time,true,,6,null,positive,false,hltb_null,false,,6,snapshot:HLTB,snapshot:RAWG,
+1693980,Dead Space,true,11.9,4,positive,positive,false,included,true,11.9,4,snapshot:HLTB,snapshot:RAWG,
+8190,Just Cause 2,true,17.7,3,positive,positive,false,included,true,17.7,3,snapshot:HLTB,snapshot:RAWG,
+108710,Alan Wake,true,11.18,5,positive,positive,false,included,true,11.18,5,snapshot:HLTB,snapshot:RAWG,
+202970,Call of Duty®: Black Ops II,true,7.05,,positive,null,false,rawg_null,false,7.05,,snapshot:HLTB,snapshot:RAWG,
+367500,Dragon's Dogma: Dark Arisen,true,33.07,7,positive,positive,false,included,true,33.07,7,snapshot:HLTB,snapshot:RAWG,
+243470,Watch_Dogs™,true,,16,null,positive,false,hltb_null,false,,16,snapshot:HLTB,snapshot:RAWG,
+1325200,Nioh 2 – The Complete Edition,true,,14,null,positive,false,hltb_null,false,,14,snapshot:HLTB,snapshot:RAWG,
+282140,SOMA,true,9.08,6,positive,positive,false,included,true,9.08,6,snapshot:HLTB,snapshot:RAWG,
+599140,Graveyard Keeper,true,45.45,7,positive,positive,false,included,true,45.45,7,snapshot:HLTB,snapshot:RAWG,
+476600,Call of Duty®: WWII,true,,6,null,positive,false,hltb_null,false,,6,snapshot:HLTB,snapshot:RAWG,
+1288310,Firework,true,,,not_in_local_table,null,false,hltb_not_in_local_table,false,,,snapshot:HLTB,snapshot:RAWG,
+302510,Ryse: Son of Rome,true,6.39,6,positive,positive,false,included,true,6.39,6,snapshot:HLTB,snapshot:RAWG,
+204450,Call of Juarez: Gunslinger,false,5.08,5,positive,positive,false,missing_three_point,false,5.08,5,snapshot:HLTB,snapshot:RAWG,
+1845910,Dragon Age™: The Veilguard,true,,43,null,positive,false,hltb_null,false,,43,snapshot:HLTB,snapshot:RAWG,
+692850,Bloodstained: Ritual of the Night,true,14.05,6,positive,positive,false,included,true,14.05,6,snapshot:HLTB,snapshot:RAWG,
+228380,Wreckfest,true,,3,null,positive,false,hltb_null,false,,3,snapshot:HLTB,snapshot:RAWG,
+1184370,Pathfinder: Wrath of the Righteous - Enhanced Edition,true,,10,null,positive,false,hltb_null,false,,10,snapshot:HLTB,snapshot:RAWG,
+668580,Atomic Heart,true,,12,null,positive,false,hltb_null,false,,12,snapshot:HLTB,snapshot:RAWG,
+1210320,Potion Craft: Alchemist Simulator,true,,3,null,positive,false,hltb_null,false,,3,snapshot:HLTB,snapshot:RAWG,
+107100,Bastion,false,6.25,4,positive,positive,false,missing_three_point,false,6.25,4,snapshot:HLTB,snapshot:RAWG,
+554620,Life is Strange: Before the Storm,true,,11,null,positive,false,hltb_null,false,,11,snapshot:HLTB,snapshot:RAWG,
+207140,SpeedRunners,true,2.14,4,positive,positive,false,included,true,2.14,4,snapshot:HLTB,snapshot:RAWG,
+447530,VA-11 Hall-A: Cyberpunk Bartender Action,true,10.95,5,positive,positive,false,included,true,10.95,5,snapshot:HLTB,snapshot:RAWG,
+383980,Rivals of Aether,false,1.49,4,positive,positive,false,missing_three_point,false,1.49,4,snapshot:HLTB,snapshot:RAWG,
+250320,The Wolf Among Us,true,8.62,9,positive,positive,false,included,true,8.62,9,snapshot:HLTB,snapshot:RAWG,
+740130,Tales of ARISE,true,,13,null,positive,false,hltb_null,false,,13,snapshot:HLTB,snapshot:RAWG,
+1282730,Loop Hero,true,,10,null,positive,false,hltb_null,false,,10,snapshot:HLTB,snapshot:RAWG,
+1256670,Library Of Ruina,true,,5,null,positive,false,hltb_null,false,,5,snapshot:HLTB,snapshot:RAWG,
+640820,Pathfinder: Kingmaker — Enhanced Plus Edition,true,,10,null,positive,false,hltb_null,false,,10,snapshot:HLTB,snapshot:RAWG,
+535930,Two Point Hospital,true,,4,null,positive,false,hltb_null,false,,4,snapshot:HLTB,snapshot:RAWG,
+1235140,Yakuza: Like a Dragon,true,,17,null,positive,false,hltb_null,false,,17,snapshot:HLTB,snapshot:RAWG,
+417860,Emily is Away,true,0.66,1,positive,positive,false,included,true,0.66,1,snapshot:HLTB,snapshot:RAWG,
+261030,The Walking Dead: Season Two,true,,,null,null,false,hltb_null,false,,,snapshot:HLTB,snapshot:RAWG,
+1144400,Senren＊Banka,false,,3,not_in_local_table,positive,false,missing_three_point,false,,3,snapshot:HLTB,snapshot:RAWG,
+209160,Call of Duty®: Ghosts,true,,6,not_in_local_table,positive,false,hltb_not_in_local_table,false,,6,snapshot:HLTB,snapshot:RAWG,
+2186680,"Warhammer 40,000: Rogue Trader",true,,9,null,positive,false,hltb_null,false,,9,snapshot:HLTB,snapshot:RAWG,
+1874880,Arma Reforger,true,0.0,3,zero,positive,false,hltb_zero,false,0.0,3,snapshot:HLTB,snapshot:RAWG,
+1030830,Mafia II: Definitive Edition,true,,3,null,positive,false,hltb_null,false,,3,snapshot:HLTB,snapshot:RAWG,
+220440,DmC: Devil May Cry,true,,6,not_in_local_table,positive,false,hltb_not_in_local_table,false,,6,snapshot:HLTB,snapshot:RAWG,
+368500,Assassin's Creed® Syndicate,true,18.66,22,positive,positive,false,included,true,18.66,22,snapshot:HLTB,snapshot:RAWG,
+288160,The Room,true,2.56,3,positive,positive,false,included,true,2.56,3,snapshot:HLTB,snapshot:RAWG,
+794260,Outward Definitive Edition,true,,4,null,positive,false,hltb_null,false,,4,snapshot:HLTB,snapshot:RAWG,
+1189490,觅长生,true,,7,not_in_local_table,positive,false,hltb_not_in_local_table,false,,7,snapshot:HLTB,snapshot:RAWG,
+238010,Deus Ex: Human Revolution - Director's Cut,true,23.24,6,positive,positive,false,included,true,23.24,6,snapshot:HLTB,snapshot:RAWG,
+41070,Serious Sam 3: BFE,true,,4,not_in_local_table,positive,false,hltb_not_in_local_table,false,,4,snapshot:HLTB,snapshot:RAWG,
+1066780,Transport Fever 2,true,,11,null,positive,false,hltb_null,false,,11,snapshot:HLTB,snapshot:RAWG,
+557340,My Friend Pedro,true,,3,null,positive,false,hltb_null,false,,3,snapshot:HLTB,snapshot:RAWG,
+238090,Sniper Elite 3,true,,5,not_in_local_table,positive,false,hltb_not_in_local_table,false,,5,snapshot:HLTB,snapshot:RAWG,
+333600,NEKOPARA Vol. 1,true,4.46,4,positive,positive,false,included,true,4.46,4,snapshot:HLTB,snapshot:RAWG,
+304240,Resident Evil,true,11.25,,positive,null,false,rawg_null,false,11.25,,snapshot:HLTB,snapshot:RAWG,
+413420,Danganronpa 2: Goodbye Despair,true,33.45,27,positive,positive,false,included,true,33.45,27,snapshot:HLTB,snapshot:RAWG,
+249130,LEGO® Marvel™ Super Heroes,true,12.28,8,positive,positive,false,included,true,12.28,8,snapshot:HLTB,snapshot:RAWG,
+260230,Valiant Hearts: The Great War™ / Soldats Inconnus : Mémoires de la Grande Guerre™,true,,6,not_in_local_table,positive,false,hltb_not_in_local_table,false,,6,snapshot:HLTB,snapshot:RAWG,
+383150,Dead Island Definitive Edition,true,15.86,7,positive,positive,false,included,true,15.86,7,snapshot:HLTB,snapshot:RAWG,
+71340,Sonic Generations Collection,true,,2,null,positive,false,hltb_null,false,,2,snapshot:HLTB,snapshot:RAWG,
+247080,Crypt of the NecroDancer,true,14.17,4,positive,positive,false,included,true,14.17,4,snapshot:HLTB,snapshot:RAWG,
+365450,Hacknet,true,7.11,3,positive,positive,false,included,true,7.11,3,snapshot:HLTB,snapshot:RAWG,
+1149620,Gas Station Simulator,true,,6,null,positive,false,hltb_null,false,,6,snapshot:HLTB,snapshot:RAWG,
+42680,Call of Duty®: Modern Warfare® 3 (2011),true,,8,not_in_local_table,positive,false,hltb_not_in_local_table,false,,8,snapshot:HLTB,snapshot:RAWG,
+99900,Spiral Knights,true,48.7,2,positive,positive,false,included,true,48.7,2,snapshot:HLTB,snapshot:RAWG,
+519860,DUSK,true,,3,null,positive,false,hltb_null,false,,3,snapshot:HLTB,snapshot:RAWG,
+1240210,There Is No Game: Wrong Dimension,true,,5,null,positive,false,hltb_null,false,,5,snapshot:HLTB,snapshot:RAWG,
+1097840,Gears 5,true,11.18,7,positive,positive,false,included,true,11.18,7,snapshot:HLTB,snapshot:RAWG,
+239160,Thief,true,11.0,5,positive,positive,false,included,true,11.0,5,snapshot:HLTB,snapshot:RAWG,
+882100,XCOM®: Chimera Squad,false,,4,null,positive,false,missing_three_point,false,,4,snapshot:HLTB,snapshot:RAWG,
+1094520,Sands of Salzaar,false,,3,not_in_local_table,positive,false,missing_three_point,false,,3,snapshot:HLTB,snapshot:RAWG,
+285190,"Warhammer 40,000: Dawn of War III",true,17.37,5,positive,positive,false,included,true,17.37,5,snapshot:HLTB,snapshot:RAWG,
+1948980,Hero's Adventure: Road to Passion,true,,6,not_in_local_table,positive,false,hltb_not_in_local_table,false,,6,snapshot:HLTB,snapshot:RAWG,
+784150,Workers & Resources: Soviet Republic,true,,2,null,positive,false,hltb_null,false,,2,snapshot:HLTB,snapshot:RAWG,
+35720,Trine 2: Complete Story,true,,4,not_in_local_table,positive,false,hltb_not_in_local_table,false,,4,snapshot:HLTB,snapshot:RAWG,
+235540,Warhammer: End Times - Vermintide,true,8.26,5,positive,positive,false,included,true,8.26,5,snapshot:HLTB,snapshot:RAWG,
+412830,STEINS;GATE,true,,5,not_in_local_table,positive,false,hltb_not_in_local_table,false,,5,snapshot:HLTB,snapshot:RAWG,
+323470,DRAGON BALL XENOVERSE,true,,8,not_in_local_table,positive,false,hltb_not_in_local_table,false,,8,snapshot:HLTB,snapshot:RAWG,
+350080,Wolfenstein: The Old Blood,true,5.92,7,positive,positive,false,included,true,5.92,7,snapshot:HLTB,snapshot:RAWG,
+1182900,A Plague Tale: Requiem,true,,5,null,positive,false,hltb_null,false,,5,snapshot:HLTB,snapshot:RAWG,
+445980,Wizard of Legend,true,,3,null,positive,false,hltb_null,false,,3,snapshot:HLTB,snapshot:RAWG,
+1161580,Hardspace: Shipbreaker,true,,6,null,positive,false,hltb_null,false,,6,snapshot:HLTB,snapshot:RAWG,
+590380,Into the Breach,false,5.51,5,positive,positive,false,missing_three_point,false,5.51,5,snapshot:HLTB,snapshot:RAWG,
+359870,FINAL FANTASY X/X-2 HD Remaster,true,50.41,6,positive,positive,false,included,true,50.41,6,snapshot:HLTB,snapshot:RAWG,
+425580,The Room Two,true,3.13,4,positive,positive,false,included,true,3.13,4,snapshot:HLTB,snapshot:RAWG,
+760060,Mutant Year Zero: Road to Eden,false,,4,not_in_local_table,positive,false,missing_three_point,false,,4,snapshot:HLTB,snapshot:RAWG,
+235600,Tom Clancy’s Splinter Cell Blacklist,true,10.76,10,positive,positive,false,included,true,10.76,10,snapshot:HLTB,snapshot:RAWG,
+1583230,High On Life,true,,4,null,positive,false,hltb_null,false,,4,snapshot:HLTB,snapshot:RAWG,
+866800,The Walking Dead: The Final Season,true,,10,not_in_local_table,positive,false,hltb_not_in_local_table,false,,10,snapshot:HLTB,snapshot:RAWG,
+1577120,The Quarry,true,,5,null,positive,false,hltb_null,false,,5,snapshot:HLTB,snapshot:RAWG,
+265550,Dead Rising 3 Apocalypse Edition,true,,6,not_in_local_table,positive,false,hltb_not_in_local_table,false,,6,snapshot:HLTB,snapshot:RAWG,
+362680,Fran Bow,false,7.66,7,positive,positive,false,missing_three_point,false,7.66,7,snapshot:HLTB,snapshot:RAWG,
+1490890,Demon Slayer -Kimetsu no Yaiba- The Hinokami Chronicles,true,,5,null,positive,false,hltb_null,false,,5,snapshot:HLTB,snapshot:RAWG,
+225260,Brutal Legend,true,,5,not_in_local_table,positive,false,hltb_not_in_local_table,false,,5,snapshot:HLTB,snapshot:RAWG,
+560130,Pillars of Eternity II: Deadfire,true,,9,null,positive,false,hltb_null,false,,9,snapshot:HLTB,snapshot:RAWG,
+236090,Dust: An Elysian Tail,true,10.1,4,positive,positive,false,included,true,10.1,4,snapshot:HLTB,snapshot:RAWG,
+330830,Tales from the Borderlands,true,10.58,11,positive,positive,false,included,true,10.58,11,snapshot:HLTB,snapshot:RAWG,
+368070,Sniper Ghost Warrior 3,true,,12,not_in_local_table,positive,false,hltb_not_in_local_table,false,,12,snapshot:HLTB,snapshot:RAWG,
+241600,Rogue Legacy,true,16.37,6,positive,positive,false,included,true,16.37,6,snapshot:HLTB,snapshot:RAWG,
+1746030,Murders on the Yangtze River,true,,16,not_in_local_table,positive,false,hltb_not_in_local_table,false,,16,snapshot:HLTB,snapshot:RAWG,
+388410,Darksiders II Deathinitive Edition,false,,9,not_in_local_table,positive,false,missing_three_point,false,,9,snapshot:HLTB,snapshot:RAWG,
+311560,Assassin’s Creed® Rogue,true,10.58,12,positive,positive,false,included,true,10.58,12,snapshot:HLTB,snapshot:RAWG,
+242680,Nuclear Throne,true,17.23,5,positive,positive,false,included,true,17.23,5,snapshot:HLTB,snapshot:RAWG,
+557600,Gorogoa,true,,2,not_in_local_table,positive,false,hltb_not_in_local_table,false,,2,snapshot:HLTB,snapshot:RAWG,
+233270,Far Cry 3 - Blood Dragon,true,,4,null,positive,false,hltb_null,false,,4,snapshot:HLTB,snapshot:RAWG,
+1533420,Neon White,true,,7,null,positive,false,hltb_null,false,,7,snapshot:HLTB,snapshot:RAWG,
+241540,State of Decay,true,15.64,5,positive,positive,false,included,true,15.64,5,snapshot:HLTB,snapshot:RAWG,
+385800,NEKOPARA Vol. 0,false,,4,not_in_local_table,positive,false,missing_three_point,false,,4,snapshot:HLTB,snapshot:RAWG,
+629820,Maneater,true,,4,null,positive,false,hltb_null,false,,4,snapshot:HLTB,snapshot:RAWG,
+40700,Machinarium,true,,3,not_in_local_table,positive,false,hltb_not_in_local_table,false,,3,snapshot:HLTB,snapshot:RAWG,
+405640,Pony Island,true,2.4,3,positive,positive,false,included,true,2.4,3,snapshot:HLTB,snapshot:RAWG,
+397950,Clustertruck,true,3.64,2,positive,positive,false,included,true,3.64,2,snapshot:HLTB,snapshot:RAWG,
+1258080,Shop Titans,true,,2,not_in_local_table,positive,false,hltb_not_in_local_table,false,,2,snapshot:HLTB,snapshot:RAWG,
+368340,CrossCode,true,,5,null,positive,false,hltb_null,false,,5,snapshot:HLTB,snapshot:RAWG,
+536220,The Walking Dead: A New Frontier,true,,9,not_in_local_table,positive,false,hltb_not_in_local_table,false,,9,snapshot:HLTB,snapshot:RAWG,
+2768430,ATLYSS,true,,5,null,positive,false,hltb_null,false,,5,snapshot:HLTB,snapshot:RAWG,
+969990,SpongeBob SquarePants: Battle for Bikini Bottom - Rehydrated,true,,3,null,positive,false,hltb_null,false,,3,snapshot:HLTB,snapshot:RAWG,
+1880330,Sanfu,true,,5,null,positive,false,hltb_null,false,,5,snapshot:HLTB,snapshot:RAWG,
+1046030,ISLANDERS,true,,2,null,positive,false,hltb_null,false,,2,snapshot:HLTB,snapshot:RAWG,
+1382330,Persona® 5 Strikers,true,,9,not_in_local_table,positive,false,hltb_not_in_local_table,false,,9,snapshot:HLTB,snapshot:RAWG,
+1361320,The Room 4: Old Sins,true,,5,null,positive,false,hltb_null,false,,5,snapshot:HLTB,snapshot:RAWG,
+250760,Shovel Knight: Treasure Trove,true,,4,null,positive,false,hltb_null,false,,4,snapshot:HLTB,snapshot:RAWG,
+228300,Remember Me,true,,5,not_in_local_table,positive,false,hltb_not_in_local_table,false,,5,snapshot:HLTB,snapshot:RAWG,
+498240,Batman - The Telltale Series,true,8.35,9,positive,positive,false,included,true,8.35,9,snapshot:HLTB,snapshot:RAWG,
+1061910,Metal: Hellsinger,true,,3,null,positive,false,hltb_null,false,,3,snapshot:HLTB,snapshot:RAWG,
+1113120,IXION,true,,8,null,positive,false,hltb_null,false,,8,snapshot:HLTB,snapshot:RAWG,
+35700,Trine Enchanted Edition,false,,4,not_in_local_table,positive,false,missing_three_point,false,,4,snapshot:HLTB,snapshot:RAWG,
+1954200,Kena: Bridge of Spirits,true,,4,not_in_local_table,positive,false,hltb_not_in_local_table,false,,4,snapshot:HLTB,snapshot:RAWG,
+222480,Resident Evil Revelations,true,,8,not_in_local_table,positive,false,hltb_not_in_local_table,false,,8,snapshot:HLTB,snapshot:RAWG,
+394310,Punch Club,true,,5,not_in_local_table,positive,false,hltb_not_in_local_table,false,,5,snapshot:HLTB,snapshot:RAWG,
+537800,Bomber Crew,true,,3,not_in_local_table,positive,false,hltb_not_in_local_table,false,,3,snapshot:HLTB,snapshot:RAWG,
+1216710,Cyber Manhunt,true,,5,not_in_local_table,positive,false,hltb_not_in_local_table,false,,5,snapshot:HLTB,snapshot:RAWG,
+288470,Fable Anniversary,true,13.47,4,positive,positive,false,included,true,13.47,4,snapshot:HLTB,snapshot:RAWG,
+335670,LISA: The Painful,true,,4,null,positive,false,hltb_null,false,,4,snapshot:HLTB,snapshot:RAWG,
+8850,BioShock® 2,true,,3,not_in_local_table,positive,false,hltb_not_in_local_table,false,,3,snapshot:HLTB,snapshot:RAWG,
+861650,Session: Skate Sim,true,,0,null,zero,false,hltb_null,false,,0,snapshot:HLTB,snapshot:RAWG,
+210770,Sanctum 2,true,,3,not_in_local_table,positive,false,hltb_not_in_local_table,false,,3,snapshot:HLTB,snapshot:RAWG,
+214510,LEGO® The Lord of the Rings™,true,,2,not_in_local_table,positive,false,hltb_not_in_local_table,false,,2,snapshot:HLTB,snapshot:RAWG,

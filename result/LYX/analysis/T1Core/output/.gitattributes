@@ -1,0 +1,3 @@
+# 冻结产物按字节核对来源；仅保护本次任务4输出，不改变其他专题规则。
+duration_analysis/** -text
+duration_references/** -text

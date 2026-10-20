@@ -56,7 +56,10 @@ def highlight(ax: Any, selected: list[Json], x: str, y: str, common: bool = Fals
         if not g["complete_three_point"] or (common and not g["three_scores_common"]) or g[x] is None:
             continue
         ax.scatter(g[x], g[y], s=145, facecolors="none", edgecolors="#172E3C", linewidths=1.7, zorder=6)
-        ax.annotate(str(g["appid"]), (g[x],g[y]), xytext=(4,-12), textcoords="offset points", fontsize=8, zorder=7)
+        label = "33号远征队" if g["appid"] == 1903340 else "God of War" if g["appid"] == 1593500 else str(g["appid"])
+        offset = (-75,-18) if g["appid"] == 1903340 else (-70,12) if g["appid"] == 1593500 else (4,-12)
+        ax.annotate(label, (g[x],g[y]), xytext=offset, textcoords="offset points", fontsize=8, zorder=7,
+                    arrowprops={"arrowstyle":"-", "color":"#586E7D", "lw":.6})
 
 
 def draw_quadrants(games: list[Json], cases: list[Json], thresholds: Json, stat: Json,
@@ -126,10 +129,10 @@ def draw_panels(games: list[Json], stats: list[Json], selected: list[Json], outp
                     bbox={"facecolor":"white","edgecolor":"none","alpha":.9})
             highlight(ax,selected,x,y,common)
         axes[0].set_ylabel("全程推进比：末 / 首" if common else "阶段推进比")
-        title="同一140款游戏：三种评分来源与主线全程推进" if common else "同一183款游戏：Steam口碑与前段、后段、全程推进"
+        title="同一142款游戏：三种评分来源与主线全程推进" if common else "同一183款游戏：Steam口碑与前段、后段、全程推进"
         fig.suptitle(title,fontsize=20,y=.965)
         add_footer(fig,[SOURCE_NOTE,
-            "分组：183款中三种评分共同有效的140款，各面板游戏完全相同；缺失及RAWG零分不补值。" if common else "分组：三个面板始终使用同183款；前/后/全程分别为中/首、末/中、末/首。",
+            "分组：183款中三种评分共同有效的142款，各面板游戏完全相同；保留原140款并补齐33号远征队、God of War评分，余下缺失及RAWG零分不补值。" if common else "分组：三个面板始终使用同183款；前/后/全程分别为中/首、末/中、末/首。",
             "统计：游戏等权Spearman，并列取平均秩；整行联合Bootstrap 2000次、种子42；各评分保留原单位，不合成总分。",
             LIMIT_NOTE])
         fig.subplots_adjust(left=.06,right=.985,top=.84,bottom=.24,wspace=.17)

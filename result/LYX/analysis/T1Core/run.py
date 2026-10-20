@@ -1,4 +1,4 @@
-"""T1Core主线指标、类型、过程与65款共同样本时长分析。"""
+"""T1Core主线指标、类型、过程与69款共同样本时长分析。"""
 
 from __future__ import annotations
 

@@ -58,3 +58,11 @@ T0Pre保留原模型分类、证据门槛与质量剔除规则，在highest基�
 PyCharm新增SQLite数据源选择本文件，保持只读使用。[storage.py](../analysis/T0Pre/wwh_replay/storage.py)的connect使用mode=ro、query_only和一致读事务，检查八张必需表；各层manifest再核对数据库SHA及固定样本。复制后只要文件字节不变，路径不同不影响指纹；应保留LYX内预期相对路径或显式适配。
 
 当前[WEB简报](../WEB/index.html)由T1/T2正式结果的26张CSV与7份manifest构建，玩法、剧情节点和评分均沿用冻结来源，浏览时不读取本库或原请求响应。只演示可交付单文件HTML；修改后重建页面也只读已有结果。需自行适配时可用[交接包](../analysis/delivery/README.md)中的49张结果CSV、JSON和图。198款源表摘录包含11143条成就/11143条成就分类、198条玩法/剧情记录和587条调用索引，但不能取代原完整SQLite供T0全范围重跑。原库含model_calls大段历史文本，完整复算时私下传整库，不提交Git，也不作为公开静态文件发布。页面已保留RAWG来源回链；构建、交接及来源警告见[WEB说明](../WEB/README.md)。
+
+## 2026年10月20日分析输入补充
+
+本数据库未修改。任务4在原65款结果基础上，叠加[人工确认CSV](../analysis/T1Core/inputs/manual_duration_supplements.csv)的10个字段形成69款；HLTB正值三节点范围在分析层为71款。原库中的68/65覆盖仍是快照事实。三款HLTB和God of War的RAWG补值不回填数据库，也不改变任务5评分或任务6长度参照。
+
+## 2026-10-20 任务5评分输入叠加
+
+SQLite内容不变。用户确认的两款媒体/RAWG评分及战神评分人数保存在[评分补充CSV](../analysis/T2Sum/inputs/manual_rating_supplements.csv)，由任务5读取时按AppID叠加，不回写数据库。原始*_raw字段与逐字段来源均保留；实际共同评分样本为原140款加两款，共142款。此处原始数据库覆盖数仍描述旧快照，不能误当叠加后的分析覆盖。

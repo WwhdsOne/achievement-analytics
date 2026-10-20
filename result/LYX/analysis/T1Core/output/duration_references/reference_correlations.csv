@@ -1,3 +1,3 @@
 ﻿x,y,n,x_unique_values,y_unique_values,spearman,interval_low,interval_high,valid_bootstrap_replicates,requested_bootstrap_replicates,random_state,reference_field,ratio_below_one,ratio_at_least_one
-playtime/extra_hours,overall_progress_ratio,65,65,65,0.6467657342657342,0.4358406882805301,0.8011311474988035,2000,2000,42,extra_hours,60,5
-playtime/completionist_hours,overall_progress_ratio,65,65,65,0.6166520979020979,0.3981260183936919,0.7772960248599278,2000,2000,42,completionist_hours,63,2
+playtime/extra_hours,overall_progress_ratio,69,69,69,0.6520277676287907,0.4568904760042903,0.8050108263686784,2000,2000,42,extra_hours,64,5
+playtime/completionist_hours,overall_progress_ratio,69,69,69,0.6301059554256485,0.4415208700520278,0.7791838457248373,2000,2000,42,completionist_hours,67,2

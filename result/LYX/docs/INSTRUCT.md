@@ -1,5 +1,10 @@
 # LYX分析使用与读图说明：T1Core与T2Sum六项任务
 
+**2026-10-20任务5评分更新：** [评分补充输入](../analysis/T2Sum/inputs/manual_rating_supplements.csv)记录33号远征队92/4.42、God of War94/4.54及RAWG评分人数5310。共同评分样本由原140款增加至142款，图16～18及统计重算；Steam183款不变。两库只读，补充确认日期与旧快照采集日期分开记录。
+
+**2026-10-20任务4更新：原65款加人工补充4款，共69款。** 用户手动查询确认的10个值保存在[人工补充输入](../analysis/T1Core/inputs/manual_duration_supplements.csv)，不写回两份SQLite。三款补HLTB三类耗时，God of War补RAWG 15小时；五款预选均可在任务4显示。任务5三评分142款、任务6长度条件原68款不随本次补充改变。
+
+
 更新：2026-10-19。阅读对象：刘宇翔、组长及需要复现或讲解图表的组员。
 
 本文件解释“做了什么、如何调用、图上在比较什么、能得出什么结论”。程序与字段细节见[T1Core说明](../analysis/T1Core/README.md)、[T2Sum说明](../analysis/T2Sum/README.md)及[同类参照说明](../analysis/T2Sum/BENCHMARK.md)，网页交接见[DEPLOY](DEPLOY.md)，固定图见[T1图集](../analysis/T1Core/figures/README.md)与[T2图集](../analysis/T2Sum/figures/README.md)。六项任务现已整合为[WEB交互简报](../WEB/index.html)，支持1～5款选择、图表切换和高亮；它读取冻结结果，不在点击时运行下文的Python分析命令，当前尚未公网部署。
@@ -15,11 +20,11 @@
 | 1. 建立指标 | 如何统一比较不同游戏的主线推进？ | 首/中/末节点选择、原始覆盖、前/后/全程推进比、任选游戏柱状对比 | 198款；图01 |
 | 2. 类型差异 | 不同玩法的差异出现在入门、前段还是后段？ | 主类型与完整多标签分组，中位数、分布、样本量与重采样区间 | 主183款、补充198款；图02～07 |
 | 3. 完整过程 | 全程表现相近，过程是否也相近？ | 全节点曲线、真实相邻区间、最大相对降幅与百分点差、自动案例和自选分组 | 198款、1741个序列节点、1543段区间；图08～09及自选图 |
-| 4. 时长关联 | 内容参考长度、平均游玩投入与主线推进有什么关系？ | 两类时长对照、阶段关联、三类参考耗时比值与案例 | 固定同65款；图10～15 |
-| 5. 口碑关联 | 高评价的游戏是否也有较高主线推进，差异在哪个阶段？ | Steam四象限、阶段关联、三评分共同样本、多标签共性和探索案例 | Steam183款、共同评分140款；图16～18 |
+| 4. 时长关联 | 内容参考长度、平均游玩投入与主线推进有什么关系？ | 两类时长对照、阶段关联、三类参考耗时比值与案例 | 固定同69款；图10～15 |
+| 5. 口碑关联 | 高评价的游戏是否也有较高主线推进，差异在哪个阶段？ | Steam四象限、阶段关联、三评分共同样本、多标签共性和探索案例 | Steam183款、共同评分142款；图16～18 |
 | 6. 同类参照 | 与玩法及结局口径相近的游戏相比，目标处于什么位置？ | 留一同类参照、三阶段差值、五条件对照、解释卡片 | 183目标、主参照181有效；图19～21 |
 
-固定来源链为：借用的1000款冻结快照→198款有效主线曲线；198款中183款三节点完整；这183款中68款有正值HLTB主线耗时，其中65款也有正值RAWG时长。183款是类型主分析的范围，65款是时长专题范围，不能把它们的统计分母混用。任务5先固定完整三节点183款，跨评分对照再取同140款；任务6沿用183款目标，至少5款参照才计算比较，主口径181款有效。这些是不同资格条件，不是数据丢失或全量1000款的完成比例。
+固定来源链为：借用的1000款冻结快照→198款有效主线曲线；198款中183款三节点完整；叠加本次人工补充后，这183款中71款有正值HLTB主线耗时，其中69款也有正值RAWG时长。183款是类型主分析的范围，69款是时长专题范围，不能把它们的统计分母混用。任务5先固定完整三节点183款，跨评分对照再取同142款；任务6沿用183款目标，至少5款参照才计算比较，主口径181款有效。这些是不同资格条件，不是数据丢失或全量1000款的完成比例。
 
 ## 2. 数据来自哪里，当前保存在哪里
 
@@ -51,8 +56,8 @@
 | [type_analysis](../analysis/T1Core/output/type_analysis) | 类型汇总、游戏成员关系、口径对照、案例 |
 | [trajectory_analysis](../analysis/T1Core/output/trajectory_analysis) | 198款过程摘要、1543段相邻区间、63对候选及自动案例报告 |
 | [trajectory_comparisons](../analysis/T1Core/output/trajectory_comparisons) | 各次手动选择的分组数据JSON、节点/摘要/区间CSV、报告 |
-| [duration_analysis](../analysis/T1Core/output/duration_analysis) | 65款主线时长底表、198款筛选记录、时长分组、10项关联及案例 |
-| [reference_cohort.csv](../analysis/T1Core/output/duration_references/reference_cohort.csv) | 同65款的RAWG时长、三类HLTB耗时、三个时长比及主线指标 |
+| [duration_analysis](../analysis/T1Core/output/duration_analysis) | 69款主线时长底表、198款筛选记录、时长分组、10项关联及案例 |
+| [reference_cohort.csv](../analysis/T1Core/output/duration_references/reference_cohort.csv) | 同69款的RAWG时长、三类HLTB耗时、三个时长比及主线指标 |
 | [duration_references](../analysis/T1Core/output/duration_references) | 图14～15的两项关联、案例与报告 |
 
 数值保留精度，比例内部通常为0～1；CSV为空表示缺失，不能读成0。`*_pp`表示百分点；内部的后段减前段差值仍为比例，需要展示时乘100。CSV为UTF-8 BOM，布尔序列化为true/false；JSON的缺失为null。
@@ -63,9 +68,9 @@ manifest记录来源版本、参数、清单和产物哈希；PNG用于直接看
 
 ### 3.1 已有网页的打开、预览与核验
 
-直接打开[WEB/index.html](../WEB/index.html)可查看六项任务的核心交互。默认选中Hollow Knight与Dead Cells；搜索限于198款有效主线游戏，支持AppID、英文名及已有中文名，最多选5款。时长、口碑、类型等总体背景不随选择缩小；缺失值保留原因，不补零。
+直接打开[WEB/index.html](../WEB/index.html)可查看六项任务的核心交互。默认选中Hollow Knight、奥德赛、33号远征队、God of War及艾尔登法环；搜索限于198款有效主线游戏，支持AppID、英文名及已有中文名，最多选5款。时长、口碑、类型等总体背景不随选择缩小；缺失值保留原因，不补零。
 
-推荐使用本机HTTP预览，使页面末尾21张原图、33份来源及完整文档链接都能按原目录访问。以下命令从**仓库根目录**执行：
+推荐使用本机HTTP预览，使页面末尾21张原图、34份来源及完整文档链接都能按原目录访问。以下命令从**仓库根目录**执行：
 
 ```powershell
 uv run --frozen --no-sync python -X utf8 -B -m http.server 8765 --bind 127.0.0.1 --directory result/LYX
@@ -80,7 +85,7 @@ uv run --frozen --no-sync python -X utf8 -B result/LYX/WEB/build.py
 uv run --frozen --no-sync python -X utf8 -B result/LYX/WEB/verify.py
 ```
 
-二者均不连接数据库、不请求DeepSeek、不重跑分析统计；构建只写WEB/index.html与source_manifest.json。详细操作、文件分工与交互范围见[WEB使用说明](../WEB/README.md)。当前浏览器28项检查的记录与边界见[WEB验收](../WEB/ACCEPTANCE.md)：消费CSV自身哈希与关键数值关系已通过检查，但仍保留6条历史父manifest指纹漂移警告，不能表述为全部历史审计链同步通过。
+二者均不连接数据库、不请求DeepSeek、不重跑分析统计；构建只写WEB/index.html与source_manifest.json。详细操作、文件分工与交互范围见[WEB使用说明](../WEB/README.md)。当前浏览器28项检查的记录与边界见[WEB验收](../WEB/ACCEPTANCE.md)：消费CSV自身哈希与关键数值关系已通过检查，但当前仍保留4条历史父manifest指纹漂移警告，不能表述为全部历史审计链同步通过。
 
 ### 3.2 Python分析与出图接口
 
@@ -103,8 +108,8 @@ cd result\LYX
 | 任务2总体分析 | run.py types | 固定主分析及补充子集 |
 | 任务3自动案例 | run.py trajectory | 不传选择参数时，按原规则选三对案例 |
 | 任务3自选 | run.py trajectory加选择参数 | 每组1～5款，可多组 |
-| 任务4主分析 | run.py duration | 固定65款，生成10～13 |
-| 任务4补充 | analyze_duration_references.py | 固定同65款，生成14～15 |
+| 任务4主分析 | run.py duration | 固定69款，生成10～13 |
+| 任务4补充 | analyze_duration_references.py | 固定同69款，生成14～15 |
 | 任务5总体/高亮 | analysis/T2Sum/run.py reputation | 无选择为固定总体；1～5款选择仅高亮，生成16～18 |
 | 任务6总体/自选 | analysis/T2Sum/run.py benchmark | 无选择为固定背景＋自动案例；1～5款选择只更新关注对象，生成19～21 |
 
@@ -249,7 +254,7 @@ uv --cache-dir analysis/T1Core/runtime/uv-cache run --frozen --no-sync python -X
 
 ## 7. 任务4：内容参考长度、游玩时长与推进
 
-### 7.1 三种HLTB口径与固定65款
+### 7.1 三种HLTB口径与固定69款
 
 | 字段 | 本项目显示名称 | 含义 |
 |---|---|---|
@@ -258,7 +263,7 @@ uv --cache-dir analysis/T1Core/runtime/uv-cache run --frozen --no-sync python -X
 | HLTB extra_hours | 主线＋支线参考耗时 | Main + Extras，含额外内容，不仅限剧情支线 |
 | HLTB completionist_hours | 全收集参考耗时 | Completionist完整游玩参考，不等于Steam全成就耗时 |
 
-两类来源并未做玩家匹配，不能声称它们统计了同一批玩家。三图13～15的65款均有三类正值HLTB耗时，原游戏与推进值完全相同。65款是有效数据交集，不推广为全部1000款或全部Steam。
+两类来源并未做玩家匹配，不能声称它们统计了同一批玩家。三图13～15的69款均有三类正值HLTB耗时，原游戏与推进值完全相同。69款是有效数据交集，不推广为全部1000款或全部Steam。
 
 ### 7.2 出图命令
 
@@ -274,7 +279,7 @@ uv --cache-dir analysis/T1Core/runtime/uv-cache run --frozen --no-sync python -X
 uv --cache-dir analysis/T1Core/runtime/uv-cache run --frozen --no-sync python -X utf8 -B analysis/T1Core/analyze_duration_references.py
 ```
 
-这两个Python入口均为固定样本分析，没有新增按1～5款筛选时长的CLI参数。WEB已独立实现保留65款背景、选择高亮和三种参考耗时切换，直接读取已存结果，不调用这两条命令重跑统计。
+这两个Python入口均为固定样本分析，没有新增按1～5款筛选时长的CLI参数。WEB已独立实现保留69款背景、选择高亮和三种参考耗时切换，直接读取已存结果，不调用这两条命令重跑统计。
 
 ### 7.3 图10～12怎么看
 
@@ -284,7 +289,7 @@ uv --cache-dir analysis/T1Core/runtime/uv-cache run --frozen --no-sync python -X
 | [11](../analysis/T1Core/figures/11_length_progress.png) | x=主线参考耗时，三个面板y=前/后/全程推进比 | 内容参考长度与哪个阶段的推进更有关联？较长游戏是否仍有高推进的例外？ |
 | [12](../analysis/T1Core/figures/12_playtime_progress.png) | x=平均游玩时长，三个面板y同11 | 平均投入较多的游戏是否对应更深主线推进？与参考长度的关系是否相同？ |
 
-每点是一款游戏，不是一个玩家。Spearman衡量游戏之间的秩关联，接近+1/-1表示较一致的同向/反向排序，接近0表示较弱的单调关联，不表示解释了多少比例的玩家行为。图左上角给65款的系数与2000次整行游戏重采样区间，种子42；RAWG整数小时的并列值保留，不人为抖动后再计算。
+每点是一款游戏，不是一个玩家。Spearman衡量游戏之间的秩关联，接近+1/-1表示较一致的同向/反向排序，接近0表示较弱的单调关联，不表示解释了多少比例的玩家行为。图左上角给69款的系数与2000次整行游戏重采样区间，种子42；RAWG整数小时的并列值保留，不人为抖动后再计算。
 
 ### 7.4 图13～15：三种时长比
 
@@ -292,11 +297,11 @@ uv --cache-dir analysis/T1Core/runtime/uv-cache run --frozen --no-sync python -X
 
 | 图 | 分母 | R<1 / R>=1 | 与全程推进的Spearman及95%重采样区间 |
 |---|---|---|---|
-| [13](../analysis/T1Core/figures/13_time_ratio.png) | 主线 | 50 / 15 | +0.641，[+0.441,+0.796] |
-| [14](../analysis/T1Core/figures/14_extra_time_ratio.png) | 主线＋支线 | 60 / 5 | +0.647，[+0.436,+0.801] |
-| [15](../analysis/T1Core/figures/15_completionist_time_ratio.png) | 全收集 | 63 / 2 | +0.617，[+0.398,+0.777] |
+| [13](../analysis/T1Core/figures/13_time_ratio.png) | 主线 | 53 / 16 | +0.652［+0.462，+0.794］ |
+| [14](../analysis/T1Core/figures/14_extra_time_ratio.png) | 主线＋支线 | 64 / 5 | +0.652［+0.457，+0.805］ |
+| [15](../analysis/T1Core/figures/15_completionist_time_ratio.png) | 全收集 | 67 / 2 | +0.630［+0.442，+0.779］ |
 
-竖线R=1是时长相等参考，横点线是65款全程比中位数。右上表示相对参考投入较高、主线推进也高；右下表示时长比高但主线推进低；左上表示时长比低但主线推进较高；左下表示两项都较低。这些位置用来寻找待解释案例，不能直接命名为“忠诚玩家”“通关后投入”或“设计失败”。
+竖线R=1是时长相等参考，横点线是69款全程比中位数。右上表示相对参考投入较高、主线推进也高；右下表示时长比高但主线推进低；左上表示时长比低但主线推进较高；左下表示两项都较低。这些位置用来寻找待解释案例，不能直接命名为“忠诚玩家”“通关后投入”或“设计失败”。
 
 每象限按|log2(R)|最大选一例，同分再按推进偏离中位数和AppID排序，是刻意挑出的探索性极端案例。图15右下象限当前0款，明确留空；不为了凑案例修改阈值。
 
@@ -304,7 +309,7 @@ uv --cache-dir analysis/T1Core/runtime/uv-cache run --frozen --no-sync python -X
 
 ### 7.5 当前观察如何讲解
 
-当前65款中，主线参考耗时与全程推进比相关约-0.451，RAWG平均游玩时长与全程推进比约+0.257，后者区间下界接近0。它说明“内容参考长度”和“平均投入”并非相同观测维度，需要分开展示。
+当前69款中，主线参考耗时与全程推进比相关约-0.364，RAWG平均游玩时长与全程推进比约+0.289，后者95%重采样区间约[+0.041,+0.511]。它说明“内容参考长度”和“平均投入”并非相同观测维度，需要分开展示。
 
 时长比与主线推进存在正向秩关联，但它包含HLTB分母，也会受到游戏样本构成影响；没有控制其他属性或识别玩家个体行为。可写“当前样本中观察到关联”，不能写“缩短游戏就能提高留存”。完整数值见[时长报告](../analysis/T1Core/output/duration_analysis/report.md)与[参考耗时补充报告](../analysis/T1Core/output/duration_references/report.md)。
 
@@ -314,9 +319,9 @@ uv --cache-dir analysis/T1Core/runtime/uv-cache run --frozen --no-sync python -X
 
 口碑描述评论者的认可，推进描述已标注成就节点的聚合覆盖。高评价不自动意味着主线推进高，两者并置可以寻找“广受认可但首末差距大”或“评价一般但节点推进较高”的例外；不能把这些现象直接解释成忠诚度或因果。
 
-全部子方向都先要求完整且不同的首/中/末三节点和有效阶段比：198款中183款合格，15款两节点不参与。Steam好评率来自WWH games.payload的positive/(positive+negative)，不是LYX旧库的review_percent；媒体分和RAWG玩家评分来自同一payload.rawg。Steam183款有效、媒体140款、RAWG正值173款；跨评分比较固定三者共同140款，不让每个面板自行换样本。
+全部子方向都先要求完整且不同的首/中/末三节点和有效阶段比：198款中183款合格，15款两节点不参与。Steam好评率来自WWH games.payload的positive/(positive+negative)，不是LYX旧库的review_percent；媒体分和RAWG玩家评分来自同一payload.rawg。Steam183款有效、媒体142款、RAWG正值174款；跨评分比较固定三者共同142款，不让每个面板自行换样本。
 
-评分仍是冻结快照。RAWG的5个NULL和5个零分分开保存，零分不当作真实低评价；共同140款RAWG评分人数均≥50。HLTB主线正值68款仅用于相近长度案例，不把主分析收缩到68或65款。
+评分基于冻结快照，叠加2026-10-20用户确认的两款评分更新；不是统一时点评分。RAWG的4个NULL和5个零分分开保存，零分不当作真实低评价；共同142款RAWG评分人数均≥50。HLTB主线正值68款仅用于相近长度案例，不把主分析收缩到68或69款。
 
 ### 8.2 运行与1～5款选择
 
@@ -326,7 +331,7 @@ uv --cache-dir analysis/T1Core/runtime/uv-cache run --frozen --no-sync python -X
 uv --cache-dir analysis/T2Sum/runtime/uv-cache run --frozen --no-sync python -X utf8 -B analysis/T2Sum/run.py reputation
 ```
 
-选择观察对象，背景和统计仍为183/140款：
+选择观察对象，背景和统计仍为183/142款：
 
 ```powershell
 uv --cache-dir analysis/T2Sum/runtime/uv-cache run --frozen --no-sync python -X utf8 -B analysis/T2Sum/run.py reputation --games 367520 "God of War" "艾尔登法环" 379720 "Raft"
@@ -343,13 +348,13 @@ uv --cache-dir analysis/T2Sum/runtime/uv-cache run --frozen --no-sync python -X 
 |---|---|---|
 | [16 四象限](../analysis/T2Sum/figures/16_reputation_quadrants.png) | x=Steam好评率，y=全程推进；两条样本中位线划分183款 | 先看原始坐标，再看所属区域；“高/低”仅相对样本中位数，不是好坏定级 |
 | [17 三阶段](../analysis/T2Sum/figures/17_reputation_stages.png) | 同183款的好评率与前段、后段、全程推进 | 对照三个阶段的秩关联和区间，看关联是否集中于某段；不是玩家随时间变化的轨迹 |
-| [18 三评分](../analysis/T2Sum/figures/18_rating_sources.png) | 固定共同140款，Steam/Metacritic/RAWG分别与阶段推进对照 | 各自用原单位，看同样本的Spearman与成对系数差；不能直接比较横轴斜率或把三个分数相加 |
+| [18 三评分](../analysis/T2Sum/figures/18_rating_sources.png) | 固定共同142款，Steam/Metacritic/RAWG分别与阶段推进对照 | 各自用原单位，看同样本的Spearman与成对系数差；不能直接比较横轴斜率或把三个分数相加 |
 
 图16中位分界为好评91.0575%、全程32.6203%，等于中位线归高组，四组50/42/42/49款。案例按两轴百分位偏离选取，是刻意挑出的探索例子，不一定具有典型性。
 
-Steam183款前/后/全程Spearman为+0.255/+0.108/+0.164；共同140款全程对应Steam+0.125、媒体+0.224、RAWG+0.282。同是Steam出现两个全程系数，是因为183与140的样本不同，不能混写成一项指标变化。数值表示游戏级单调关联，不是解释了多少玩家行为，也不能仅凭系数大小宣布某来源更准确。
+Steam183款前/后/全程Spearman为+0.255/+0.108/+0.164；共同142款全程对应Steam+0.140、媒体+0.239、RAWG+0.295。同是Steam出现两个全程系数，是因为183与142的样本不同，不能混写成一项指标变化。数值表示游戏级单调关联，不是解释了多少玩家行为，也不能仅凭系数大小宣布某来源更准确。
 
-统计为游戏等权，整行Bootstrap 2000次、种子42，重采样后重新计算平均秩。共同140款的评分系数差使用同轮抽样，完整9行差值区间保留；区间不代表玩家级误差。相近长度案例要求同主类型/结局且HLTB比≤1.25，99对候选中选3对，不是随机实验。
+统计为游戏等权，整行Bootstrap 2000次、种子42，重采样后重新计算平均秩。共同142款的评分系数差使用同轮抽样，完整9行差值区间保留；区间不代表玩家级误差。相近长度案例要求同主类型/结局且HLTB比≤1.25，99对候选中选3对，不是随机实验。
 
 ### 8.4 多标签共性和探索排名能说明什么
 
@@ -363,7 +368,7 @@ Steam183款前/后/全程Spearman为+0.255/+0.108/+0.164；共同140款全程对
 
 | 文件，均位于T2Sum/output/reputation | 用来做什么 |
 |---|---|
-| reputation_eligibility.csv / reputation_cohort.csv / rating_common.csv | 198资格台账、183主明细、共同140款；保留原值、评分状态与抓取时间 |
+| reputation_eligibility.csv / reputation_cohort.csv / rating_common.csv | 198资格台账、183主明细、共同142款；保留原值、评分状态与抓取时间 |
 | score_coverage.csv / score_summary.csv | 覆盖和分布，防止把缺失评分补零 |
 | reputation_correlations.csv / correlation_differences.csv | 12项主关联及9项共同样本评分差 |
 | sensitivity_correlations.csv | 单一start170、统一结局107、多结局76的对照 |
@@ -372,7 +377,7 @@ Steam183款前/后/全程Spearman为+0.255/+0.108/+0.164；共同140款全程对
 | exploration_*.csv | 10张多标签、文本标签、共现、边界、排序、权重和节点原文等明细 |
 | data.json / manifest.json / report.md | 完整背景与统计、来源和指纹、解释报告 |
 
-自选状态分三类：available_all_panels可在全部图定位；available_steam_only只在16/17定位，18坚持共同140款；incomplete_three_point保留原因而不画假点。上述五款示例中Hollow Knight和艾尔登法环属于第一类，God of War与Raft缺媒体评分属第二类，DOOM只有两节点属第三类。某个评分有值也不能临时加入18的某一面板，破坏共同样本。
+自选状态分三类：available_all_panels可在全部图定位；available_steam_only只在16/17定位，18坚持共同142款；incomplete_three_point保留原因而不画假点。上述五款示例中Hollow Knight和艾尔登法环属于第一类，God of War补齐后属于第一类，Raft缺媒体评分属第二类，DOOM只有两节点属第三类。某个评分有值也不能临时加入18的某一面板，破坏共同样本。
 
 ## 9. 任务6：玩法多标签下的同类参照
 
@@ -429,7 +434,7 @@ uv --cache-dir analysis/T2Sum/runtime/uv-cache run --frozen --no-sync python -X 
 | [20 三阶段差](../analysis/T2Sum/figures/20_peer_stage_gaps.png) | 所选/预置案例前、后、全程各减自身参照中位数 | 相对差距集中在哪个阶段；0是持平参照，不是没有推进 |
 | [21 参照分布](../analysis/T2Sum/figures/21_peer_cases.png) | 其他游戏的点/箱体与目标菱形，旁列相近参照和原节点提示 | 目标是否偏离主要参照分布，还是同类本来就很分散；展开完整名单核查可比性 |
 
-主参照181款中91款为正差、90款为负差。对照条件比较共同有效的同一批目标：好评相近条件165款中161款方向一致，时长相近条件46款中42款一致。不能用换过人群的总体中位数冒充同一批游戏的变化，也不能把一致性当因果稳健性或显著性。
+主参照181款中91款为正差、90款为负差。对照条件比较共同有效的同一批目标：好评相近条件169款中161款方向一致，时长相近条件46款中42款一致。不能用换过人群的总体中位数冒充同一批游戏的变化，也不能把一致性当因果稳健性或显著性。
 
 ### 9.5 不足、案例与产物
 
@@ -452,7 +457,7 @@ query_benchmark只读查询已有默认结果，不会重新构建参照；与CL
 
 只查看结果：先打开[交互简报](../WEB/index.html)，或看[T1图集](../analysis/T1Core/figures/README.md)、[T2图集](../analysis/T2Sum/figures/README.md)及对应report，不需要重跑。网页交互视图提炼核心问题，原21张图通过末尾图集入口保留，不随选择生成新PNG。需要全量刷新时，在来源版本匹配前提下，顺序为T0基线（必要时）→T1 prepare→types/trajectory/duration及参考补图→T2 reputation→benchmark→WEB build→WEB verify。T1 --output只隔离输出，不自动改变下游默认输入路径；不要把试跑输出当作已经替换正式底表。
 
-1. 讲解先说明1000→198→183，时长65、三评分140、主参照181各自的资格条件。
+1. 讲解先说明1000→198→183，时长69、三评分142、主参照181各自的资格条件。
 2. 用任务1解释覆盖与阶段比、首节点和位置中位；任务2先交代主类型/多标签，再比较组内汇总。
 3. 用任务3说明同全程可以有不同过程；用任务4区分参考长度、平均投入和相对耗时比。
 4. 用任务5展示口碑与推进的不同维度，用任务6说明相对同类位置；随时回到节点原文和资格台账。

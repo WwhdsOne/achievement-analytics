@@ -1,4 +1,4 @@
-"""固定65款共同样本，分析主线参考耗时、平均游玩时长与主线推进。"""
+"""固定69款共同样本，分析主线参考耗时、平均游玩时长与主线推进。"""
 
 from __future__ import annotations
 
@@ -17,9 +17,10 @@ from compare_games import COLORS, load_catalog
 from plot_files import add_footer, figure_directory
 from prepare_metrics import DEFAULT_OUTPUT, ROOT, csv_text, digest, owned_path, protected_snapshot, source, write_text
 
-VERSION = "lyx-duration-common65-v1"
+VERSION = "lyx-duration-common69-manual-v2"
 DEFAULT_DURATION = DEFAULT_OUTPUT / "duration_analysis"
-COHORT_SHA256 = "41aed4f5c6cfff37d0032fc3bfb3812a8d30b48e3ef0058cab7865cf90a42271"
+from duration_inputs import (ADDED_APPIDS, BASELINE_SHA256, BASELINE_SIZE, COHORT_SHA256, COHORT_SIZE,
+                             load_supplements, resolve_value, value_source)
 SEED = 42
 BOOTSTRAP = 2000
 MIN_GROUP_INTERVAL = 10
@@ -32,7 +33,7 @@ LABELS = {"main_hours": "主线参考耗时（HLTB，小时）", "playtime": "�
 FIGURE_NAMES = ("10_time_comparison", "11_length_progress", "12_playtime_progress", "13_time_ratio")
 BINS = (("≤5小时", 0.0, 5.0), (">5～15小时", 5.0, 15.0), (">15～30小时", 15.0, 30.0), (">30小时", 30.0, math.inf))
 QUADRANTS = ("比值≥1，推进≥中位数", "比值≥1，推进<中位数", "比值<1，推进≥中位数", "比值<1，推进<中位数")
-SOURCE_NOTE = "样本来源：198款有效主线曲线 → 183款完整三节点 → 68款正值HLTB主线时长 → 65款同时具备正值RAWG时长。"
+SOURCE_NOTE = "样本来源：198款主线曲线 → 183款完整三节点 → 71款正值HLTB → 69款正值RAWG；原65款加人工补充4款。"
 TIME_NOTE = "时长：HLTB main_hours为主线参考耗时，RAWG playtime按研究口径作为用户平均游玩时长；单位均为小时。"
 LIMIT_NOTE = "解释：游戏级跨来源比较，时长比不等于个人完成度或通关后投入；相关不作因果解释，不代表全部Steam游戏。"
 Json = dict[str, Any]
@@ -59,8 +60,9 @@ def number_status(value: Any, present: bool = True) -> str:
 
 
 def load_duration_data() -> tuple[list[Json], list[Json], Json]:
-    """Read two existing SQLite files without writes and freeze the agreed 65-AppID overlap."""
+    """Combine immutable snapshots with ten explicit manual values; freeze original65 plus four."""
     catalog, audit = load_catalog()
+    supplements, manual_audit = load_supplements(catalog)
     appids = [g["appid"] for g in catalog]
     placeholders = ",".join("?" for _ in appids)
     path = source.database_path(source.LEGACY_DB)
@@ -76,50 +78,65 @@ def load_duration_data() -> tuple[list[Json], list[Json], Json]:
         conn.close()
     with source.connect(source.DEFAULT_DB) as conn:
         payloads = {r[0]: json.loads(r[1]) for r in conn.execute(f"SELECT appid,payload FROM games WHERE appid IN ({placeholders})", appids)}
-    eligible, selected = [], []
+    eligible, selected, baseline_ids = [], [], []
     rawg_checks = 0
     for game in catalog:
         appid = game["appid"]
         local = times.get(appid)
         rawg = payloads[appid].get("rawg")
-        playtime = rawg.get("playtime") if isinstance(rawg, dict) else None
-        main = local["main_hours"] if local else None
-        main_status = number_status(main, local is not None)
-        play_status = number_status(playtime)
+        original_playtime = rawg.get("playtime") if isinstance(rawg, dict) else None
+        original_main = local["main_hours"] if local else None
         if local and local["name_en"] != game["title"]:
             raise ValueError(f"AppID={appid}名称不一致，停止而不按名称推断版本")
-        # Agreement is checked where HLTB is available; source precedence is never implicit.
-        if main_status == "positive" and game["three_point_available"]:
-            if local["playtime"] != playtime:
-                raise ValueError(f"AppID={appid}两份RAWG时长副本不一致，停止避免静默换源")
+        if number_status(original_main) == "positive" and game["three_point_available"]:
+            if local["playtime"] != original_playtime:
+                raise ValueError(f"AppID={appid}两份RAWG快照副本不一致，停止避免静默换源")
             rawg_checks += 1
+            if number_status(original_playtime) == "positive":
+                baseline_ids.append(appid)
+        main = resolve_value(appid, "main_hours", original_main, supplements)
+        playtime = resolve_value(appid, "playtime", original_playtime, supplements)
+        main_status = number_status(main, local is not None or (appid, "main_hours") in supplements)
+        play_status = number_status(playtime)
         reason = ("missing_three_point" if not game["three_point_available"] else
                   "hltb_" + main_status if main_status != "positive" else
                   "rawg_" + play_status if play_status != "positive" else "included")
-        order_issue = bool(local and main_status == "positive" and any(
-            number_status(local[k]) == "positive" and local[k] < main for k in ("extra_hours", "completionist_hours")))
+        extra_values = [resolve_value(appid, k, local[k] if local else None, supplements)
+                        for k in ("extra_hours", "completionist_hours")]
+        order_issue = bool(main_status == "positive" and any(
+            number_status(v) == "positive" and v < main for v in extra_values))
+        provenance = {"original_main_hours": original_main, "original_playtime": original_playtime,
+                      "main_hours_source": value_source(appid, "main_hours", supplements),
+                      "playtime_source": value_source(appid, "playtime", supplements),
+                      "manual_fields": "|".join(sorted(field for a, field in supplements if a == appid))}
         eligible.append({"appid": appid, "title": game["title"], "three_point_available": game["three_point_available"],
                          "main_hours": main, "playtime": playtime, "hltb_status": main_status, "rawg_status": play_status,
-                         "time_order_anomaly": order_issue, "exclusion_reason": reason, "included": reason == "included"})
+                         "time_order_anomaly": order_issue, "exclusion_reason": reason, "included": reason == "included",
+                         **provenance})
         if reason == "included":
             selected.append({"appid": appid, "title": game["title"], "main_hours": main, "playtime": playtime,
                              "time_ratio": playtime / main, **{f: game[f] for f in ("p_s", "p_m", "p_f", *PROGRESS)},
                              "node_count": game["node_count"], "ending_type": game["ending_type"],
-                             "quality_flags": game["quality_flags"], "time_order_anomaly": order_issue})
+                             "quality_flags": game["quality_flags"], "time_order_anomaly": order_issue, **provenance})
     ids = [g["appid"] for g in selected]
-    if len(ids) != 65 or digest(ids) != COHORT_SHA256:
-        raise ValueError("共同样本不是已确认的65款，请先核对来源，不自动换样本")
+    if len(baseline_ids) != BASELINE_SIZE or digest(baseline_ids) != BASELINE_SHA256:
+        raise ValueError("原65款快照范围已改变，拒绝将其他数据漂移混入人工补充")
+    if len(ids) != COHORT_SIZE or digest(ids) != COHORT_SHA256 or set(ids) - set(baseline_ids) != ADDED_APPIDS:
+        raise ValueError("当前范围必须为原65款加已确认4款，共69款")
     if any(g[f] is None for g in selected for f in PROGRESS):
-        raise ValueError("65款中存在缺失阶段指标")
+        raise ValueError("69款中存在缺失阶段指标")
     counts = {"fixed_games": len(catalog), "three_point": sum(g["three_point_available"] for g in catalog),
               "hltb_positive_all": sum(r["hltb_status"] == "positive" for r in eligible),
-              "hltb_positive_three_point": rawg_checks, "common_games": len(selected),
-              "hltb_status_all": dict(Counter(r["hltb_status"] for r in eligible)),
+              "hltb_positive_three_point": sum(r["three_point_available"] and r["hltb_status"] == "positive" for r in eligible),
+              "rawg_snapshot_copy_checks": rawg_checks, "common_games": len(selected),
+              "baseline_common_games": len(baseline_ids), "manual_added_games": len(ADDED_APPIDS),
+              "manual_fields": len(supplements), "hltb_status_all": dict(Counter(r["hltb_status"] for r in eligible)),
               "exclusion_reasons": dict(Counter(r["exclusion_reason"] for r in eligible)),
-              "time_order_anomalies_in_65": sum(g["time_order_anomaly"] for g in selected)}
-    return selected, eligible, {**audit, "cohort_sha256_65": COHORT_SHA256, "selected_appids": ids, "counts": counts,
-                              "hltb_source": "local games_time.main_hours; copied by AppID on 2026-10-15",
-                              "rawg_source": "borrowed games.payload.rawg.playtime; agrees with local games_time.playtime on all 68 HLTB-positive three-point games",
+              "time_order_anomalies": sum(g["time_order_anomaly"] for g in selected)}
+    return selected, eligible, {**audit, "cohort_sha256": COHORT_SHA256, "selected_appids": ids, "counts": counts,
+                              "baseline_common_cohort_sha256": BASELINE_SHA256, "manual_supplements": manual_audit,
+                              "hltb_source": "local games_time plus user-confirmed HLTB null supplements",
+                              "rawg_source": "borrowed games.payload.rawg.playtime plus user-confirmed God of War 15h; original snapshot copies checked before filling",
                               "legacy_database_sha256": source.fingerprint(path)["sha256"], "unit": "hours"}
 
 
@@ -243,7 +260,7 @@ def draw_time_comparison(games: list[Json], stats: list[Json], output: Path) -> 
         colorbar = fig.colorbar(dots, ax=ax, fraction=.04, pad=.035)
         colorbar.ax.yaxis.set_major_formatter(PercentFormatter(1, decimals=0))
         colorbar.set_label("全程推进比（末 / 首）", labelpad=12)
-        fig.suptitle("65款游戏：主线参考耗时与平均游玩时长对照", fontsize=20, y=.965)
+        fig.suptitle("69款游戏：主线参考耗时与平均游玩时长对照", fontsize=20, y=.965)
         add_footer(fig, [SOURCE_NOTE, TIME_NOTE,
                    "数据：每点一款游戏，颜色为全程推进比；虚线为两类时长相等的位置，不是通关或留存阈值。", LIMIT_NOTE])
         fig.subplots_adjust(left=.09, right=.87, top=.87, bottom=.24)
@@ -251,7 +268,7 @@ def draw_time_comparison(games: list[Json], stats: list[Json], output: Path) -> 
 
 
 def draw_progress(games: list[Json], stats: list[Json], output: Path, xfield: str) -> None:
-    """Draw the same 65-game cohort against each of the three existing progression ratios."""
+    """Draw the same 69-game cohort against each of the three existing progression ratios."""
     from matplotlib.ticker import PercentFormatter
 
     plt, style = plotting()
@@ -270,7 +287,7 @@ def draw_progress(games: list[Json], stats: list[Json], output: Path, xfield: st
             ax.grid(color="#E0E7EC", linewidth=.7); ax.set_axisbelow(True)
         axes[0].set_ylabel("阶段推进比")
         subject = "主线参考耗时" if xfield == "main_hours" else "平均游玩时长"
-        fig.suptitle(f"同一65款游戏：{subject}与前段、后段、全程推进", fontsize=20, y=.965)
+        fig.suptitle(f"同一69款游戏：{subject}与前段、后段、全程推进", fontsize=20, y=.965)
         add_footer(fig, [SOURCE_NOTE, TIME_NOTE,
                    "统计：每点一款游戏；前/后/全程依次为中/首、末/中、末/首；Spearman并列取平均秩，游戏级Bootstrap 2000次、种子42。", LIMIT_NOTE])
         fig.subplots_adjust(left=.065, right=.985, top=.83, bottom=.25, wspace=.15)
@@ -306,7 +323,7 @@ def draw_ratio(games: list[Json], stats: list[Json], cases: list[Json], median: 
             body = (f"\nRAWG {case['playtime']:g}h / HLTB {case['main_hours']:g}h\n时长比{case['time_ratio']:.2f}倍 · 全程{case['overall_progress_ratio']:.1%}"
                     f"\n{case['quadrant']}（{case['quadrant_games']}款）")
             cards.text(0, .97 - i * .245, title + body, transform=cards.transAxes, va="top", fontsize=9)
-        fig.suptitle("同一65款游戏：平均游玩时长与主线参考耗时之比，及全程推进", fontsize=18, y=.965)
+        fig.suptitle("同一69款游戏：平均游玩时长与主线参考耗时之比，及全程推进", fontsize=18, y=.965)
         add_footer(fig, [SOURCE_NOTE, TIME_NOTE,
                    "数据：R=RAWG/HLTB，虚线R=1；横点线为全程比样本中位数；每象限取|log2(R)|最大案例，同分按推进偏离和AppID排序。", LIMIT_NOTE])
         fig.subplots_adjust(left=.07, right=.985, top=.84, bottom=.25, wspace=.24)
@@ -318,16 +335,17 @@ def report_text(games: list[Json], eligibility: list[Json], stats: list[Json], g
     """Report game-level evidence with fixed sample, canceled type contrasts and source limits."""
     values = {r["field"]: r for r in summary}
     counts = audit["counts"]
-    lines = ["# 专题4：内容长度、平均游玩时长与主线推进", "", "实施日期：2026-10-16。",
-             f"主线快照版本：{audit['dataset_version']}。共同样本65款，AppID顺序指纹：{COHORT_SHA256}。", "",
+    lines = ["# 专题4：内容长度、平均游玩时长与主线推进", "", "更新：2026-10-20。原65款加人工补充4款，原SQLite不变。",
+             f"主线快照版本：{audit['dataset_version']}。共同样本69款，AppID顺序指纹：{COHORT_SHA256}。", "",
              "## 固定样本与来源", "",
-             "采用用户确认口径：RAWG playtime为用户平均游玩时长（小时），HLTB main_hours为主线参考耗时（小时）。二者独立保留，不互相填缺失；主线指标仍使用既有数组位置中位节点和代表结局。",
-             "不开展类型对照、类型分组、类型着色或按类型拟合。全部主图使用同一65款，不把不同有效集合混为一条阶段过程。",
+             "采用用户确认口径：RAWG playtime为用户平均游玩时长（小时），HLTB main_hours为主线参考耗时（小时）。二者独立保留；空值仅用已确认的同来源人工查询补充，不互相替代；主线指标仍使用既有数组位置中位节点和代表结局。",
+             "不开展类型对照、类型分组、类型着色或按类型拟合。全部主图使用同一69款，不把不同有效集合混为一条阶段过程。",
              "| 筛选步骤 | 游戏数 |", "|---|---:|",
              f"| 固定有效主线范围 | {counts['fixed_games']} |", f"| 完整三节点 | {counts['three_point']} |",
              f"| 其中正值HLTB主线时长 | {counts['hltb_positive_three_point']} |", f"| 再与正值RAWG时长取交集 | {len(games)} |", "",
-             "全部198款中，HLTB主线时长正值75款、本地未匹配37款、NULL85款、零值1款；本地未匹配不代表HLTB网站没有该游戏。",
-             "三节点且正值HLTB的68款中，3款RAWG缺失：God of War、Call of Duty®: Black Ops II、Resident Evil。其余65款为固定共同样本。RAWG以借用快照为源，68款的值与旧库playtime逐项一致；HLTB只读旧本地快照，不合并或修改数据库。", "",
+             f"全部198款中，补充后HLTB主线正值{counts['hltb_positive_all']}款；状态分布{counts['hltb_status_all']}。本地未匹配不代表HLTB网站没有该游戏。",
+             "补充前基线65款不变。新增Assassin's Creed® Odyssey、Clair Obscur: Expedition 33、ELDEN RING的三类HLTB耗时及God of War的RAWG 15小时，形成69款。补充后完整三节点且HLTB正值71款，另2款仍缺RAWG。",
+             "人工补充由刘宇翔于2026-10-20在项目对话确认，提供10个字段；未提供页面URL或查询时间。逐字段来源、原快照空值和人工字段写入CSV及manifest，不写回SQLite。", "",
              "## 输入分布与时长比", "", "| 变量 | n | 最小 | 中位数 | 最大 |", "|---|---:|---:|---:|---:|"]
     for f in TIME_FIELDS:
         r = values[f]
@@ -341,18 +359,18 @@ def report_text(games: list[Json], eligibility: list[Json], stats: list[Json], g
         rho = f"{r['spearman']:+.3f}" if r['spearman'] is not None else "不可计算"
         interval = f"[{r['interval_low']:+.3f}, {r['interval_high']:+.3f}]" if r['interval_low'] is not None else "不可计算"
         lines.append(f"| {LABELS[r['x']]} | {LABELS[r['y']]} | {r['n']} | {rho} | {interval} |")
-    lines += ["", "区间表示当前65款游戏的重采样波动，不是Steam玩家级误差或总体随机抽样保证。相关方向与大小分别说明，不凭区间重叠认定两种相关系数不同。", "",
-              "## HLTB主线长度分组（仍为相同65款）", "", "| 参考耗时 | n | 前段中位数 | 后段中位数 | 全程中位数 |", "|---|---:|---:|---:|---:|"]
+    lines += ["", "区间表示当前69款游戏的重采样波动，不是Steam玩家级误差或总体随机抽样保证。相关方向与大小分别说明，不凭区间重叠认定两种相关系数不同。", "",
+              "## HLTB主线长度分组（仍为相同69款）", "", "| 参考耗时 | n | 前段中位数 | 后段中位数 | 全程中位数 |", "|---|---:|---:|---:|---:|"]
     for label, _, _ in BINS:
         rows = [r for r in groups if r["hours_group"] == label]
         lines.append(f"| {label} | {rows[0]['n']} | " + " | ".join(f"{r['median']:.1%}" if r['median'] is not None else "缺失" for r in rows) + " |")
-    lines += ["", "组内先计算每款游戏指标再取中位数；四分位使用线性插值。n>=10才提供中位数Bootstrap区间，>30小时组7款只报告分布；分组不是根据结果寻找的最优切点。", "",
+    lines += ["", "组内先计算每款游戏指标再取中位数；四分位使用线性插值。n>=10才提供中位数Bootstrap区间，各组按更新后的样本数决定是否报告区间；分组不是根据结果寻找的最优切点。", "",
               "## 观察与可复查案例", ""]
     for field in TIME_FIELDS:
         r = next(r for r in stats if r["x"] == field and r["y"] == "overall_progress_ratio")
         if r["spearman"] is not None:
             lines.append(f"- {LABELS[field]}与全程推进比：ρ={r['spearman']:+.3f}，重采样区间[{r['interval_low']:+.3f}, {r['interval_high']:+.3f}]。这是一项游戏级关联，不作因果归因。")
-    lines += ["", "案例以R=1和65款全程比中位数划分四象限；每象限按|log2(R)|降序、全程比偏离中位数距离降序、AppID升序取一款。属于刻意选择的探索性极端案例，不能代表各象限的典型游戏；无样本时不调整阈值补齐。", ""]
+    lines += ["", "案例以R=1和69款全程比中位数划分四象限；每象限按|log2(R)|降序、全程比偏离中位数距离降序、AppID升序取一款。属于刻意选择的探索性极端案例，不能代表各象限的典型游戏；无样本时不调整阈值补齐。", ""]
     for c in cases:
         lines.append(f"- {c['case']} {c['title']}：HLTB {c['main_hours']:g}h，RAWG {c['playtime']:g}h，R={c['time_ratio']:.2f}，全程{c['overall_progress_ratio']:.1%}；{c['quadrant']}。")
     lines += ["", "平均玩得更久与主线推进更深是不同观测维度。重复游玩、支线或其他活动只能作为后续待核验解释，不能凭时长比值直接确认。比值含HLTB分母，始终同时展示两种原始时长的关联，避免仅依据派生比值作结论。", "", "## 四张图", ""]
@@ -360,15 +378,15 @@ def report_text(games: list[Json], eligibility: list[Json], stats: list[Json], g
         path = Path(os.path.relpath(figures / (stem + ".png"), output)).as_posix()
         lines += [f"![{title}]({path})", ""]
     lines += ["## 明细与边界", "",
-              "[65款底表](duration_cohort.csv)、[198款筛选记录](duration_eligibility.csv)、[变量分布](duration_summary.csv)、[相关与区间](time_correlations.csv)、[时长分组](duration_groups.csv)、[案例](duration_cases.csv)、[来源与保护核验](manifest.json)。",
-              "这65款来自既有冻结游戏的有效交集，样本覆盖不完整；两类时长和成就统计的来源口径不同，不宣称是同一批玩家的时长与轨迹。RAWG是整数小时，保留并列值，不抖动数据用于统计。",
+              "[69款底表](duration_cohort.csv)、[198款筛选记录](duration_eligibility.csv)、[变量分布](duration_summary.csv)、[相关与区间](time_correlations.csv)、[时长分组](duration_groups.csv)、[案例](duration_cases.csv)、[来源与保护核验](manifest.json)。",
+              "这69款来自既有冻结游戏的有效交集，样本覆盖不完整；两类时长和成就统计的来源口径不同，不宣称是同一批玩家的时长与轨迹。RAWG是整数小时，保留并列值，不抖动数据用于统计。",
               "阶段推进是聚合节点覆盖之比，不是日留存、流失率或个人完成度；节点跨度、首节点和代表结局含义仍有差异。本轮未控制其他游戏属性，不把时长关联解释为内容长度造成了流失。",
-              "两份数据库、T0Pre、旧底表与01～09图保持只读/不变，无新采集、模型调用或数据库写入。RAWG来源：[RAWG](https://rawg.io/)。", ""]
+              "两份数据库、T0Pre、旧底表与01～09图保持只读/不变；采用用户提供人工补充值，无程序联网采集、模型调用或数据库写入。RAWG来源：[RAWG](https://rawg.io/)。", ""]
     return "\n".join(lines)
 
 
 def analyze(output: str | Path = DEFAULT_DURATION) -> Json:
-    """Build the fixed 65-game duration analysis while protecting all existing results."""
+    """Build the fixed 69-game duration analysis while protecting all existing results."""
     output = owned_path(output)
     old = (ROOT / "figures", DEFAULT_OUTPUT / "comparisons", DEFAULT_OUTPUT / "type_analysis", DEFAULT_OUTPUT / "trajectory_analysis")
     if output in (ROOT, DEFAULT_OUTPUT) or any(output.is_relative_to(p) for p in old):
@@ -377,11 +395,11 @@ def analyze(output: str | Path = DEFAULT_DURATION) -> Json:
     games, eligibility, audit = load_duration_data()
     stats, groups, summary = correlation_statistics(games), group_statistics(games), variable_summary(games)
     cases, median = choose_cases(games)
-    checks = {"fixed_65_appids": len(games) == 65 and digest([g['appid'] for g in games]) == COHORT_SHA256,
+    checks = {"fixed_69_appids": len(games) == COHORT_SIZE and digest([g['appid'] for g in games]) == COHORT_SHA256,
               "eligibility_198": len(eligibility) == 198, "all_three_ratios_available": all(g[f] is not None for g in games for f in PROGRESS),
               "positive_finite_times": all(number_status(g[f]) == "positive" for g in games for f in TIME_FIELDS),
-              "every_correlation_uses_65": all(r['n'] == 65 for r in stats),
-              "fixed_bin_counts": [r['n'] for r in groups if r['metric'] == PROGRESS[0]] == [10, 30, 18, 7],
+              "every_correlation_uses_69": all(r['n'] == COHORT_SIZE for r in stats),
+              "fixed_bin_counts": [r['n'] for r in groups if r['metric'] == PROGRESS[0]] == [10, 30, 20, 9],
               "small_groups_no_interval": all(r['interval_low'] is None for r in groups if r['n'] < MIN_GROUP_INTERVAL)}
     if not all(checks.values()):
         raise ValueError(f"时长计算核验失败：{checks}")
@@ -410,7 +428,7 @@ def analyze(output: str | Path = DEFAULT_DURATION) -> Json:
                 "protected_before": protected_before, "protected_after": protected_after,
                 "prior_artifacts_before": prior_before, "prior_artifacts_after": prior_after,
                 "implementation_sha256": {name: hashlib.sha256((ROOT / name).read_bytes()).hexdigest() for name in
-                    (Path(__file__).name, "run.py", "plot_files.py", "prepare_metrics.py", "compare_games.py", "analyze_types.py")},
+                    (Path(__file__).name, "run.py", "plot_files.py", "prepare_metrics.py", "compare_games.py", "analyze_types.py", "duration_inputs.py")},
                 "outputs_path_base": "manifest directory", "outputs_sha256": {n: hashlib.sha256((output / n).read_bytes()).hexdigest() for n in names}}
     write_text(output / "manifest.json", json.dumps(manifest, ensure_ascii=False, indent=2, allow_nan=False) + "\n")
     if not all(checks.values()):

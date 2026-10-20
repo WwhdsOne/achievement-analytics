@@ -1,12 +1,12 @@
 {
   "page_version": "lyx-web-story-v1",
-  "built_at": "2026-10-19T10:19:03+08:00",
+  "built_at": "2026-10-20T13:48:30+08:00",
   "dataset_version": "wwh5-2026-10-13T10:26:09.722887+00:00",
   "counts": {
     "curves": 198,
     "complete_three_point": 183,
-    "duration": 65,
-    "common_ratings": 140,
+    "duration": 69,
+    "common_ratings": 142,
     "main_available_peers": 181,
     "sequence_nodes": 1741,
     "adjacent_edges": 1543,
@@ -70,24 +70,6 @@
       },
       {
         "kind": "parent_manifest_fingerprint_drift",
-        "manifest": "analysis/T1Core/output/duration_analysis/manifest.json",
-        "field": "source.manifest_sha256",
-        "target": "analysis/T1Core/output/manifest.json",
-        "recorded": "aa76ddc651ccfb6d683ff534fbb165bcc96329facd8bf8489aa71508ce07daf6",
-        "actual": "608f88c2c887394aee6e2e38a94aaf04a457aab5ad5f1ea57ec440520fa5d47b",
-        "meaning": "父级清单指纹发生变化；本页实际消费的 CSV 已独立核验输出哈希与数值关系。"
-      },
-      {
-        "kind": "parent_manifest_fingerprint_drift",
-        "manifest": "analysis/T2Sum/output/reputation/manifest.json",
-        "field": "source.manifest_sha256",
-        "target": "analysis/T1Core/output/manifest.json",
-        "recorded": "aa76ddc651ccfb6d683ff534fbb165bcc96329facd8bf8489aa71508ce07daf6",
-        "actual": "608f88c2c887394aee6e2e38a94aaf04a457aab5ad5f1ea57ec440520fa5d47b",
-        "meaning": "父级清单指纹发生变化；本页实际消费的 CSV 已独立核验输出哈希与数值关系。"
-      },
-      {
-        "kind": "parent_manifest_fingerprint_drift",
         "manifest": "analysis/T2Sum/output/benchmark/manifest.json",
         "field": "source.manifest_sha256",
         "target": "analysis/T1Core/output/manifest.json",
@@ -97,11 +79,11 @@
       },
       {
         "kind": "parent_manifest_fingerprint_drift",
-        "manifest": "analysis/T1Core/output/duration_references/manifest.json",
-        "field": "source.base_source.manifest_sha256",
-        "target": "analysis/T1Core/output/manifest.json",
-        "recorded": "aa76ddc651ccfb6d683ff534fbb165bcc96329facd8bf8489aa71508ce07daf6",
-        "actual": "608f88c2c887394aee6e2e38a94aaf04a457aab5ad5f1ea57ec440520fa5d47b",
+        "manifest": "analysis/T2Sum/output/benchmark/manifest.json",
+        "field": "source.upstream_manifest_sha256",
+        "target": "analysis/T2Sum/output/reputation/manifest.json",
+        "recorded": "e145bc85f78e106da19dbfb35397ef571d903fdf8afb6bc90d4c7a63d0e208f0",
+        "actual": "84009a158122897a35f0ebd8fb36247450ac67c12fcb6bb4f55e4b3bf4dd900e",
         "meaning": "父级清单指纹发生变化；本页实际消费的 CSV 已独立核验输出哈希与数值关系。"
       }
     ],
@@ -109,6 +91,12 @@
     "scope": "本页消费的 CSV 与关系核验；未打开 SQLite 或重跑统计。"
   },
   "sources": [
+    {
+      "path": "analysis/T1Core/inputs/manual_duration_supplements.csv",
+      "sha256": "275e2e40b68c9f6cb106d4040377c103285ce8eaebd4cd6fcfd15d5c9f49ce2a",
+      "bytes": 1661,
+      "rows": 10
+    },
     {
       "path": "analysis/T1Core/output/checkpoints.csv",
       "sha256": "b1b76bd40f16e48bbfbde254b222060c674477f7905594537c224acc519bb74f",
@@ -123,41 +111,41 @@
     },
     {
       "path": "analysis/T1Core/output/duration_analysis/duration_eligibility.csv",
-      "sha256": "d376faff7a3739c4ce42e320446d497dbd5e5a933bcf47491934a893e2d857a7",
-      "bytes": 16153,
+      "sha256": "c85bf22116b8aa8e38af7cff3fa122364e8db989418716e465f942d191295930",
+      "bytes": 23151,
       "rows": 198
     },
     {
       "path": "analysis/T1Core/output/duration_analysis/duration_groups.csv",
-      "sha256": "893fdcfaeb5a7c31f14b368a9fc4e04de5168f60fd8f0cacfac4214a7409cb5f",
-      "bytes": 1749,
+      "sha256": "3ef82d752e2c5184867fd49c32d18256ab2b1975d649becc058b69cd0919c733",
+      "bytes": 1746,
       "rows": 12
     },
     {
       "path": "analysis/T1Core/output/duration_analysis/manifest.json",
-      "sha256": "0d4968611490dde2690932f3ed3ae0b2c92d130a5cb362f847a49e69c5e8f041",
-      "bytes": 20758
+      "sha256": "cde2e326007d1dbeb8760e54b22e59784e094a070c88123ad055397a3fcd679c",
+      "bytes": 52190
     },
     {
       "path": "analysis/T1Core/output/duration_analysis/time_correlations.csv",
-      "sha256": "7bf6ff055aee33a796b161c002491ccd57d56a0c78c57561d078ae72e83c2652",
-      "bytes": 1267,
+      "sha256": "9a9b917973c965c62692e109f675368e10c68b87597f981edaa1a135fb2d2ae4",
+      "bytes": 1266,
       "rows": 10
     },
     {
       "path": "analysis/T1Core/output/duration_references/manifest.json",
-      "sha256": "e1fb59a2eb24bf72b2b8e59e4e5e9d57db9595ae107e01c5a4be49fbc913b9e5",
-      "bytes": 16625
+      "sha256": "c1253d6ed9772c43a2a8e4bedbcfaf06805865eb4dbbb17fd56618a021395ba8",
+      "bytes": 53778
     },
     {
       "path": "analysis/T1Core/output/duration_references/reference_cohort.csv",
-      "sha256": "9285283afd7246e42df03e900d91423c85cc5ff1bce49e98248b019a1390dc37",
-      "bytes": 14708,
-      "rows": 65
+      "sha256": "d40be531447b2320c133d4b93dc9b13b849b98e2a6fb13926c83750d59a9aa3e",
+      "bytes": 20396,
+      "rows": 69
     },
     {
       "path": "analysis/T1Core/output/duration_references/reference_correlations.csv",
-      "sha256": "49097b0432d2ff5d1d81989c71ad28557b8281ea6487d3a9eda9b9484875289e",
+      "sha256": "58c033927798481f0d8625332af53758276ba6e4ff342a922b0f693910be5020",
       "bytes": 495,
       "rows": 2
     },
@@ -213,6 +201,12 @@
       "rows": 560
     },
     {
+      "path": "analysis/T2Sum/inputs/manual_rating_supplements.csv",
+      "sha256": "f24037fdb1d66b211c39a393668ca0fb22b388516e38491841b1984dbba14dbd",
+      "bytes": 1246,
+      "rows": 5
+    },
+    {
       "path": "analysis/T2Sum/output/benchmark/benchmark_cases.csv",
       "sha256": "37139e113b51ce1264f2d92aa0eee6b99b76b90672dbd61d7416b8341ad1b7e6",
       "bytes": 5734,
@@ -255,8 +249,8 @@
     },
     {
       "path": "analysis/T2Sum/output/reputation/manifest.json",
-      "sha256": "e145bc85f78e106da19dbfb35397ef571d903fdf8afb6bc90d4c7a63d0e208f0",
-      "bytes": 55715
+      "sha256": "84009a158122897a35f0ebd8fb36247450ac67c12fcb6bb4f55e4b3bf4dd900e",
+      "bytes": 57779
     },
     {
       "path": "analysis/T2Sum/output/reputation/matched_cases.csv",
@@ -266,26 +260,26 @@
     },
     {
       "path": "analysis/T2Sum/output/reputation/rating_common.csv",
-      "sha256": "19e8e0b68d3e3382a2c6af877417ec1c62a3acf918edfe2d022ae29096fd0339",
-      "bytes": 45150,
-      "rows": 140
+      "sha256": "3a8e0fae22f6cc6bfde8d64b498d83f02ce22373453ae3ef9af18d54886211ab",
+      "bytes": 52616,
+      "rows": 142
     },
     {
       "path": "analysis/T2Sum/output/reputation/reputation_cohort.csv",
-      "sha256": "2cfdca021c83303cde1a17e16c2768ed68af4391033d43daadc8c113327a6a1a",
-      "bytes": 58269,
+      "sha256": "5ab027aac03c0f6aac951a6f4b09db89901ada1a085a05fc4edc264da6e31cf7",
+      "bytes": 67064,
       "rows": 183
     },
     {
       "path": "analysis/T2Sum/output/reputation/reputation_correlations.csv",
-      "sha256": "6384e65c20f2686b6f65dfd3a709c635304954d9f64f3734452202ee99fa1753",
-      "bytes": 2445,
+      "sha256": "a7f9d3c4cca4ffc4681df4bf9e51b5490a1dbc3424edc183b0cf6d8e79923168",
+      "bytes": 2446,
       "rows": 12
     },
     {
       "path": "analysis/T2Sum/output/reputation/reputation_eligibility.csv",
-      "sha256": "7e0bb16bd97150619fc81698f79421852e144546a3753bbe82d577274039bdd1",
-      "bytes": 62775,
+      "sha256": "6ab727ee5f313b29a5d28f13ea0d0a6d4c2911178d9d2484125b46dd26cb2dfc",
+      "bytes": 72276,
       "rows": 198
     },
     {
@@ -296,22 +290,22 @@
     },
     {
       "path": "analysis/T2Sum/output/reputation/score_coverage.csv",
-      "sha256": "8d4384c216b53d7f3205a8c3ec39cbf089d1034b32fc9ebe57b09932f32b66cd",
+      "sha256": "2f4fc525db5d2058806c32e3069f0a103c228db644e4db43af65712a6baee4f0",
       "bytes": 170,
       "rows": 4
     }
   ],
   "web_sources": {
-    "page.html": "9ffb2046cae8532ce2f2c02fca04034eb3f16c5f0356e98c6f74961a3ce9510a",
-    "style.css": "f4d364b2c0a43afa1799b133b4668d6f271b15437226d668e89e282efcbf27c5",
-    "app.js": "47f06a203f9fb425b8406b101e8371dae7fc6f4d8e66bc6dc6c2eea94503f746",
-    "data_adapter.py": "22c50ec82ed20987dc7d8cec432a2681784d48c6876c408e8eef7e7f52fa645c",
+    "page.html": "a1ae854e12f8ddae9a8b146005938f8c11441c662629ab8b5e4204d4f95e51e5",
+    "style.css": "d2a80519c73bb8e235ac63491b3432d4da0009d5440da4934cc773077f0c6522",
+    "app.js": "8581a57757023f59a519fee6c74fb1cd3b030e713a3b1ffc29e172aa58bd992f",
+    "data_adapter.py": "852fdef3757d7bf1da47a1d234a5877d413fd4cf6b9477b916d698488b3261b7",
     "build.py": "f2c5fe32cebdec93c5ce3c8e1d74cea0ebab5c3949ce5cfc6507a0047c18fe21"
   },
   "outputs": {
     "index.html": {
-      "sha256": "8e7b8d64eb76ccbd60848caa8ba05823fbef18b18d2fb4a31560e507f19e8100",
-      "bytes": 5149092
+      "sha256": "5eceee16c774506568c13c41e774c0892c7496e7a0941994bce818154e65fd63",
+      "bytes": 5334155
     }
   },
   "database_writes": false,

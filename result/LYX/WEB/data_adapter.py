@@ -28,7 +28,7 @@ end_candidate_count end_max_tie_count start_label_count bootstrap bootstrap_repl
 valid_bootstrap_replicates requested_bootstrap_replicates random_state n base reference_n
 group_n tag_n background_n background_tag_n outside_n outside_tag_n score_unique
 x_unique_values y_unique_values ratio_below_one ratio_at_least_one positive negative
-review_count rawg_ratings_count peer_n known_issue_peer_n at_least10_peers selected_pair
+review_count rawg_ratings_count rawg_ratings_count_raw peer_n known_issue_peer_n at_least10_peers selected_pair
 candidate_rank pair frame_rank valid_ratio_count reverse_jump_count max_relative_tie_count
 max_relative_edge_position max_coverage_gap_tie_count max_coverage_gap_edge_position
 """.split())
@@ -37,7 +37,7 @@ confidence story_confidence from_confidence to_confidence rate from_rate to_rate
 adjacent_progress_ratio relative_drop coverage_gap_pp gap_relative_to_first
 from_node_fraction to_node_fraction interval_midpoint_fraction wwh_baseline_rate
 wwh_completion_ratio median q1 q3 minimum maximum interval_low interval_high
-cohort_median delta_to_cohort_pp reference_median delta_to_main_pp main_hours playtime
+cohort_median delta_to_cohort_pp reference_median delta_to_main_pp main_hours playtime original_main_hours original_playtime
 time_ratio extra_hours extra_hours_ratio completionist_hours completionist_hours_ratio
 lower_exclusive upper_inclusive spearman steam_positive_ratio metacritic_raw metacritic
 rawg_rating_raw rawg_rating hltb_main_hours coverage steam_median overall_median
@@ -61,7 +61,7 @@ is_end requires_start to_requires_start is_max_relative_drop is_max_coverage_gap
 eligible_main_plot time_order_anomaly reference_order_anomaly included complete_three_point
 three_scores_common descriptive_support discordant product_consistent case_eligible
 """.split())
-LIST_FIELDS = {"gameplay_labels", "similarity_labels", "quality_flags"}
+LIST_FIELDS = {"gameplay_labels", "similarity_labels", "quality_flags", "manual_fields"}
 
 
 def _sha(path: Path) -> str:
@@ -195,7 +195,7 @@ def _medians(rows: list[dict[str, Any]], fields: tuple[str, ...]) -> dict[str, f
 def load_dashboard_data(lyx_root: Path) -> dict[str, Any]:
     """Return a validated compact presentation payload using frozen CSV results.
 
-    The 198/183/65/140/181 sample contract is deliberate. A different data version
+    The 198/183/69/142/181 sample contract is deliberate. A different data version
     requires review before a build can silently change the page's scope.
     No database, source file, analysis artifact or upstream manifest is written.
     """
@@ -248,6 +248,36 @@ def load_dashboard_data(lyx_root: Path) -> dict[str, Any]:
     names_by_id = _index(names, "reputation_eligibility")
     reputation_by_id = _index(reputation, "reputation_cohort")
     duration_by_id = _index(durations, "reference_cohort")
+    manual = manifests["duration"]["source"]["manual_supplements"]
+    manual_path = sources.inside(sources.root / manual["path"])
+    if _sha(manual_path) != manual["sha256"]:
+        raise ValueError("Manual duration input hash differs from the analysis receipt")
+    with manual_path.open(encoding="utf-8-sig", newline="") as handle:
+        manual_rows = list(csv.DictReader(handle))
+    if len(manual_rows) != 10 or {int(r["appid"]) for r in manual_rows} != {812140, 1903340, 1593500, 1245620}:
+        raise ValueError("Manual duration supplement scope differs from the approved ten fields")
+    for item in manual_rows:
+        row = duration_by_id[int(item["appid"])]
+        _same(row[item["field"]], float(item["value"]), "manual duration " + item["field"])
+        if not row[item["field"] + "_source"].startswith("manual_confirmed:"):
+            raise ValueError("Manual duration value lost its origin")
+    sources.record(manual_path, len(manual_rows))
+    rating_manual = manifests["reputation"]["source"]["manual_supplements"]
+    rating_path = sources.inside(sources.root / rating_manual["path"])
+    if _sha(rating_path) != rating_manual["sha256"]:
+        raise ValueError("Manual score input hash differs from the task5 receipt")
+    with rating_path.open(encoding="utf-8-sig", newline="") as handle:
+        rating_rows = list(csv.DictReader(handle))
+    if len(rating_rows) != 5 or {(int(r["appid"]), r["field"]) for r in rating_rows} != {
+        (1903340, "metacritic"), (1903340, "rawg_rating"), (1593500, "metacritic"),
+        (1593500, "rawg_rating"), (1593500, "rawg_ratings_count")}:
+        raise ValueError("Manual score supplement scope differs from the approved five fields")
+    for item in rating_rows:
+        row = reputation_by_id[int(item["appid"])]
+        _same(row[item["field"]], float(item["value"]), "manual rating " + item["field"])
+        if not row[item["field"] + "_source"].startswith("manual_confirmed:"):
+            raise ValueError("Manual score value lost its origin")
+    sources.record(rating_path, len(rating_rows))
     eligibility_by_id = _index(duration_eligibility, "duration_eligibility")
     profile_by_id = _index(profiles, "game_profiles")
     main_conditions_by_id = _index(
@@ -289,7 +319,7 @@ def load_dashboard_data(lyx_root: Path) -> dict[str, Any]:
         "main_available_peers": next(row["available_n"] for row in peer_coverage if row["config"] == "main"),
         "sequence_nodes": sum(map(len, nodes_by_id.values())), "adjacent_edges": len(edges),
     }
-    expected = {"curves": 198, "complete_three_point": 183, "duration": 65, "common_ratings": 140, "main_available_peers": 181, "sequence_nodes": 1741, "adjacent_edges": 1543}
+    expected = {"curves": 198, "complete_three_point": 183, "duration": 69, "common_ratings": 142, "main_available_peers": 181, "sequence_nodes": 1741, "adjacent_edges": 1543}
     if counts != expected:
         raise ValueError(f"Frozen sample changed: {counts}")
     ids, complete_ids = set(core_by_id), {row["appid"] for row in complete}
@@ -391,6 +421,8 @@ def load_dashboard_data(lyx_root: Path) -> dict[str, Any]:
             "counts": counts, "medians": _medians(complete, METRICS),
             "all_curve_medians": _medians(core, METRICS),
             "duration_medians": _medians(durations, ("main_hours", "playtime", "time_ratio", "extra_hours", "extra_hours_ratio", "completionist_hours", "completionist_hours_ratio")),
+            "duration_manual_supplements": manual,
+            "rating_manual_supplements": rating_manual,
             "source_cohort_sha256": next(iter(cohort_receipts)),
             "source_checks": {
                 "status": "passed_with_manifest_warnings" if sources.warnings else "passed",
@@ -411,10 +443,10 @@ def load_dashboard_data(lyx_root: Path) -> dict[str, Any]:
         "reputation": {"cohort": reputation, "common": common, "correlations": correlations, "coverage": coverage, "quadrants": quadrants, "exploration_multilabel": multilabel, "region_boundaries": boundaries, "matched_cases": matched},
         "peers": {"coverage": peer_coverage, "members": members, "parameters": manifests["peers"]["parameters"]},
         "highlights": {
-            "opening_appids": [235600, 588650], "default_appids": [367520, 588650],
+            "opening_appids": [235600, 588650], "default_appids": [367520, 812140, 1903340, 1593500, 1245620],
             "trajectory_pairs": selected_pairs, "reputation_matched_cases": matched,
             "peer_cases": peer_cases,
-            "missing_examples": {"two_nodes": 379720, "rawg_missing": 1593500, "insufficient_peers": 397950, "no_peers": 861650},
+            "missing_examples": {"two_nodes": 379720, "rawg_missing": next(r["appid"] for r in duration_eligibility if r["exclusion_reason"] == "rawg_null"), "insufficient_peers": 397950, "no_peers": 861650},
         },
         "sources": sorted(sources.records.values(), key=lambda item: item["path"]),
     }

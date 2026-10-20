@@ -79,16 +79,38 @@ def read_prepared() -> Json:
     if hashlib.sha256(data_path.read_bytes()).hexdigest()!=manifest["outputs_sha256"][key]:
         raise ValueError("任务6data.json已改变")
     upstream=ROOT/"output"/"reputation"/"manifest.json"
-    if hashlib.sha256(upstream.read_bytes()).hexdigest()!=manifest["source"]["upstream_manifest_sha256"]:
-        raise ValueError("任务5上游版本已改变，请先复跑benchmark")
-    return json.loads(data_path.read_text(encoding="utf-8"))
+    package = json.loads(data_path.read_text(encoding="utf-8"))
+    upstream_hash = hashlib.sha256(upstream.read_bytes()).hexdigest()
+    if upstream_hash != manifest["source"]["upstream_manifest_sha256"]:
+        # Task5 can refresh media/RAWG scores without changing any input used by task6.
+        current_manifest = json.loads(upstream.read_text(encoding="utf-8"))
+        if not all(current_manifest.get("checks", {}).values()) or not current_manifest.get("checks"):
+            raise ValueError("任务5上游核验失败")
+        for relative, expected in current_manifest["outputs_sha256"].items():
+            if hashlib.sha256((ROOT / relative).read_bytes()).hexdigest() != expected:
+                raise ValueError("任务5当前产物指纹不符")
+        current = json.loads((upstream.parent / "data.json").read_text(encoding="utf-8"))
+        old_rows = {g["appid"]: g for g in package["results"]}
+        new_rows = {g["appid"]: g for g in current["background"]}
+        inputs = ("positive", "negative", "review_count", "ending_type", "primary_gameplay",
+                  "hltb_main_hours", "p_s", "p_m", "p_f", *PROGRESS)
+        if set(old_rows) != set(new_rows) or any(
+            old_rows[i][field] != new_rows[i][field] for i in old_rows for field in inputs
+        ) or any(current["source"][k] != package["source"][k] for k in
+                 ("dataset_version", "game_metrics_sha256", "cohort_sha256")):
+            raise ValueError("任务6实际计算输入已改变，请先复跑benchmark")
+        package["source"] = {**package["source"], "upstream_compatibility": {
+            "status": "consumed_inputs_unchanged", "current_manifest_sha256": upstream_hash,
+            "core_manifest_history": {"recorded": package["source"]["manifest_sha256"], "current": current["source"]["manifest_sha256"]},
+            "note": "任务5评分更新及历史父清单漂移；指标CSV、范围指纹及任务6实际使用值未变，沿用原参照结果"}}
+    return package
 
 
 def query_benchmark(selectors: list[str] | None = None, kind: str = "mixed") -> Json:
     """Return frozen background and reference details for 1–5 names/AppIDs, without writes or recomputation."""
     package=read_prepared()
     catalog,audit=load_catalog()
-    if any(audit[k]!=package["source"][k] for k in ("dataset_version","game_metrics_sha256","manifest_sha256")):
+    if any(audit[k]!=package["source"][k] for k in ("dataset_version","game_metrics_sha256","cohort_sha256")):
         raise ValueError("任务6与当前T1版本不同")
     background=[r for r in package["results"] if r["peer_status"]=="available"]
     return {"version":package["version"],"source":package["source"],"parameters":package["parameters"],

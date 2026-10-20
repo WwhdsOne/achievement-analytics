@@ -78,3 +78,11 @@ WHERE t.display_name IS NOT a.display_name;
 ```
 
 现成[WEB交互简报](../WEB/index.html)已内嵌由正式结果表整理的游戏/时长展示数据，打开页面不读本SQLite。只演示可交付单文件HTML；重建页面读取T1/T2已有CSV与manifest，不重新查询本库。若另外适配数据，可参考[delivery/package](../analysis/delivery/README.md)中的游戏/时长摘录和计算结果；按现有分析代码完整复算仍需整份原SQLite及指纹。不得将SQLite、累计CSV或原始导出提交Git；网页打开、构建与交接见[WEB说明](../WEB/README.md)。
+
+## 2026年10月20日分析输入补充
+
+本数据库未修改。任务4在原65款结果基础上，叠加[人工确认CSV](../analysis/T1Core/inputs/manual_duration_supplements.csv)的10个字段形成69款；HLTB正值三节点范围在分析层为71款。原库中的68/65覆盖仍是快照事实。三款HLTB和God of War的RAWG补值不回填数据库，也不改变任务5评分或任务6长度参照。
+
+## 2026-10-20 任务5评分输入叠加
+
+SQLite内容不变。用户确认的两款媒体/RAWG评分及战神评分人数保存在[评分补充CSV](../analysis/T2Sum/inputs/manual_rating_supplements.csv)，由任务5读取时按AppID叠加，不回写数据库。原始*_raw字段与逐字段来源均保留；实际共同评分样本为原140款加两款，共142款。此处原始数据库覆盖数仍描述旧快照，不能误当叠加后的分析覆盖。

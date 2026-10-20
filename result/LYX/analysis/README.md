@@ -41,8 +41,8 @@ analysis/
 | 1. 主线指标准备与游戏对比 | 固定198款，183款完整三节点，15款中间留空；首/中/末覆盖及前/后/全程比 | 01 | [底表报告](T1Core/output/report.md) |
 | 2. 类型与阶段 | 主183款、补充198款；主类型与完整多标签分别汇总 | 02～07 | [类型报告](T1Core/output/type_analysis/report.md) |
 | 3. 完整主线过程 | 198款、1741个序列节点、1543段相邻区间；自动案例及自选分组 | 08～09 | [过程报告](T1Core/output/trajectory_analysis/report.md) |
-| 4. 时长与推进 | 同65款；RAWG平均游玩时长、HLTB三类参考耗时及比值 | 10～15 | [主分析](T1Core/output/duration_analysis/report.md)、[补充参照](T1Core/output/duration_references/report.md) |
-| 5. 口碑与推进 | Steam183款、三评分共同140款；四象限、阶段相关和多标签探索 | 16～18 | [口碑报告](T2Sum/output/reputation/report.md) |
+| 4. 时长与推进 | 同69款；RAWG平均游玩时长、HLTB三类参考耗时及比值 | 10～15 | [主分析](T1Core/output/duration_analysis/report.md)、[补充参照](T1Core/output/duration_references/report.md) |
+| 5. 口碑与推进 | Steam183款、三评分共同142款；四象限、阶段相关和多标签探索 | 16～18 | [口碑报告](T2Sum/output/reputation/report.md) |
 | 6. 同类参照 | 183款目标，主条件181款参照充足；五条件915行及21294条有向参照 | 19～21 | [同类参照报告](T2Sum/output/benchmark/report.md) |
 
 固定图索引：[T1图集01～15](T1Core/figures/README.md)、[T2图集16～21](T2Sum/figures/README.md)。T0Pre的三张基线图在其自身figures中，不占上述编号；过程自选例图另见[分组图集](T1Core/figures/trajectory_comparisons/README.md)。
@@ -71,8 +71,8 @@ uv --cache-dir analysis/T1Core/runtime/uv-cache run --frozen --no-sync python -X
 | 类型总体 | analysis/T1Core/run.py types | 固定样本，不接受游戏选择 |
 | 自动过程案例 | analysis/T1Core/run.py trajectory | 固定全量过程明细及自动案例 |
 | 自选过程分组 | analysis/T1Core/run.py trajectory --games 367520 220240 1245620 --games-per-group 2 | 默认每组2款，余数保留；只指定--groups时尽量均分 |
-| 时长主分析 | analysis/T1Core/run.py duration | 固定65款，生成10～13 |
-| 时长补图 | analysis/T1Core/analyze_duration_references.py | 同65款，生成14～15 |
+| 时长主分析 | analysis/T1Core/run.py duration | 固定69款，生成10～13 |
+| 时长补图 | analysis/T1Core/analyze_duration_references.py | 同69款，生成14～15 |
 | 口碑总体/高亮 | analysis/T2Sum/run.py reputation | 可加--games/--appids/--game-names选1～5款 |
 | 同类参照总体/自选 | analysis/T2Sum/run.py benchmark | 需默认reputation结果，可选1～5款 |
 
@@ -87,8 +87,8 @@ T2Sum建议使用自身缓存路径 `--cache-dir analysis/T2Sum/runtime/uv-cache
 | 任务1 | CLI及WEB支持1～5款AppID/已有中英文名 | 网页展示所选节点覆盖或阶段推进 |
 | 任务2 | CLI固定总体；WEB可切主类型/完整标签并查看成员 | 类型统计固定183款，不随选择改变 |
 | 任务3 | CLI/query_trajectory自选分组；WEB支持最多5款的分组对比 | 默认每组2款或指定组数均分，保留全部有效节点与原顺序 |
-| 任务4 | CLI固定65款；WEB已实现高亮和三种参考切换 | 始终固定65款及对应统计；缺失保留说明 |
-| 任务5 | CLI静态高亮/query_reputation；WEB可切视图、阶段和评分 | 固定183/140款，保留缺评分/缺三节点状态 |
+| 任务4 | CLI固定69款；WEB已实现高亮和三种参考切换 | 始终固定69款及对应统计；缺失保留说明 |
+| 任务5 | CLI静态高亮/query_reputation；WEB可切视图、阶段和评分 | 固定183/142款，保留缺评分/缺三节点状态 |
 | 任务6 | CLI/query_benchmark；WEB按五条件真实结果切换 | 各条件总体背景不随选择变；参照不足不补零 |
 
 Python入口按已有appid/name_en/name_zh匹配，歧义和重复报错；WEB按已有名称/AppID展示搜索候选，已选游戏不重复加入，最多5款，不补造中文译名。query_benchmark仍没有config参数；WEB适配器已独立读取五条件的已存结果和成员，未修改这个Python函数或把主条件只换标题。现有Python查询部分仍依赖本地SQLite，WEB浏览只用内嵌结果。当前本地交互页面已完成，但尚无分析专用HTTP接口或公网部署；详细交接见[DEPLOY](../docs/DEPLOY.md)。
@@ -110,3 +110,7 @@ Python入口按已有appid/name_en/name_zh匹配，歧义和重复报错；WEB�
 [本机运行核验报告](delivery/runtime/run_check_20261017T043521Z/REPORT.md)及其acceptance.json保存命令、耗时、产物和保护结果；这些运行记录属于本地忽略文件，Git克隆后不会自动携带。本次README更新仅同步导航与状态，没有重新执行统计、修改程序或写数据库。
 
 2026-10-19网页实施另有28项浏览器检查、桌面/手机布局及33份来源文件核验，见[WEB/ACCEPTANCE](../WEB/ACCEPTANCE.md)。已消费CSV自身校验与数值关系通过，6条历史父manifest漂移仍记录为警告；该网页验收不替代原分析链严格审计，也不将当前完整审计写为全部通过。
+
+## 2026年10月20日任务4补充
+
+原65款加4款人工补充形成69款。10个值保存在[人工时长输入](T1Core/inputs/manual_duration_supplements.csv)，两份数据库不变。10～15图、结果表、来源清单和网页同步更新；默认预选Hollow Knight、奥德赛、33号远征队、God of War、艾尔登法环。全程推进相关：主线比+0.652、主线加额外内容比+0.652、全收集比+0.630。任务5和任务6原样本、原统计不变。

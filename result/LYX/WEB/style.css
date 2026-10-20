@@ -170,6 +170,11 @@ p.section-number { display: block; width: auto; height: auto; margin: 0 0 10px; 
 .badge.orange, .chip.orange { color: #97602c; background: #fcf3e8; border-color: #edddc8; }
 .badge.cyan, .chip.cyan { color: #247f8a; background: #edf8fa; border-color: #d0eaee; }
 .stats-ribbon { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 0; padding: 20px 0; margin-top: 18px; border-top: 1px solid var(--line); border-bottom: 1px solid var(--line); }
+.correlation-explainer { margin-top: 16px; padding: 18px 20px; background: #f3f6fb; border: 1px solid var(--line); border-radius: 9px; color: #4d607c; font-size: 12px; line-height: 1.9; overflow-wrap: anywhere; }
+.correlation-explainer h3 { margin: 0 0 10px; color: var(--ink); font-size: 14px; }
+.correlation-explainer p { margin: 0; }
+.correlation-explainer p + p { margin-top: 10px; }
+.correlation-explainer strong { color: #244b7b; }
 .kpi { min-width: 0; padding-inline: 20px; border-left: 1px solid var(--line); }
 .kpi:first-child { border-left: 0; padding-left: 0; }
 .kpi strong { display: block; color: var(--ink-strong); font-size: 26px; line-height: 1.4; letter-spacing: -.035em; }

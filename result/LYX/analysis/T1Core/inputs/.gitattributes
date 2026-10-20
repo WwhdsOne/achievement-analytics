@@ -1,0 +1,2 @@
+# 保留来源指纹，避免跨平台换行转换改变人工输入的SHA256。
+manual_duration_supplements.csv -text
