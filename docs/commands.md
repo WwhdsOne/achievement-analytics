@@ -157,23 +157,39 @@ uv run --with playwright python scripts/check_dashboard_browser.py --url http://
 [experiments.md](experiments.md)）。当时生成的 `data/processed/analysis-report.json`
 （不入Git）仍在，但**再也不能重新生成**。
 
-## 9. 面板部署（腾讯云，Go 单文件）
+## 9. 面板部署（腾讯云，Go 与持久化静态内容）
 
 `dashboard/` 是**自包含**的：`go.mod` / `.env` / `Dockerfile` / `docker-compose.yml` /
 `deploy.sh` 全在这个目录里，仓库根目录不放任何面板相关文件。后端是 **Go、只读**，前端 embed
-在同一个二进制里；镜像 `FROM scratch`，最终 16MB，容器内存约 6MB。跑在腾讯云那台机器上
+在同一个二进制里；研究原页、原图与报告独立持久化，镜像 `FROM scratch`。跑在腾讯云那台机器上
 （`network_mode: host`，容器内 `127.0.0.1:15432` 即宿主上的 PostgreSQL），公网入口
 `http://82.157.208.173:8600`。
 
 ```bash
 # 一条命令搞定（也可 cd dashboard && bash deploy.sh）
 bash dashboard/deploy.sh
+
+# 只在本机编译、校验、打包，不读部署凭据、不连接服务器
+bash dashboard/deploy.sh --prepare-only
+
+# 临时目录模拟首次、重复、单文件变更、损坏与缺失文件同步；不读云库
+uv run python scripts/check_dashboard_content.py
 ```
 
 脚本做四件事：交叉编译 linux/amd64 → **从 `dashboard/.env` 抽出 `POSTGRES_*` 与 `RECOMMENDATION_HOST/PORT`**
 （值原样照搬，不做任何改写）→ 打成 tar 上传到服务器 `/opt/achievement-dashboard/` →
 `docker compose up -d --build` → 远端探活 → 本机探公网 → 确认补抓接口是 404。
 **服务器上不需要仓库、不需要 Git、不需要 Python。**
+
+冻结内容独立保存于 `/opt/achievement-dashboard/content/`：`objects/` 按 SHA256 去重，
+`releases/` 保存完整版本，`current` 原子指向已校验版本。容器以只读方式挂载父目录，
+因此版本切换不需要重建镜像。每次部署验证服务器实际文件字节，缺失、变化或损坏才上传，
+未变化时传输的数据文件为零；普通代码 tar 不包含 LYX、研究原图和历史报告。
+旧版本保留且不自动清理，服务器备份应覆盖此目录。研究汇总 JSON 同样独立持久化。
+首次迁移会复用旧部署目录内摘要一致的历史报告；对象缺失时也可从完整的当前版本
+复制修复，均不重新上传。复制后再校验 SHA256，旧目录与冻结对象不共用 inode。
+本机默认从 `dashboard/` 读取，`--content-dir /路径/current` 可验证持久化版本，
+使用其报告时另传 `--report /路径/current/data/processed/analysis-report.json`。
 
 配置全在 **`dashboard/.env`**（不入 git，也**不读仓库根的 `.env`**）。两段各自独立填写、
 原样使用：
