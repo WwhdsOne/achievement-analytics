@@ -21,6 +21,7 @@ __pycache__/
 *.py[cod]
 .venv/
 .pytest_cache/
+.ruff_cache/
 
 # Go 面板的交叉编译产物（由 deploy/deploy.sh 生成后上传到服务器，不入库）
 build/
@@ -38,6 +39,7 @@ inkos.json
 .nvmrc
 .node-version
 .workbuddy
+.code-review-graph/
 
 # 图表生成的临时产物（最终稿在 docs/presentations/）
 .chart-data-*/
