@@ -5,7 +5,7 @@
   const esc = escapeHtml;
   const fields = {tags: '玩家标签', genres: '游戏类型', developers: '开发商', publishers: '发行商'};
   const topics = [
-    {id: 'trends', tab: '类型潮流', title: '发售年份与潮流类型演变', kind: '主线', owner: '杨金辉', scope: '按发售年份比较游戏类型、题材和玩家模式的构成变化。', outputs: ['类型占比趋势', '官方分类对照', '题材与玩家模式']},
+    {id: 'trends', tab: '类型潮流', title: '发售年份与潮流类型演变', kind: '主线', owner: '杨金辉', scope: '按发售日期播放标签与类型的累计变化，并比较各年份游戏类型、题材和玩家模式的构成。', outputs: ['日期交互趋势', '类型占比趋势', '官方分类对照', '题材与玩家模式']},
     {id: 'clusters', tab: '画像聚类', title: '游戏画像聚类', kind: '扩展', owner: '耶美田', scope: '把成就解锁情况相近的游戏分成五类，看看各类的分布、常见标签和热门作品。', outputs: ['五类成就分布', '类型关联', '热门作品']},
     {id: 'recommendation', tab: '可解释推荐', title: '可解释推荐', kind: '主线', owner: '朱政宇', scope: '选几款你喜欢的游戏，从共同的标签、类型与创作者关系中，发现下一款。', outputs: ['相似游戏', '推荐理由']},
     {id: 'retention', tab: '实际完成曲线', title: '实际完成曲线与游戏用户粘性分析', kind: '主线', owner: '王文海、刘宇翔', scope: '直接嵌入刘宇翔的原始交互简报：六项分析串成一页，可自选 1–5 款游戏联动查看阶段推进、时长投入、口碑与同类参照。', outputs: ['主线指标', '玩法比较', '完整过程', '游玩投入', '口碑关联', '同类参照']},
@@ -14,7 +14,7 @@
   const BADGES = {
     recommendation: '交互成果',
     clusters: '图解报告 · 2026-10-17',
-    trends: '图解报告 · 2026-10-16',
+    trends: '交互趋势 · 图解报告',
     retention: '原始交付页 · 2026-10-20',
   };
   let active = '', selected = [], meta = null, metaPromise = null;

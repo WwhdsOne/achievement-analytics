@@ -54,6 +54,9 @@ var assets = map[string]struct{ file, ctype string }{
 	"/assets/research/yjh/official-genre.png":           {"figures/yjh/official-genre.png", "image/png"},
 	"/assets/research/yjh/theme-growth.png":             {"figures/yjh/theme-growth.png", "image/png"},
 	"/assets/research/yjh/player-growth.png":            {"figures/yjh/player-growth.png", "image/png"},
+	"/assets/research/yjh/trend-race.html":              {"yjh/trend-race.html", "text/html; charset=utf-8"},
+	"/assets/research/yjh/游戏标签年度分布.csv":                 {"yjh/all-tags.csv", "text/csv; charset=utf-8"},
+	"/assets/research/yjh/游戏类型年度分布.csv":                 {"yjh/curated-genres.csv", "text/csv; charset=utf-8"},
 	"/assets/research/ymt/cluster-data.json":            {"cluster-data.json", "application/json; charset=utf-8"},
 	"/assets/research/ymt/shape-pca.png":                {"figures/ymt/shape-pca.png", "image/png"},
 	"/assets/research/ymt/tier-pca.png":                 {"figures/ymt/tier-pca.png", "image/png"},
@@ -346,7 +349,7 @@ func main() {
 	// "GET /{$}" 才是「只匹配根路径」；写成 "GET /" 会变成匹配所有路径的兜底项
 	mux.HandleFunc("GET /{$}", static("index.html", "text/html; charset=utf-8"))
 	for path, a := range assets {
-		if strings.HasPrefix(a.file, "figures/") || strings.HasSuffix(a.file, "-data.json") {
+		if strings.HasPrefix(a.file, "figures/") || strings.HasPrefix(a.file, "yjh/") || strings.HasSuffix(a.file, "-data.json") {
 			file := a.file
 			mux.HandleFunc("GET "+path, func(w http.ResponseWriter, r *http.Request) {
 				w.Header().Set("X-Content-Type-Options", "nosniff")

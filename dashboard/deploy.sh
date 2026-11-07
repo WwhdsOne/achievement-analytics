@@ -113,6 +113,7 @@ if [ "$PREPARE_ONLY" = 0 ]; then
   echo "    目标 ${TARGET}:${DEPLOY_PATH}  端口 ${DEPLOY_PORT}"
 fi
 python3 ../scripts/sync_lyx_bundle.py --check
+python3 ../scripts/sync_yjh_trend.py --check
 python3 ../scripts/dashboard_content.py prepare
 
 # ── 1. 交叉编译 ─────────────────────────────────────────────────────────

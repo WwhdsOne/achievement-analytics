@@ -8,6 +8,10 @@
 .trend-kpis strong { display: block; font-size: clamp(21px, 2.1vw, 29px); font-variant-numeric: tabular-nums; letter-spacing: -.05em; }
 .trend-kpis span { display: block; font-size: 11px; line-height: 1.8; color: var(--L3); margin-top: 8px; }
 .trend-section { margin-bottom: 26px; }
+.trend-race-heading { display: flex; justify-content: space-between; align-items: start; gap: 12px; flex-wrap: wrap; }
+.trend-race-heading a { color: var(--INK); font-size: 12px; text-decoration: underline; text-underline-offset: 4px; }
+.trend-race-frame-wrap { border: 1px solid var(--GRID); border-radius: 10px; overflow: hidden; background: #f3f6fa; }
+.trend-race-frame { display: block; width: 100%; height: 960px; border: 0; }
 .trend-section h3 { font-size: 19px !important; line-height: 1.7; }
 .trend-purpose { font-size: 12px; line-height: 1.9; color: var(--L3); margin: 8px 0 18px; }
 .trend-image { display: block; color: var(--INK); text-decoration: none; background: #f6f7f9; border: 1px solid var(--GRID); border-radius: 10px; overflow: hidden; }
@@ -30,6 +34,7 @@
   .trend-kpis strong { font-size: 22px; }
 }
 @media (max-width: 680px) {
+  .trend-race-frame { height: 830px; }
   .trend-kpis { grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 18px 12px; }
   .trend-kpis > div:first-child { grid-column: 1 / -1; }
   .trend-kpis > div:first-child strong { font-size: 32px; }

@@ -5,6 +5,7 @@
   const number = value => Number(value).toLocaleString('zh-CN');
   const pct = (value, digits = 1) => Number(value).toFixed(digits) + '%';
   const files = {genre: 'genre-share.png', official: 'official-genre.png', theme: 'theme-growth.png', players: 'player-growth.png'};
+  const raceURL = '/assets/research/yjh/trend-race.html';
   let dataPromise;
 
   /** loadData 缓存冻结汇总；失败后允许重试。 */
@@ -88,7 +89,12 @@
     return `<div class="trend-lead"><p class="trend-step">这项研究在做什么</p><h3>按发售年份分组，<br>看看游戏的类型构成怎么变。</h3>
       <p>把项目数据库中的游戏按发售年份分组，统计各类标签有多常见。这里反映的是不同年份发售的游戏有什么属性；它没有记录当年的销量、在线人数或玩家偏好。</p>
       <div class="trend-kpis"><div><strong>${number(data.meta.games)}</strong><span>款游戏构成整体快照样本</span></div><div><strong>2014–2024</strong><span>类型折线图的发售年份</span></div><div><strong>2014–2020</strong><span>增长榜的两个比较年份</span></div></div>
-      <p class="research-note">杨金辉（YJH）· 第二版冻结成果 · 2026-10-16 提取 · 仅含 2026 年以前发售的游戏</p></div>
+      <p class="research-note">本页下方四张原图：杨金辉（YJH）第二版冻结成果 · 2026-10-16 提取 · 仅含 2026 年以前发售的游戏；上方指标属于这份第二版快照。</p></div>
+      <section class="card trend-section trend-race-section" aria-labelledby="trend-race-title">
+        <div class="trend-race-heading"><div><p class="trend-step">交互展示 / 2014–2025</p><h3 id="trend-race-title">标签与类型的发售日期累计变化</h3></div><a href="${raceURL}" target="_blank" rel="noopener noreferrer">在新标签页打开 ↗</a></div>
+        <p class="trend-purpose">按发售日期播放，查看 SteamSpy 标签的累计游戏数和动态排名；可切换全部标签与精选类型。图中的数量是当前快照按发售日期回溯的累计值，不代表当时的玩家热度。</p>
+        <div class="trend-race-frame-wrap"><iframe class="trend-race-frame" src="${raceURL}" title="杨金辉：游戏标签与类型发售日期分布交互图" loading="eager" referrerpolicy="no-referrer"></iframe></div>
+      </section>
       ${charts(data)}
       <footer class="trend-footer research-note">来源：Steam 商店的发售日期与官方分类、SteamSpy 玩家标签。标签抓取窗口为 2026-09-18 至 2026-10-01。<br>本页为固定研究快照，不随游戏探索页刷新；输入指纹 ${esc(data.meta.input_sha256.slice(0, 12))}。</footer>`;
   }

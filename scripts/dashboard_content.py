@@ -48,7 +48,7 @@ def prepare(output: Path, source_dir: Path | None) -> Path:
     else:
         dashboard = ROOT / "dashboard"
         files = [(p.relative_to(dashboard).as_posix(), p)
-                 for directory in ("lyx", "figures")
+                 for directory in ("lyx", "figures", "yjh")
                  for p in (dashboard / directory).rglob("*") if p.is_file()]
         files.append(("data/processed/analysis-report.json", ROOT / "data/processed/analysis-report.json"))
         files += [(name, dashboard / name) for name in ("cluster-data.json", "trend-data.json")]
